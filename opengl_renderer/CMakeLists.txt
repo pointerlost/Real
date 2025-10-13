@@ -1,16 +1,9 @@
-cmake_minimum_required(VERSION 3.20)
-project(opengl_renderer)
-
-if(DEFINED ENV{VCPKG_ROOT})
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-elseif(EXISTS "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-    set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
-endif()
-
+cmake_minimum_required(VERSION 3.21)
 # manifest mode
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+project(opengl_renderer)
+set(CMAKE_CXX_STANDARD 20)
 
-find_package(glad REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -18,37 +11,86 @@ find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 
-add_executable(${PROJECT_NAME} src/main/main.cpp)
-
-# Include directories
-target_include_directories(${PROJECT_NAME} PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_BINARY_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/vendor
+add_executable(${PROJECT_NAME}
+    main/main.cpp
+    src/Core/file_manager.cpp
+    include/Core/Window.h
+    src/Core/Window.cpp
+    include/Core/Logger.h
+    src/Core/Engine.cpp
+    include/Core/Engine.h
+    include/Core/Utils.h
+    include/Core/Timer.h
+    src/Core/Timer.cpp
+    include/Graphics/Shader.h
+    src/Graphics/Shader.cpp
+    include/Core/AssetManager.h
+    src/Core/AssetManager.cpp
+    include/Graphics/Mesh.h
+    include/Graphics/MeshManager.h
+    src/Graphics/MeshManager.cpp
+    include/Core/Services.h
+    src/Core/Services.cpp
+    include/Graphics/MeshFactory.h
+    src/Graphics/MeshFactory.cpp
+    include/Graphics/Texture.h
+    include/Graphics/Transformations.h
+    include/Graphics/Camera.h
+    src/Graphics/Camera.cpp
+    include/Graphics/Config.h
+    include/Graphics/Renderer.h
+    src/Graphics/Renderer.cpp
+    include/Scene/Scene.h
+    src/Scene/Scene.cpp
+    include/Input/Input.h
+    src/Input/Input.cpp
+    include/Core/Callback.h
+    src/Core/Callback.cpp
+    include/Input/Keycodes.h
+    include/Input/CameraInput.h
+    src/Input/CameraInput.cpp
+    include/Scene/Components.h
+    include/Scene/Entity.h
+    include/Core/UUID.h
+    src/Core/UUID.cpp
+    src/Scene/Entity.cpp
+    include/Editor/EditorState.h
+    src/Editor/EditorState.cpp
+    src/Graphics/Transformations.cpp
+    include/Graphics/Light.h
+    src/Graphics/Light.cpp
+    include/Graphics/Material.h
+    src/Graphics/Texture.cpp
+        include/Graphics/Buffer.h
+        src/Graphics/Buffer.cpp
+        include/Graphics/GPUBuffers.h
+        include/Graphics/RenderContext.h
+        src/Graphics/RenderContext.cpp
+        include/Graphics/RenderCommand.h
+        src/Graphics/Material.cpp
 )
+
+add_library(glad_local STATIC vendor/glad/src/glad.c)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_BINARY_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor
+)
+target_include_directories(glad_local PUBLIC vendor/glad/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        glad::glad
-        glfw
-        glm::glm
-        nlohmann_json::nlohmann_json
-        imgui::imgui
-        assimp::assimp
+    glad_local
+    glfw
+    glm::glm
+    nlohmann_json::nlohmann_json
+    imgui::imgui
+    assimp::assimp
 )
 
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
-elseif(UNIX AND NOT APPLE)
-    find_package(OpenGL REQUIRED)
-    find_package(X11 REQUIRED)
-    target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL X11)
-endif()
+set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
 
-install(TARGETS ${PROJECT_NAME}
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+configure_file(
+        include/Core/Config.h.in
+        include/Core/Config.h
 )
-
-install(DIRECTORY include/ DESTINATION include)
-install(DIRECTORY shaders/ DESTINATION share/shaders)

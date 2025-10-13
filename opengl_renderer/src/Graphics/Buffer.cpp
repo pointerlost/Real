@@ -1,0 +1,31 @@
+//
+// Created by pointerlost on 10/12/25.
+//
+#include "Graphics/Buffer.h"
+
+namespace Real::opengl {
+
+    Buffer::Buffer(GLbitfield flags) : m_Flags(flags)
+    {
+    }
+
+    Buffer::~Buffer() {
+        CleanResources();
+    }
+
+    void Buffer::Bind(BufferType type, GLuint bindingPoint) {
+        if (type == BufferType::SSBO) {
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_Buffer);
+        } else if (type == BufferType::UBO) {
+            glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, m_Buffer);
+        }
+    }
+
+    void Buffer::CleanResources() {
+        if (m_Ptr && m_Buffer != 0) {
+            glUnmapNamedBuffer(m_Buffer);
+            m_Ptr = nullptr;
+            glDeleteBuffers(1, &m_Buffer);
+        }
+    }
+}

@@ -11,19 +11,9 @@
 
 namespace Real {
 
-    struct Buffer {
-        void* ptr;
-        GLuint buffer;
-        GLsizeiptr size;
-        GLsizeiptr capacity;
-
-        GLbitfield flags = (GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_COHERENT_BIT);
-    };
-
     class MeshManager {
     public:
         void InitResourcesWithBufferData();
-        void InitResourcesPersistentMapping();
 
         const std::unordered_map<std::string, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
         [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const std::string& name) const;
@@ -37,9 +27,6 @@ namespace Real {
         std::unordered_map<std::string, Graphics::MeshInfo> m_MeshInfos;
         std::vector<Graphics::Vertex> m_AllVertices;
         std::vector<uint32_t> m_AllIndices;
-
-        Buffer m_PBufferV;
-        Buffer m_PBufferE;
 
         unsigned int m_UniversalVAO = 0, m_VBO = 0, m_EBO = 0;
     private:

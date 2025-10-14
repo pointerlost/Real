@@ -2,6 +2,9 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Scene/Scene.h"
+
+#include "Core/AssetManager.h"
+#include "Core/Services.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
 

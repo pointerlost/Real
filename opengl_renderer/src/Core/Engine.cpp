@@ -36,11 +36,10 @@ namespace Real {
         const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
         Services::GetAssetManager()->LoadShader(vert, frag, "main");
 
-        // m_MeshManager->InitResourcesWithBufferData();
-        m_MeshManager->InitResourcesPersistentMapping();
+        m_MeshManager->InitResourcesWithBufferData();
 
-        m_AssetManager->LoadTexture("assets/textures/container.jpg", "container");
-        m_AssetManager->LoadTexture("assets/textures/container.jpg", "container2");
+        // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container");
+        // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container2");
 
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
@@ -51,18 +50,25 @@ namespace Real {
 
         m_CameraInput = CreateScope<CameraInput>(&editorCamera);
 
+        const auto& defaultMat = Services::GetAssetManager()->GetDefaultMat();
+
         auto& cube = m_Scene->CreateEntity("Cube");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(2.0, 2.0, 0.0f));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& cube2 = m_Scene->CreateEntity("Cube2");
         cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(4.0, 2.0, 0.0f));
         cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube2.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(5.0, 4.0, 0.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{};
+        light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
+
+        m_Renderer->GetRenderContext()->InitResources();
     }
 
     void Engine::ShutDown() {
@@ -73,7 +79,7 @@ namespace Real {
         // Callbacks
         glfwPollEvents();
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.55f, 0.55f, 0.55f, 1.0f);
+        glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 

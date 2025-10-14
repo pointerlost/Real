@@ -1,4 +1,5 @@
 #version 460
+#include "opengl/buffers.glsl"
 
 // TODO: #extension GL_ARB_bindless_texture : require
 
@@ -10,14 +11,19 @@ out vec3 vFragPos;
 out vec3 vNormal;
 out vec2 vUV;
 
-uniform mat3 u_NormalMatrix;
-uniform mat4 ModelMat;
 uniform mat4 View;
 uniform mat4 Projection;
 
+flat out int vMaterialIndex;
+
 void main() {
-    vFragPos = vec3(ModelMat * vec4(aPos, 1.0));
-    vNormal = u_NormalMatrix * aNormal;
+    int entityIdx = gl_BaseInstance;
+    EntityData entityProps = entityData[entityIdx];
+    vMaterialIndex = entityProps.materialIndex;
+    int transformIdx = entityProps.transformIndex;
+
+    vFragPos = vec3(GetModelMatrix(transformIdx) * vec4(aPos, 1.0));
+    vNormal = GetNormalMatrix(transformIdx) * aNormal;
     vUV = aUV;
-    gl_Position = Projection * View * ModelMat * vec4(aPos, 1.0f);
+    gl_Position = Projection * View * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
 }

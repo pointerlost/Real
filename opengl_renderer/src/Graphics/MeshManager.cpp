@@ -70,52 +70,7 @@ namespace Real {
         glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Graphics::Vertex, m_UV));
         glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
 
-        Info(GetMeshCount());
+        // Info(GetMeshCount());
     }
 
-    void MeshManager::InitResourcesPersistentMapping() {
-        auto [fstTri, secTri] = MeshFactory::CreateTriangle();
-        CreateSingleMesh(fstTri, secTri, "triangle");
-        auto [fstCube, secCube] = MeshFactory::CreateCube();
-        CreateSingleMesh(fstCube, secCube, "cube");
-
-        // Create universal VAO
-        glCreateVertexArrays(1, &m_UniversalVAO);
-
-        // Create persistent map buffer for VBO
-        glCreateBuffers(1, &m_PBufferV.buffer);
-        glNamedBufferStorage(m_PBufferV.buffer, m_AllVertices.size() * sizeof(Graphics::Vertex), m_AllVertices.data(), m_PBufferV.flags);
-        m_PBufferV.ptr = glMapNamedBufferRange(m_PBufferV.buffer, 0, m_AllVertices.size() * sizeof(Graphics::Vertex), m_PBufferV.flags);
-        memcpy(m_PBufferV.ptr, m_AllVertices.data(), m_AllVertices.size() * sizeof(Graphics::Vertex));
-
-        // Bind VAO to (VBO) current persistent map buffer
-        glVertexArrayVertexBuffer(m_UniversalVAO, 0, m_PBufferV.buffer, 0, sizeof(Graphics::Vertex));
-
-        // Same thing for EBO
-        glCreateBuffers(1, &m_PBufferE.buffer);
-        glNamedBufferStorage(m_PBufferE.buffer, m_AllIndices.size() * sizeof(uint32_t), m_AllIndices.data(), m_PBufferE.flags);
-        m_PBufferE.ptr = glMapNamedBufferRange(m_PBufferE.buffer, 0, m_AllIndices.size() * sizeof(uint32_t), m_PBufferE.flags);
-        memcpy(m_PBufferE.ptr, m_AllIndices.data(), m_AllIndices.size() * sizeof(uint32_t));
-
-        // Bind VAO to (EBO) current persistent map buffer
-        glVertexArrayElementBuffer(m_UniversalVAO, m_PBufferE.buffer);
-
-        // Load Attributes to current opengl state
-        // Position Attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 0);
-        glVertexArrayAttribFormat(m_UniversalVAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Graphics::Vertex, m_Position));
-        glVertexArrayAttribBinding(m_UniversalVAO, 0, 0);
-
-        // Normal Attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 1);
-        glVertexArrayAttribFormat(m_UniversalVAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Graphics::Vertex, m_Normal));
-        glVertexArrayAttribBinding(m_UniversalVAO, 1, 0);
-
-        // UV Attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 2);
-        glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Graphics::Vertex, m_UV));
-        glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
-
-        Info(GetMeshCount());
-    }
 }

@@ -15,9 +15,9 @@ namespace Real {
     } DrawElementsIndirectCommand;
 
     typedef struct {
-        uint transformIndex;
-        uint materialIndex;
-        uint indexCount;
-        uint indexOffset;
+        int transformIndex;
+        int materialIndex;
+        int indexCount;
+        int indexOffset;
     } EntityMetadata;
 }

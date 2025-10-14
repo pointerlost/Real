@@ -1,16 +1,15 @@
 #ifndef BUFFERS_GLSL
 #define BUFFERS_GLSL
 
-constexpr int MAX_ENTITIES = 16384;
-constexpr int MAX_LIGHT = 512;
-
 struct Transform {
     mat4 modelMatrix;
+    mat4 normalMatrix; // unused w (padding)
 };
 layout(std430, binding = 2) buffer TransformSSBO {
-    Transform transforms[MAX_ENTITIES];
-    // TODO: Add normal matrix!!
+    Transform transforms[];
 };
+mat4 GetModelMatrix(int idx)  { return transforms[idx].modelMatrix; }
+mat3 GetNormalMatrix(int idx) { return mat3(transforms[idx].normalMatrix); }
 
 layout(std140, binding = 3) uniform CameraUBO {
     mat4 view;
@@ -24,12 +23,12 @@ struct Material {
     float roughness[4]; // 0 = roughness, other indices padding (16-byte alignment)
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
-    Material materials[MAX_ENTITIES];
+    Material materials[];
 };
 
-vec4 GetBaseColor(int idx) { return materials[idx].baseColor; }
-vec3 GetEmissive(int idx)  { return materials[idx].emissiveMetallic.xyz; }
-float GetMetallic(int idx) { return materials[idx].emissiveMetallic.w; }
+vec4 GetBaseColor(int idx)  { return materials[idx].baseColor; }
+vec3 GetEmissive(int idx)   { return materials[idx].emissiveMetallic.xyz; }
+float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
 float GetRoughness(int idx) { return materials[idx].roughness[0]; }
 
 struct Light {
@@ -37,7 +36,7 @@ struct Light {
     vec4 specular; // w = padding
 };
 layout(std430, binding = 5) buffer LightSSBO {
-    Light lights[MAX_LIGHT];
+    Light lights[];
 };
 
 vec3 GetDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }
@@ -56,14 +55,14 @@ layout (std430, binding = 0) buffer IndirectBuffer {
     DrawElementsIndirectCommand indirectCommands[];
 };
 
-struct EntityMetadata {
-    uint transformIndex;
-    uint materialIndex;
-    uint indexCount;
-    uint indexOffset;
+struct EntityData {
+    int transformIndex;
+    int materialIndex;
+    int indexCount;
+    int indexOffset;
 };
-layout (std430, binding = 1) buffer EntityData {
-    EntityMetadata entityData[];
+layout (std430, binding = 1) buffer EntityMetaData {
+    EntityData entityData[];
 };
 
 #endif

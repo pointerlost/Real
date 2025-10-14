@@ -100,6 +100,7 @@ namespace Real {
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
                 Warn("ERROR::SHADER_COMPILATION_FAILED_ERROR of type: " + type);
+                Warn(infoLog);
             }
         }
         else {
@@ -107,6 +108,7 @@ namespace Real {
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
                 Warn("ERROR::PROGRAM_LINKING_ERROR of type: " + type);
+                Warn(infoLog);
             }
         }
     }

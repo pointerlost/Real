@@ -26,11 +26,12 @@ namespace Real {
         [[nodiscard]] const glm::vec3& GetSpecular() const { return m_Specular; }
 
         void Update(Transformations& transform);
-        [[nodiscard]] LightSSBO ConvertToGPUFormat() const;
+        [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
 
     private:
         // TODO: go to PBR slowly!!!
-        glm::vec3 m_Diffuse = glm::vec3(1.0f);
-        glm::vec3 m_Specular = glm::vec3(0.6f);
+        glm::vec3 m_Diffuse  = glm::vec3(1.0);
+        glm::vec3 m_Specular = glm::vec3(1.0);
+        glm::vec3 m_Position = glm::vec3(0.0);
     };
 }

@@ -50,39 +50,47 @@ namespace Real {
             m_GPUDatas.drawCommands.size() * sizeof(DrawElementsIndirectCommand), opengl::BufferType::SSBO
         );
 
-        // m_Buffers.camera.Create(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
-        // m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
+        m_Buffers.camera.Create(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
+        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
     }
 
     void RenderContext::BindGPUBuffers() const {
         m_Buffers.drawCommand.Bind(opengl::BufferType::SSBO, 0);
         m_Buffers.entityData.Bind(opengl::BufferType::SSBO, 1);
         m_Buffers.transform.Bind(opengl::BufferType::SSBO, 2);
-        // m_Buffers.camera.Bind(opengl::BufferType::UBO, 3);
+        m_Buffers.camera.Bind(opengl::BufferType::UBO, 3);
         m_Buffers.material.Bind(opengl::BufferType::SSBO, 4);
         m_Buffers.light.Bind(opengl::BufferType::SSBO, 5);
     }
 
     void RenderContext::UploadToGPU() {
-        m_Buffers.transform.UploadToGPU(m_GPUDatas.transforms,
-            m_GPUDatas.transforms.size() * sizeof(TransformSSBO), opengl::BufferType::SSBO
-        );
-
-        m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
-            m_GPUDatas.materials.size() * sizeof(MaterialSSBO), opengl::BufferType::SSBO
-        );
-
-        m_Buffers.light.UploadToGPU(m_GPUDatas.lights,
-            m_GPUDatas.lights.size() * sizeof(LightSSBO), opengl::BufferType::SSBO
-        );
-
+        // Update per EntityMetadata
         m_Buffers.entityData.UploadToGPU(m_GPUDatas.entityData,
             m_GPUDatas.entityData.size() * sizeof(EntityMetadata), opengl::BufferType::SSBO
         );
 
+        // Update Draw commands
         m_Buffers.drawCommand.UploadToGPU(m_GPUDatas.drawCommands,
             m_GPUDatas.drawCommands.size() * sizeof(DrawElementsIndirectCommand), opengl::BufferType::SSBO
         );
+
+        // Update Transforms
+        m_Buffers.transform.UploadToGPU(m_GPUDatas.transforms,
+            m_GPUDatas.transforms.size() * sizeof(TransformSSBO), opengl::BufferType::SSBO
+        );
+
+        // Update Materials
+        m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
+            m_GPUDatas.materials.size() * sizeof(MaterialSSBO), opengl::BufferType::SSBO
+        );
+
+        // Update Lights
+        m_Buffers.light.UploadToGPU(m_GPUDatas.lights,
+            m_GPUDatas.lights.size() * sizeof(LightSSBO), opengl::BufferType::SSBO
+        );
+
+        // Update Camera
+        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
     }
 
     const GPUData& RenderContext::CollectRenderables() {
@@ -111,8 +119,8 @@ namespace Real {
             DrawElementsIndirectCommand command;
             command.count = meshData.m_IndexCount;
             command.instanceCount = 1;
-            command.baseVertex = meshData.m_IndexOffset;
-            command.firstIndex = 0;
+            command.baseVertex = 0; // Use 0 because we've already baked the offset (idx + vertexOffset)
+            command.firstIndex = meshData.m_IndexOffset;
             command.baseInstance = (uint)i++;
             m_GPUDatas.drawCommands.push_back(command);
 
@@ -124,12 +132,12 @@ namespace Real {
             m_GPUDatas.entityData.push_back(entityData);
         }
 
-        UploadToGPU();
-
         // Collect others
 
-        // CollectCamera();
-        // CollectLights();
+        CollectCamera();
+        CollectLights();
+
+        UploadToGPU();
 
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         return m_GPUDatas;
@@ -139,15 +147,17 @@ namespace Real {
         /* TODO: An update is required to add multiple cameras during run-time
          * (currently, adding multiple cameras may cause to crash)!!
          */
-        for (const auto& view = m_Scene->GetAllEntitiesWith<CameraComponent>(); auto [entity, camera] : view.each()) {
-            const CameraUBO gpuData = camera.m_Camera.ConvertToGPUFormat();
+        const auto& view = m_Scene->GetAllEntitiesWith<CameraComponent, TransformComponent>();
+        for (auto [entity, camera, transform] : view.each()) {
+            const CameraUBO gpuData = camera.m_Camera.ConvertToGPUFormat(transform.m_Transform);
             m_GPUDatas.camera = gpuData;
         }
     }
 
     void RenderContext::CollectLights() {
-        for (const auto& view = m_Scene->GetAllEntitiesWith<LightComponent>(); auto [entity, light] : view.each()) {
-            LightSSBO gpuData = light.m_Light.ConvertToGPUFormat();
+        const auto& view = m_Scene->GetAllEntitiesWith<LightComponent, TransformComponent>();
+        for (auto [entity, light, transform] : view.each()) {
+            LightSSBO gpuData = light.m_Light.ConvertToGPUFormat(transform.m_Transform);
             m_GPUDatas.lights.push_back(gpuData);
         }
     }

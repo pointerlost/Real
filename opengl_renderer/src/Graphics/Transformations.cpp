@@ -18,9 +18,11 @@ namespace Real {
         m_ModelMatrixDirty = false;
     }
 
-    TransformSSBO Transformations::ConvertToGPUFormat() const {
+    TransformSSBO Transformations::ConvertToGPUFormat() {
+        Update();
         TransformSSBO gpuData{};
         gpuData.modelMatrix = m_ModelMatrix;
+        gpuData.normalMatrix = glm::mat4(glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix))));
         return gpuData;
     }
 }

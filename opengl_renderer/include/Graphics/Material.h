@@ -24,7 +24,7 @@ namespace Real {
 
     struct Material {
     public:
-        glm::vec4 BaseColor = glm::vec4(1.0f);
+        glm::vec4 BaseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
         float Metallic = 0.0f;
         float Roughness = 1.0f;
         glm::vec3 emissive = glm::vec3(0.0f);

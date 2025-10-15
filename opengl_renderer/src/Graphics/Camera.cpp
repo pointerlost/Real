@@ -30,11 +30,14 @@ namespace Real {
             m_Projection = glm::perspective(glm::radians(m_FOV), m_Aspect, m_Near, m_Far);
             m_ProjectionDirty = false;
         }
-        // Add orthographic camera
+        // TODO: Add orthographic camera
     }
 
-    CameraUBO Camera::ConvertToGPUFormat() const {
+    CameraUBO Camera::ConvertToGPUFormat(Transformations& transform) {
+        Update(transform);
+
         CameraUBO gpuData{};
+        gpuData.position = glm::vec4(transform.GetPosition(), 0.0); // w unused (padding)
         gpuData.view = m_View;
         gpuData.projection = m_Projection;
         gpuData.viewProjection = m_Projection * m_View;

@@ -12,10 +12,16 @@ mat4 GetModelMatrix(int idx)  { return transforms[idx].modelMatrix; }
 mat3 GetNormalMatrix(int idx) { return mat3(transforms[idx].normalMatrix); }
 
 layout(std140, binding = 3) uniform CameraUBO {
+    vec4 position;
     mat4 view;
     mat4 projection;
     mat4 viewProjection;
-};
+} uCamera;
+
+vec3 GetViewPos()    { return uCamera.position.xyz;   }
+mat4 GetProjView()   { return uCamera.viewProjection; }
+mat4 GetView()       { return uCamera.view;           }
+mat4 GetProjection() { return uCamera.projection;     }
 
 struct Material {
     vec4 baseColor;
@@ -32,8 +38,9 @@ float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
 float GetRoughness(int idx) { return materials[idx].roughness[0]; }
 
 struct Light {
-    vec4 diffuse;  // w = padding
-    vec4 specular; // w = padding
+    vec4 diffuse;  // w unused (padding)
+    vec4 specular; // w unused (padding)
+    vec4 position; // w unused (padding)
 };
 layout(std430, binding = 5) buffer LightSSBO {
     Light lights[];
@@ -41,6 +48,7 @@ layout(std430, binding = 5) buffer LightSSBO {
 
 vec3 GetDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }
 vec3 GetSpecular(int idx) { return lights[idx].specular.xyz; }
+vec3 GetLightPos(int idx) { return lights[idx].position.xyz; }
 
 // MULTI DRAW INDIRECT BUFFERS
 

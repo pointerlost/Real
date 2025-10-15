@@ -19,11 +19,12 @@ namespace Real {
     void MeshManager::CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint32_t> indices,
             const std::string& name)
     {
+        if (m_MeshInfos.contains(name)) return; // Skip if mesh already exists
         Graphics::MeshInfo info{};
-        info.m_VertexCount = vertices.size();
-        info.m_IndexCount  = indices.size();
+        info.m_VertexCount  = vertices.size();
+        info.m_IndexCount   = indices.size();
         info.m_VertexOffset = m_AllVertices.size();
-        info.m_IndexOffset = m_AllIndices.size();
+        info.m_IndexOffset  = m_AllIndices.size();
 
         m_AllVertices.insert(m_AllVertices.end(), vertices.begin(), vertices.end());
 
@@ -34,7 +35,7 @@ namespace Real {
         m_MeshInfos[name] = info;
     }
 
-    void MeshManager::InitResourcesWithBufferData() {
+    void MeshManager::InitResources() {
         auto [triFirst, triSecond] = MeshFactory::CreateTriangle();
         CreateSingleMesh(triFirst, triSecond, "triangle");
         auto [cubeFirst, cubeSecond] = MeshFactory::CreateCube();
@@ -69,8 +70,6 @@ namespace Real {
         glEnableVertexArrayAttrib(m_UniversalVAO, 2);
         glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Graphics::Vertex, m_UV));
         glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
-
-        // Info(GetMeshCount());
     }
 
 }

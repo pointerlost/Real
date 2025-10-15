@@ -11,8 +11,8 @@ out vec3 vFragPos;
 out vec3 vNormal;
 out vec2 vUV;
 
-uniform mat4 View;
-uniform mat4 Projection;
+// uniform mat4 View;
+// uniform mat4 Projection;
 
 flat out int vMaterialIndex;
 
@@ -25,5 +25,5 @@ void main() {
     vFragPos = vec3(GetModelMatrix(transformIdx) * vec4(aPos, 1.0));
     vNormal = GetNormalMatrix(transformIdx) * aNormal;
     vUV = aUV;
-    gl_Position = Projection * View * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
+    gl_Position = GetProjection() * GetView() * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
 }

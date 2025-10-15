@@ -16,7 +16,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update(Entity* camera);
+        void Update();
 
         Entity& CreateEntity(const std::string& tag = std::string());
         void DestroyEntity(entt::entity entity);

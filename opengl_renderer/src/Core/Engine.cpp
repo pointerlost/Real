@@ -36,7 +36,7 @@ namespace Real {
         const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
         Services::GetAssetManager()->LoadShader(vert, frag, "main");
 
-        m_MeshManager->InitResourcesWithBufferData();
+        m_MeshManager->InitResources();
 
         // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container");
         // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container2");
@@ -46,24 +46,24 @@ namespace Real {
 
         editorCamera = m_Scene->CreateEntity("Editor Camera");
         (void)editorCamera.AddComponent<CameraComponent>();
-        editorCamera.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0f));
+        editorCamera.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
 
         m_CameraInput = CreateScope<CameraInput>(&editorCamera);
 
         const auto& defaultMat = Services::GetAssetManager()->GetDefaultMat();
 
         auto& cube = m_Scene->CreateEntity("Cube");
-        cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(2.0, 2.0, 0.0f));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& cube2 = m_Scene->CreateEntity("Cube2");
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(4.0, 2.0, 0.0f));
+        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 0.0));
         cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube2.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& light = m_Scene->CreateEntity("Light");
-        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(5.0, 4.0, 0.0));
+        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-6.0, 4.0, 0.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
@@ -94,7 +94,7 @@ namespace Real {
     void Engine::UpdatePhase() {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
-        m_Scene->Update(&editorCamera);
+        m_Scene->Update();
     }
 
     void Engine::InitServices() {

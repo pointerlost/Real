@@ -8,16 +8,15 @@
 #include <glad/glad.h>
 #include "Mesh.h"
 
-
 namespace Real {
 
     class MeshManager {
     public:
-        void InitResourcesWithBufferData();
+        void InitResources();
 
         const std::unordered_map<std::string, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
         [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const std::string& name) const;
-        [[nodiscard]] unsigned int GetUniversalVAO() const { return m_UniversalVAO; }
+        [[nodiscard]] GLuint GetUniversalVAO() const { return m_UniversalVAO; }
         void BindUniversalVAO() const { glBindVertexArray(m_UniversalVAO); }
         void UnbindCurrVAO() const { glBindVertexArray(0); }
 

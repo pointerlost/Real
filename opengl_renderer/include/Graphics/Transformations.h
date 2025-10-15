@@ -38,7 +38,7 @@ namespace Real {
         [[nodiscard]] const glm::vec3& GetScale() const { return m_Scale; }
 
         void Update();
-        [[nodiscard]] TransformSSBO ConvertToGPUFormat() const;
+        [[nodiscard]] TransformSSBO ConvertToGPUFormat();
 
     private:
         glm::vec3 m_Translate = glm::vec3(0.0f);

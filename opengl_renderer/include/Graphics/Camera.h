@@ -48,24 +48,24 @@ namespace Real {
         [[nodiscard]] const glm::mat4& GetProjection() const { return m_Projection; }
 
         void Update(Transformations& transform);
-        [[nodiscard]] CameraUBO ConvertToGPUFormat() const;
+        [[nodiscard]] CameraUBO ConvertToGPUFormat(Transformations& transform);
 
     private:
-        float m_Near = 0.01f;
-        float m_Far  = 100.0f;
-        float m_FOV  = 45.0f;
+        float m_Near = 0.01;
+        float m_Far  = 1000.0;
+        float m_FOV  = 45.0;
         float m_Aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
         CameraMode m_Mode = CameraMode::Perspective;
 
-        const glm::vec3 m_SceneCenter = glm::vec3(0.0f);
-        const glm::vec3 m_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+        const glm::vec3 m_SceneCenter = glm::vec3(0.0);
+        const glm::vec3 m_WorldUp = glm::vec3(0.0, 1.0, 0.0);
 
         glm::vec3 m_Forward = glm::vec3(0.0, 0.0, -1.0);
         glm::vec3 m_Up = glm::vec3(0.0, 1.0, 0.0);
         glm::vec3 m_Right = glm::vec3(1.0, 0.0, 0.0);
 
-        glm::mat4 m_View = glm::mat4(1.0f);
-        glm::mat4 m_Projection = glm::mat4(1.0f);
+        glm::mat4 m_View = glm::mat4(1.0);
+        glm::mat4 m_Projection = glm::mat4(1.0);
         bool m_ProjectionDirty = true;
     };
 }

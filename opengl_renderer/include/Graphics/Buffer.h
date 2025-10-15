@@ -50,17 +50,19 @@ namespace Real::opengl {
                     }
                 }
             }
-            // else if (type == BufferType::UBO) {
-            //     // TODO: Need update for resizing!! (for now, it will have one element) !!!
-            //     if (m_Buffer != 0) {
-            //         m_Size = size;
-            //         glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()),
-            //             GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT
-            //         );
-            //     } else {
-            //         Create(data, size, type);
-            //     }
-            // }
+            else if (type == BufferType::UBO) {
+                // TODO: Need update for resizing!! (for now, it will have one element) !!!
+                if (m_Buffer != 0) {
+                    m_Size = size;
+                    // Load data to gpu
+                    glNamedBufferSubData(m_Buffer, 0, m_Size, data.data());
+                    // glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()),
+                        // GL_DYNAMIC_STORAGE_BIT
+                    // );
+                } else {
+                    Create(data, size, type);
+                }
+            }
         }
 
         void Bind(BufferType type, GLuint bindingPoint) const;
@@ -92,11 +94,11 @@ namespace Real::opengl {
                 // memcpy(m_Ptr, data.data(), m_Size);
                 // glFlushMappedNamedBufferRange(m_Buffer, 0, m_Size);
             }
-            // else if (type == BufferType::UBO) {
-            //     glCreateBuffers(1, &m_Buffer);
-            //     glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()), GL_DYNAMIC_STORAGE_BIT);
-            //     glFlushMappedNamedBufferRange(m_Buffer, 0, m_Size);
-            // }
+            else if (type == BufferType::UBO) {
+                glCreateBuffers(1, &m_Buffer);
+                glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()),
+                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+            }
         }
 
         void CleanResources();

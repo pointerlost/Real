@@ -21,29 +21,27 @@ namespace Real::opengl {
     }
 
     void Renderer::Render(Entity* camera) {
-        // GPU data ready
-        const auto& data = sceneRenderContext->CollectRenderables();
-
         const auto& meshManager  = Services::GetMeshManager();
         const auto& assetManager = Services::GetAssetManager();
-
+        // GPU data ready
+        const auto& renderables = sceneRenderContext->CollectRenderables();
         const auto shader = assetManager->GetShader("main");
-        const auto& editorCam = camera->GetComponent<CameraComponent>()->m_Camera;
 
+        // Bind gpu buffer to binding points
         sceneRenderContext->BindGPUBuffers();
 
+        // Bind Shader and VAO
         shader.Bind();
         meshManager->BindUniversalVAO();
+
+        // Set uniforms
         shader.SetVec3("g_GlobalAmbient", m_Scene->GetGlobalAmbient());
-        shader.SetMat4("View", editorCam.GetView());
-        shader.SetMat4("Projection", editorCam.GetProjection());
-        shader.SetVec3("lightColor", glm::vec3(1.0));
-        shader.SetVec3("lightPos", glm::vec3(0.0, 5.0, 5.0));
+        shader.SetInt("uLightCount", 1);
         shader.SetVec3("viewPos", camera->GetComponent<TransformComponent>()->m_Transform.GetPosition());
 
-        if (!data.drawCommands.empty()) {
+        if (!renderables.drawCommands.empty()) {
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetRenderContext()->GetBuffers().drawCommand.GetHandle());
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(data.drawCommands.size()), 0);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(renderables.drawCommands.size()), 0);
         }
 
         meshManager->UnbindCurrVAO();

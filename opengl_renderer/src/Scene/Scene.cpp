@@ -14,8 +14,7 @@ namespace Real {
     {
     }
 
-    void Scene::Update(Entity* camera) {
-        camera->GetComponent<CameraComponent>()->m_Camera.Update(camera->GetComponent<TransformComponent>()->m_Transform);
+    void Scene::Update() {
     }
 
     Entity& Scene::CreateEntity(const std::string &tag) {

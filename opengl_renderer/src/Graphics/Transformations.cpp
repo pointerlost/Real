@@ -13,7 +13,7 @@ namespace Real {
         const auto scale = glm::scale(glm::mat4(1.0f), m_Scale);
         // Warning...
         // if we do world-space movement so order should be R * T * S
-        m_ModelMatrix = rotate * translate * scale;
+        m_ModelMatrix = translate * rotate * scale;
 
         m_ModelMatrixDirty = false;
     }

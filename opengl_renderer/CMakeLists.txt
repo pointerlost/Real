@@ -68,6 +68,13 @@ add_executable(${PROJECT_NAME}
         src/Graphics/RenderContext.cpp
         include/Graphics/RenderCommand.h
         src/Graphics/Material.cpp
+        src/Editor/EditorPanel.cpp
+        include/Editor/EditorPanel.h
+        include/Editor/HierarchyPanel.h
+        include/Editor/InspectorPanel.h
+        include/Editor/IPanel.h
+        src/Editor/HierarchyPanel.cpp
+        src/Editor/InspectorPanel.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

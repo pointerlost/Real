@@ -2,9 +2,7 @@
 // Created by pointerlost on 10/3/25.
 //
 #include "Core/Engine.h"
-#include <ranges>
 #include <Core/Config.h>
-
 #include "Core/Callback.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
@@ -24,16 +22,22 @@ namespace Real {
         m_MeshManager.reset();
         m_EditorTimer.reset();
         m_Window.reset();
+        m_EditorState.reset();
         ShutDown();
     }
 
     void Engine::InitResources() {
-        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Sometimes we just need to do");
+        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
         m_Window->Init();
-        InitCallbacks(m_Window->GetWindow());
+        InitCallbacks(m_Window->GetGLFWWindow());
 
         m_EditorTimer = CreateScope<Timer>();
         m_EditorTimer->Start();
+        m_EditorState = CreateScope<EditorState>();
+        // Init UI (the order is matter!!!)
+        m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get());
+        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>(m_EditorPanel.get());
+        m_InspectorPanel = CreateScope<UI::InspectorPanel>(m_EditorPanel.get());
 
         InitAsset();
         InitMesh();
@@ -51,36 +55,41 @@ namespace Real {
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
 
-        editorCamera = m_Scene->CreateEntity("Editor Camera");
-        (void)editorCamera.AddComponent<CameraComponent>();
-        editorCamera.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
+        m_EditorState->camera = m_Scene->CreateEntity("Editor Camera");
+        (void)m_EditorState->camera.AddComponent<CameraComponent>();
+        m_EditorState->camera.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
 
-        m_CameraInput = CreateScope<CameraInput>(&editorCamera);
+        m_CameraInput = CreateScope<CameraInput>(&m_EditorState->camera);
 
         const auto& defaultMat = Services::GetAssetManager()->GetDefaultMat();
 
         auto& cube = m_Scene->CreateEntity("Cube");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(4.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& cube2 = m_Scene->CreateEntity("Cube2");
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 0.0));
+        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(10.0, 4.0, 0.0));
+        cube2.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0));
         cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube2.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-4.0, 4.0, -2.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{};
+        light.AddComponent<LightComponent>().m_Light = Light{LightType::DIRECTIONAL};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         m_AssetManager->LoadTextures();
         m_Renderer->GetRenderContext()->InitResources();
+        Info("Resources loaded successfully!");
     }
 
     void Engine::ShutDown() {
         glfwTerminate();
+        // Cleanup Dear ImGui context
+        m_EditorPanel->Shutdown();
     }
 
     void Engine::StartPhase() {
@@ -89,6 +98,8 @@ namespace Real {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Init UI
+        m_EditorPanel->BeginFrame();
     }
 
     void Engine::EndPhase(GLFWwindow* window) {
@@ -96,7 +107,12 @@ namespace Real {
     }
 
     void Engine::RenderPhase() {
-        m_Renderer->Render(&editorCamera);
+        // Draw OpenGL stuff
+        m_Renderer->Render(&m_EditorState->camera);
+        // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
+        m_InspectorPanel->Render(m_Scene.get());
+        m_HierarchyPanel->Render(m_Scene.get());
+        m_EditorPanel->Render(m_Scene.get());
     }
 
     void Engine::UpdatePhase() {
@@ -109,6 +125,7 @@ namespace Real {
         Services::SetAssetManager(m_AssetManager.get());
         Services::SetMeshManager(m_MeshManager.get());
         Services::SetEditorTimer(m_EditorTimer.get());
+        Services::SetEditorState(m_EditorState.get());
     }
 
     void Engine::InitAsset() {
@@ -122,7 +139,7 @@ namespace Real {
     }
 
     void Engine::Running() {
-        const auto window = m_Window->GetWindow();
+        const auto window = m_Window->GetGLFWWindow();
         while (!glfwWindowShouldClose(window) && !Input::IsKeyPressed(REAL_KEY_ESCAPE)) {
             StartPhase();
             UpdatePhase();

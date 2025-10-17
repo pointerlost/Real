@@ -2,13 +2,16 @@
 // Created by pointerlost on 10/10/25.
 //
 #include "Graphics/Light.h"
+
+#include "Core/Services.h"
+#include "Core/Timer.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 
 namespace Real {
 
-    Light::Light() {
+    Light::Light(LightType type) : m_Type(static_cast<int>(type)) {
     }
 
     void Light::Update(Transformations& transform) {
@@ -29,6 +32,16 @@ namespace Real {
         }
         if (Input::IsKeyHeld(REAL_KEY_KP_6)) { // Z-axis
             transform.AddTranslate(0.0, 0.0, -0.1);
+        }
+
+        if (Input::IsKeyHeld(REAL_KEY_KP_SUBTRACT)) {
+            transform.AddRotate(Services::GetEditorTimer()->GetDelta() * 45.0, glm::vec3(0.0, 1.0, 0.0));
+        }
+        if (Input::IsKeyHeld(REAL_KEY_KP_ADD)) {
+            transform.AddRotate(Services::GetEditorTimer()->GetDelta() * 45.0, glm::vec3(1.0, 0.0, 0.0));
+        }
+        if (Input::IsKeyHeld(REAL_KEY_KP_ENTER)) {
+            transform.AddRotate(Services::GetEditorTimer()->GetDelta() * 45.0, glm::vec3(0.0, 0.0, 1.0));
         }
 
         if (Input::IsKeyHeld(REAL_KEY_KP_7)) {
@@ -54,11 +67,15 @@ namespace Real {
 
     LightSSBO Light::ConvertToGPUFormat(Transformations& transform) {
         Update(transform);
-        LightSSBO gpuData{};
-        gpuData.diffuse  = glm::vec4(m_Diffuse, 1.0);
-        gpuData.specular = glm::vec4(m_Specular, 1.0);
-        gpuData.position = glm::vec4(transform.GetPosition(), 1.0);
-        gpuData.constLinQuadratic = glm::vec4(m_Constant, m_Linear, m_Quadratic, 1.0);
+        LightSSBO gpuData{};                                     // Convert angles to cosine
+        gpuData.pos_cutoff = glm::vec4(transform.GetPosition(),  glm::cos(glm::radians(m_CutOff))); // Inner cone
+        gpuData.dir_outer  = glm::vec4(transform.GetDirection(), glm::cos(glm::radians(m_OuterCutOff))); // Outer cone
+        gpuData.diffuse   = glm::vec4(m_Diffuse, 1.0);
+        gpuData.specular  = glm::vec4(m_Specular, 1.0);
+        gpuData.constant  = m_Constant;
+        gpuData.linear    = m_Linear;
+        gpuData.quadratic = m_Quadratic;
+        gpuData.type = m_Type;
         return gpuData;
     }
 }

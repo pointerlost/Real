@@ -12,9 +12,15 @@ namespace Real {
 
 namespace Real {
 
+    enum class LightType : int {
+        POINT,
+        DIRECTIONAL,
+        SPOT,
+    };
+
     class Light {
     public:
-        Light();
+        explicit Light(LightType type = LightType::POINT);
         ~Light() = default;
         Light(const Light&) = default;
 
@@ -29,13 +35,18 @@ namespace Real {
         [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
 
     private:
-        // TODO: go to PBR slowly!!!
+        // TODO: PBR lighting
         glm::vec3 m_Diffuse  = glm::vec3(1.0);
         glm::vec3 m_Specular = glm::vec3(1.0);
 
-        // Point light (Attenuation)
+        // Attenuation parameters
         float m_Constant = 1.0;
         float m_Linear = 0.09;
         float m_Quadratic = 0.032;
+
+        // Spot light
+        float m_CutOff = 12.5;
+        float m_OuterCutOff = 17.5;
+        int m_Type = static_cast<int>(LightType::POINT); // point = 0, directional = 1, spot = 2
     };
 }

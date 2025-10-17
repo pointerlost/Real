@@ -12,11 +12,15 @@ namespace Real {
     };
 
     struct LightSSBO {
-        glm::vec4 position{0.0}; // w unused (padding)
-        glm::vec4 direction{0.0};
+        glm::vec4 pos_cutoff{0.0}; // vec3 = position, float = cutoff
+        glm::vec4 dir_outer{0.0}; // vec3 direction, float = outerCutoff
         glm::vec4 diffuse{1.0};
         glm::vec4 specular{0.7};
-        glm::vec4 constLinQuadratic{1.0, 0.09, 0.032, 0.0}; // constant,linear,quadratic | w unused (padding)
+        int type = 0;
+        // Attenuation parameters
+        float constant = 1.0;
+        float linear = 0.09;
+        float quadratic = 0.032;
     };
 
     struct MaterialSSBO {

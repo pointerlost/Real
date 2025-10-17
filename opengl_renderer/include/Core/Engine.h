@@ -7,6 +7,10 @@
 #include "AssetManager.h"
 #include "Timer.h"
 #include "Utils.h"
+#include "Editor/EditorPanel.h"
+#include "Editor/EditorState.h"
+#include "Editor/HierarchyPanel.h"
+#include "Editor/InspectorPanel.h"
 #include "Graphics/MeshManager.h"
 #include "Graphics/Renderer.h"
 #include "Input/CameraInput.h"
@@ -25,13 +29,16 @@ namespace Real {
 
     private:
         Scope<Timer> m_EditorTimer;
+        Scope<EditorState> m_EditorState;
         Scope<Graphics::Window> m_Window;
         Scope<MeshManager> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
         Scope<opengl::Renderer> m_Renderer;
         Scope<Scene> m_Scene;
         Scope<CameraInput> m_CameraInput;
-        Entity editorCamera;
+        Scope<UI::EditorPanel> m_EditorPanel;
+        Scope<UI::HierarchyPanel> m_HierarchyPanel;
+        Scope<UI::InspectorPanel> m_InspectorPanel;
 
         // Scope<Timer> m_GameTimer;
     private:

@@ -25,8 +25,10 @@ namespace Real {
     };
 
     struct IDComponent {
+        UUID m_UUID{};
+
+        IDComponent() = default;
         explicit IDComponent(UUID uuid) : m_UUID(uuid) {}
-        UUID m_UUID;
         bool operator==(const IDComponent &) const = default;
     };
 
@@ -45,7 +47,7 @@ namespace Real {
     struct MeshComponent {
         std::string m_MeshName;
 
-        explicit MeshComponent(const std::string& meshName) : m_MeshName(meshName) {}
+        explicit MeshComponent(std::string  meshName) : m_MeshName(std::move(meshName)) {}
         MeshComponent() = default;
         MeshComponent(MeshComponent&) = default;
     };
@@ -59,7 +61,7 @@ namespace Real {
     };
 
     struct CameraComponent {
-        Camera m_Camera;
+        Camera m_Camera{CameraMode::Perspective};
 
         explicit CameraComponent(Camera camera) : m_Camera(std::move(camera)) {}
         CameraComponent() = default;

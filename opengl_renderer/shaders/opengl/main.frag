@@ -1,5 +1,8 @@
 #version 460
+// Before you include any file, pay attention to the order.
+// if lighting calculations need to use buffers.glsl so you have to include lighting.glsl first!
 #include "opengl/buffers.glsl"
+#include "opengl/lighting_calc.glsl"
 
 in vec3 vFragPos;
 in vec3 vNormal;
@@ -10,34 +13,15 @@ uniform vec3 g_GlobalAmbient;
 uniform int uLightCount;
 
 out vec4 FragColor;
-float specularStrength = 0.5;
 
 void main() {
     vec3 result = vec3(0.0);
     vec3 normal = normalize(vNormal);
 
     for (int i = 0; i < uLightCount; i++) {
-        vec3 lightPos = GetLightPos(i);
-
-        // Point light
-        float distance = length(lightPos - vFragPos);
-        float attenuation = 1.0 / (GetLightConstant(i) + GetLightLinear(i) * distance +
-                            GetLightQuadratic(i) * (distance * distance));
-
-        vec3 lightDir = normalize(lightPos - vFragPos);
-        float diff = max(dot(normal, lightDir), 0.0);
-
-        vec3 diffuse = (diff * GetDiffuse(i));
-        diffuse *= attenuation;
-
-        // specular
         vec3 viewDir = normalize(GetViewPos() - vFragPos);
-        vec3 reflectDir = reflect(-lightDir, normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-        vec3 specular = specularStrength * spec * GetSpecular(i);
-        specular *= attenuation;
 
-        result += (diffuse + specular);
+        result += CalculateLighting(i, vFragPos, viewDir, normal);
     }
     result += g_GlobalAmbient;
     FragColor = vec4(result, 1.0) * GetBaseColor(vMaterialIndex) * texture(u_TextureArray, vec3(vUV, GetTextureLayer(vMaterialIndex)));

@@ -1,18 +1,17 @@
 //
 // Created by pointerlost on 10/4/25.
 //
+// #define STB_IMAGE_IMPLEMENTATION
+// #include <stb/stb_image.h>
 #include "Core/AssetManager.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Utils.h"
-// #define STB_IMAGE_IMPLEMENTATION
-// #include <stb/stb_image.h>
 #include <fstream>
-#include <stack>
 #include <Core/Config.h>
-
 #include "Graphics/Material.h"
 #include "stb/stb_image.h"
+#include "queue"
 
 namespace Real {
 
@@ -32,8 +31,8 @@ namespace Real {
     std::string AssetManager::PreprocessorForShaders(const std::string &filePath) {
         using namespace std;
 
-        std::string result;
-        stack<string> glslContentQueue;
+        string result;
+        queue<string> glslContentQueue;
 
         if (!File::Exists(filePath)) {
             Warn("Path doesn't exists: " + filePath);
@@ -63,7 +62,7 @@ namespace Real {
         // Merge all files containing '#include'
         while (!glslContentQueue.empty()) {
             line = "";
-            std::string queuePath = glslContentQueue.top();
+            std::string queuePath = glslContentQueue.front();
             glslContentQueue.pop();
 
             ifstream newStream(queuePath, ios::in);
@@ -73,7 +72,8 @@ namespace Real {
                     glslContentQueue.push(ConcatStr(SHADERS_DIR + line.substr(pathFirstLine, line.size() - pathFirstLine - 1)));
                 } else if (line.substr(0, 7) != "#version" || line.substr(0, 1) != "#") {
                     // Load into the beginning because main section should at the end
-                    result.append(ConcatStr(line + "\n"));
+                    // result.append(ConcatStr(line + "\n"));
+                    result += ConcatStr(line + "\n");
                 }
             }
         }

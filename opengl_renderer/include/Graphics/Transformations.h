@@ -24,11 +24,20 @@ namespace Real {
         void SetTranslate(const glm::vec3& position) { m_Translate = position;  m_ModelMatrixDirty = true; }
         [[nodiscard]] const glm::vec3& GetPosition() const { return m_Translate; }
 
+        [[nodiscard]] glm::vec3 GetDirection() const {
+            const glm::vec3 forward = m_Rotate * glm::vec3(0.0, 0.0, -1.0);
+            return glm::normalize(glm::vec3{ forward.x, forward.y, forward.z});
+        }
+
         // Add rotations
-        void AddRotate(const glm::mat4& rotate) { m_Rotate += glm::quat_cast(rotate); m_ModelMatrixDirty = true; }
-        void AddRotate(const glm::quat& rotate) { m_Rotate += rotate; m_ModelMatrixDirty = true; }
-        void SetRotate(const glm::mat4& rotate) { m_Rotate = glm::quat_cast(rotate); m_ModelMatrixDirty = true; }
-        void SetRotate(const glm::quat& rotate) { m_Rotate = rotate; m_ModelMatrixDirty = true; }
+        void AddRotate(float angle, const glm::vec3& axis) {
+            m_Rotate = glm::angleAxis(glm::radians(angle), axis) * m_Rotate;
+            m_ModelMatrixDirty = true;
+        }
+        void SetRotate(float angle, const glm::vec3& axis) {
+            m_Rotate = glm::angleAxis(glm::radians(angle), axis);
+            m_ModelMatrixDirty = true;
+        }
         [[nodiscard]] const glm::quat& GetRotationWithQuat() const { return m_Rotate; }
         [[nodiscard]] glm::mat4 GetRotationWithMat4() const { return glm::mat4_cast(m_Rotate); }
 

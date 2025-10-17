@@ -17,7 +17,7 @@ namespace Real::Graphics {
         void SetWidth(int width) { m_Width = width; }
         void SetHeight(int height) { m_Height = height; }
 
-        [[nodiscard]] GLFWwindow* GetWindow() const { return m_Window; }
+        [[nodiscard]] GLFWwindow* GetGLFWWindow() const { return m_Window; }
 
     private:
         int m_Width = 720;

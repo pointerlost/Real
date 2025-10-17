@@ -40,24 +40,30 @@ float GetTextureLayer(int idx) { return materials[idx].roughnessTexLayer[1]; }
 
 
 struct Light {
-    vec4 position;  // w unused (padding)
-    vec4 direction; // w unused (padding)
-    vec4 diffuse;   // w unused (padding)
-    vec4 specular;  // w unused (padding)
-    vec4 constLinQuadratic; // constant, linear, quadratic | w unused (padding)
+    vec4 pos_cutoff; // vec3 position,  w = cutOff
+    vec4 dir_outer;  // vec3 direction, w = outerCutOff
+    vec4 diffuse;
+    vec4 specular;
+    int type; // point = 0, directional = 1, spot = 2
+    // Attenuation parameters
+    float constant;
+    float linear;
+    float quadratic;
 };
 layout(std430, binding = 5) buffer LightSSBO {
     Light lights[];
 };
 
-vec3 GetLightPos(int idx) { return lights[idx].position.xyz;  }
-vec3 GetLightDir(int idx) { return lights[idx].direction.xyz; }
-vec3 GetDiffuse(int idx)  { return lights[idx].diffuse.xyz;   }
-vec3 GetSpecular(int idx) { return lights[idx].specular.xyz;  }
-float GetLightConstant(int idx)  { return lights[idx].constLinQuadratic.x; }
-float GetLightLinear(int idx)    { return lights[idx].constLinQuadratic.y; }
-float GetLightQuadratic(int idx) { return lights[idx].constLinQuadratic.z; }
-
+vec3 GetLightPos(int idx) { return lights[idx].pos_cutoff.xyz;  }
+vec3 GetLightDir(int idx) { return lights[idx].dir_outer.xyz;   }
+float GetCutOff(int idx)      { return lights[idx].pos_cutoff.w; }
+float GetOuterCutOff(int idx) { return lights[idx].dir_outer.w;  }
+vec3 GetLightDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }
+vec3 GetLightSpecular(int idx) { return lights[idx].specular.xyz; }
+int GetLightType(int idx)      { return lights[idx].type; }
+float GetLightConstant(int idx)  { return lights[idx].constant;  }
+float GetLightLinear(int idx)    { return lights[idx].linear;    }
+float GetLightQuadratic(int idx) { return lights[idx].quadratic; }
 
 // MULTI DRAW INDIRECT BUFFERS
 

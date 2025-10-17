@@ -22,15 +22,24 @@ namespace Real::opengl {
         ~Buffer();
 
         [[nodiscard]] GLuint GetHandle() const {
-            if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + std::string(__FILE__)); return 0; }
+            if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + std::string(__FILE__)); }
             return m_Buffer;
         }
 
+        // Multiple data upload
         template <typename T>
         void Create(const std::vector<T>& data, GLsizeiptr size, BufferType type) {
-            m_Size = size;
             CleanResources();
+            m_Size = size;
             Create(data, type);
+        }
+
+        // Single data upload
+        template <typename T>
+        void Create(const T& data, GLsizeiptr size, BufferType type) {
+            CleanResources();
+            m_Size = size;
+            Create(std::vector{data}, type);
         }
 
         template <typename T>
@@ -45,8 +54,8 @@ namespace Real::opengl {
                 }
                 else {
                     if (m_Ptr) {
-                        memcpy(m_Ptr, data.data(), m_Size);
-                        glFlushMappedNamedBufferRange(m_Buffer, 0, m_Size);
+                        memcpy(m_Ptr, data.data(), size);
+                        glFlushMappedNamedBufferRange(m_Buffer, 0, size);
                     }
                 }
             }
@@ -56,9 +65,6 @@ namespace Real::opengl {
                     m_Size = size;
                     // Load data to gpu
                     glNamedBufferSubData(m_Buffer, 0, m_Size, data.data());
-                    // glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()),
-                        // GL_DYNAMIC_STORAGE_BIT
-                    // );
                 } else {
                     Create(data, size, type);
                 }
@@ -71,7 +77,7 @@ namespace Real::opengl {
         GLuint m_Buffer = 0;
         void* m_Ptr = nullptr;
         GLsizeiptr m_Size = 0;
-        GLbitfield m_Flags = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
+        GLbitfield m_Flags = GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
 
     private:
         template <typename T>
@@ -83,21 +89,21 @@ namespace Real::opengl {
                     return;
                 }
                 // Direct State Access
-                glNamedBufferStorage(m_Buffer, m_Size, (const void*)data.data(),
-                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT
+                glNamedBufferStorage(m_Buffer, m_Size, nullptr,
+                    GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT
                 );
                 m_Ptr = glMapNamedBufferRange(m_Buffer, 0, m_Size, m_Flags);
                 if (!m_Ptr) {
                     Warn("Persistent mapping pointer nullptr from: " + std::string(__FILE__));
                     return;
                 }
-                // memcpy(m_Ptr, data.data(), m_Size);
-                // glFlushMappedNamedBufferRange(m_Buffer, 0, m_Size);
+                glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
             }
             else if (type == BufferType::UBO) {
                 glCreateBuffers(1, &m_Buffer);
-                glNamedBufferStorage(m_Buffer, m_Size, reinterpret_cast<const void *>(data.data()),
+                glNamedBufferStorage(m_Buffer, m_Size, nullptr,
                     GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT);
+                glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
             }
         }
 

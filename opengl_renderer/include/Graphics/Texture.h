@@ -8,23 +8,15 @@
 namespace Real {
 
     struct Texture {
+    public:
         Texture() = default;
         Texture(const Texture&) = default;
+        void Load(const std::string& filePath);
 
-        [[nodiscard]] GLuint GetID() const { return m_ID; }
-
-        bool Create(const std::string& filePath, const std::string& name);
-        void CheckOrMakeResident();
-        void CheckOrMakeNonResident();
-
-    private:
+    public:
+        unsigned char* m_Data;
         GLuint m_ID = 0;
-        uint64_t m_BindlessHandle = 0;
-        bool m_IsResident = false;
-        int m_Width = 0, m_Height = 0;
-        std::string m_Name;
-
-    private:
-        void GenerateMipMaps();
+        GLsizei m_Width = 2, m_Height = 2;
+        int m_Index = -1; // index will use to find texture in TextureArray
     };
 }

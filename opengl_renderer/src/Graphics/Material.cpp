@@ -9,7 +9,8 @@ namespace Real {
         MaterialSSBO gpuData{};
         gpuData.baseColor = m_Base->BaseColor;
         gpuData.emissiveMetallic = glm::vec4(m_Base->emissive, m_Base->Metallic);
-        gpuData.roughness[0] = m_Base->Roughness;
+        gpuData.roughnessTexLayer[0] = m_Base->Roughness;
+        gpuData.roughnessTexLayer[0] = 0.0;
         return gpuData;
     }
 }

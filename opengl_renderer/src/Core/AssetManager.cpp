@@ -12,6 +12,7 @@
 #include <Core/Config.h>
 
 #include "Graphics/Material.h"
+#include "stb/stb_image.h"
 
 namespace Real {
 
@@ -91,11 +92,38 @@ namespace Real {
         if (m_Textures.contains(name)) return m_Textures[name];
         auto texture = CreateRef<Texture>();
 
-        const auto handle = texture->Create(filePath, name);
+        texture->Load(filePath);
+        texture->m_Index = static_cast<int>(m_TextureArrays.size());
 
+        m_TextureArrays.push_back(texture);
         m_Textures[name] = texture;
-        m_TextureHandles[name] = handle;
         return texture;
+    }
+
+    void AssetManager::LoadTextures() {
+        // Load all textures
+        LoadTexture("assets/textures/container.jpg", "container");
+
+        // Create texture array
+        GLuint textureArray;
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &textureArray);
+        // Allocate the storage
+        glTextureStorage3D(textureArray, 1, GL_RGBA8, m_TextureArrays[0]->m_Width, m_TextureArrays[0]->m_Height, m_TextureArrays.size());
+
+        for (int i = 0; i < m_TextureArrays.size(); i++) {
+            auto tex = m_TextureArrays[i];
+            glTextureSubImage3D(textureArray, 0, 0, 0, i, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
+            stbi_image_free(tex->m_Data); // Clean up vRAM
+            tex->m_Data = nullptr;
+        }
+        // Set parameters
+        glTextureParameteri(textureArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(textureArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(textureArray, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(textureArray, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        // Bind texture array (binding point = 6)
+        glBindTextureUnit(6, textureArray);
     }
 
     Ref<MaterialInstance> AssetManager::GetDefaultMat() {

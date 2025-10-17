@@ -20,7 +20,7 @@ namespace Real {
         [[nodiscard]] glm::mat3 GetNormalMatrix() const { return glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix))); }
 
         void AddTranslate(const glm::vec3& position) { m_Translate += position; m_ModelMatrixDirty = true; }
-        void AddTranslate(float x, float y, float z) { m_Translate += glm::vec3(x, y, z); }
+        void AddTranslate(float x, float y, float z) { m_Translate += glm::vec3(x, y, z); m_ModelMatrixDirty = true; }
         void SetTranslate(const glm::vec3& position) { m_Translate = position;  m_ModelMatrixDirty = true; }
         [[nodiscard]] const glm::vec3& GetPosition() const { return m_Translate; }
 

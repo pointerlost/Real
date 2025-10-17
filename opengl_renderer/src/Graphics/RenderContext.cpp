@@ -19,39 +19,23 @@ namespace Real {
         m_Buffers.transform.Create(m_GPUDatas.transforms,
             MAX_ENTITIES * sizeof(TransformSSBO), opengl::BufferType::SSBO
         );
-        m_Buffers.transform.UploadToGPU(m_GPUDatas.transforms,
-            m_GPUDatas.transforms.size() * sizeof(TransformSSBO), opengl::BufferType::SSBO
-        );
 
         m_Buffers.material.Create(m_GPUDatas.materials,
             MAX_ENTITIES * sizeof(MaterialSSBO), opengl::BufferType::SSBO
         );
-        m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
-            m_GPUDatas.materials.size() * sizeof(MaterialSSBO), opengl::BufferType::SSBO
-        );
 
         m_Buffers.light.Create(m_GPUDatas.lights, MAX_LIGHTS * sizeof(LightSSBO), opengl::BufferType::SSBO
-        );
-        m_Buffers.light.UploadToGPU(m_GPUDatas.lights,
-            m_GPUDatas.lights.size() * sizeof(LightSSBO), opengl::BufferType::SSBO
         );
 
         m_Buffers.entityData.Create(m_GPUDatas.entityData,
             MAX_ENTITIES * sizeof(EntityMetadata), opengl::BufferType::SSBO
         );
-        m_Buffers.entityData.UploadToGPU(m_GPUDatas.entityData,
-            m_GPUDatas.entityData.size() * sizeof(EntityMetadata), opengl::BufferType::SSBO
-        );
 
         m_Buffers.drawCommand.Create(m_GPUDatas.drawCommands,
             MAX_ENTITIES * sizeof(DrawElementsIndirectCommand), opengl::BufferType::SSBO
         );
-        m_Buffers.drawCommand.UploadToGPU(m_GPUDatas.drawCommands,
-            m_GPUDatas.drawCommands.size() * sizeof(DrawElementsIndirectCommand), opengl::BufferType::SSBO
-        );
 
-        m_Buffers.camera.Create(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
-        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
+        m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
     }
 
     void RenderContext::BindGPUBuffers() const {
@@ -138,7 +122,6 @@ namespace Real {
         CollectLights();
 
         UploadToGPU();
-
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         return m_GPUDatas;
     }
@@ -148,17 +131,15 @@ namespace Real {
          * (currently, adding multiple cameras may cause to crash)!!
          */
         const auto& view = m_Scene->GetAllEntitiesWith<CameraComponent, TransformComponent>();
-        for (auto [entity, camera, transform] : view.each()) {
-            const CameraUBO gpuData = camera.m_Camera.ConvertToGPUFormat(transform.m_Transform);
-            m_GPUDatas.camera = gpuData;
+        for (const auto& [entity, camera, transform] : view.each()) {
+            m_GPUDatas.camera = camera.m_Camera.ConvertToGPUFormat(transform.m_Transform);
         }
     }
 
     void RenderContext::CollectLights() {
         const auto& view = m_Scene->GetAllEntitiesWith<LightComponent, TransformComponent>();
-        for (auto [entity, light, transform] : view.each()) {
-            LightSSBO gpuData = light.m_Light.ConvertToGPUFormat(transform.m_Transform);
-            m_GPUDatas.lights.push_back(gpuData);
+        for (const auto& [entity, light, transform] : view.each()) {
+            m_GPUDatas.lights.push_back(light.m_Light.ConvertToGPUFormat(transform.m_Transform));
         }
     }
 

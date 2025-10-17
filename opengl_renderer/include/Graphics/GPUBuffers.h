@@ -12,15 +12,17 @@ namespace Real {
     };
 
     struct LightSSBO {
-        glm::vec4 diffuse  = glm::vec4(1.0f);
-        glm::vec4 specular = glm::vec4(0.7f);
-        glm::vec4 position = glm::vec4(0.0f); // w unused (padding)
+        glm::vec4 position{0.0}; // w unused (padding)
+        glm::vec4 direction{0.0};
+        glm::vec4 diffuse{1.0};
+        glm::vec4 specular{0.7};
+        glm::vec4 constLinQuadratic{1.0, 0.09, 0.032, 0.0}; // constant,linear,quadratic | w unused (padding)
     };
 
     struct MaterialSSBO {
         glm::vec4 baseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
         glm::vec4 emissiveMetallic = glm::vec4(0.2f);
-        float roughness[4]; // 0 = roughness, other indices padding (16-byte alignment)
+        float roughnessTexLayer[4]; // 0 = roughness, 1 = texture layer, other indices padding (16-byte alignment)
     };
 
     struct CameraUBO {

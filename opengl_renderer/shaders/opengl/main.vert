@@ -10,10 +10,6 @@ layout (location = 2) in vec2 aUV;
 out vec3 vFragPos;
 out vec3 vNormal;
 out vec2 vUV;
-
-// uniform mat4 View;
-// uniform mat4 Projection;
-
 flat out int vMaterialIndex;
 
 void main() {

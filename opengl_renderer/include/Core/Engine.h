@@ -24,16 +24,15 @@ namespace Real {
         void Running();
 
     private:
+        Scope<Timer> m_EditorTimer;
         Scope<Graphics::Window> m_Window;
         Scope<MeshManager> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
         Scope<opengl::Renderer> m_Renderer;
         Scope<Scene> m_Scene;
-
-        Entity editorCamera;
         Scope<CameraInput> m_CameraInput;
+        Entity editorCamera;
 
-        Scope<Timer> m_EditorTimer;
         // Scope<Timer> m_GameTimer;
     private:
         void ShutDown();

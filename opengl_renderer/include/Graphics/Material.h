@@ -6,6 +6,7 @@
 #include <glm/ext.hpp>
 
 #include "GPUBuffers.h"
+#include "Texture.h"
 #include "Core/Utils.h"
 
 namespace Real {
@@ -28,6 +29,7 @@ namespace Real {
         float Metallic = 0.0f;
         float Roughness = 1.0f;
         glm::vec3 emissive = glm::vec3(0.0f);
+        int GetTextureIndex(TextureType type) { return textures[type]->m_Index; }
 
         std::unordered_map<TextureType, Ref<Texture>> textures;
     };

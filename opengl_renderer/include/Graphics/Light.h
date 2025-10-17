@@ -32,6 +32,10 @@ namespace Real {
         // TODO: go to PBR slowly!!!
         glm::vec3 m_Diffuse  = glm::vec3(1.0);
         glm::vec3 m_Specular = glm::vec3(1.0);
-        glm::vec3 m_Position = glm::vec3(0.0);
+
+        // Point light (Attenuation)
+        float m_Constant = 1.0;
+        float m_Linear = 0.09;
+        float m_Quadratic = 0.032;
     };
 }

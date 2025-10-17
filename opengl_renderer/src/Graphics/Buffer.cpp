@@ -18,10 +18,10 @@ namespace Real::opengl {
     }
 
     void Buffer::CleanResources() {
-        if (m_Ptr || m_Buffer != 0) {
+        if (m_Ptr) {
             glUnmapNamedBuffer(m_Buffer);
             m_Ptr = nullptr;
-            glDeleteBuffers(1, &m_Buffer);
         }
+        glDeleteBuffers(1, &m_Buffer);
     }
 }

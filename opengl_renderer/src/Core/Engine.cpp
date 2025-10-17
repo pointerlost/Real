@@ -17,6 +17,13 @@
 namespace Real {
 
     Engine::~Engine() {
+        m_Scene.reset();
+        m_CameraInput.reset();
+        m_AssetManager.reset();
+        m_Renderer.reset();
+        m_MeshManager.reset();
+        m_EditorTimer.reset();
+        m_Window.reset();
         ShutDown();
     }
 
@@ -63,11 +70,12 @@ namespace Real {
         cube2.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         auto& light = m_Scene->CreateEntity("Light");
-        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-6.0, 4.0, 0.0));
+        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-4.0, 4.0, -2.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
+        m_AssetManager->LoadTextures();
         m_Renderer->GetRenderContext()->InitResources();
     }
 

@@ -35,6 +35,7 @@ namespace Real {
     struct TransformComponent {
         Transformations m_Transform{};
         TransformComponent() = default;
+        TransformComponent(const TransformComponent&) = delete;
     };
 
     struct MaterialComponent {

@@ -77,7 +77,7 @@ namespace Real {
         m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
     }
 
-    const GPUData& RenderContext::CollectRenderables() {
+    void RenderContext::CollectRenderables() {
         // Clean the data from previous frame
         CleanPrevFrame();
 
@@ -88,6 +88,7 @@ namespace Real {
         for (auto [entity, transform, mesh, material] : view.each()) {
             EntityMetadata entityData;
 
+            // The order is matter transformation should update first because ConvertToGPUFormat has update
             // Transform GPU data
             TransformSSBO gpuTransform = transform.m_Transform.ConvertToGPUFormat();
             const int transformIdx = (int)m_GPUDatas.transforms.size();
@@ -123,7 +124,6 @@ namespace Real {
 
         UploadToGPU();
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        return m_GPUDatas;
     }
 
     void RenderContext::CollectCamera() {

@@ -10,5 +10,6 @@ namespace Real {
         Entity selectedEntity{};
         Entity camera{};
         bool running = true;
+        bool fpsMode = true;
     };
 }

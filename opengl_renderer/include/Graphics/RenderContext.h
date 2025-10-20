@@ -38,8 +38,7 @@ namespace Real {
         explicit RenderContext(Scene* scene);
         void InitResources();
         void BindGPUBuffers() const;
-        void UploadToGPU();
-        const GPUData& CollectRenderables();
+        void CollectRenderables();
 
         [[nodiscard]] const GPUData& GetGPURenderData() const { return m_GPUDatas; }
         [[nodiscard]] const GPUBuffers& GetBuffers() const { return m_Buffers; }
@@ -53,5 +52,6 @@ namespace Real {
         void CollectCamera();
         void CollectLights();
         void CleanPrevFrame();
+        void UploadToGPU();
     };
 }

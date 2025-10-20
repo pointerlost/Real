@@ -10,6 +10,7 @@
 
 #include "Core/Services.h"
 #include "Core/Timer.h"
+#include "Editor/EditorState.h"
 
 namespace Real {
 
@@ -17,6 +18,8 @@ namespace Real {
     }
 
     void CameraInput::Update() {
+        if (!Services::GetEditorState()->fpsMode) return;
+
         auto& camera = m_Camera->GetComponent<CameraComponent>()->m_Camera;
         auto& transform = m_Camera->GetComponent<TransformComponent>()->m_Transform;
         // Input: Keyboard State
@@ -35,6 +38,7 @@ namespace Real {
         if (Input::IsKeyHeld(REAL_KEY_D)) {
             transform.AddTranslate(right * translate);
         }
+
         // Input: Mouse Button State
         // do it some stuff
 

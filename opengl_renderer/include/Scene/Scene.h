@@ -7,6 +7,10 @@
 #include "Core/UUID.h"
 #include <glm/ext.hpp>
 
+namespace Real::opengl {
+    class Renderer;
+}
+
 namespace Real {
     class Entity;
 }
@@ -16,7 +20,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update();
+        void Update(opengl::Renderer* renderer);
 
         Entity& CreateEntity(const std::string& tag = std::string());
         void DestroyEntity(entt::entity entity);

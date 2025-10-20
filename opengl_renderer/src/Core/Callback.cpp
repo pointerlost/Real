@@ -4,6 +4,8 @@
 #include "Core/Callback.h"
 
 #include "Core/Services.h"
+#include "Editor/EditorState.h"
+#include "Graphics/Config.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 
@@ -29,6 +31,7 @@ namespace Real {
         Input::g_MouseX = xpos;
         Input::g_MouseY = ypos;
 
+        if (!Services::GetEditorState()->fpsMode) return;
         if (Input::IsKeyHeld(REAL_MOUSE_BUTTON_LEFT) || Input::IsKeyPressed(REAL_MOUSE_BUTTON_LEFT)) {
             auto deltaX = Input::g_MouseX - Input::g_MouseLastX;
             auto deltaY = Input::g_MouseLastY - Input::g_MouseY; // Y-axis should be reversed

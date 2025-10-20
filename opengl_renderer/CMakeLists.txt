@@ -61,20 +61,23 @@ add_executable(${PROJECT_NAME}
     src/Graphics/Light.cpp
     include/Graphics/Material.h
     src/Graphics/Texture.cpp
-        include/Graphics/Buffer.h
-        src/Graphics/Buffer.cpp
-        include/Graphics/GPUBuffers.h
-        include/Graphics/RenderContext.h
-        src/Graphics/RenderContext.cpp
-        include/Graphics/RenderCommand.h
-        src/Graphics/Material.cpp
-        src/Editor/EditorPanel.cpp
-        include/Editor/EditorPanel.h
-        include/Editor/HierarchyPanel.h
-        include/Editor/InspectorPanel.h
-        include/Editor/IPanel.h
-        src/Editor/HierarchyPanel.cpp
-        src/Editor/InspectorPanel.cpp
+    include/Graphics/Buffer.h
+    src/Graphics/Buffer.cpp
+    include/Graphics/GPUBuffers.h
+    include/Graphics/RenderContext.h
+    src/Graphics/RenderContext.cpp
+    include/Graphics/RenderCommand.h
+    src/Graphics/Material.cpp
+    src/Editor/EditorPanel.cpp
+    include/Editor/EditorPanel.h
+    include/Editor/HierarchyPanel.h
+    include/Editor/InspectorPanel.h
+    include/Editor/IPanel.h
+    src/Editor/HierarchyPanel.cpp
+    src/Editor/InspectorPanel.cpp
+    vendor/ImGuizmo/ImGuizmo.cpp
+        include/Math/Math.h
+        src/Math/Math.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

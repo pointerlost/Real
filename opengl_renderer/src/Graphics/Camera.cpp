@@ -24,9 +24,9 @@ namespace Real {
         m_Up = glm::normalize(glm::cross(m_Right, m_Forward));
 
         if (m_Mode == CameraMode::Perspective) {
-            const auto& pos = transform.GetPosition();
+            const auto& pos = transform.GetTranslate();
             m_View = glm::lookAt(pos, pos + m_Forward, m_WorldUp);
-            if (!m_ProjectionDirty) return;
+            // if (!m_ProjectionDirty) return;
             m_Projection = glm::perspective(glm::radians(m_FOV), m_Aspect, m_Near, m_Far);
             m_ProjectionDirty = false;
         }
@@ -37,7 +37,7 @@ namespace Real {
         Update(transform);
 
         CameraUBO gpuData{};
-        gpuData.position = glm::vec4(transform.GetPosition(), 0.0); // w unused (padding)
+        gpuData.position = glm::vec4(transform.GetTranslate(), 0.0); // w unused (padding)
         gpuData.view = m_View;
         gpuData.projection = m_Projection;
         gpuData.viewProjection = m_Projection * m_View;

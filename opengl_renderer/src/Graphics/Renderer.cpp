@@ -23,8 +23,6 @@ namespace Real::opengl {
     void Renderer::Render(Entity* camera) {
         const auto& meshManager  = Services::GetMeshManager();
         const auto& assetManager = Services::GetAssetManager();
-        // GPU data ready
-        const auto& renderables = sceneRenderContext->CollectRenderables();
         const auto shader = assetManager->GetShader("main");
 
         // Bind gpu buffer to binding points
@@ -37,11 +35,12 @@ namespace Real::opengl {
         // Set uniforms
         shader.SetVec3("g_GlobalAmbient", m_Scene->GetGlobalAmbient());
         shader.SetInt("uLightCount", 1);
-        shader.SetVec3("viewPos", camera->GetComponent<TransformComponent>()->m_Transform.GetPosition());
+        shader.SetVec3("viewPos", camera->GetComponent<TransformComponent>()->m_Transform.GetTranslate());
 
-        if (!renderables.drawCommands.empty()) {
+        const auto& gpuData = sceneRenderContext->GetGPURenderData();
+        if (!gpuData.drawCommands.empty()) {
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetRenderContext()->GetBuffers().drawCommand.GetHandle());
-            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(renderables.drawCommands.size()), 0);
+            glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(gpuData.drawCommands.size()), 0);
         }
 
         meshManager->UnbindCurrVAO();

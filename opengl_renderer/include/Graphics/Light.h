@@ -31,6 +31,20 @@ namespace Real {
         [[nodiscard]] const glm::vec3& GetDiffuse()  const { return m_Diffuse;  }
         [[nodiscard]] const glm::vec3& GetSpecular() const { return m_Specular; }
 
+        void SetConstant(float constant) { m_Constant = constant; }
+        [[nodiscard]] float GetConstant() const { return m_Constant; }
+        void SetLinear(float linear) { m_Linear = linear; }
+        [[nodiscard]] float GetLinear() const { return m_Linear; }
+        void SetQuadratic(float quad) { m_Quadratic = quad; }
+        [[nodiscard]] float GetQuadratic() const { return m_Quadratic; }
+
+        void SetCutOff(float cutoff) { m_CutOff = cutoff; }
+        void SetOuterCutOff(float outer) { m_OuterCutOff = outer; }
+        [[nodiscard]] float GetCutOff() const { return m_CutOff; }
+        [[nodiscard]] float GetOuterCutOff() const { return m_OuterCutOff; }
+
+        [[nodiscard]] LightType GetType() const { return m_Type; }
+
         void Update(Transformations& transform);
         [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
 
@@ -47,6 +61,6 @@ namespace Real {
         // Spot light
         float m_CutOff = 12.5;
         float m_OuterCutOff = 17.5;
-        int m_Type = static_cast<int>(LightType::POINT); // point = 0, directional = 1, spot = 2
+        LightType m_Type = LightType::POINT; // point = 0, directional = 1, spot = 2
     };
 }

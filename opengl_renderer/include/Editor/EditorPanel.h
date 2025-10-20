@@ -2,28 +2,60 @@
 // Created by pointerlost on 10/17/25.
 //
 #pragma once
+#include <imgui.h>
+#include "ImGuizmo/ImGuizmo.h"
+#include <string>
+#include <unordered_map>
 #include "IPanel.h"
 
-namespace Real::Graphics {
-    class Window;
+namespace Real {
+
+    namespace UI {
+        class HierarchyPanel;
+        class InspectorPanel;
+    }
+
+    namespace opengl {
+        class Renderer;
+    }
+
+    namespace Graphics {
+        class Window;
+    }
 }
 
 namespace Real::UI {
 
     class EditorPanel final : public IPanel {
     public:
-        explicit EditorPanel(Graphics::Window* window);
+        explicit EditorPanel(Graphics::Window* window, HierarchyPanel* hierarchyPanel, InspectorPanel* inspectorPanel);
         void BeginFrame() override;
-        void Render(Scene* scene) override;
+        void Render(Scene* scene, opengl::Renderer* renderer) override;
         void Shutdown() override;
+        ImFont* GetFontStyle(const std::string& fontName);
 
     private:
         Graphics::Window* m_Window;
-        friend class InspectorPanel;
         friend class HierarchyPanel;
+        friend class InspectorPanel;
+        HierarchyPanel* m_HierarchyPanel;
+        InspectorPanel* m_InspectorPanel;
+        bool wasItemActivated = false;
+        ImGuizmo::OPERATION m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+
+        std::unordered_map<std::string, ImFont*> m_Fonts;
 
     private:
+        void Render();
+
         void RenderMenuBar();
         void DrawPerformanceProfile();
+        void UpdateInputUI();
+
+        void InitFontStyle();
+        void InitDarkTheme();
+
+        void DrawGizmos();
+        void DebugGizmos();
     };
 }

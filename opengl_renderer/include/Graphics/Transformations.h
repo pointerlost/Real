@@ -16,13 +16,17 @@ namespace Real {
         ~Transformations() = default;
         Transformations(Transformations&) = default;
 
+        void SetModelMatrix(const glm::mat4& model) { m_ModelMatrix = model; }
+        // To update gizmos
+        [[nodiscard]] glm::mat4& GetModelMatrix() { m_ModelMatrixDirty = false; return m_ModelMatrix; }
         [[nodiscard]] const glm::mat4& GetModelMatrix() const { return m_ModelMatrix; }
         [[nodiscard]] glm::mat3 GetNormalMatrix() const { return glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix))); }
 
         void AddTranslate(const glm::vec3& position) { m_Translate += position; m_ModelMatrixDirty = true; }
         void AddTranslate(float x, float y, float z) { m_Translate += glm::vec3(x, y, z); m_ModelMatrixDirty = true; }
         void SetTranslate(const glm::vec3& position) { m_Translate = position;  m_ModelMatrixDirty = true; }
-        [[nodiscard]] const glm::vec3& GetPosition() const { return m_Translate; }
+        [[nodiscard]] const glm::vec3& GetTranslate() const { return m_Translate; }
+        [[nodiscard]] glm::vec3& GetTranslate() { m_ModelMatrixDirty = true; return m_Translate; }
 
         [[nodiscard]] glm::vec3 GetDirection() const {
             const glm::vec3 forward = m_Rotate * glm::vec3(0.0, 0.0, -1.0);
@@ -38,6 +42,12 @@ namespace Real {
             m_Rotate = glm::angleAxis(glm::radians(angle), axis);
             m_ModelMatrixDirty = true;
         }
+        void SetRotationEuler(const glm::vec3& eulerDegrees) {
+            m_Rotate = glm::quat(glm::radians(eulerDegrees));
+        }
+        void SetRotation(const glm::quat& rotate) { m_ModelMatrixDirty = true; m_Rotate = rotate; }
+        void SetRotation(const glm::mat4& rotate) { m_ModelMatrixDirty = true; m_Rotate = glm::quat_cast(rotate); }
+        [[nodiscard]] glm::vec3 GetRotationEuler() const { m_ModelMatrixDirty = true; return glm::degrees(glm::eulerAngles(m_Rotate)); }
         [[nodiscard]] const glm::quat& GetRotationWithQuat() const { return m_Rotate; }
         [[nodiscard]] glm::mat4 GetRotationWithMat4() const { return glm::mat4_cast(m_Rotate); }
 
@@ -45,6 +55,7 @@ namespace Real {
         void AddScale(float x, float y, float z) { m_Scale += glm::vec3(x, y, z); m_ModelMatrixDirty = true; }
         void SetScale(const glm::vec3& scale) { m_Scale = scale;  m_ModelMatrixDirty = true; }
         [[nodiscard]] const glm::vec3& GetScale() const { return m_Scale; }
+        [[nodiscard]] glm::vec3& GetScale() { m_ModelMatrixDirty = true; return m_Scale; }
 
         void Update();
         [[nodiscard]] TransformSSBO ConvertToGPUFormat();

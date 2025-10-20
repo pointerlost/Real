@@ -44,6 +44,8 @@ namespace Real {
         [[nodiscard]] const glm::vec3& GetUp() const { return m_Up; }
         [[nodiscard]] const glm::vec3& GetRight() const { return m_Right; }
 
+        [[nodiscard]] glm::mat4& GetView() { return m_View; }
+        [[nodiscard]] glm::mat4& GetProjection() { return m_Projection; }
         [[nodiscard]] const glm::mat4& GetView() const { return m_View; }
         [[nodiscard]] const glm::mat4& GetProjection() const { return m_Projection; }
 

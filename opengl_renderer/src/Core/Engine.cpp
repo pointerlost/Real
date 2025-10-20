@@ -35,9 +35,9 @@ namespace Real {
         m_EditorTimer->Start();
         m_EditorState = CreateScope<EditorState>();
         // Init UI (the order is matter!!!)
-        m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get());
-        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>(m_EditorPanel.get());
-        m_InspectorPanel = CreateScope<UI::InspectorPanel>(m_EditorPanel.get());
+        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
+        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
+        m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
 
         InitAsset();
         InitMesh();
@@ -78,7 +78,7 @@ namespace Real {
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-4.0, 4.0, -2.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{LightType::DIRECTIONAL};
+        light.AddComponent<LightComponent>().m_Light = Light{};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         m_AssetManager->LoadTextures();
@@ -108,17 +108,14 @@ namespace Real {
 
     void Engine::RenderPhase() {
         // Draw OpenGL stuff
-        m_Renderer->Render(&m_EditorState->camera);
         // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
-        m_InspectorPanel->Render(m_Scene.get());
-        m_HierarchyPanel->Render(m_Scene.get());
-        m_EditorPanel->Render(m_Scene.get());
+        m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
     }
 
     void Engine::UpdatePhase() {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
-        m_Scene->Update();
+        m_Scene->Update(m_Renderer.get());
     }
 
     void Engine::InitServices() {

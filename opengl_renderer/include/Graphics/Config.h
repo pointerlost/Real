@@ -3,7 +3,7 @@
 //
 #pragma once
 
-constexpr float SCREEN_WIDTH  = 1560.0f;
+constexpr float SCREEN_WIDTH  = 1520.0f;
 constexpr float SCREEN_HEIGHT = 840.0f;
 
 constexpr int MAX_ENTITIES = 16384;

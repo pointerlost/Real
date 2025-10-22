@@ -39,4 +39,8 @@ namespace Real {
     float Timer::GetElapsed() const {
         return m_ElapsedTime;
     }
+
+    int Timer::GetFPS() const {
+        return static_cast<int>(1.0 / m_DeltaTime);
+    }
 }

@@ -1,8 +1,6 @@
 #version 460
 #include "opengl/buffers.glsl"
 
-// TODO: #extension GL_ARB_bindless_texture : require
-
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aUV;
@@ -19,7 +17,7 @@ void main() {
     int transformIdx = entityProps.transformIndex;
 
     vFragPos = vec3(GetModelMatrix(transformIdx) * vec4(aPos, 1.0));
-    vNormal = GetNormalMatrix(transformIdx) * aNormal;
+    vNormal = normalize(GetNormalMatrix(transformIdx) * aNormal);
     vUV = aUV;
     gl_Position = GetProjection() * GetView() * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
 }

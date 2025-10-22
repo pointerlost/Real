@@ -2,8 +2,12 @@
 // Created by pointerlost on 10/8/25.
 //
 #pragma once
-#include "Scene.h"
+#include <Scene/Scene.h>
+#include <entt/entt.hpp>
+#include "Core/Logger.h"
 #include "Core/Utils.h"
+
+namespace Real { class Scene; }
 
 namespace Real {
 
@@ -22,6 +26,7 @@ namespace Real {
         operator uint32_t() const {
             return static_cast<uint32_t>(m_Handle);
         }
+        [[nodiscard]] bool IsExists() const { return m_Handle != entt::null; }
 
         template <typename T>
         [[nodiscard]] T& AddComponent() {
@@ -32,7 +37,7 @@ namespace Real {
         /* Callable for known component types */
         template <typename... Args>
         void AddComponents() {
-            // Need test if exists
+            // TODO: Need test check if exists already before added because will cause crash!!
             (m_Scene->GetRegistry().emplace<Args>(m_Handle), ...);
         }
 

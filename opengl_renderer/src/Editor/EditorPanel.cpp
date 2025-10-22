@@ -6,6 +6,7 @@
 #include "imgui_impl_opengl3.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
+#include "Core/Timer.h"
 #include "Core/Window.h"
 #include "Editor/EditorState.h"
 #include "Editor/HierarchyPanel.h"
@@ -56,12 +57,19 @@ namespace Real::UI {
         ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 5 + 31.0, 25.0));
         ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT));
 
-        ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
-        renderer->Render(&Services::GetEditorState()->camera);
-        m_HierarchyPanel->Render(scene, renderer);
-        m_InspectorPanel->Render(scene, renderer);
+        constexpr auto windowFlags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize |
+                                     ImGuiWindowFlags_NoCollapse   | ImGuiWindowFlags_NoTitleBar;
+        // Draw main scene window into Editor Window
+        ImGui::Begin("Scene", nullptr, windowFlags);
+        // Main Scene window
+        renderer->Render(Services::GetEditorState()->camera);
+        // Draw UI
         Render();
         ImGui::End();
+
+        // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
+        m_HierarchyPanel->Render(scene, renderer);
+        m_InspectorPanel->Render(scene, renderer);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -94,19 +102,19 @@ namespace Real::UI {
     }
 
     void EditorPanel::DrawPerformanceProfile() {
+        if (Input::IsKeyPressed(REAL_KEY_F11)) openPerfProfile = !openPerfProfile;
+        if (openPerfProfile) return;
+        const std::string fps = "FPS: " + std::to_string(Services::GetEditorTimer()->GetFPS());
+        ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), fps.c_str());
     }
 
     void EditorPanel::UpdateInputUI() {
         if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered()) {
-            Services::GetEditorState()->selectedEntity = Entity{};
+            Services::GetEditorState()->selectedEntity = nullptr;
         }
 
-        wasItemActivated = ImGui::IsItemActivated();
-
-        if (wasItemActivated && ImGui::IsMouseDown(ImGuiMouseButton_Left) || Input::IsKeyPressed(REAL_KEY_F4)) {
-            Services::GetEditorState()->fpsMode = false;
-        } else {
-            Services::GetEditorState()->fpsMode = true;
+        if (Input::IsKeyPressed(REAL_KEY_F3)) {
+            Services::GetEditorState()->fpsMode = !Services::GetEditorState()->fpsMode;
         }
     }
 
@@ -136,14 +144,13 @@ namespace Real::UI {
 
     void EditorPanel::DrawGizmos() {
         if (Input::IsKeyPressed(REAL_KEY_E)) {
-            m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+            m_GizmoType = ImGuizmo::TRANSLATE;
         } else if (Input::IsKeyPressed(REAL_KEY_R)) {
-            m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+            m_GizmoType = ImGuizmo::ROTATE;
         } else if (Input::IsKeyPressed(REAL_KEY_T)){
-            m_GizmoType = ImGuizmo::OPERATION::SCALE;
+            m_GizmoType = ImGuizmo::SCALE;
         }
 
-        // Using perspective camera
         if (Services::GetEditorState()->selectedEntity) {
             // Using perspective projection
             ImGuizmo::SetOrthographic(false);
@@ -152,12 +159,12 @@ namespace Real::UI {
             // Draw gizmos rect
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 
-            auto& transform = Services::GetEditorState()->selectedEntity.GetComponent<TransformComponent>()->m_Transform;
-            auto& camera = Services::GetEditorState()->camera.GetComponent<CameraComponent>()->m_Camera;
+            auto& transform = Services::GetEditorState()->selectedEntity->GetComponent<TransformComponent>()->m_Transform;
+            auto& camera = Services::GetEditorState()->camera->GetComponent<CameraComponent>()->m_Camera;
             auto model = transform.GetModelMatrix();
 
             ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()),
-                m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(model)
+                (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(model)
             );
 
             if (ImGuizmo::IsUsing()) {

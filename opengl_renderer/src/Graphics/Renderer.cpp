@@ -7,6 +7,7 @@
 
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
+#include "Core/Timer.h"
 #include "Graphics/MeshManager.h"
 #include "Graphics/Transformations.h"
 #include "Scene/Components.h"
@@ -30,12 +31,12 @@ namespace Real::opengl {
 
         // Bind Shader and VAO
         shader.Bind();
+        assetManager->BindTextureArray();
         meshManager->BindUniversalVAO();
 
         // Set uniforms
         shader.SetVec3("g_GlobalAmbient", m_Scene->GetGlobalAmbient());
         shader.SetInt("uLightCount", 1);
-        shader.SetVec3("viewPos", camera->GetComponent<TransformComponent>()->m_Transform.GetTranslate());
 
         const auto& gpuData = sceneRenderContext->GetGPURenderData();
         if (!gpuData.drawCommands.empty()) {

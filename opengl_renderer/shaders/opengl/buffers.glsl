@@ -23,6 +23,7 @@ mat4 GetProjView()   { return uCamera.viewProjection; }
 mat4 GetView()       { return uCamera.view;           }
 mat4 GetProjection() { return uCamera.projection;     }
 
+// TODO: #extension GL_ARB_bindless_texture : require
 struct Material {
     vec4 baseColor;
     vec4 emissiveMetallic;
@@ -37,7 +38,7 @@ vec3 GetEmissive(int idx)   { return materials[idx].emissiveMetallic.xyz; }
 float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
 float GetRoughness(int idx) { return materials[idx].roughnessTexLayer[0]; }
 float GetTextureLayer(int idx) { return materials[idx].roughnessTexLayer[1]; }
-
+float GetTextureLayer2(int idx) { return materials[idx].roughnessTexLayer[2]; }
 
 struct Light {
     vec4 pos_cutoff; // vec3 position,  w = cutOff
@@ -55,7 +56,7 @@ layout(std430, binding = 5) buffer LightSSBO {
 };
 
 vec3 GetLightPos(int idx) { return lights[idx].pos_cutoff.xyz;  }
-vec3 GetLightDir(int idx) { return lights[idx].dir_outer.xyz;   }
+vec3 GetLightDir(int idx) { return -normalize(lights[idx].dir_outer.xyz); }
 float GetCutOff(int idx)      { return lights[idx].pos_cutoff.w; }
 float GetOuterCutOff(int idx) { return lights[idx].dir_outer.w;  }
 vec3 GetLightDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }

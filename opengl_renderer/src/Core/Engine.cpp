@@ -7,6 +7,7 @@
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
+#include "Graphics/Material.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
@@ -49,39 +50,33 @@ namespace Real {
 
         m_MeshManager->InitResources();
 
-        // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container");
-        // m_AssetManager->LoadTexture("assets/textures/container.jpg", "container2");
-
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
+        m_AssetManager->LoadTextures();
 
-        m_EditorState->camera = m_Scene->CreateEntity("Editor Camera");
-        (void)m_EditorState->camera.AddComponent<CameraComponent>();
-        m_EditorState->camera.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
+        m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
+        (void)m_EditorState->camera->AddComponent<CameraComponent>();
+        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
 
-        m_CameraInput = CreateScope<CameraInput>(&m_EditorState->camera);
+        m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
-        const auto& defaultMat = Services::GetAssetManager()->GetDefaultMat();
+        const auto& defaultMat = m_AssetManager->GetDefaultMat();
+        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("material");
+        material->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("container2"));
+        material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
 
         auto& cube = m_Scene->CreateEntity("Cube");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0));
-        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(4.0));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(3.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube.AddComponent<MaterialComponent>().m_Instance = defaultMat;
-
-        auto& cube2 = m_Scene->CreateEntity("Cube2");
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(10.0, 4.0, 0.0));
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0));
-        cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube2.AddComponent<MaterialComponent>().m_Instance = defaultMat;
+        cube.AddComponent<MaterialComponent>().m_Instance = material;
 
         auto& light = m_Scene->CreateEntity("Light");
-        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-4.0, 4.0, -2.0));
+        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{};
+        light.AddComponent<LightComponent>().m_Light = Light{LightType::POINT};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
-        m_AssetManager->LoadTextures();
         m_Renderer->GetRenderContext()->InitResources();
         Info("Resources loaded successfully!");
     }
@@ -108,7 +103,6 @@ namespace Real {
 
     void Engine::RenderPhase() {
         // Draw OpenGL stuff
-        // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
     }
 

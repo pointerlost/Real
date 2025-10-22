@@ -23,10 +23,9 @@ namespace Real {
         [[nodiscard]] glm::mat3 GetNormalMatrix() const { return glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix))); }
 
         void AddTranslate(const glm::vec3& position) { m_Translate += position; m_ModelMatrixDirty = true; }
-        void AddTranslate(float x, float y, float z) { m_Translate += glm::vec3(x, y, z); m_ModelMatrixDirty = true; }
         void SetTranslate(const glm::vec3& position) { m_Translate = position;  m_ModelMatrixDirty = true; }
         [[nodiscard]] const glm::vec3& GetTranslate() const { return m_Translate; }
-        [[nodiscard]] glm::vec3& GetTranslate() { m_ModelMatrixDirty = true; return m_Translate; }
+        [[nodiscard]] glm::vec3 GetTranslate() { return m_Translate; }
 
         [[nodiscard]] glm::vec3 GetDirection() const {
             const glm::vec3 forward = m_Rotate * glm::vec3(0.0, 0.0, -1.0);
@@ -35,27 +34,27 @@ namespace Real {
 
         // Add rotations
         void AddRotate(float angle, const glm::vec3& axis) {
-            m_Rotate = glm::angleAxis(glm::radians(angle), axis) * m_Rotate;
             m_ModelMatrixDirty = true;
+            m_Rotate = glm::angleAxis(glm::radians(angle), axis) * m_Rotate;
         }
         void SetRotate(float angle, const glm::vec3& axis) {
-            m_Rotate = glm::angleAxis(glm::radians(angle), axis);
             m_ModelMatrixDirty = true;
+            m_Rotate = glm::angleAxis(glm::radians(angle), axis);
         }
         void SetRotationEuler(const glm::vec3& eulerDegrees) {
+            m_ModelMatrixDirty = true;
             m_Rotate = glm::quat(glm::radians(eulerDegrees));
         }
         void SetRotation(const glm::quat& rotate) { m_ModelMatrixDirty = true; m_Rotate = rotate; }
         void SetRotation(const glm::mat4& rotate) { m_ModelMatrixDirty = true; m_Rotate = glm::quat_cast(rotate); }
-        [[nodiscard]] glm::vec3 GetRotationEuler() const { m_ModelMatrixDirty = true; return glm::degrees(glm::eulerAngles(m_Rotate)); }
+        [[nodiscard]] glm::vec3 GetRotationEuler() const { return glm::degrees(glm::eulerAngles(m_Rotate)); }
         [[nodiscard]] const glm::quat& GetRotationWithQuat() const { return m_Rotate; }
         [[nodiscard]] glm::mat4 GetRotationWithMat4() const { return glm::mat4_cast(m_Rotate); }
 
         void AddScale(const glm::vec3& scale) { m_Scale += scale; m_ModelMatrixDirty = true; }
-        void AddScale(float x, float y, float z) { m_Scale += glm::vec3(x, y, z); m_ModelMatrixDirty = true; }
         void SetScale(const glm::vec3& scale) { m_Scale = scale;  m_ModelMatrixDirty = true; }
         [[nodiscard]] const glm::vec3& GetScale() const { return m_Scale; }
-        [[nodiscard]] glm::vec3& GetScale() { m_ModelMatrixDirty = true; return m_Scale; }
+        [[nodiscard]] glm::vec3 GetScale() { return m_Scale; }
 
         void Update();
         [[nodiscard]] TransformSSBO ConvertToGPUFormat();

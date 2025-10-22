@@ -2,17 +2,18 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include <entt/entt.hpp>
+#include "entt/entt.hpp"
 #include "Core/Logger.h"
 #include "Core/UUID.h"
 #include <glm/ext.hpp>
-
-namespace Real::opengl {
-    class Renderer;
-}
+#include "Graphics/Light.h"
 
 namespace Real {
     class Entity;
+
+    namespace opengl {
+        class Renderer;
+    }
 }
 
 namespace Real {
@@ -37,10 +38,11 @@ namespace Real {
 
         const glm::vec3& GetGlobalAmbient() const { return g_GlobalAmbient; }
 
+        Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
+
     private:
         entt::registry m_Registry;
         std::unordered_map<UUID, Entity> m_Entities;
-
         glm::vec3 g_GlobalAmbient = glm::vec3(0.1f);
     };
 }

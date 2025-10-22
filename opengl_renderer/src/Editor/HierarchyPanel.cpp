@@ -12,7 +12,7 @@
 #include "Editor/EditorState.h"
 #include "Graphics/Material.h"
 #include "Scene/Components.h"
-#include "Scene/Entity.h"
+#include "Scene/Scene.h"
 
 namespace Real::UI {
 
@@ -42,39 +42,42 @@ namespace Real::UI {
         if (!entity) return;
 
         // ImGui::PushFont(m_EditorPanel->GetFontStyle("Ubuntu-Bold"));
-        if (entity.HasComponent<TagComponent>()) {
-            DrawComponent(entity.GetComponent<TagComponent>());
+        if (entity->HasComponent<TagComponent>()) {
+            DrawComponent(entity->GetComponent<TagComponent>());
         }
-        if (entity.HasComponent<TransformComponent>()) {
-            DrawComponent(entity.GetComponent<TransformComponent>());
+        if (entity->HasComponent<TransformComponent>()) {
+            DrawComponent(entity->GetComponent<TransformComponent>());
         }
-        if (entity.HasComponent<MaterialComponent>()) {
-            DrawComponent(entity.GetComponent<MaterialComponent>());
+        if (entity->HasComponent<MaterialComponent>()) {
+            DrawComponent(entity->GetComponent<MaterialComponent>());
         }
-        if (entity.HasComponent<MeshComponent>()) {
-            DrawComponent(entity.GetComponent<MeshComponent>());
+        if (entity->HasComponent<MeshComponent>()) {
+            DrawComponent(entity->GetComponent<MeshComponent>());
         }
-        if (entity.HasComponent<LightComponent>()) {
-            DrawComponent(entity.GetComponent<LightComponent>());
+        if (entity->HasComponent<LightComponent>()) {
+            DrawComponent(entity->GetComponent<LightComponent>());
         }
-        if (entity.HasComponent<CameraComponent>()) {
-            DrawComponent(entity.GetComponent<CameraComponent>());
+        if (entity->HasComponent<CameraComponent>()) {
+            DrawComponent(entity->GetComponent<CameraComponent>());
         }
         // ImGui::PopFont();
+
         // Reset
         m_IDcounter = 0;
     }
 
     void HierarchyPanel::DrawComponent(TagComponent *comp) {
         if (ImGui::CollapsingHeader("Tag Component")) {
+            // Max 21 character
+            ImGui::InputText("Tag" ,comp->Tag.data(), 21);
         }
     }
 
     void HierarchyPanel::DrawComponent(TransformComponent *comp) {
         auto& transform = comp->m_Transform;
-        auto& position = transform.GetTranslate();
+        auto position = transform.GetTranslate();
         auto rotate = transform.GetRotationEuler();
-        auto& scale = transform.GetScale();
+        auto scale = transform.GetScale();
 
         constexpr auto textboxSize = ImVec2(25.0, 30.0);
         constexpr auto textSize = ImVec2(70.0, 30.0);
@@ -96,6 +99,8 @@ namespace Real::UI {
                 DrawCustomTextShape("Z", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, position.z, 0.1, -360.0, 360.0);
+
+                transform.SetTranslate(position);
             }
 
             // Rotate
@@ -114,7 +119,6 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, rotate.z, 0.1, -360.0, 360.0);
 
-                // rotate is a copy-value, so set it
                 transform.SetRotationEuler(rotate);
             }
 
@@ -133,6 +137,8 @@ namespace Real::UI {
                 DrawCustomTextShape("Z", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, scale.z, 0.1, 0.01, 360.0);
+
+                transform.SetScale(scale);
             }
         }
     }
@@ -140,7 +146,7 @@ namespace Real::UI {
     void HierarchyPanel::DrawComponent(MaterialComponent *comp) {
         const auto& material = comp->m_Instance->m_Base;
         auto& baseColor = material->BaseColor;
-        auto& emissive = material->emissive;
+        auto& emissive = material->Emissive;
         auto& metallic = material->Metallic;
         auto& roughness = material->Roughness;
         constexpr auto textboxSize = ImVec2(22.0, 30.0);

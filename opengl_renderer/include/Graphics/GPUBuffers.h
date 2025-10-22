@@ -26,7 +26,7 @@ namespace Real {
     struct MaterialSSBO {
         glm::vec4 baseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
         glm::vec4 emissiveMetallic = glm::vec4(0.2f);
-        float roughnessTexLayer[4]; // 0 = roughness, 1 = texture layer, other indices padding (16-byte alignment)
+        float roughnessTexLayer[4]; // 0 = roughness, 1 = diffuse texture layer, 2 = specular tex layer, 3,4 = padding
     };
 
     struct CameraUBO {

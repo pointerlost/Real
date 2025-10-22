@@ -23,6 +23,8 @@
 # Assets
 /opengl_renderer/assets/textures/*
 /opengl_renderer/assets/fonts/*
+!/opengl_renderer/assets/fonts/.gitkeep
+!/opengl_renderer/assets/textures/.gitkeep
 
 /opengl_renderer/*.o
 /opengl_renderer/*.obj

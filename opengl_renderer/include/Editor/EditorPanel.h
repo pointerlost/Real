@@ -40,8 +40,8 @@ namespace Real::UI {
         friend class InspectorPanel;
         HierarchyPanel* m_HierarchyPanel;
         InspectorPanel* m_InspectorPanel;
-        bool wasItemActivated = false;
-        ImGuizmo::OPERATION m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+        bool openPerfProfile = false;
+        ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
 
         std::unordered_map<std::string, ImFont*> m_Fonts;
 

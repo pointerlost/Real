@@ -18,6 +18,7 @@ namespace Real {
 
         [[nodiscard]] float GetDelta() const;
         [[nodiscard]] float GetElapsed() const;
+        [[nodiscard]] int GetFPS() const;
 
     private:
         float m_CurrFrameTime = 0.0f;

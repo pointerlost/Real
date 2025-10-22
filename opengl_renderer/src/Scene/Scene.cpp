@@ -35,4 +35,12 @@ namespace Real {
         m_Registry.destroy(entity);
     }
 
+    Entity& Scene::CreateLight(const std::string &entityTag, LightType type) {
+        auto& entity = CreateEntity(entityTag);
+        entity.AddComponent<LightComponent>().m_Light = Light{type};
+        entity.AddComponent<MeshComponent>().m_MeshName = "cube";
+        (void)entity.AddComponent<MaterialComponent>();
+        return entity;
+    }
+
 }

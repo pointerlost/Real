@@ -101,36 +101,47 @@ namespace Real {
     }
 
     void AssetManager::LoadTextures() {
+        // TODO: Read from file like materials.json
         // Load all textures
+        LoadTexture("assets/textures/container2.png", "container2");
+        LoadTexture("assets/textures/container2_specular.png", "container2_specular");
         LoadTexture("assets/textures/container.jpg", "container");
 
         // Create texture array
-        GLuint textureArray;
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &textureArray);
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_GPUTextureArray);
         // Allocate the storage
-        glTextureStorage3D(textureArray, 1, GL_RGBA8, m_TextureArrays[0]->m_Width, m_TextureArrays[0]->m_Height, m_TextureArrays.size());
+        glTextureStorage3D(m_GPUTextureArray, 1, GL_RGBA8, m_TextureArrays[0]->m_Width, m_TextureArrays[0]->m_Height, m_TextureArrays.size());
 
         for (int i = 0; i < m_TextureArrays.size(); i++) {
-            auto tex = m_TextureArrays[i];
-            glTextureSubImage3D(textureArray, 0, 0, 0, i, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
+            const auto tex = m_TextureArrays[i];
+            glTextureSubImage3D(m_GPUTextureArray, 0, 0, 0, i, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
             stbi_image_free(tex->m_Data); // Clean up vRAM
             tex->m_Data = nullptr;
         }
         // Set parameters
-        glTextureParameteri(textureArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(textureArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(textureArray, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(textureArray, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // Bind texture array (binding point = 6)
-        glBindTextureUnit(6, textureArray);
+        glBindTextureUnit(6, m_GPUTextureArray);
     }
 
     Ref<MaterialInstance> AssetManager::GetDefaultMat() {
-        const auto mat = CreateRef<Material>();
         const auto instance = CreateRef<MaterialInstance>();
-        instance->m_Base = mat;
         m_Materials["default"] = instance;
         return m_Materials["default"];
+    }
+
+    Ref<MaterialInstance>& AssetManager::CreateMaterialInstance(const std::string& name) {
+        if (m_Materials.contains(name)) return m_Materials[name];
+        const auto material = CreateRef<MaterialInstance>();
+        m_Materials[name] = material;
+        return m_Materials[name];
+    }
+
+    void AssetManager::BindTextureArray() const {
+        glBindTextureUnit(6, m_GPUTextureArray);
     }
 }

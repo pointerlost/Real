@@ -1,6 +1,5 @@
 #version 460
-// Before you include any file, pay attention to the order.
-// if lighting calculations need to use buffers.glsl so you have to include lighting.glsl first!
+// Before you include any file, pay attention to the order! (preprocessors work like recursion)
 #include "opengl/buffers.glsl"
 #include "opengl/lighting_calc.glsl"
 
@@ -16,20 +15,28 @@ out vec4 FragColor;
 
 void main() {
     vec3 result = vec3(0.0);
-    vec3 normal = normalize(vNormal);
+    vec3 normal = vNormal;
+    float texDiffLayer = GetTextureLayer(vMaterialIndex);
+    float texSpecLayer = GetTextureLayer2(vMaterialIndex);
+    vec3 matColor = GetBaseColor(vMaterialIndex).rgb;
 
     for (int i = 0; i < uLightCount; i++) {
+        // vec3 lightDir = normalize(-(vec3(0.0, 0.0, 0.0) - vec3(GetLightPos(i))));
+        vec3 lightDir = GetLightDir(i); // Negate because light points toward scene
+        vec3 reflectDir = reflect(-lightDir, normal);
         vec3 viewDir = normalize(GetViewPos() - vFragPos);
 
-        result += CalculateLighting(i, vFragPos, viewDir, normal);
-    }
-    result += g_GlobalAmbient;
-    FragColor = vec4(result, 1.0) * GetBaseColor(vMaterialIndex) * texture(u_TextureArray, vec3(vUV, GetTextureLayer(vMaterialIndex)));
-}
-/*
-float distance    = length(light.position - FragPos);
-float attenuation = 1.0 / (light.constant + light.linear * distance +
-    		    light.quadratic * (distance * distance));
-*/
+        float NdotL = max(dot(normal, lightDir), 0.0);
+        float RdotV = max(dot(reflectDir, viewDir), 0.0);
 
-// FragColor = vec4(ambient + diffuse + specular, 1.0) * texture2D(tex, vUV);
+        vec3 texDiff = texture(u_TextureArray, vec3(vUV, texDiffLayer)).rgb;
+        vec3 texSpec = texture(u_TextureArray, vec3(vUV, texSpecLayer)).rgb;
+
+        if (texDiffLayer < 0.0) texDiff = vec3(1.0, 1.0, 1.0);
+        if (texSpecLayer < 0.0) texSpec = vec3(1.0, 1.0, 1.0);
+
+        result += CalculateLighting(i, NdotL, RdotV, vFragPos, texDiff, texSpec, g_GlobalAmbient, matColor);
+    }
+
+    FragColor = vec4(result, 1.0);
+}

@@ -4,6 +4,8 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Real {
 
@@ -31,6 +33,9 @@ namespace Real {
             m_ProjectionDirty = false;
         }
         // TODO: Add orthographic camera
+
+        // Set the transform quaternion for rotation to keep the camera direction in sync.
+        transform.SetRotation(glm::quat(glm::rotation(glm::vec3(0,0,-1), m_Forward)));
     }
 
     CameraUBO Camera::ConvertToGPUFormat(Transformations& transform) {

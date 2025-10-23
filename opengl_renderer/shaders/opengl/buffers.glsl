@@ -56,7 +56,7 @@ layout(std430, binding = 5) buffer LightSSBO {
 };
 
 vec3 GetLightPos(int idx) { return lights[idx].pos_cutoff.xyz;  }
-vec3 GetLightDir(int idx) { return -normalize(lights[idx].dir_outer.xyz); }
+vec3 GetLightDir(int idx) { return normalize(lights[idx].dir_outer.xyz); }
 float GetCutOff(int idx)      { return lights[idx].pos_cutoff.w; }
 float GetOuterCutOff(int idx) { return lights[idx].dir_outer.w;  }
 vec3 GetLightDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }

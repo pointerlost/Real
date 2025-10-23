@@ -2,7 +2,7 @@
 #define LIGHTING_CALC_GLSL
 
 vec3 CalcDirectionalLight(int lightIndex, float NdotL, float RdotV, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-
+    // Ambient calc
     vec3 ambient = globalAmbient * matColor * texDiff;
     // Diffuse calc
     vec3 diffuse = NdotL * GetLightDiffuse(lightIndex) * texDiff;
@@ -15,9 +15,10 @@ vec3 CalcDirectionalLight(int lightIndex, float NdotL, float RdotV, vec3 texDiff
 }
 
 vec3 CalcSpotLight(int lightIndex, float NdotL, float RdotV, vec3 FtoLight, float distance, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-    vec3 diffuse, specular = vec3(0.0);
-
+    // Ambient calc
     vec3 ambient = texDiff * globalAmbient * matColor;
+
+    vec3 diffuse, specular = vec3(0.0);
 
     // Calc angle between light forward and fragment direction
     float theta = dot(FtoLight, GetLightDir(lightIndex));
@@ -43,6 +44,7 @@ vec3 CalcPointLight(int lightIndex, float NdotL, float RdotV, float distance, ve
     float attenuation = 1.0 / (GetLightConstant(lightIndex) + GetLightLinear(lightIndex) * distance +
                         GetLightQuadratic(lightIndex) * (distance * distance));
 
+    // Ambient calc
     vec3 ambient = texDiff * globalAmbient * matColor;
 
     // Diffuse calc

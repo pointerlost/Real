@@ -3,6 +3,9 @@
 //
 #include "Core/Engine.h"
 #include <Core/Config.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 #include "Core/Callback.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
@@ -74,8 +77,10 @@ namespace Real {
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{LightType::POINT};
+        light.AddComponent<LightComponent>().m_Light = Light{LightType::DIRECTIONAL};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
+        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetNormalMatrix()));
+        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetDirection()));
 
         m_Renderer->GetRenderContext()->InitResources();
         Info("Resources loaded successfully!");

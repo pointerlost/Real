@@ -27,12 +27,11 @@ namespace Real {
         [[nodiscard]] const glm::vec3& GetTranslate() const { return m_Translate; }
         [[nodiscard]] glm::vec3 GetTranslate() { return m_Translate; }
 
+        // World-space direction
         [[nodiscard]] glm::vec3 GetDirection() const {
-            const glm::vec3 forward = m_Rotate * glm::vec3(0.0, 0.0, -1.0);
-            return glm::normalize(glm::vec3{ forward.x, forward.y, forward.z});
+            return glm::normalize(glm::mat3(m_ModelMatrix) * glm::vec3(0.0, 0.0, -1.0));
         }
 
-        // Add rotations
         void AddRotate(float angle, const glm::vec3& axis) {
             m_ModelMatrixDirty = true;
             m_Rotate = glm::angleAxis(glm::radians(angle), axis) * m_Rotate;

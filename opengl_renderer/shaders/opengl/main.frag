@@ -21,8 +21,7 @@ void main() {
     vec3 matColor = GetBaseColor(vMaterialIndex).rgb;
 
     for (int i = 0; i < uLightCount; i++) {
-        // vec3 lightDir = normalize(-(vec3(0.0, 0.0, 0.0) - vec3(GetLightPos(i))));
-        vec3 lightDir = GetLightDir(i); // Negate because light points toward scene
+        vec3 lightDir = GetLightDir(i);
         vec3 reflectDir = reflect(-lightDir, normal);
         vec3 viewDir = normalize(GetViewPos() - vFragPos);
 
@@ -33,7 +32,7 @@ void main() {
         vec3 texSpec = texture(u_TextureArray, vec3(vUV, texSpecLayer)).rgb;
 
         if (texDiffLayer < 0.0) texDiff = vec3(1.0, 1.0, 1.0);
-        if (texSpecLayer < 0.0) texSpec = vec3(1.0, 1.0, 1.0);
+        if (texSpecLayer < 0.0) texSpec = vec3(0.0, 0.0, 0.0);
 
         result += CalculateLighting(i, NdotL, RdotV, vFragPos, texDiff, texSpec, g_GlobalAmbient, matColor);
     }

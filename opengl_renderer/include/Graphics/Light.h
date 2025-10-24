@@ -49,7 +49,6 @@ namespace Real {
         [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
 
     private:
-        // TODO: PBR lighting
         glm::vec3 m_Diffuse  = glm::vec3(1.0);
         glm::vec3 m_Specular = glm::vec3(1.0);
 

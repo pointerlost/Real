@@ -21,7 +21,6 @@ namespace Real::Input {
 
     // Mouse scroll
     extern double g_Scroll;
-    extern float g_ScrollSensitivity;
     extern bool g_IsScrolling;
 
     extern bool IsScrolling();

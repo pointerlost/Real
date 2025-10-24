@@ -31,8 +31,8 @@ namespace Real::UI {
         explicit EditorPanel(Graphics::Window* window, HierarchyPanel* hierarchyPanel, InspectorPanel* inspectorPanel);
         void BeginFrame() override;
         void Render(Scene* scene, opengl::Renderer* renderer) override;
+        void EndFrame() override {}
         void Shutdown() override;
-        ImFont* GetFontStyle(const std::string& fontName);
 
     private:
         Graphics::Window* m_Window;
@@ -42,8 +42,6 @@ namespace Real::UI {
         InspectorPanel* m_InspectorPanel;
         bool openPerfProfile = false;
         ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
-
-        std::unordered_map<std::string, ImFont*> m_Fonts;
 
     private:
         void Render();

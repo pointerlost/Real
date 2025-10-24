@@ -37,13 +37,6 @@ namespace Real {
         [[nodiscard]] float GetAspect() const { return m_Aspect; }
         [[nodiscard]] float GetFOV()    const { return m_FOV;    }
 
-        void SetDirection(const glm::vec3& dir) { m_Forward = dir; }
-        void SetUp(const glm::vec3& up) { m_Up = up; }
-        void SetRight(const glm::vec3& right) { m_Right = right; }
-        [[nodiscard]] const glm::vec3& GetDirection() const { return m_Forward; }
-        [[nodiscard]] const glm::vec3& GetUp() const { return m_Up; }
-        [[nodiscard]] const glm::vec3& GetRight() const { return m_Right; }
-
         [[nodiscard]] glm::mat4& GetView() { return m_View; }
         [[nodiscard]] glm::mat4& GetProjection() { return m_Projection; }
         [[nodiscard]] const glm::mat4& GetView() const { return m_View; }
@@ -61,10 +54,6 @@ namespace Real {
 
         const glm::vec3 m_SceneCenter = glm::vec3(0.0);
         const glm::vec3 m_WorldUp = glm::vec3(0.0, 1.0, 0.0);
-
-        glm::vec3 m_Forward = glm::vec3(0.0, 0.0, -1.0);
-        glm::vec3 m_Up = glm::vec3(0.0, 1.0, 0.0);
-        glm::vec3 m_Right = glm::vec3(1.0, 0.0, 0.0);
 
         glm::mat4 m_View = glm::mat4(1.0);
         glm::mat4 m_Projection = glm::mat4(1.0);

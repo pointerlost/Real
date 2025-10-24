@@ -28,9 +28,20 @@ namespace Real {
         [[nodiscard]] glm::vec3 GetTranslate() { return m_Translate; }
 
         // World-space direction
-        [[nodiscard]] glm::vec3 GetDirection() const {
+        void SetWorldDirection(const glm::vec3& dir) { m_ModelMatrixDirty = true; m_WorldForward = dir; }
+        [[nodiscard]] glm::vec3 GetWorldDirection() const {
             return glm::normalize(glm::mat3(m_ModelMatrix) * glm::vec3(0.0, 0.0, -1.0));
         }
+
+        void SetLocalDirection(const glm::vec3& dir) { m_ModelMatrixDirty = true; m_LocalForward = dir; }
+        [[nodiscard]] glm::vec3 GetLocalDirection() const {
+            return glm::normalize(glm::mat3(m_Rotate) * glm::vec3(0.0, 0.0, -1.0));
+        }
+
+        void SetUp(const glm::vec3& up) { m_Up = up; }
+        void SetRight(const glm::vec3& right) { m_Right = right; }
+        [[nodiscard]] const glm::vec3& GetUp() const { return m_Up; }
+        [[nodiscard]] const glm::vec3& GetRight() const { return m_Right; }
 
         void AddRotate(float angle, const glm::vec3& axis) {
             m_ModelMatrixDirty = true;
@@ -46,6 +57,7 @@ namespace Real {
         }
         void SetRotation(const glm::quat& rotate) { m_ModelMatrixDirty = true; m_Rotate = rotate; }
         void SetRotation(const glm::mat4& rotate) { m_ModelMatrixDirty = true; m_Rotate = glm::quat_cast(rotate); }
+        void SetRotation(const glm::vec3& forward) { m_ModelMatrixDirty = true; m_Rotate = glm::quat(glm::vec3(0, 0, -1), forward); }
         [[nodiscard]] glm::vec3 GetRotationEuler() const { return glm::degrees(glm::eulerAngles(m_Rotate)); }
         [[nodiscard]] const glm::quat& GetRotationWithQuat() const { return m_Rotate; }
         [[nodiscard]] glm::mat4 GetRotationWithMat4() const { return glm::mat4_cast(m_Rotate); }
@@ -62,6 +74,11 @@ namespace Real {
         glm::vec3 m_Translate = glm::vec3(0.0f);
         glm::quat m_Rotate = glm::identity<glm::quat>();
         glm::vec3 m_Scale = glm::vec3(1.0f);
+
+        glm::vec3 m_LocalForward = glm::vec3(0.0, 0.0, -1.0);
+        glm::vec3 m_WorldForward = glm::vec3(0.0, 0.0, -1.0);
+        glm::vec3 m_Up = glm::vec3(0.0, 1.0, 0.0);
+        glm::vec3 m_Right = glm::vec3(1.0, 0.0, 0.0);
 
         glm::mat4 m_ModelMatrix = glm::mat4(1.0f);
         mutable bool m_ModelMatrixDirty = true;

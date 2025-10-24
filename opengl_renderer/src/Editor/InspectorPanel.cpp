@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Editor/EditorState.h"
 #include "Graphics/Config.h"
@@ -29,11 +30,13 @@ namespace Real::UI {
         ImGui::SetNextWindowSize(ImVec2(m_SizeX, m_SizeY));
         ImGui::SetNextWindowPos(ImVec2(0, 25), ImGuiCond_Always);
         ImGui::Begin("Inspector", &m_Open, ImGuiWindowFlags_NoResize);
+        ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Regular-Big"));
 
         IterateEntities(scene);
         if (m_OpenRClickWindow)
             DrawRightClickWindow(scene);
 
+        ImGui::PopFont();
         ImGui::End();
     }
 
@@ -44,7 +47,7 @@ namespace Real::UI {
         const auto& editorState = Services::GetEditorState();
         auto& entities = scene->GetEntities();
         for (auto& entity: entities | std::views::values) {
-            const auto& tag = entity.GetComponent<TagComponent>()->Tag;
+            const auto& tag = entity.GetComponent<TagComponent>()->m_Tag;
             if (ImGui::Selectable(tag.c_str())) {
                 editorState->selectedEntity = &entity;
             }

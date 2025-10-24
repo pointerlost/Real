@@ -17,7 +17,6 @@ namespace Real::Input {
     float g_Yaw = -90.0f;
     float g_Pitch = 0.0f;
     double g_Scroll = 0.0f;
-    float g_ScrollSensitivity = 256.0;
     bool g_IsScrolling = false;
 
     bool g_KeyLastDown[REAL_KEY_COUNT] = { false };

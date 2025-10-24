@@ -4,15 +4,13 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
-
 #include "Logger.h"
 #include "Utils.h"
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
 
-namespace Real {
-    struct MaterialInstance;
-}
+struct ImFont;
+namespace Real { struct MaterialInstance; }
 
 namespace Real {
 
@@ -33,12 +31,17 @@ namespace Real {
 
         void BindTextureArray() const;
 
+        // TODO: Load fonts from file!!
+        void AddFontStyle(const std::string& fontName, ImFont* font);
+        ImFont* GetFontStyle(const std::string& fontName);
+
     private:
         std::unordered_map<std::string, Shader> m_Shaders;
         std::unordered_map<std::string, Ref<Texture>> m_Textures;
         GLuint m_GPUTextureArray = 0;
         std::vector<Ref<Texture>> m_TextureArrays;
         std::unordered_map<std::string, Ref<MaterialInstance>> m_Materials;
+        std::unordered_map<std::string, ImFont*> m_Fonts;
 
     private:
         Ref<Texture> LoadTexture(const std::string& filePath, const std::string& name);

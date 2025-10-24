@@ -16,6 +16,7 @@ namespace Real::UI {
         explicit InspectorPanel();
         void BeginFrame() override;
         void Render(Scene* scene, opengl::Renderer* renderer) override;
+        void EndFrame() override {}
         void Shutdown() override;
 
     private:

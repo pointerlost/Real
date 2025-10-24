@@ -3,9 +3,6 @@
 //
 #include "Core/Engine.h"
 #include <Core/Config.h>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
-
 #include "Core/Callback.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
@@ -35,17 +32,22 @@ namespace Real {
         m_Window->Init();
         InitCallbacks(m_Window->GetGLFWWindow());
 
+        m_Systems = CreateScope<Systems>();
+        // Init sub-systems
+        m_Systems->Init();
+
         m_EditorTimer = CreateScope<Timer>();
         m_EditorTimer->Start();
         m_EditorState = CreateScope<EditorState>();
-        // Init UI (the order is matter!!!)
-        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
-        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
-        m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
 
         InitAsset();
         InitMesh();
         InitServices();
+
+        // Init UI (the order is matter!!!)
+        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
+        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
+        m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
 
         const auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
         const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
@@ -59,7 +61,8 @@ namespace Real {
 
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();
-        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 5.0));
+        (void)m_EditorState->camera->AddComponent<VelocityComponent>();
+        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
 
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
@@ -70,7 +73,7 @@ namespace Real {
 
         auto& cube = m_Scene->CreateEntity("Cube");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0));
-        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(3.0));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(30.0, 2.5, 30.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube.AddComponent<MaterialComponent>().m_Instance = material;
 
@@ -79,8 +82,6 @@ namespace Real {
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{LightType::DIRECTIONAL};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
-        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetNormalMatrix()));
-        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetDirection()));
 
         m_Renderer->GetRenderContext()->InitResources();
         Info("Resources loaded successfully!");
@@ -114,6 +115,7 @@ namespace Real {
     void Engine::UpdatePhase() {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
+        m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
     }
 
@@ -136,6 +138,7 @@ namespace Real {
 
     void Engine::Running() {
         const auto window = m_Window->GetGLFWWindow();
+        glfwSwapInterval(0);
         while (!glfwWindowShouldClose(window) && !Input::IsKeyPressed(REAL_KEY_ESCAPE)) {
             StartPhase();
             UpdatePhase();

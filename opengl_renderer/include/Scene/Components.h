@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <utility>
-
 #include "Core/Utils.h"
 #include "Core/UUID.h"
 #include "Graphics/Camera.h"
@@ -15,12 +14,13 @@ namespace Real {
 }
 
 namespace Real {
+    // TODO: Add dirty flags to manage components and avoid to unnecessary updates
 
     struct TagComponent {
-        std::string Tag;
+        std::string m_Tag;
 
         TagComponent() = default;
-        explicit TagComponent(std::string tag) : Tag(std::move(tag)) {}
+        explicit TagComponent(std::string tag) : m_Tag(std::move(tag)) {}
         TagComponent(const TagComponent&) = default;
     };
 
@@ -36,6 +36,15 @@ namespace Real {
         Transformations m_Transform{};
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = delete;
+    };
+
+    struct VelocityComponent {
+        glm::vec3 m_LinearVelocity = glm::vec3(0.0);
+        glm::vec3 m_Acceleration = glm::vec3(0.0);
+        glm::vec3 m_Speed = glm::vec3(0.0);
+
+        VelocityComponent() = default;
+        VelocityComponent(const VelocityComponent&) = default;
     };
 
     struct MaterialComponent {

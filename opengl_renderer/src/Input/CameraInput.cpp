@@ -20,23 +20,26 @@ namespace Real {
     void CameraInput::Update() {
         if (!Services::GetEditorState()->fpsMode) return;
 
+        // TODO: add GetAllComponentsWithEntity function to manage easily
         auto& camera = m_Camera->GetComponent<CameraComponent>()->m_Camera;
-        auto& transform = m_Camera->GetComponent<TransformComponent>()->m_Transform;
+        auto velocity = m_Camera->GetComponent<VelocityComponent>();
+        const auto& deltaTime = Services::GetEditorTimer()->GetDelta();
+
+        // Reset velocity speed
+        *velocity = VelocityComponent{};
+
         // Input: Keyboard State
-        const auto& direction = camera.GetDirection();
-        const auto& right = camera.GetRight();
-        constexpr float translate = 0.25f;
         if (Input::IsKeyHeld(REAL_KEY_W)) {
-            transform.AddTranslate(direction * translate);
+            velocity->m_Speed.z += 15.0;
         }
         if (Input::IsKeyHeld(REAL_KEY_A)) {
-            transform.AddTranslate(-right * translate);
+            velocity->m_Speed.x -= 15.0;
         }
         if (Input::IsKeyHeld(REAL_KEY_S)) {
-            transform.AddTranslate(-direction * translate);
+            velocity->m_Speed.z -= 15.0;
         }
         if (Input::IsKeyHeld(REAL_KEY_D)) {
-            transform.AddTranslate(right * translate);
+            velocity->m_Speed.x += 15.0;
         }
 
         // Input: Mouse Button State
@@ -44,12 +47,10 @@ namespace Real {
 
         // Mouse Scroll State
         if (Input::IsScrolling()) {
-            camera.AddFOV(Input::GetScroll() * Services::GetEditorTimer()->GetDelta());
+            camera.AddFOV(Input::GetScroll() * deltaTime);
             Input::g_IsScrolling = false;
             Input::ResetScroll();
         }
-
-        transform.Update();
     }
 
 }

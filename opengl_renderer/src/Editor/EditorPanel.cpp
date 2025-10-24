@@ -4,6 +4,7 @@
 #include "Editor/EditorPanel.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "Core/AssetManager.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Core/Timer.h"
@@ -121,16 +122,25 @@ namespace Real::UI {
     void EditorPanel::InitFontStyle() {
         // Font style
         // Hardcoded for now!!
+        const auto& assetManager = Services::GetAssetManager();
+
         const ImGuiIO& io = ImGui::GetIO();
         if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; File::Exists(fontFile)) {
-            m_Fonts["Ubuntu-Regular"] = io.Fonts->AddFontFromFileTTF(fontFile, 16.0f, nullptr, io.Fonts->GetGlyphRangesDefault());
+            assetManager->AddFontStyle("Ubuntu-Regular", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        }
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Regular-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
         if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; File::Exists(fontFile)) {
-            m_Fonts["Ubuntu-Bold"] = io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault());
+            assetManager->AddFontStyle("Ubuntu-Bold", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        }
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Bold-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
     }
 
     void EditorPanel::InitDarkTheme() {
+        // TODO: Background of text colors can be change
         ImGui::GetStyle().Colors[ImGuiCol_Header] = ImVec4(0.1019, 0.1568, 0.1372, 1.0);
         ImGui::GetStyle().Colors[ImGuiCol_HeaderActive] = ImVec4(0.1568, 0.6294, 0.1137, 1.0);
         ImGui::GetStyle().Colors[ImGuiCol_HeaderHovered] = ImVec4(0.1765, 0.2157, 0.2823, 1.0);
@@ -140,6 +150,7 @@ namespace Real::UI {
         ImGui::GetStyle().Colors[ImGuiCol_FrameBg] = ImVec4(0.1019, 0.1568, 0.1372, 1.0);
         ImGui::GetStyle().Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.2620, 0.3250, 0.28260, 1.0);
         ImGui::GetStyle().Colors[ImGuiCol_FrameBgActive] = ImVec4(0.3712, 0.4035, 0.3907, 1.0);
+        ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.03954, 0.03914, 0.03934, 1.0);
     }
 
     void EditorPanel::DrawGizmos() {
@@ -202,11 +213,4 @@ namespace Real::UI {
         // DebugGizmos();
     }
 
-    ImFont* EditorPanel::GetFontStyle(const std::string& fontName) {
-        if (m_Fonts.contains(fontName)) {
-            return m_Fonts[fontName];
-        }
-        Warn(ConcatStr("Font doesn't exists! from: ", __FILE__, "\n name: ", fontName));
-        return nullptr;
-    }
 }

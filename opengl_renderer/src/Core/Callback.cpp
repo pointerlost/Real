@@ -4,6 +4,7 @@
 #include "Core/Callback.h"
 
 #include "Core/Services.h"
+#include "Core/Timer.h"
 #include "Editor/EditorState.h"
 #include "Graphics/Config.h"
 #include "Input/Input.h"
@@ -58,7 +59,7 @@ namespace Real {
 
     void set_mouse_scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
         Input::g_IsScrolling = true;
-        Input::g_Scroll -= yoffset * Input::g_ScrollSensitivity;
+        Input::g_Scroll -= yoffset;
     }
 
     void set_framebuffer_size_callback(GLFWwindow *window, int width, int height) {

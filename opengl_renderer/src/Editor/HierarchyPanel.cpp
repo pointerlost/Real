@@ -7,6 +7,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Editor/EditorPanel.h"
 #include "Editor/EditorState.h"
@@ -41,7 +42,7 @@ namespace Real::UI {
         const auto& entity = editorState->selectedEntity;
         if (!entity) return;
 
-        // ImGui::PushFont(m_EditorPanel->GetFontStyle("Ubuntu-Bold"));
+        ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Bold"));
         if (entity->HasComponent<TagComponent>()) {
             DrawComponent(entity->GetComponent<TagComponent>());
         }
@@ -60,7 +61,7 @@ namespace Real::UI {
         if (entity->HasComponent<CameraComponent>()) {
             DrawComponent(entity->GetComponent<CameraComponent>());
         }
-        // ImGui::PopFont();
+        ImGui::PopFont();
 
         // Reset
         m_IDcounter = 0;
@@ -69,7 +70,7 @@ namespace Real::UI {
     void HierarchyPanel::DrawComponent(TagComponent *comp) {
         if (ImGui::CollapsingHeader("Tag Component")) {
             // Max 21 character
-            ImGui::InputText("Tag" ,comp->Tag.data(), 21);
+            ImGui::InputText("Tag" ,comp->m_Tag.data(), 21);
         }
     }
 
@@ -90,15 +91,15 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomTextShape("X", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, position.x, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, position.x, 0.1, -360.0, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Y", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, position.y, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, position.y, 0.1, -360.0, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Z", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, position.z, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, position.z, 0.1, -360.0, 360.0, "%.2f");
 
                 transform.SetTranslate(position);
             }
@@ -109,15 +110,15 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomTextShape("X", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, rotate.x, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, rotate.x, 0.1, -360.0, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Y", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, rotate.y, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, rotate.y, 0.1, -360.0, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Z", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, rotate.z, 0.1, -360.0, 360.0);
+                DrawCustomSizedDragger(dragSize, rotate.z, 0.1, -360.0, 360.0, "%.2f");
 
                 transform.SetRotationEuler(rotate);
             }
@@ -128,15 +129,15 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomTextShape("X", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, scale.x, 0.1, 0.01, 360.0);
+                DrawCustomSizedDragger(dragSize, scale.x, 0.1, 0.01, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Y", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, scale.y, 0.1, 0.01, 360.0);
+                DrawCustomSizedDragger(dragSize, scale.y, 0.1, 0.01, 360.0, "%.2f");
                 ImGui::SameLine();
                 DrawCustomTextShape("Z", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, scale.z, 0.1, 0.01, 360.0);
+                DrawCustomSizedDragger(dragSize, scale.z, 0.1, 0.01, 360.0, "%.2f");
 
                 transform.SetScale(scale);
             }
@@ -192,25 +193,21 @@ namespace Real::UI {
         auto constant = light.GetConstant();
         auto linear = light.GetLinear();
         auto quadratic = light.GetQuadratic();
+        auto cutOff = light.GetCutOff();
+        auto outerCutOff = light.GetOuterCutOff();
 
         if (ImGui::CollapsingHeader("Light Component")) {
+            const auto lightType = light.GetType();
+
             if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
                 light.SetDiffuse(diffuse);
             }
             if (ImGui::ColorEdit3("Specular", &specular[0])) {
                 light.SetSpecular(specular);
             }
-            // Diffuse
-            // if (ImGui::DragFloat4("Diffuse", &diffuse[0], 0.01, 0.001, 1.0)) {
-                // light.SetDiffuse(diffuse);
-            // }
-            // Specular
-            // if (ImGui::DragFloat4("Specular", &specular[0], 0.01, 0.001, 1.0)) {
-                // light.SetSpecular(specular);
-            // }
 
             // Attenuation Parameters
-            if (light.GetType() == LightType::POINT) {
+            if (lightType == LightType::POINT) {
                 ImGui::BeginGroup();
                 ImGui::TextColored(ImVec4(1.0, 1.0, 0.2, 1.0), "Attenuation Parameters");
                 if (ImGui::DragFloat("Constant", &constant, 0.001, 0.00001, 1.0)) {
@@ -227,18 +224,37 @@ namespace Real::UI {
                 ImGui::EndGroup();
             }
 
+            // Spot light parameters
+            if (lightType == LightType::SPOT) {
+                ImGui::SetNextItemOpen(true, ImGuiCond_Once);
+                if (ImGui::TreeNode("Spot Properties")) {
+                    DrawCustomTextShape("Inner Angle (CutOff)", ImVec2(200,30), ImVec4(0.03954, 0.03914, 0.03934, 1.0), false, ImVec4(0.75, 0.75, 0.2, 1.0));
+                    ImGui::SameLine();
+                    DrawCustomSizedDragger(75.0, cutOff, 0.05, 1.0, outerCutOff, "%.2f");
+                    light.SetCutOff(cutOff);
+
+                    DrawCustomTextShape("Outer Angle (OuterCutOff)", ImVec2(200,30), ImVec4(0.03954, 0.03914, 0.03934, 1.0), false, ImVec4(0.75, 0.75, 0.2, 1.0));
+                    ImGui::SameLine();
+                    DrawCustomSizedDragger(75.0, outerCutOff, 0.05, 1.0, 90.0, "%.2f");
+                    light.SetOuterCutOff(outerCutOff);
+
+                    ImGui::TreePop();
+                }
+            }
+
             // Light type selection window
             const char* arr[3] = { "Point", "Directional", "Spot" };
             if (ImGui::BeginCombo("##LightTypes",  arr[static_cast<int>(light.GetType())])) {
-                // TODO: Add SetType function and change the current light with a new one
+                // TODO: Store the old light properties to be changed with a new one
+                // In this case we are creating a new one
                 if (ImGui::Selectable("Point")) {
-                    // light.SetType(LightType::POINT);
+                    comp->m_Light = Light{LightType::POINT};
                 }
                 if (ImGui::Selectable("Directional")) {
-                    // light.SetType(LightType::DIRECTIONAL);
+                    comp->m_Light = Light{LightType::DIRECTIONAL};
                 }
                 if (ImGui::Selectable("Spot")) {
-                    // light.SetType(LightType::SPOT);
+                    comp->m_Light = Light{LightType::SPOT};
                 }
                 ImGui::EndCombo();
             }

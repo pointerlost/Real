@@ -144,4 +144,24 @@ namespace Real {
     void AssetManager::BindTextureArray() const {
         glBindTextureUnit(6, m_GPUTextureArray);
     }
+
+    void AssetManager::AddFontStyle(const std::string &fontName, ImFont *font) {
+        if (!font) {
+            Warn("font is nullptr! name: " + fontName + "from: " + __FILE__);
+            return;
+        }
+        if (m_Fonts.contains(fontName)) {
+            Warn("font already exists with this name: " + fontName + " use a new name!");
+            return;
+        }
+        m_Fonts[fontName] = font;
+    }
+
+    ImFont* AssetManager::GetFontStyle(const std::string &fontName) {
+        if (m_Fonts.contains(fontName)) {
+            return m_Fonts[fontName];
+        }
+        Warn(ConcatStr("Font doesn't exists! from: ", __FILE__, "\n name: ", fontName));
+        return nullptr;
+    }
 }

@@ -78,6 +78,10 @@ add_executable(${PROJECT_NAME}
     vendor/ImGuizmo/ImGuizmo.cpp
         include/Math/Math.h
         src/Math/Math.cpp
+        include/Scene/Systems.h
+        include/Scene/SystemUpdate.h
+        src/Scene/SystemUpdate.cpp
+        src/Scene/Systems.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

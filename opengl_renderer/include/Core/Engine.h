@@ -16,6 +16,7 @@
 #include "Input/CameraInput.h"
 #include "Scene/Entity.h"
 #include "Scene/Scene.h"
+#include "Scene/Systems.h"
 
 namespace Real {
 
@@ -39,6 +40,7 @@ namespace Real {
         Scope<UI::EditorPanel> m_EditorPanel;
         Scope<UI::HierarchyPanel> m_HierarchyPanel;
         Scope<UI::InspectorPanel> m_InspectorPanel;
+        Scope<Systems> m_Systems;
 
         // Scope<Timer> m_GameTimer;
     private:

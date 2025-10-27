@@ -286,6 +286,7 @@ namespace Real::UI {
         auto far = camera.GetFar();
         auto fov = camera.GetFOV();
         auto aspect = camera.GetAspect();
+
         if (ImGui::CollapsingHeader("Camera Component")) {
             // TODO: redesign drag floats with new values
             if (ImGui::DragFloat("Near Plane", &near, 0.01, 0.001, 500.0)) {
@@ -300,6 +301,23 @@ namespace Real::UI {
             if (ImGui::DragFloat("Aspect", &aspect, 0.01, 0.001, 500.0)) { // Change the values
                 camera.SetFar(aspect);
             }
+        }
+
+        if (ImGui::CollapsingHeader("Editor Camera State")) {
+            const auto& view = scene->GetAllEntitiesWith<IDComponent, TagComponent, CameraComponent>();
+
+            ImGui::BeginListBox("##Cameras");
+            for (auto [entity, id, tagComp, cc] : view.each()) {
+                auto tag = tagComp.m_Tag;
+                if (scene->GetEntityWithUUID(id.m_UUID) == Services::GetEditorState()->camera) {
+                    tag += " (Current)";
+                }
+                if (ImGui::Selectable(tag.c_str())) {
+                    Services::GetEditorState()->camera = scene->GetEntityWithUUID(id.m_UUID);
+                    break;
+                }
+            }
+            ImGui::EndListBox();
         }
     }
 

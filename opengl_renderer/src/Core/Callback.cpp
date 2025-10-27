@@ -32,7 +32,7 @@ namespace Real {
         Input::g_MouseX = xpos;
         Input::g_MouseY = ypos;
 
-        if (!Services::GetEditorState()->fpsMode) return;
+        if (!Services::GetEditorState()->FpsMode) return;
         if (Input::IsKeyHeld(REAL_MOUSE_BUTTON_LEFT) || Input::IsKeyPressed(REAL_MOUSE_BUTTON_LEFT)) {
             auto deltaX = Input::g_MouseX - Input::g_MouseLastX;
             auto deltaY = Input::g_MouseLastY - Input::g_MouseY; // Y-axis should be reversed

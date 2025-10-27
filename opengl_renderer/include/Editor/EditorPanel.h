@@ -44,7 +44,7 @@ namespace Real::UI {
         ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
 
     private:
-        void Render();
+        void Render(Scene* scene);
 
         void RenderMenuBar();
         void DrawPerformanceProfile();

@@ -69,6 +69,18 @@ namespace Real {
         (void)m_EditorState->camera->AddComponent<VelocityComponent>();
         m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
 
+        // Editor camera2
+        auto& camera2 = m_Scene->CreateEntity("Editor Camera2");
+        (void)camera2.AddComponent<CameraComponent>();
+        (void)camera2.AddComponent<VelocityComponent>();
+        camera2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 2.0, 5.0));
+
+        // Editor camera3
+        auto& camera3 = m_Scene->CreateEntity("Editor Camera3");
+        (void)camera3.AddComponent<CameraComponent>();
+        (void)camera3.AddComponent<VelocityComponent>();
+        camera3.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(10.0, 2.0, 5.0));
+
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
         const auto& defaultMat = m_AssetManager->GetDefaultMat();
@@ -76,14 +88,41 @@ namespace Real {
         material->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("floor_wood"));
         // material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
 
-        auto& cube = m_Scene->CreateEntity("Cube");
-        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(100.0, 0.5, 100.0));
+        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("material2");
+        material2->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("container2"));
+        material2->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
+
+        auto& cube = m_Scene->CreateEntity("RightWall");
+        cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube.AddComponent<MaterialComponent>().m_Instance = material;
 
+        auto& cube2 = m_Scene->CreateEntity("LeftWall");
+        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-26.0, 1.5, 0.0));
+        cube2.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
+        cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube2.AddComponent<MaterialComponent>().m_Instance = material;
+
+        auto& cube3 = m_Scene->CreateEntity("Floor");
+        cube3.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 0.5, 98.0));
+        cube3.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube3.AddComponent<MaterialComponent>().m_Instance = material;
+
+        auto& cube4 = m_Scene->CreateEntity("Roof");
+        cube4.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 13.5, 0.0));
+        cube4.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 4.0, 1.0));
+        cube4.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube4.AddComponent<MaterialComponent>().m_Instance = material;
+
+        auto& cube5 = m_Scene->CreateEntity("Container");
+        cube5.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 12.0));
+        cube5.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0, 8.0, 8.0));
+        cube5.AddComponent<MeshComponent>().m_MeshName = "cube";
+        cube5.AddComponent<MaterialComponent>().m_Instance = material2;
+
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
-        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetWorldDirection()));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{LightType::SPOT};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
@@ -140,20 +179,26 @@ namespace Real {
         Info("MeshManager initialized successfully!");
     }
 
-    void Engine::Running() {
-        const auto window = m_Window->GetGLFWWindow();
-
-        glfwSwapInterval(0);
-
+    void Engine::SetOpenGLStateFunctions() {
         /*
         TODO:
-            when i learn the different rendering techniques, (e.g. deferred rendering)
+            when i learn the different rendering techniques, (e.g. more advanced deferred rendering)
             need update to apply gamma correction in CPU, for now we will do in GPU-side
         */
         // Activate automatic Gamma Correction
         // glEnable(GL_FRAMEBUFFER_SRGB);
         glEnable(GL_DEPTH_TEST);
+        // glDepthFunc(GL_ALWAYS);
 
+        // This only has affect if depth testing is enabled
+        // glDepthMask(GL_FALSE);
+    }
+
+    void Engine::Running() {
+        const auto window = m_Window->GetGLFWWindow();
+        glfwSwapInterval(0);
+
+        SetOpenGLStateFunctions();
         while (!glfwWindowShouldClose(window) && !Input::IsKeyPressed(REAL_KEY_ESCAPE)) {
             StartPhase();
             UpdatePhase();

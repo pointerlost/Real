@@ -46,7 +46,7 @@ namespace Real {
         [[nodiscard]] CameraUBO ConvertToGPUFormat(Transformations& transform);
 
     private:
-        float m_Near = 0.01;
+        float m_Near = 0.1;
         float m_Far  = 1000.0;
         float m_FOV  = 45.0;
         float m_Aspect = SCREEN_WIDTH / SCREEN_HEIGHT;

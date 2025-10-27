@@ -65,7 +65,7 @@ namespace Real::UI {
         // Main Scene window
         renderer->Render(Services::GetEditorState()->camera);
         // Draw UI
-        Render();
+        Render(scene);
         ImGui::End();
 
         // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
@@ -115,7 +115,7 @@ namespace Real::UI {
         }
 
         if (Input::IsKeyPressed(REAL_KEY_F3)) {
-            Services::GetEditorState()->fpsMode = !Services::GetEditorState()->fpsMode;
+            Services::GetEditorState()->FpsMode = !Services::GetEditorState()->FpsMode;
         }
     }
 
@@ -205,7 +205,7 @@ namespace Real::UI {
         }
     }
 
-    void EditorPanel::Render() {
+    void EditorPanel::Render(Scene* scene) {
         UpdateInputUI();
         RenderMenuBar();
         DrawPerformanceProfile();

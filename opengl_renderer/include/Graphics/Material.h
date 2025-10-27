@@ -26,8 +26,7 @@ namespace Real {
     };
 
     struct Material {
-    public:
-        glm::vec4 BaseColor = glm::vec4(1.0, 1.0, 0.0, 1.0);
+        glm::vec4 BaseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
         float Metallic = 0.0f;
         float Roughness = 1.0f;
         float Shininess = 32.0f;
@@ -42,7 +41,6 @@ namespace Real {
     };
 
     struct MaterialInstance {
-    public:
         Ref<Material> m_Base = CreateRef<Material>();
 
         [[nodiscard]] MaterialSSBO ConvertToGPUFormat() const;

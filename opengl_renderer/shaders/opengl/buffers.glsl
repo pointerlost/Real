@@ -27,7 +27,7 @@ mat4 GetProjection() { return uCamera.projection;     }
 struct Material {
     vec4 baseColor;
     vec4 emissiveMetallic;
-    float textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
+    int textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
     float roughnessShininess[4]; // 0 = roughness, 1 = shininess
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
@@ -39,8 +39,8 @@ vec3 GetEmissive(int idx)   { return materials[idx].emissiveMetallic.xyz; }
 float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
 float GetRoughness(int idx) { return materials[idx].roughnessShininess[0]; }
 float GetShininess(int idx) { return materials[idx].roughnessShininess[1]; }
-float GetTextureLayer(int idx) { return materials[idx].textureLayers[0]; }
-float GetTextureLayer2(int idx) { return materials[idx].textureLayers[1]; }
+int GetTextureLayer(int idx) { return materials[idx].textureLayers[0]; }
+int GetTextureLayer2(int idx) { return materials[idx].textureLayers[1]; }
 
 // TODO: improvable from the perspective of memory padding
 struct Light {
@@ -70,7 +70,6 @@ float GetLightLinear(int idx)    { return lights[idx].linear;    }
 float GetLightQuadratic(int idx) { return lights[idx].quadratic; }
 
 // MULTI DRAW INDIRECT BUFFERS
-
 struct DrawElementsIndirectCommand {
     uint count;
     uint instanceCount;
@@ -92,8 +91,10 @@ layout (std430, binding = 1) buffer EntityMetaData {
     EntityData entityData[];
 };
 
+
 // Texture array
 layout (binding = 6) uniform sampler2DArray u_TextureArray;
+
 
 // Global Data
 layout(std140, binding = 7) uniform GlobalDataUBO {

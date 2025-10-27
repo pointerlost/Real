@@ -13,8 +13,10 @@ namespace Real {
         gpuData.emissiveMetallic = glm::vec4(m_Base->Emissive, m_Base->Metallic);
         gpuData.roughnessShininess[0] = m_Base->Roughness;
         gpuData.roughnessShininess[1] = m_Base->Shininess;
-        gpuData.textureLayers[0] = static_cast<float>(m_Base->GetTextureIndex(TextureType::BaseColor));
-        gpuData.textureLayers[1] = static_cast<float>(m_Base->GetTextureIndex(TextureType::Specular));
+        gpuData.textureLayers[0] = m_Base->GetTextureIndex(TextureType::BaseColor);
+        gpuData.textureLayers[1] = m_Base->GetTextureIndex(TextureType::Specular);
+        // Info(ConcatStr("BaseColor: ", std::to_string(m_Base->GetTextureIndex(TextureType::BaseColor))));
+        // Info(ConcatStr("Specular: ", std::to_string(m_Base->GetTextureIndex(TextureType::Specular))));
         return gpuData;
     }
 }

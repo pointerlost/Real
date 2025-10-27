@@ -35,8 +35,6 @@ namespace Real::opengl {
         meshManager->BindUniversalVAO();
 
         // Set uniforms
-        // shader.SetVec3("g_GlobalAmbient", m_Scene->GetGlobalAmbient());
-        shader.SetInt("uLightCount", 1);
 
         const auto& gpuData = sceneRenderContext->GetGPURenderData();
         if (!gpuData.drawCommands.empty()) {

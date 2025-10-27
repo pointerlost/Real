@@ -9,7 +9,7 @@ namespace Real {
     struct EditorState {
         Entity* selectedEntity{};
         Entity* camera{};
-        bool running = true;
-        bool fpsMode = true;
+        bool Running = true;
+        bool FpsMode = true;
     };
 }

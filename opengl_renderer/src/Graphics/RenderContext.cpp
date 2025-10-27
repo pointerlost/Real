@@ -3,6 +3,7 @@
 //
 #include "Graphics/RenderContext.h"
 #include "Core/Services.h"
+#include "Editor/EditorState.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Material.h"
 #include "Graphics/MeshManager.h"
@@ -137,10 +138,10 @@ namespace Real {
         /* TODO: An update is required to add multiple cameras during run-time
          * (currently, adding multiple cameras may cause to crash)!!
          */
-        const auto& view = m_Scene->GetAllEntitiesWith<CameraComponent, TransformComponent>();
-        for (const auto& [entity, camera, transform] : view.each()) {
-            m_GPUDatas.camera = camera.m_Camera.ConvertToGPUFormat(transform.m_Transform);
-        }
+        const auto camera = Services::GetEditorState()->camera;
+        const auto cc = camera->GetComponent<CameraComponent>();
+        const auto tc = camera->GetComponent<TransformComponent>();
+        m_GPUDatas.camera = cc->m_Camera.ConvertToGPUFormat(tc->m_Transform);
     }
 
     void RenderContext::CollectLights() {

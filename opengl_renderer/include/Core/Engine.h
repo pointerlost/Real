@@ -54,6 +54,7 @@ namespace Real {
         void InitServices() const;
         void InitAsset();
         void InitMesh();
+        void SetOpenGLStateFunctions();
 
         // TODO: Snapshot editor to game-time
     };

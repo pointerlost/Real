@@ -114,9 +114,8 @@ namespace Real {
         // Allocate the storage
         glTextureStorage3D(m_GPUTextureArray, 1, GL_RGBA8, m_TextureArrays[0]->m_Width, m_TextureArrays[0]->m_Height, m_TextureArrays.size());
 
-        for (int i = 0; i < m_TextureArrays.size(); i++) {
-            const auto tex = m_TextureArrays[i];
-            glTextureSubImage3D(m_GPUTextureArray, 0, 0, 0, i, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
+        for (const auto& tex : m_TextureArrays) {
+            glTextureSubImage3D(m_GPUTextureArray, 0, 0, 0, tex->m_Index, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
             stbi_image_free(tex->m_Data); // Clean up vRAM
             tex->m_Data = nullptr;
         }
@@ -137,7 +136,8 @@ namespace Real {
     }
 
     Ref<MaterialInstance>& AssetManager::CreateMaterialInstance(const std::string& name) {
-        if (m_Materials.contains(name)) return m_Materials[name];
+        if (m_Materials.contains(name))
+            return m_Materials[name];
         const auto material = CreateRef<MaterialInstance>();
         m_Materials[name] = material;
         return m_Materials[name];

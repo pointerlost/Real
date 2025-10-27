@@ -12,5 +12,4 @@ vec3 Convert_LinearSpace_to_sRGB(vec3 content) {
     return pow(content, vec3(1.0 / gamma));
 }
 
-
 #endif

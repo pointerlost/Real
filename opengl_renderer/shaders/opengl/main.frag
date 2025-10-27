@@ -18,8 +18,8 @@ void main() {
     vec3 result = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);
-    float texDiffLayer = GetTextureLayer(fs_in.MaterialIndex);
-    float texSpecLayer = GetTextureLayer2(fs_in.MaterialIndex);
+    int texDiffLayer = GetTextureLayer(fs_in.MaterialIndex);
+    int texSpecLayer = GetTextureLayer2(fs_in.MaterialIndex);
     vec3 matColor = GetBaseColor(fs_in.MaterialIndex).rgb;
 
     for (int i = 0; i < lightCount; i++) {

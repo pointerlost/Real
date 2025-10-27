@@ -43,4 +43,10 @@ namespace Real {
         return entity;
     }
 
+    Entity* Scene::GetEntityWithUUID(UUID uuid) {
+        if (!m_Entities.contains(uuid)) {
+            Warn("Entity doesn't exists!");
+        }
+        return &m_Entities[uuid];
+    }
 }

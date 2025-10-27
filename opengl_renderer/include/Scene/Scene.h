@@ -38,6 +38,8 @@ namespace Real {
 
         Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
 
+        Entity* GetEntityWithUUID(UUID uuid);
+
     private:
         entt::registry m_Registry;
         std::unordered_map<UUID, Entity> m_Entities;

@@ -22,7 +22,7 @@ namespace Real {
 
         void LoadTextures();
         Ref<Texture>& GetTexture(const std::string& name) {
-            if (!m_Textures.contains(name)) Warn("Texture '" + name + "' can't find!");
+            if (!IsTextureExists(name)) Warn("Texture '" + name + "' can't find!");
             return m_Textures[name];
         }
         Ref<MaterialInstance> GetDefaultMat();

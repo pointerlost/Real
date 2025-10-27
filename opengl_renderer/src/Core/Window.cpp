@@ -3,7 +3,7 @@
 //
 #include "Core/Window.h"
 #include "Core/Logger.h"
-#include "Graphics/Config.h"
+#include "../../include/Core/Config.h"
 
 namespace Real::Graphics {
 

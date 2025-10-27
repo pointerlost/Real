@@ -5,19 +5,23 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aUV;
 
-out vec3 vFragPos;
-out vec3 vNormal;
-out vec2 vUV;
-flat out int vMaterialIndex;
+out VS_OUT {
+    vec3 FragPos;
+    vec3 Normal;
+    vec2 UV;
+    flat int MaterialIndex;
+} vs_out;
 
 void main() {
     int entityIdx = gl_BaseInstance;
     EntityData entityProps = entityData[entityIdx];
-    vMaterialIndex = entityProps.materialIndex;
+
     int transformIdx = entityProps.transformIndex;
 
-    vFragPos = vec3(GetModelMatrix(transformIdx) * vec4(aPos, 1.0));
-    vNormal = normalize(GetNormalMatrix(transformIdx) * aNormal);
-    vUV = aUV;
-    gl_Position = GetProjection() * GetView() * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
+    vs_out.MaterialIndex = entityProps.materialIndex;
+    vs_out.FragPos = vec3(GetModelMatrix(transformIdx) * vec4(aPos, 1.0));
+    vs_out.Normal = normalize(GetNormalMatrix(transformIdx) * aNormal);
+    vs_out.UV = aUV;
+
+    gl_Position = GetProjView() * GetModelMatrix(transformIdx) * vec4(aPos, 1.0f);
 }

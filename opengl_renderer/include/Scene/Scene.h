@@ -36,13 +36,10 @@ namespace Real {
         std::unordered_map<UUID, Entity>& GetEntities() { return m_Entities; }
         size_t GetEntityCount() const { return m_Entities.size(); }
 
-        const glm::vec3& GetGlobalAmbient() const { return g_GlobalAmbient; }
-
         Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
 
     private:
         entt::registry m_Registry;
         std::unordered_map<UUID, Entity> m_Entities;
-        glm::vec3 g_GlobalAmbient = glm::vec3(0.1f);
     };
 }

@@ -30,6 +30,7 @@ namespace Real {
         glm::vec4 BaseColor = glm::vec4(1.0, 1.0, 0.0, 1.0);
         float Metallic = 0.0f;
         float Roughness = 1.0f;
+        float Shininess = 32.0f;
         glm::vec3 Emissive = glm::vec3(0.0f);
         int GetTextureIndex(TextureType type) {
             if (textures.contains(type))

@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <glm/ext.hpp>
-#include "Config.h"
+#include "../Core/Config.h"
 #include "GPUBuffers.h"
 
 namespace Real {

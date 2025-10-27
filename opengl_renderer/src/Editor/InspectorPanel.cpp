@@ -8,7 +8,7 @@
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Editor/EditorState.h"
-#include "Graphics/Config.h"
+#include "../../include/Core/Config.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Scene/Components.h"

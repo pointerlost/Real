@@ -4,7 +4,7 @@
 #pragma once
 #include <imgui.h>
 #include "IPanel.h"
-#include "Graphics/Config.h"
+#include "../Core/Config.h"
 #include "Scene/Components.h"
 
 namespace Real::UI {
@@ -23,18 +23,19 @@ namespace Real::UI {
 
     private:
         bool m_Open = true;
+        bool m_OpenLightDir = false;
         float m_SizeX = SCREEN_WIDTH / 5 + 31.0;
         float m_SizeY = SCREEN_HEIGHT;
         int m_IDcounter = 0;
 
     private:
         void DrawComponents(Scene* scene);
-        void DrawComponent(TagComponent* comp);
-        void DrawComponent(TransformComponent* comp);
-        void DrawComponent(MaterialComponent* comp);
-        void DrawComponent(MeshComponent* comp);
-        void DrawComponent(LightComponent* comp);
-        void DrawComponent(CameraComponent* comp);
+        void DrawComponent(TagComponent* comp, Scene* scene);
+        void DrawComponent(TransformComponent* comp, Scene* scene);
+        void DrawComponent(MaterialComponent* comp, Scene* scene);
+        void DrawComponent(MeshComponent* comp, Scene* scene);
+        void DrawComponent(LightComponent* comp, TransformComponent* tc, Scene* scene);
+        void DrawComponent(CameraComponent* comp, Scene* scene);
 
         void DrawCustomTextShape(const std::string& text, ImVec2 boxSize, ImVec4 color, bool textColorActive = false, ImVec4 textColor = ImVec4());
         void DrawCustomSizedDragger(float dragWidth, float& val, float speed, float v_min, float v_max, const char* format = "%.3f");

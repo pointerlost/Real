@@ -20,13 +20,14 @@ namespace Real {
         // Attenuation parameters
         float constant = 1.0;
         float linear = 0.09;
-        float quadratic = 0.032;
+        float quadratic = 0.002;
     };
 
     struct MaterialSSBO {
         glm::vec4 baseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
         glm::vec4 emissiveMetallic = glm::vec4(0.2f);
-        float roughnessTexLayer[4]; // 0 = roughness, 1 = diffuse texture layer, 2 = specular tex layer, 3,4 = padding
+        float textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
+        float roughnessShininess[4]; // 0 = roughness, 1 = shininess
     };
 
     struct CameraUBO {
@@ -34,6 +35,11 @@ namespace Real {
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         glm::mat4 viewProjection = glm::mat4(1.0f);
+    };
+
+    struct GlobalUBO {
+        glm::vec4 GlobalAmbient{0.1};
+        int lightCount[4]; // 0 = light count, other indices padding
     };
 
 }

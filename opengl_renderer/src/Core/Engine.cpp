@@ -3,6 +3,11 @@
 //
 #include "Core/Engine.h"
 #include <Core/Config.h>
+#include <Core/CmakeConfig.h>
+#include <Core/Config.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 #include "Core/Callback.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
@@ -68,19 +73,19 @@ namespace Real {
 
         const auto& defaultMat = m_AssetManager->GetDefaultMat();
         const auto& material = Services::GetAssetManager()->CreateMaterialInstance("material");
-        material->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("container2"));
-        material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
+        material->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("floor_wood"));
+        // material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
 
         auto& cube = m_Scene->CreateEntity("Cube");
-        cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0));
-        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(30.0, 2.5, 30.0));
+        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(100.0, 0.5, 100.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
         cube.AddComponent<MaterialComponent>().m_Instance = material;
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
+        Info(glm::to_string(light.GetComponent<TransformComponent>()->m_Transform.GetWorldDirection()));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{LightType::DIRECTIONAL};
+        light.AddComponent<LightComponent>().m_Light = Light{LightType::SPOT};
         light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
 
         m_Renderer->GetRenderContext()->InitResources();
@@ -93,10 +98,9 @@ namespace Real {
         m_EditorPanel->Shutdown();
     }
 
-    void Engine::StartPhase() {
+    void Engine::StartPhase() const {
         // Callbacks
         glfwPollEvents();
-        glEnable(GL_DEPTH_TEST);
         glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Init UI
@@ -107,19 +111,19 @@ namespace Real {
         glfwSwapBuffers(window);
     }
 
-    void Engine::RenderPhase() {
+    void Engine::RenderPhase() const {
         // Draw OpenGL stuff
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
     }
 
-    void Engine::UpdatePhase() {
+    void Engine::UpdatePhase() const {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
         m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
     }
 
-    void Engine::InitServices() {
+    void Engine::InitServices() const {
         Services::SetAssetManager(m_AssetManager.get());
         Services::SetMeshManager(m_MeshManager.get());
         Services::SetEditorTimer(m_EditorTimer.get());
@@ -138,7 +142,18 @@ namespace Real {
 
     void Engine::Running() {
         const auto window = m_Window->GetGLFWWindow();
+
         glfwSwapInterval(0);
+
+        /*
+        TODO:
+            when i learn the different rendering techniques, (e.g. deferred rendering)
+            need update to apply gamma correction in CPU, for now we will do in GPU-side
+        */
+        // Activate automatic Gamma Correction
+        // glEnable(GL_FRAMEBUFFER_SRGB);
+        glEnable(GL_DEPTH_TEST);
+
         while (!glfwWindowShouldClose(window) && !Input::IsKeyPressed(REAL_KEY_ESCAPE)) {
             StartPhase();
             UpdatePhase();

@@ -9,6 +9,7 @@
 #include "Core/Utils.h"
 #include <fstream>
 #include <Core/Config.h>
+#include <Core/CmakeConfig.h>
 #include "Graphics/Material.h"
 #include "stb/stb_image.h"
 #include "queue"
@@ -103,6 +104,7 @@ namespace Real {
     void AssetManager::LoadTextures() {
         // TODO: Read from file like materials.json
         // Load all textures
+        LoadTexture("assets/textures/woodFloor.png", "floor_wood");
         LoadTexture("assets/textures/container2.png", "container2");
         LoadTexture("assets/textures/container2_specular.png", "container2_specular");
         LoadTexture("assets/textures/container.jpg", "container");

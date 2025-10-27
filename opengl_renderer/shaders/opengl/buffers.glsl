@@ -27,7 +27,8 @@ mat4 GetProjection() { return uCamera.projection;     }
 struct Material {
     vec4 baseColor;
     vec4 emissiveMetallic;
-    float roughnessTexLayer[4]; // 0 = roughness, 1 = texture layer, other indices padding (16-byte alignment)
+    float textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
+    float roughnessShininess[4]; // 0 = roughness, 1 = shininess
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
@@ -36,10 +37,12 @@ layout(std430, binding = 4) buffer MaterialSSBO {
 vec4 GetBaseColor(int idx)  { return materials[idx].baseColor; }
 vec3 GetEmissive(int idx)   { return materials[idx].emissiveMetallic.xyz; }
 float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
-float GetRoughness(int idx) { return materials[idx].roughnessTexLayer[0]; }
-float GetTextureLayer(int idx) { return materials[idx].roughnessTexLayer[1]; }
-float GetTextureLayer2(int idx) { return materials[idx].roughnessTexLayer[2]; }
+float GetRoughness(int idx) { return materials[idx].roughnessShininess[0]; }
+float GetShininess(int idx) { return materials[idx].roughnessShininess[1]; }
+float GetTextureLayer(int idx) { return materials[idx].textureLayers[0]; }
+float GetTextureLayer2(int idx) { return materials[idx].textureLayers[1]; }
 
+// TODO: improvable from the perspective of memory padding
 struct Light {
     vec4 pos_cutoff; // vec3 position,  w = cutOff
     vec4 dir_outer;  // vec3 direction, w = outerCutOff
@@ -56,7 +59,7 @@ layout(std430, binding = 5) buffer LightSSBO {
 };
 
 vec3 GetLightPos(int idx) { return lights[idx].pos_cutoff.xyz;  }
-vec3 GetLightDir(int idx) { return normalize(lights[idx].dir_outer.xyz); }
+vec3 GetLightDir(int idx) { return normalize(-lights[idx].dir_outer.xyz); }
 float GetCutOff(int idx)      { return lights[idx].pos_cutoff.w; }
 float GetOuterCutOff(int idx) { return lights[idx].dir_outer.w;  }
 vec3 GetLightDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }
@@ -91,5 +94,14 @@ layout (std430, binding = 1) buffer EntityMetaData {
 
 // Texture array
 layout (binding = 6) uniform sampler2DArray u_TextureArray;
+
+// Global Data
+layout(std140, binding = 7) uniform GlobalDataUBO {
+    vec4 GlobalAmbient; // last index padding
+    int lightCount[4]; // 0 = lightCount, other indices padding
+} uGlobalData;
+
+vec3 GetGlobalAmbient() { return uGlobalData.GlobalAmbient.xyz; }
+int GetLightCount() { return uGlobalData.lightCount[0]; }
 
 #endif

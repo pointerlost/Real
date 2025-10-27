@@ -28,7 +28,7 @@ namespace Real {
             );
 
             // TODO: need movement system to update transform stuff
-            transform.AddTranslate(vc.m_LinearVelocity * deltaTime);
+            transform.AddTranslate(vc.m_LinearVelocity);
 
             // TODO: Add acceleration for rotation
         }

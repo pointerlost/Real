@@ -3,7 +3,7 @@
 //
 #include "Input/Input.h"
 
-#include "Graphics/Config.h"
+#include "../../include/Core/Config.h"
 #include "Input/CameraInput.h"
 
 namespace Real::Input {

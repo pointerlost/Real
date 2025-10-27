@@ -4,6 +4,7 @@
 #include "Editor/HierarchyPanel.h"
 #include <imgui.h>
 #define GLM_ENABLE_EXPERIMENTAL
+#include <imgui_internal.h>
 #include <glm/gtx/string_cast.hpp>
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -44,22 +45,22 @@ namespace Real::UI {
 
         ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Bold"));
         if (entity->HasComponent<TagComponent>()) {
-            DrawComponent(entity->GetComponent<TagComponent>());
+            DrawComponent(entity->GetComponent<TagComponent>(), scene);
         }
         if (entity->HasComponent<TransformComponent>()) {
-            DrawComponent(entity->GetComponent<TransformComponent>());
+            DrawComponent(entity->GetComponent<TransformComponent>(), scene);
         }
         if (entity->HasComponent<MaterialComponent>()) {
-            DrawComponent(entity->GetComponent<MaterialComponent>());
+            DrawComponent(entity->GetComponent<MaterialComponent>(), scene);
         }
         if (entity->HasComponent<MeshComponent>()) {
-            DrawComponent(entity->GetComponent<MeshComponent>());
+            DrawComponent(entity->GetComponent<MeshComponent>(), scene);
         }
         if (entity->HasComponent<LightComponent>()) {
-            DrawComponent(entity->GetComponent<LightComponent>());
+            DrawComponent(entity->GetComponent<LightComponent>(), entity->GetComponent<TransformComponent>(), scene);
         }
         if (entity->HasComponent<CameraComponent>()) {
-            DrawComponent(entity->GetComponent<CameraComponent>());
+            DrawComponent(entity->GetComponent<CameraComponent>(), scene);
         }
         ImGui::PopFont();
 
@@ -67,14 +68,14 @@ namespace Real::UI {
         m_IDcounter = 0;
     }
 
-    void HierarchyPanel::DrawComponent(TagComponent *comp) {
+    void HierarchyPanel::DrawComponent(TagComponent *comp, Scene* scene) {
         if (ImGui::CollapsingHeader("Tag Component")) {
             // Max 21 character
             ImGui::InputText("Tag" ,comp->m_Tag.data(), 21);
         }
     }
 
-    void HierarchyPanel::DrawComponent(TransformComponent *comp) {
+    void HierarchyPanel::DrawComponent(TransformComponent *comp, Scene* scene) {
         auto& transform = comp->m_Transform;
         auto position = transform.GetTranslate();
         auto rotate = transform.GetRotationEuler();
@@ -144,19 +145,21 @@ namespace Real::UI {
         }
     }
 
-    void HierarchyPanel::DrawComponent(MaterialComponent *comp) {
+    void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
         const auto& material = comp->m_Instance->m_Base;
         auto& baseColor = material->BaseColor;
         auto& emissive = material->Emissive;
         auto& metallic = material->Metallic;
         auto& roughness = material->Roughness;
-        constexpr auto textboxSize = ImVec2(22.0, 30.0);
+        auto& shininess = material->Shininess;
         constexpr auto textSize = ImVec2(45.0, 30.0);
-        constexpr float dragCount = 4.0;
-        const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
         if (ImGui::CollapsingHeader("Material Component")) {
             // Base color
             {
+                auto textboxSize = ImVec2(22.0, 30.0);
+                constexpr float dragCount = 4.0;
+                const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
+
                 DrawCustomTextShape("Color", textSize, ImVec4(0.1019, 0.1568, 0.1372, 1.0));
                 ImGui::SameLine();
                 DrawCustomTextShape("R", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
@@ -171,22 +174,33 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, baseColor.b, 0.001, 0.0, 1.0, "%.2f");
                 ImGui::SameLine();
-                DrawCustomTextShape("A", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
+                DrawCustomTextShape("A", textboxSize, ImVec4(1.0, 1.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, baseColor.a, 0.001, 0.0, 1.0, "%.2f");
+
+                // Change the size of the new text boxes
+                textboxSize = ImVec2(100.0, 30.0);
+
+                ImGui::ColorEdit3("Emissive", &emissive[0]);
+                DrawCustomSizedDragger(191.5, metallic, 0.01, 0.001, 1.0, "%.2f");
+                ImGui::SameLine();
+                DrawCustomTextShape("Metallic", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
+                DrawCustomSizedDragger(191.5, roughness, 0.01, 0.001, 1.0, "%.2f");
+                ImGui::SameLine();
+                DrawCustomTextShape("Roughness", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
+                DrawCustomSizedDragger(191.5, shininess, 0.5, 0.0, 256.0, "%.1f");
+                ImGui::SameLine();
+                DrawCustomTextShape("Shininess", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
             }
-            ImGui::ColorEdit3("Emissive", &emissive[0]);
-            DrawCustomSizedDragger(191.5, metallic, 0.01, 0.001, 1.0);
-            DrawCustomSizedDragger(191.5, roughness, 0.01, 0.001, 1.0);
         }
     }
 
-    void HierarchyPanel::DrawComponent(MeshComponent *comp) {
+    void HierarchyPanel::DrawComponent(MeshComponent *comp, Scene* scene) {
         if (ImGui::CollapsingHeader("Mesh Component")) {
         }
     }
 
-    void HierarchyPanel::DrawComponent(LightComponent *comp) {
+    void HierarchyPanel::DrawComponent(LightComponent *comp, TransformComponent* transform, Scene* scene) {
         auto& light = comp->m_Light;
         auto diffuse = light.GetDiffuse();
         auto specular = light.GetSpecular();
@@ -235,7 +249,7 @@ namespace Real::UI {
 
                     DrawCustomTextShape("Outer Angle (OuterCutOff)", ImVec2(200,30), ImVec4(0.03954, 0.03914, 0.03934, 1.0), false, ImVec4(0.75, 0.75, 0.2, 1.0));
                     ImGui::SameLine();
-                    DrawCustomSizedDragger(75.0, outerCutOff, 0.05, 1.0, 90.0, "%.2f");
+                    DrawCustomSizedDragger(75.0, outerCutOff, 0.05, cutOff, 90.0, "%.2f");
                     light.SetOuterCutOff(outerCutOff);
 
                     ImGui::TreePop();
@@ -259,9 +273,14 @@ namespace Real::UI {
                 ImGui::EndCombo();
             }
         }
+
+        if (ImGui::Selectable("Show Light Direction")) {
+            if (light.GetType() == LightType::DIRECTIONAL) {
+            }
+        }
     }
 
-    void HierarchyPanel::DrawComponent(CameraComponent *comp) {
+    void HierarchyPanel::DrawComponent(CameraComponent *comp, Scene* scene) {
         auto& camera = comp->m_Camera;
         auto near = camera.GetNear();
         auto far = camera.GetFar();

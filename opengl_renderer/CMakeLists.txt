@@ -37,7 +37,7 @@ add_executable(${PROJECT_NAME}
     include/Graphics/Transformations.h
     include/Graphics/Camera.h
     src/Graphics/Camera.cpp
-    include/Graphics/Config.h
+    include/Core/Config.h
     include/Graphics/Renderer.h
     src/Graphics/Renderer.cpp
     include/Scene/Scene.h
@@ -76,12 +76,12 @@ add_executable(${PROJECT_NAME}
     src/Editor/HierarchyPanel.cpp
     src/Editor/InspectorPanel.cpp
     vendor/ImGuizmo/ImGuizmo.cpp
-        include/Math/Math.h
-        src/Math/Math.cpp
-        include/Scene/Systems.h
-        include/Scene/SystemUpdate.h
-        src/Scene/SystemUpdate.cpp
-        src/Scene/Systems.cpp
+    include/Math/Math.h
+    src/Math/Math.cpp
+    include/Scene/Systems.h
+    include/Scene/SystemUpdate.h
+    src/Scene/SystemUpdate.cpp
+    src/Scene/Systems.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
@@ -105,6 +105,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
 
 configure_file(
-        include/Core/Config.h.in
-        include/Core/Config.h
+    include/Core/Config.h.in
+    include/Core/CmakeConfig.h
 )

@@ -36,6 +36,8 @@ namespace Real {
         );
 
         m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
+
+        m_Buffers.globalData.Create(m_GPUDatas.globalData, 1 * sizeof(GlobalUBO), opengl::BufferType::UBO);
     }
 
     void RenderContext::BindGPUBuffers() const {
@@ -45,6 +47,8 @@ namespace Real {
         m_Buffers.camera.Bind(opengl::BufferType::UBO, 3);
         m_Buffers.material.Bind(opengl::BufferType::SSBO, 4);
         m_Buffers.light.Bind(opengl::BufferType::SSBO, 5);
+        // Texture array binding point = 6
+        m_Buffers.globalData.Bind(opengl::BufferType::UBO, 7);
     }
 
     void RenderContext::UploadToGPU() {
@@ -75,6 +79,9 @@ namespace Real {
 
         // Update Camera
         m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
+
+        // Update Global Data
+        m_Buffers.globalData.UploadToGPU(std::vector{m_GPUDatas.globalData}, 1 * sizeof(GlobalUBO), opengl::BufferType::UBO);
     }
 
     void RenderContext::CollectRenderables() {
@@ -118,9 +125,9 @@ namespace Real {
         }
 
         // Collect others
-
         CollectCamera();
         CollectLights();
+        CollectGlobalData();
 
         UploadToGPU();
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
@@ -141,6 +148,11 @@ namespace Real {
         for (const auto& [entity, light, transform] : view.each()) {
             m_GPUDatas.lights.push_back(light.m_Light.ConvertToGPUFormat(transform.m_Transform));
         }
+    }
+
+    void RenderContext::CollectGlobalData() {
+        m_GPUDatas.globalData.GlobalAmbient = glm::vec4(0.1);
+        m_GPUDatas.globalData.lightCount[0] = 1;
     }
 
     void RenderContext::CleanPrevFrame() {

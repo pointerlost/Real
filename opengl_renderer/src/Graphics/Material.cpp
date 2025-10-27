@@ -11,9 +11,10 @@ namespace Real {
         MaterialSSBO gpuData{};
         gpuData.baseColor = m_Base->BaseColor;
         gpuData.emissiveMetallic = glm::vec4(m_Base->Emissive, m_Base->Metallic);
-        gpuData.roughnessTexLayer[0] = m_Base->Roughness;
-        gpuData.roughnessTexLayer[1] = static_cast<float>(m_Base->GetTextureIndex(TextureType::BaseColor));
-        gpuData.roughnessTexLayer[2] = static_cast<float>(m_Base->GetTextureIndex(TextureType::Specular));
+        gpuData.roughnessShininess[0] = m_Base->Roughness;
+        gpuData.roughnessShininess[1] = m_Base->Shininess;
+        gpuData.textureLayers[0] = static_cast<float>(m_Base->GetTextureIndex(TextureType::BaseColor));
+        gpuData.textureLayers[1] = static_cast<float>(m_Base->GetTextureIndex(TextureType::Specular));
         return gpuData;
     }
 }

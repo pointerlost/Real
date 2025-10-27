@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "IPanel.h"
-#include "Graphics/Config.h"
+#include "../Core/Config.h"
 
 namespace Real::UI {
     class EditorPanel;

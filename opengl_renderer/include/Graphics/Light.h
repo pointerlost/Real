@@ -55,7 +55,7 @@ namespace Real {
         // Attenuation parameters
         float m_Constant = 1.0;
         float m_Linear = 0.09;
-        float m_Quadratic = 0.032;
+        float m_Quadratic = 0.002;
 
         // Spot light
         float m_CutOff = 12.5;

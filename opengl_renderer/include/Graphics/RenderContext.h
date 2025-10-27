@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "Buffer.h"
-#include "Config.h"
+#include "../Core/Config.h"
 
 namespace Real {
     class Scene;
@@ -22,6 +22,7 @@ namespace Real {
         std::vector<DrawElementsIndirectCommand> drawCommands;
         std::vector<EntityMetadata> entityData;
         CameraUBO camera;
+        GlobalUBO globalData;
     };
 
     struct GPUBuffers {
@@ -31,6 +32,7 @@ namespace Real {
         opengl::Buffer drawCommand;
         opengl::Buffer entityData;
         opengl::Buffer camera;
+        opengl::Buffer globalData;
     };
 
     class RenderContext {
@@ -51,6 +53,7 @@ namespace Real {
     private:
         void CollectCamera();
         void CollectLights();
+        void CollectGlobalData();
         void CleanPrevFrame();
         void UploadToGPU();
     };

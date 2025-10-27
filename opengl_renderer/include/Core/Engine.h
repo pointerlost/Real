@@ -46,12 +46,12 @@ namespace Real {
     private:
         void ShutDown();
 
-        void StartPhase();
-        void UpdatePhase();
-        void RenderPhase();
+        void StartPhase() const;
+        void UpdatePhase() const;
+        void RenderPhase() const;
         void EndPhase(GLFWwindow* window);
 
-        void InitServices();
+        void InitServices() const;
         void InitAsset();
         void InitMesh();
 

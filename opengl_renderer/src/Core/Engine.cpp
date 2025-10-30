@@ -35,6 +35,7 @@ namespace Real {
     void Engine::InitResources() {
         m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
         m_Window->Init();
+
         InitCallbacks(m_Window->GetGLFWWindow());
 
         m_Systems = CreateScope<Systems>();
@@ -57,6 +58,10 @@ namespace Real {
         const auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
         const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
         Services::GetAssetManager()->LoadShader(vert, frag, "main");
+
+        // const auto shadowMapVertex = ConcatStr(SHADERS_DIR, "opengl/shadow_map.vert");
+        // const auto shadowMapFrag = ConcatStr(SHADERS_DIR, "opengl/shadow_map.frag");
+        // m_AssetManager->LoadShader(shadowMapVertex, shadowMapFrag, "shadow_map");
 
         m_MeshManager->InitResources();
 
@@ -141,7 +146,7 @@ namespace Real {
         // Callbacks
         glfwPollEvents();
         glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         // Init UI
         m_EditorPanel->BeginFrame();
     }
@@ -187,8 +192,10 @@ namespace Real {
         */
         // Activate automatic Gamma Correction
         // glEnable(GL_FRAMEBUFFER_SRGB);
+
         glEnable(GL_DEPTH_TEST);
-        // glDepthFunc(GL_ALWAYS);
+        glDepthFunc(GL_LEQUAL);
+        // glEnable(GL_STENCIL_TEST);
 
         // This only has affect if depth testing is enabled
         // glDepthMask(GL_FALSE);

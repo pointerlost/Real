@@ -28,6 +28,7 @@ namespace Real {
     struct GPUBuffers {
         opengl::Buffer transform;
         opengl::Buffer material;
+        opengl::Buffer texture;
         opengl::Buffer light;
         opengl::Buffer drawCommand;
         opengl::Buffer entityData;

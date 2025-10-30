@@ -8,7 +8,6 @@
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 #include <fstream>
-#include <Core/Config.h>
 #include <Core/CmakeConfig.h>
 #include "Graphics/Material.h"
 #include "stb/stb_image.h"
@@ -89,11 +88,36 @@ namespace Real {
         return m_Shaders.at(name);
     }
 
+    void AssetManager::CreateTextureArray(const glm::ivec2 &resolution, GLenum internalFormat, const std::vector<Ref<Texture>>& textures) {
+        // Create texture array
+        GLuint texArray;
+        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
+        // Allocate the storage
+        glTextureStorage3D(texArray, 1, internalFormat, resolution.x, resolution.y, textures.size());
+
+        for (const auto& tex : textures) {
+            glTextureSubImage3D(texArray, 0, 0, 0, tex->m_Index, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
+            stbi_image_free(tex->m_Data); // Clean up vRAM
+            tex->m_Data = nullptr;
+        }
+        // Set parameters
+        glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(texArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTextureParameteri(texArray, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTextureParameteri(texArray, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    }
+
     Ref<Texture> AssetManager::LoadTexture(const std::string &filePath, const std::string& name) {
         if (m_Textures.contains(name)) return m_Textures[name];
         auto texture = CreateRef<Texture>();
 
-        texture->Load(filePath);
+        if (!filePath.empty())
+            texture->Load(filePath);
+
+        if (texture->m_Width > m_MaxTexDimensionsWH.first)
+            m_MaxTexDimensionsWH.first = texture->m_Width;
+        if (texture->m_Height > m_MaxTexDimensionsWH.second)
+            m_MaxTexDimensionsWH.second = texture->m_Height;
         texture->m_Index = static_cast<int>(m_TextureArrays.size());
 
         m_TextureArrays.push_back(texture);
@@ -104,26 +128,10 @@ namespace Real {
     void AssetManager::LoadTextures() {
         // TODO: Read from file like materials.json
         // Load all textures
-        LoadTexture("assets/textures/woodFloor.png", "floor_wood");
-        LoadTexture("assets/textures/container2.png", "container2");
-        LoadTexture("assets/textures/container2_specular.png", "container2_specular");
         LoadTexture("assets/textures/container.jpg", "container");
-
-        // Create texture array
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &m_GPUTextureArray);
-        // Allocate the storage
-        glTextureStorage3D(m_GPUTextureArray, 1, GL_RGBA8, m_TextureArrays[0]->m_Width, m_TextureArrays[0]->m_Height, m_TextureArrays.size());
-
-        for (const auto& tex : m_TextureArrays) {
-            glTextureSubImage3D(m_GPUTextureArray, 0, 0, 0, tex->m_Index, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
-            stbi_image_free(tex->m_Data); // Clean up vRAM
-            tex->m_Data = nullptr;
-        }
-        // Set parameters
-        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(m_GPUTextureArray, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        LoadTexture("assets/textures/container2_specular.png", "container2_specular");
+        LoadTexture("assets/textures/container2.png", "container2");
+        LoadTexture("assets/textures/woodFloor.png", "floor_wood");
 
         // Bind texture array (binding point = 6)
         glBindTextureUnit(6, m_GPUTextureArray);

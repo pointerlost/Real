@@ -5666,10 +5666,10 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
    // Skip the reserved data.
    stbi__skip(s, stbi__get32be(s) );
 
-   // Find out if the data is compressed.
+   // Find out if the data is compressed_BC6.
    // Known values:
    //   0: no compression
-   //   1: RLE compressed
+   //   1: RLE compressed_BC6
    compression = stbi__get16be(s);
    if (compression > 1)
       return stbi__errpuc("bad compression", "PSD has an unknown compression format");
@@ -5702,7 +5702,7 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
       //     Else if n is 128, noop.
       // Endloop
 
-      // The RLE-compressed data is preceeded by a 2-byte data count for each row in the data,
+      // The RLE-compressed_BC6 data is preceeded by a 2-byte data count for each row in the data,
       // which we're going to just skip.
       stbi__skip(s, h * channelCount * 2 );
 

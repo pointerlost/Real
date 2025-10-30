@@ -9,11 +9,11 @@ namespace Real::opengl {
         CleanResources();
     }
 
-    void Buffer::Bind(BufferType type, GLuint bindingPoint) const {
+    void Buffer::Bind(GLenum target, BufferType type, GLuint bindingPoint) const {
         if (type == BufferType::SSBO) {
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingPoint, m_Buffer);
+            glBindBufferBase(target, bindingPoint, m_Buffer);
         } else if (type == BufferType::UBO) {
-            glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, m_Buffer);
+            glBindBufferBase(target, bindingPoint, m_Buffer);
         }
     }
 

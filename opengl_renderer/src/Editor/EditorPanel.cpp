@@ -48,7 +48,6 @@ namespace Real::UI {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGuizmo::BeginFrame();
-        // ImGui::ShowDemoWindow();
     }
 
     void EditorPanel::Render(Scene* scene, opengl::Renderer* renderer) {
@@ -56,7 +55,7 @@ namespace Real::UI {
         // Hierarchy,Inspector width = SCREEN_WIDTH / 5 + 31.0
         // MenuBarPanel height = 25.0
         ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 5 + 31.0, 25.0));
-        ImGui::SetNextWindowSize(ImVec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT));
+        ImGui::SetNextWindowSize(m_SceneWindowSize);
 
         constexpr auto windowFlags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize |
                                      ImGuiWindowFlags_NoCollapse   | ImGuiWindowFlags_NoTitleBar;
@@ -66,6 +65,7 @@ namespace Real::UI {
         renderer->Render(Services::GetEditorState()->camera);
         // Draw UI
         Render(scene);
+
         ImGui::End();
 
         // Draw UI stuff (TODO: get a loop for rendering UI in one line because we have virtual functions!)
@@ -86,8 +86,7 @@ namespace Real::UI {
         ImGui::PushStyleVarY(ImGuiStyleVar_FramePadding, 5);
         ImGui::BeginMainMenuBar();
 
-        if (ImGui::BeginMenu("File", true)) {
-
+        if (ImGui::BeginMenu("File")) {
             if (ImGui::Button("Bla bla")) {
             }
             if (ImGui::Button("Bla bla 2")) {

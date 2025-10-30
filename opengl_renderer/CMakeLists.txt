@@ -10,6 +10,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(zstd CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME}
     main/main.cpp
@@ -82,6 +83,8 @@ add_executable(${PROJECT_NAME}
     include/Scene/SystemUpdate.h
     src/Scene/SystemUpdate.cpp
     src/Scene/Systems.cpp
+    include/API/OpenGL/Types/FrameBuffer.h
+    src/API/OpenGL/Types/FrameBuffer.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
@@ -100,6 +103,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     nlohmann_json::nlohmann_json
     imgui::imgui
     assimp::assimp
+    zstd::libzstd
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)

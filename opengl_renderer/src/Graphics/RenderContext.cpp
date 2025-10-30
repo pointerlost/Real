@@ -42,14 +42,14 @@ namespace Real {
     }
 
     void RenderContext::BindGPUBuffers() const {
-        m_Buffers.drawCommand.Bind(opengl::BufferType::SSBO, 0);
-        m_Buffers.entityData.Bind(opengl::BufferType::SSBO, 1);
-        m_Buffers.transform.Bind(opengl::BufferType::SSBO, 2);
-        m_Buffers.camera.Bind(opengl::BufferType::UBO, 3);
-        m_Buffers.material.Bind(opengl::BufferType::SSBO, 4);
-        m_Buffers.light.Bind(opengl::BufferType::SSBO, 5);
+        m_Buffers.drawCommand.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 0);
+        m_Buffers.entityData.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 1);
+        m_Buffers.transform.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 2);
+        m_Buffers.camera.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 3);
+        m_Buffers.material.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 4);
+        m_Buffers.light.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 5);
         // Texture array binding point = 6
-        m_Buffers.globalData.Bind(opengl::BufferType::UBO, 7);
+        m_Buffers.globalData.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 7);
     }
 
     void RenderContext::UploadToGPU() {
@@ -153,7 +153,7 @@ namespace Real {
 
     void RenderContext::CollectGlobalData() {
         m_GPUDatas.globalData.GlobalAmbient = glm::vec4(0.1);
-        m_GPUDatas.globalData.lightCount[0] = 1;
+        m_GPUDatas.globalData.lightCount[0] = 1; // TODO: remove the hardcoded value
     }
 
     void RenderContext::CleanPrevFrame() {

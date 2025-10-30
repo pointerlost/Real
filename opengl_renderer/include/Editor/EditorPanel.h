@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include "IPanel.h"
+#include "Core/Config.h"
 
 namespace Real {
 
@@ -42,6 +43,9 @@ namespace Real::UI {
         InspectorPanel* m_InspectorPanel;
         bool openPerfProfile = false;
         ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
+
+        // Screen height can wrong for editor-time, because of main menu panel has some height
+        ImVec2 m_SceneWindowSize = ImVec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
 
     private:
         void Render(Scene* scene);

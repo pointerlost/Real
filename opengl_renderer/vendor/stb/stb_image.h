@@ -4332,12 +4332,12 @@ static int stbi__parse_huffman_block(stbi__zbuf *a)
             }
             return 1;
          }
-         if (z >= 286) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, length codes 286 and 287 must not appear in compressed data
+         if (z >= 286) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, length codes 286 and 287 must not appear in compressed_BC6 data
          z -= 257;
          len = stbi__zlength_base[z];
          if (stbi__zlength_extra[z]) len += stbi__zreceive(a, stbi__zlength_extra[z]);
          z = stbi__zhuffman_decode(a, &a->z_distance);
-         if (z < 0 || z >= 30) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, distance codes 30 and 31 must not appear in compressed data
+         if (z < 0 || z >= 30) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, distance codes 30 and 31 must not appear in compressed_BC6 data
          dist = stbi__zdist_base[z];
          if (stbi__zdist_extra[z]) dist += stbi__zreceive(a, stbi__zdist_extra[z]);
          if (zout - a->zout_start < dist) return stbi__err("bad dist","Corrupt PNG");
@@ -6183,10 +6183,10 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
    // Skip the reserved data.
    stbi__skip(s, stbi__get32be(s) );
 
-   // Find out if the data is compressed.
+   // Find out if the data is compressed_BC6.
    // Known values:
    //   0: no compression
-   //   1: RLE compressed
+   //   1: RLE compressed_BC6
    compression = stbi__get16be(s);
    if (compression > 1)
       return stbi__errpuc("bad compression", "PSD has an unknown compression format");
@@ -6219,7 +6219,7 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
       //     Else if n is 128, noop.
       // Endloop
 
-      // The RLE-compressed data is preceded by a 2-byte data count for each row in the data,
+      // The RLE-compressed_BC6 data is preceded by a 2-byte data count for each row in the data,
       // which we're going to just skip.
       stbi__skip(s, h * channelCount * 2 );
 

@@ -71,7 +71,7 @@ namespace Real::opengl {
             }
         }
 
-        void Bind(BufferType type, GLuint bindingPoint) const;
+        void Bind(GLenum target, BufferType type, GLuint bindingPoint) const;
 
     private:
         GLuint m_Buffer = 0;

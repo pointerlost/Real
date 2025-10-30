@@ -20,6 +20,7 @@ namespace Real {
         std::string PreprocessorForShaders(const std::string& filePath);
         const Shader &GetShader(const std::string& name);
 
+        void CreateTextureArray(const glm::ivec2& resolution, GLenum internalFormat, const std::vector<Ref<Texture>>& textures);
         void LoadTextures();
         Ref<Texture>& GetTexture(const std::string& name) {
             if (!IsTextureExists(name)) Warn("Texture '" + name + "' can't find!");
@@ -38,8 +39,7 @@ namespace Real {
     private:
         std::unordered_map<std::string, Shader> m_Shaders;
         std::unordered_map<std::string, Ref<Texture>> m_Textures;
-        GLuint m_GPUTextureArray = 0;
-        std::vector<Ref<Texture>> m_TextureArrays;
+        std::pair<GLsizei, GLsizei> m_MaxTexDimensionsWH;
         std::unordered_map<std::string, Ref<MaterialInstance>> m_Materials;
         std::unordered_map<std::string, ImFont*> m_Fonts;
 

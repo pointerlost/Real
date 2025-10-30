@@ -34,12 +34,12 @@ layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
 };
 
-vec4 GetBaseColor(int idx)  { return materials[idx].baseColor; }
-vec3 GetEmissive(int idx)   { return materials[idx].emissiveMetallic.xyz; }
-float GetMetallic(int idx)  { return materials[idx].emissiveMetallic.w; }
-float GetRoughness(int idx) { return materials[idx].roughnessShininess[0]; }
-float GetShininess(int idx) { return materials[idx].roughnessShininess[1]; }
-int GetTextureLayer(int idx) { return materials[idx].textureLayers[0]; }
+vec4 GetBaseColor(int idx)    { return materials[idx].baseColor; }
+vec3 GetEmissive(int idx)     { return materials[idx].emissiveMetallic.xyz;  }
+float GetMetallic(int idx)    { return materials[idx].emissiveMetallic.w;    }
+float GetRoughness(int idx)   { return materials[idx].roughnessShininess[0]; }
+float GetShininess(int idx)   { return materials[idx].roughnessShininess[1]; }
+int GetTextureLayer(int idx)  { return materials[idx].textureLayers[0]; }
 int GetTextureLayer2(int idx) { return materials[idx].textureLayers[1]; }
 
 // TODO: improvable from the perspective of memory padding
@@ -94,7 +94,6 @@ layout (std430, binding = 1) buffer EntityMetaData {
 
 // Texture array
 layout (binding = 6) uniform sampler2DArray u_TextureArray;
-
 
 // Global Data
 layout(std140, binding = 7) uniform GlobalDataUBO {

@@ -24,10 +24,16 @@ namespace Real {
     };
 
     struct MaterialSSBO {
-        glm::vec4 baseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
-        glm::vec4 emissiveMetallic = glm::vec4(0.2f);
-        int textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
-        float roughnessShininess[4]; // 0 = roughness, 1 = shininess
+        glm::vec4 m_BaseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
+        glm::vec4 m_NormalRMA = {}; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
+
+        // TODO: store override colors inside materialInstance, use MaterialBase as a texture storage!!!
+        int albedoMapIdx;
+        int metallicMapIdx;
+        int roughnessMapIdx;
+        int normalMapIdx;
+        int aoMapIdx;
+        int heightMapIdx;
     };
 
     struct CameraUBO {

@@ -13,10 +13,16 @@
 #include "stb/stb_image.h"
 #include "queue"
 
+#include <compressonator/include/cmp_core/source/cmp_core.h>
+#include <compressonator/include/cmp_compressonatorlib/compressonator.h>
+#include <compressonator/include/cmp_framework/common/cmp_mips.h>
+#include <compressonator/include/cmp_framework/compute_base.h>
+#include <GL/glext.h>
+
 namespace Real {
 
     void AssetManager::LoadShader(const std::string &vertexPath, const std::string &fragmentPath,
-        const std::string& name)
+                                  const std::string& name)
     {
         const auto vertPath = PreprocessorForShaders(vertexPath);
         const auto fragPath = PreprocessorForShaders(fragmentPath);
@@ -88,17 +94,77 @@ namespace Real {
         return m_Shaders.at(name);
     }
 
-    void AssetManager::CreateTextureArray(const glm::ivec2 &resolution, GLenum internalFormat, const std::vector<Ref<Texture>>& textures) {
+    void AssetManager::LoadUncompressedTexture(const std::string& name, const std::string &filePath) {
+        if (m_Textures.contains(name)) return;
+
+        Ref<Texture> texture = CreateRef<Texture>(ImageFormatState::UNCOMPRESSED);
+        auto& data = texture->m_Data;
+
+        data.m_Data = stbi_load(filePath.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, 0);
+
+        // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
+        // Get byte per channel as 1 coz we are loading images as 8-bit format
+        data.m_DataSize = (data.m_Width * data.m_Height) * data.m_ChannelCount * 1;
+
+        if (data.m_ChannelCount == 3) {
+            data.m_Format = GL_RGB8;
+            data.m_ImageCompressType = ImageCompressedType::BC1;
+        }
+        else if (data.m_ChannelCount == 3) {
+            data.m_Format = GL_RGB8;
+            data.m_ImageCompressType = ImageCompressedType::BC6;
+        }
+        else if (data.m_ChannelCount == 4) {
+            data.m_Format = GL_RGBA8;
+            data.m_ImageCompressType = ImageCompressedType::BC7;
+        }
+
+        // We are deciding for m_InternalFormat in Compress-time
+        m_Textures[name] = std::move(texture);
+    }
+
+    void AssetManager::LoadUncompressedTextures(const std::string &name, void *mixedData) {
+        if (m_Textures.contains(name)) return;
+
+        Ref<Texture> texture = CreateRef<Texture>(ImageFormatState::UNCOMPRESSED);
+        auto& data = texture->m_Data;
+
+        data.m_Data = mixedData;
+
+        // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
+        // Get byte per channel as 1 coz we are loading images as 8-bit format
+        data.m_DataSize = (data.m_Width * data.m_Height) * data.m_ChannelCount * 1;
+
+        if (data.m_ChannelCount == 3) {
+            data.m_Format = GL_RGB8;
+            data.m_ImageCompressType = ImageCompressedType::BC1;
+        }
+        else if (data.m_ChannelCount == 3) {
+            data.m_Format = GL_RGB8;
+            data.m_ImageCompressType = ImageCompressedType::BC6;
+        }
+        else if (data.m_ChannelCount == 4) {
+            data.m_Format = GL_RGBA8;
+            data.m_ImageCompressType = ImageCompressedType::BC7;
+        }
+
+        // We are deciding for m_InternalFormat in Compress-time
+        m_Textures[name] = std::move(texture);
+    }
+
+    void AssetManager::CreateTextureArray(const glm::ivec2 &resolution, const std::vector<Ref<Texture>>& textures) {
         // Create texture array
         GLuint texArray;
         glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
         // Allocate the storage
-        glTextureStorage3D(texArray, 1, internalFormat, resolution.x, resolution.y, textures.size());
+        glTextureStorage3D(texArray, 1, textures[0]->m_Data.m_InternalFormat, resolution.x, resolution.y, textures.size());
 
         for (const auto& tex : textures) {
-            glTextureSubImage3D(texArray, 0, 0, 0, tex->m_Index, tex->m_Width, tex->m_Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, tex->m_Data);
-            stbi_image_free(tex->m_Data); // Clean up vRAM
-            tex->m_Data = nullptr;
+            auto& texData = tex->m_Data;
+            // use GL compressed types for format
+            glTextureSubImage3D(texArray, 0, 0, 0, tex->m_Index, texData.m_Width, texData.m_Height, 1, texData.m_InternalFormat, GL_UNSIGNED_BYTE, texData.m_Data);
+            stbi_image_free(texData.m_Data); // Clean up vRAM
+            texData.m_Data = nullptr;
         }
         // Set parameters
         glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -114,10 +180,6 @@ namespace Real {
         if (!filePath.empty())
             texture->Load(filePath);
 
-        if (texture->m_Width > m_MaxTexDimensionsWH.first)
-            m_MaxTexDimensionsWH.first = texture->m_Width;
-        if (texture->m_Height > m_MaxTexDimensionsWH.second)
-            m_MaxTexDimensionsWH.second = texture->m_Height;
         texture->m_Index = static_cast<int>(m_TextureArrays.size());
 
         m_TextureArrays.push_back(texture);

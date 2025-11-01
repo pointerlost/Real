@@ -85,6 +85,12 @@ add_executable(${PROJECT_NAME}
     src/Scene/Systems.cpp
     include/API/OpenGL/Types/FrameBuffer.h
     src/API/OpenGL/Types/FrameBuffer.cpp
+        include/Util/Util.h
+        src/Util/Util.cpp
+        include/Tools/ImageTools.h
+        src/Tools/ImageTools.cpp
+        include/Graphics/TextureArrays.h
+        src/Graphics/TextureArrays.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

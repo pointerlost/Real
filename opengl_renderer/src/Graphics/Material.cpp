@@ -9,14 +9,15 @@ namespace Real {
 
     MaterialSSBO MaterialInstance::ConvertToGPUFormat() const {
         MaterialSSBO gpuData{};
-        gpuData.baseColor = m_Base->BaseColor;
-        gpuData.emissiveMetallic = glm::vec4(m_Base->Emissive, m_Base->Metallic);
-        gpuData.roughnessShininess[0] = m_Base->Roughness;
-        gpuData.roughnessShininess[1] = m_Base->Shininess;
-        gpuData.textureLayers[0] = m_Base->GetTextureIndex(TextureType::BaseColor);
-        gpuData.textureLayers[1] = m_Base->GetTextureIndex(TextureType::Specular);
-        // Info(ConcatStr("BaseColor: ", std::to_string(m_Base->GetTextureIndex(TextureType::BaseColor))));
-        // Info(ConcatStr("Specular: ", std::to_string(m_Base->GetTextureIndex(TextureType::Specular))));
+        gpuData.m_BaseColor = m_BaseColor;
+        gpuData.m_NormalRMA = m_NormalRMA;
+
+        gpuData.albedoMapIdx = m_Base->albedoMap->m_Index;
+        gpuData.metallicMapIdx = m_Base->metallicMap->m_Index;
+        gpuData.roughnessMapIdx = m_Base->roughnessMap->m_Index;
+        gpuData.normalMapIdx = m_Base->normalMap->m_Index;
+        gpuData.aoMapIdx = m_Base->aoMap->m_Index;
+        gpuData.heightMapIdx = m_Base->heightMap->m_Index;
         return gpuData;
     }
 }

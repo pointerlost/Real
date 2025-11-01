@@ -17,33 +17,27 @@ namespace Real {
 namespace Real {
 
     enum class TextureType {
-        BaseColor,
-        Specular,
+        Albedo,
         Normal,
         Roughness,
-        Displacement,
+        Metallic,
         AmbientOcclusion,
+        Height,
     };
 
     struct Material {
-        glm::vec4 BaseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        float Metallic = 0.0f;
-        float Roughness = 1.0f;
-        float Shininess = 32.0f;
-        glm::vec3 Emissive = glm::vec3(0.0f);
-        int GetTextureIndex(TextureType type) {
-            if (textures.contains(type))
-                return textures[type]->m_Index;
-            return -1;
-        }
-
-        std::unordered_map<TextureType, Ref<Texture>> textures;
+        Ref<Texture> albedoMap;
+        Ref<Texture> normalMap;
+        Ref<Texture> m_rmaMap;
+        Ref<Texture> heightMap;
     };
 
     struct MaterialInstance {
+        glm::vec4 m_BaseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        glm::vec4 m_NormalRMA = {};
+
         Ref<Material> m_Base = CreateRef<Material>();
 
         [[nodiscard]] MaterialSSBO ConvertToGPUFormat() const;
-        void AddTexture(TextureType type, Ref<Texture> texture) const { m_Base->textures[type] = std::move(texture); }
     };
 }

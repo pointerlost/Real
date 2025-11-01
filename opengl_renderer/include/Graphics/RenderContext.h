@@ -8,6 +8,11 @@
 
 #include "Buffer.h"
 #include "../Core/Config.h"
+#include "Core/Utils.h"
+
+namespace Real {
+    struct Texture;
+}
 
 namespace Real {
     class Scene;
@@ -28,7 +33,6 @@ namespace Real {
     struct GPUBuffers {
         opengl::Buffer transform;
         opengl::Buffer material;
-        opengl::Buffer texture;
         opengl::Buffer light;
         opengl::Buffer drawCommand;
         opengl::Buffer entityData;

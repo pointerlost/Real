@@ -5,18 +5,44 @@
 #include <glad/glad.h>
 #include <string>
 
+#include "Core/Utils.h"
+
 namespace Real {
 
-    struct Texture {
-    public:
-        Texture() = default;
-        Texture(const Texture&) = default;
-        void Load(const std::string& filePath);
+    enum class ImageFormatState {
+        UNCOMPRESSED,
+        COMPRESSED
+    };
 
-    public:
-        unsigned char* m_Data;
-        GLuint m_ID = 0;
-        GLsizei m_Width = 2, m_Height = 2;
-        int m_Index = -1; // index will use to find texture in TextureArray
+    enum class ImageCompressedType {
+        BC1,
+        BC6,
+        BC7,
+    };
+
+    struct TextureData {
+        void* m_Data;
+        int m_Handle;
+        int m_Width;
+        int m_Height;
+        int m_DataSize;
+        int m_ChannelCount;
+        int m_Format;
+        int m_InternalFormat;
+        ImageCompressedType m_ImageCompressType;
+
+        TextureData() = default;
+        TextureData(const TextureData&) = default;
+    };
+
+    struct Texture {
+        explicit Texture(ImageFormatState format = ImageFormatState::UNCOMPRESSED) { m_ImageFormatState = format; }
+        explicit Texture(const Ref<TextureData>& data) : m_Data(*data) {}
+        Texture(const Texture&) = default;
+        TextureData m_Data{};
+        ImageFormatState m_ImageFormatState = ImageFormatState::UNCOMPRESSED;
+
+        int m_TexIndex = -1;
+        int m_ArrayIndex = -1;
     };
 }

@@ -20,12 +20,6 @@
 /opengl_renderer/CTestTestfile.cmake
 /opengl_renderer/Testing/
 
-# Assets
-/opengl_renderer/assets/textures/*
-/opengl_renderer/assets/fonts/*
-!/opengl_renderer/assets/fonts/.gitkeep
-!/opengl_renderer/assets/textures/.gitkeep
-
 /opengl_renderer/*.o
 /opengl_renderer/*.obj
 /opengl_renderer/*.pch

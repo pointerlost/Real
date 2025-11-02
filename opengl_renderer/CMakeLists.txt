@@ -85,12 +85,12 @@ add_executable(${PROJECT_NAME}
     src/Scene/Systems.cpp
     include/API/OpenGL/Types/FrameBuffer.h
     src/API/OpenGL/Types/FrameBuffer.cpp
-        include/Util/Util.h
-        src/Util/Util.cpp
-        include/Tools/ImageTools.h
-        src/Tools/ImageTools.cpp
-        include/Graphics/TextureArrays.h
-        src/Graphics/TextureArrays.cpp
+    include/Util/Util.h
+    src/Util/Util.cpp
+    include/Tools/ImageTools.h
+    src/Tools/ImageTools.cpp
+    include/Graphics/TextureArrays.h
+    src/Graphics/TextureArrays.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
@@ -113,6 +113,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
+set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
+
 
 configure_file(
     include/Core/Config.h.in

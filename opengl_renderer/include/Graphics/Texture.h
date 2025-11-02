@@ -30,9 +30,6 @@ namespace Real {
         int m_Format;
         int m_InternalFormat;
         ImageCompressedType m_ImageCompressType;
-
-        TextureData() = default;
-        TextureData(const TextureData&) = default;
     };
 
     struct Texture {

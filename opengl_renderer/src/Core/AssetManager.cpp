@@ -95,7 +95,7 @@ namespace Real {
     }
 
     void AssetManager::LoadUncompressedTexture(const std::string& name, const std::string &filePath) {
-        if (m_Textures.contains(name)) return;
+        if (IsTextureExists(name)) return;
 
         Ref<Texture> texture = CreateRef<Texture>(ImageFormatState::UNCOMPRESSED);
         auto& data = texture->m_Data;
@@ -124,16 +124,12 @@ namespace Real {
     }
 
     void AssetManager::LoadUncompressedTextures(const std::string &name, void *mixedData) {
-        if (m_Textures.contains(name)) return;
+        if (IsTextureExists(name)) return;
 
         Ref<Texture> texture = CreateRef<Texture>(ImageFormatState::UNCOMPRESSED);
         auto& data = texture->m_Data;
 
         data.m_Data = mixedData;
-
-        // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
-        // Get byte per channel as 1 coz we are loading images as 8-bit format
-        data.m_DataSize = (data.m_Width * data.m_Height) * data.m_ChannelCount * 1;
 
         if (data.m_ChannelCount == 3) {
             data.m_Format = GL_RGB8;
@@ -174,7 +170,7 @@ namespace Real {
     }
 
     Ref<Texture> AssetManager::LoadTexture(const std::string &filePath, const std::string& name) {
-        if (m_Textures.contains(name)) return m_Textures[name];
+        if (IsTextureExists(name)) return m_Textures[name];
         auto texture = CreateRef<Texture>();
 
         if (!filePath.empty())

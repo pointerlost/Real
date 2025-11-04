@@ -29,10 +29,8 @@ namespace Real {
 
         // TODO: store override colors inside materialInstance, use MaterialBase as a texture storage!!!
         int albedoMapIdx;
-        int metallicMapIdx;
-        int roughnessMapIdx;
         int normalMapIdx;
-        int aoMapIdx;
+        int rmaMapIdx;
         int heightMapIdx;
     };
 

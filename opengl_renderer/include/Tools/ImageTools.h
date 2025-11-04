@@ -4,11 +4,10 @@
 #pragma once
 #include "Core/Utils.h"
 
-namespace Real {
-    struct Texture;
-}
+namespace Real { struct Texture; }
 
 namespace Real::Tools {
-    Ref<Texture> PackRMATexturesToChannels(const Ref<Texture> &roughness, const Ref<Texture> &metallic, const Ref<Texture> &ao);
-    void CompressTextureToBCn(Ref<Texture>& texture, const char* destPath);
+    [[nodiscard]] Ref<Texture> PackTexturesToChannels(const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3);
+    [[nodiscard]] Ref<Texture> PackTexturesToChannels(const std::array<Ref<Texture>, 3>& textures);
+    void CompressTextureToBCn(Ref<Texture>& texture, const std::string& destPath);
 }

@@ -146,12 +146,12 @@ namespace Real::UI {
     }
 
     void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
-        const auto& material = comp->m_Instance->m_Base;
-        auto& baseColor = material->BaseColor;
-        auto& emissive = material->Emissive;
-        auto& metallic = material->Metallic;
-        auto& roughness = material->Roughness;
-        auto& shininess = material->Shininess;
+        const auto& material = comp->m_Instance;
+        auto& baseColor = material->m_BaseColor;
+        auto& normalColor = material->m_NormalRMA[0];
+        auto& roughness = material->m_NormalRMA[1];
+        auto& metallic = material->m_NormalRMA[2];
+        auto& ao = material->m_NormalRMA[3];
         constexpr auto textSize = ImVec2(45.0, 30.0);
         if (ImGui::CollapsingHeader("Material Component")) {
             // Base color
@@ -177,20 +177,6 @@ namespace Real::UI {
                 DrawCustomTextShape("A", textboxSize, ImVec4(1.0, 1.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, baseColor.a, 0.001, 0.0, 1.0, "%.2f");
-
-                // Change the size of the new text boxes
-                textboxSize = ImVec2(100.0, 30.0);
-
-                ImGui::ColorEdit3("Emissive", &emissive[0]);
-                DrawCustomSizedDragger(191.5, metallic, 0.01, 0.001, 1.0, "%.2f");
-                ImGui::SameLine();
-                DrawCustomTextShape("Metallic", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
-                DrawCustomSizedDragger(191.5, roughness, 0.01, 0.001, 1.0, "%.2f");
-                ImGui::SameLine();
-                DrawCustomTextShape("Roughness", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
-                DrawCustomSizedDragger(191.5, shininess, 0.5, 0.0, 256.0, "%.1f");
-                ImGui::SameLine();
-                DrawCustomTextShape("Shininess", textboxSize, ImVec4(0.05, 0.05, 0.05, 1.0));
             }
         }
     }

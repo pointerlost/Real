@@ -4,30 +4,30 @@ add_library(CMP_Core STATIC)
 
 target_sources(CMP_Core
     PRIVATE
-        shaders/bc1_encode_kernel.h
-        shaders/bc1_common_kernel.h
-        shaders/bc1_encode_kernel.cpp
-        shaders/bc2_encode_kernel.h
-        shaders/bc2_encode_kernel.cpp
-        shaders/bc3_encode_kernel.h
-        shaders/bc3_encode_kernel.cpp
-        shaders/bc4_encode_kernel.h
-        shaders/bc4_encode_kernel.cpp
-        shaders/bc5_encode_kernel.h
-        shaders/bc5_encode_kernel.cpp
-        shaders/bc6_encode_kernel.h
-        shaders/bc6_encode_kernel.cpp
-        shaders/bc7_encode_kernel.h
-        shaders/bc7_common_encoder.h
-        shaders/bc7_encode_kernel.cpp
-        shaders/bcn_common_kernel.h
-        shaders/bcn_common_api.h
-        shaders/common_def.h
+    shaders/bc1_encode_kernel.h
+    shaders/bc1_common_kernel.h
+    shaders/bc1_encode_kernel.cpp
+    shaders/bc2_encode_kernel.h
+    shaders/bc2_encode_kernel.cpp
+    shaders/bc3_encode_kernel.h
+    shaders/bc3_encode_kernel.cpp
+    shaders/bc4_encode_kernel.h
+    shaders/bc4_encode_kernel.cpp
+    shaders/bc5_encode_kernel.h
+    shaders/bc5_encode_kernel.cpp
+    shaders/bc6_encode_kernel.h
+    shaders/bc6_encode_kernel.cpp
+    shaders/bc7_encode_kernel.h
+    shaders/bc7_common_encoder.h
+    shaders/bc7_encode_kernel.cpp
+    shaders/bcn_common_kernel.h
+    shaders/bcn_common_api.h
+    shaders/common_def.h
 
-        source/cmp_core.h
-        source/cmp_core.cpp
-        source/cmp_math_vec4.h
-        source/cmp_math_func.h
+    source/cmp_core.h
+    source/cmp_core.cpp
+    source/cmp_math_vec4.h
+    source/cmp_math_func.h
 
     ../applications/_libs/cmp_math/cpu_extensions.cpp
     ../applications/_libs/cmp_math/cmp_math_common.cpp
@@ -46,15 +46,15 @@ if (OPTION_BUILD_BROTLIG)
     target_sources(
         CMP_Core
         PRIVATE
-            shaders/brlg_encode_kernel.h
-            shaders/brlg_encode_kernel.cpp
+        shaders/brlg_encode_kernel.h
+        shaders/brlg_encode_kernel.cpp
     )
 endif()
 
 target_include_directories(CMP_Core
     PUBLIC
-        shaders
-        source
+    shaders
+    source
     ../applications/_libs/cmp_math/
 )
 

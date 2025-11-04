@@ -7,10 +7,10 @@
 namespace Real {
 
     struct FileInfo {
-        std::string name;
-        std::string path;
-        std::string stem;
-        std::string extension;
+        std::string name; // Full name
+        std::string path; // Full path
+        std::string stem; // Name without extension
+        std::string ext;  // Extension
     };
 
     class File {

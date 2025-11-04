@@ -134,7 +134,7 @@ endif()
 
 target_include_directories(CMP_Framework
     PUBLIC
-        .
+    ./
     ${PROJECT_SOURCE_DIR}/cmp_framework/common/half
     ${PROJECT_SOURCE_DIR}/cmp_framework/common/
     ${PROJECT_SOURCE_DIR}/cmp_compressonatorlib

@@ -68,35 +68,35 @@ if (OPTION_BUILD_BROTLIG)
 endif()
 
 add_library(CMP_Compressonator 
-    STATIC
-        version.h
-        common.h
-        compress.cpp
-        compressonator.h
-        compressonator.cpp
+    STATIC  
+    version.h
+    common.h
+    compress.cpp
+    compressonator.h
+    compressonator.cpp
     ${CMP_SRCS}
 )
 
 target_include_directories(CMP_Compressonator
     PUBLIC
-        .
+    ./
     # Lossy Compression
-        apc
-        atc
-        ati
-        basis
-        bc6h
-        bc7
-        block
-        buffer
-        dxt
-        dxtc
-        etc
-        etc/etcpack
-        gt
+    apc
+    atc
+    ati
+    basis
+    bc6h
+    bc7
+    block
+    buffer
+    dxt
+    dxtc
+    etc
+    etc/etcpack/
+    gt
 
     # Common
-        common
+    common
     ${PROJECT_SOURCE_DIR}/cmp_framework/common
     ${PROJECT_SOURCE_DIR}/cmp_framework/common/half
     ${PROJECT_SOURCE_DIR}/applications/_plugins/common
@@ -108,8 +108,8 @@ set_target_properties(CMP_Compressonator PROPERTIES FOLDER ${PROJECT_FOLDER_SDK_
 if (OPTION_BUILD_ASTC)
     target_include_directories(CMP_Compressonator
         PUBLIC
-            astc
-            astc/arm
+        astc
+        astc/arm/
     )
 endif()
 

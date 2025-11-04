@@ -1,44 +1,60 @@
 //
 // Created by pointerlost on 10/30/25.
 //
-#include <GL/glext.h>
 #include <Tools/ImageTools.h>
 #include "compressonator/include/cmp_compressonatorlib/compressonator.h"
-#include "compressonator/include/cmp_framework/common/hdr_encode.h"
-#include "compressonator/include/cmp_framework/common/cmp_mips.h"
-#include "compressonator/include/cmp_core/shaders/bc1_cmp.h"
-#include "compressonator/include/cmp_core/shaders/bc7_cmpmsc.h"
-#include "compressonator/include/cmp_framework/compute_base.h"
-#include "compressonator/include/cmp_framework/common/half/tofloat.h"
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
+#include <glad/include/glad/glad.h>
+#include <GL/glext.h>
+
+#include "Core/AssetManager.h"
+#include "Core/Services.h"
 
 namespace Real::Tools {
 
-    Ref<Texture> PackRMATexturesToChannels(const Ref<Texture> &roughness, const Ref<Texture> &metallic, const Ref<Texture> &ao) {
+    Ref<Texture> PackTexturesToChannels(const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3) {
+        if (!tex1 || !tex2 || !tex3) {
+            Warn("There is no texture! from: " + std::string(__FILE__));
+            return {};
+        }
+
         constexpr int channelCount = 3; // RGB
         Ref<Texture> mixedTexture = CreateRef<Texture>();
         // Copy all the data to the mixedTex and only change what is necessary
-        mixedTexture->m_Data = roughness->m_Data;
+        if (tex1) {
+            mixedTexture->GetData() = tex1->GetData();
+            mixedTexture->SetFileInfo(tex1->GetFileInfo());
+        }
+        else if (tex2) {
+            mixedTexture->GetData() = tex2->GetData();
+            mixedTexture->SetFileInfo(tex2->GetFileInfo());
+        }
+        else if (tex3) {
+            mixedTexture->GetData() = tex3->GetData();
+            mixedTexture->SetFileInfo(tex3->GetFileInfo());
+        }
 
         // Set new props to mixedTex
-        mixedTexture->m_Data.m_DataSize = roughness->m_Data.m_DataSize * channelCount;
-        mixedTexture->m_Data.m_ChannelCount = channelCount;
+        mixedTexture->GetData().m_DataSize *= channelCount;
+        mixedTexture->GetData().m_ChannelCount = channelCount;
 
-        const auto roughnessData = roughness->m_Data;
-        const auto metallicData = metallic->m_Data;
-        const auto aoData = ao->m_Data;
-
-        const auto roughnessRawData = static_cast<uint8_t *>(roughnessData.m_Data);
-        const auto metallicRawData = static_cast<uint8_t *>(metallicData.m_Data);
-        const auto aoRawData = static_cast<uint8_t *>(aoData.m_Data);
+        auto* roughnessRawData = new uint8_t[mixedTexture->GetData().m_DataSize];
+        std::fill_n(roughnessRawData, mixedTexture->GetData().m_DataSize, 0.5);
+        if (tex1) roughnessRawData = static_cast<uint8_t*>(tex1->GetData().m_Data);
+        auto* metallicRawData = new uint8_t[mixedTexture->GetData().m_DataSize];
+        std::fill_n(metallicRawData, mixedTexture->GetData().m_DataSize, 0.0);
+        if (tex2) metallicRawData = static_cast<uint8_t*>(tex2->GetData().m_Data);
+        auto* aoRawData = new uint8_t[mixedTexture->GetData().m_DataSize];
+        std::fill_n(aoRawData, mixedTexture->GetData().m_DataSize, 1.0);
+        if (tex3) aoRawData = static_cast<uint8_t*>(tex3->GetData().m_Data);
 
         // Create mixedTexture data
-        const auto mixedTexRawData = new uint8_t[mixedTexture->m_Data.m_DataSize];
+        const auto mixedTexRawData = new uint8_t[mixedTexture->GetData().m_DataSize];
 
         // All textures have the same resolution
-        const int texWidth = roughnessData.m_Width;
-        const int texHeight = roughnessData.m_Height;
+        const int texWidth = mixedTexture->GetData().m_Width;
+        const int texHeight = mixedTexture->GetData().m_Height;
 
         for (int y = 0; y < texHeight; y++) {
             for (int x = 0; x < texWidth; x++) {
@@ -48,23 +64,36 @@ namespace Real::Tools {
                 mixedTexRawData[pixelIdx + 2] = aoRawData[pixelIdx + 2];
             }
         }
-        mixedTexture->m_Data.m_Data = static_cast<void *>(mixedTexRawData);
+        // Copy the local mixed text data into the original text data to free up memory
+        memcpy(mixedTexture->GetData().m_Data, mixedTexRawData, mixedTexture->GetData().m_DataSize);
+        delete[] mixedTexRawData;
+        delete[] roughnessRawData;
+        delete[] metallicRawData;
+        delete[] aoRawData;
+
+        const std::string name = mixedTexture->GetFileInfo().name;
+        const std::string newName = name.substr(0, name.size() - 4) + "_RMA";
+        Info(newName);
+        mixedTexture->GetFileInfo().name = newName;
 
         return std::move(mixedTexture);
     }
 
-    void CompressTextureToBCn(Ref<Texture>& texture, const char *destPath) {
-        if (texture->m_ImageFormatState == ImageFormatState::COMPRESSED) {
-            Info("Texture already compressed!");
+    Ref<Texture> PackTexturesToChannels(const std::array<Ref<Texture>, 3>& textures) {
+        return PackTexturesToChannels(textures[0], textures[1], textures[2]);
+    }
+
+    void CompressTextureToBCn(Ref<Texture>& texture, const std::string& destPath) {
+        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetName())) {
+            Info("Texture already compressed! Texture name: " + texture->GetName());
             return;
         }
 
-        auto& texData = texture->m_Data;
+        auto& texData = texture->GetData();
         const int inputPixelCount   = texData.m_Width * texData.m_Height;
         const int inputChannelCount = texData.m_ChannelCount;
 
-        const Scope<int8_t> inpData = CreateScope<int8_t>(texData.m_DataSize);
-        int8_t* inputData = inpData.get();
+        int8_t* inputData = new int8_t[texData.m_DataSize];
 
         for (int i = 0; i < inputPixelCount; ++i)
         {
@@ -94,6 +123,11 @@ namespace Real::Tools {
                 destFormat = CMP_FORMAT_BC7; // 8-bit
                 texData.m_InternalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM; // match it to BC7
                 break;
+
+            default:
+                // Use it BC7 for now
+                destFormat = CMP_FORMAT_BC7; // 8-bit
+                texData.m_InternalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM; // match it to BC7
         }
 
         // Create the MipSet to hold the input data
@@ -108,6 +142,8 @@ namespace Real::Tools {
         CMP_GetMipLevel(&baseLevel, &inputTexture, 0, 0);
 
         memcpy(baseLevel->m_pbData, inputData, inputPixelCount * inputChannelCount);
+        // Free memory after copy
+        delete[] inputData;
 
         // Setup a results buffer for the processed data
         CMP_MipSet resultTexture = {};
@@ -163,19 +199,20 @@ namespace Real::Tools {
         CMP_DestroyBlockEncoder(&bcnEncoder);
 
         // Save the result to a file
-        status = CMP_SaveTexture(destPath, &resultTexture);
+        std::string fullName = destPath + texture->GetFileInfo().stem + ".dds";
+        status = CMP_SaveTexture(fullName.c_str(), &resultTexture);
 
         // Clean up buffers
         CMP_FreeMipSet(&inputTexture);
         CMP_FreeMipSet(&resultTexture);
 
         if (status != CMP_OK) {
-            std::printf("Error %d: Saving processed file %s\n", status, destPath);
+            std::printf("Error %d: Saving processed file %s\n", status, destPath.c_str());
             return;
         }
 
-        texture->m_ImageFormatState = ImageFormatState::COMPRESSED;
+        texture->SetImageFormat(ImageFormatState::COMPRESSED);
 
-        Info(ConcatStr("Texture compression done for path: ", destPath));
+        Info(ConcatStr("Texture compression done for path: ", fullName));
     }
 }

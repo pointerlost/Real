@@ -13,32 +13,27 @@ namespace Real {
 
         switch (resolution) {
             case TextureResolution::_256:
-                tex->m_TexIndex = static_cast<int>(m_AlbedoMapTexArray_256.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_AlbedoMapTexArray_256.size()));
                 m_AlbedoMapTexArray_256.push_back(tex);
                 break;
             case TextureResolution::_512:
-                tex->m_TexIndex = static_cast<int>(m_AlbedoMapTexArray_512.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_AlbedoMapTexArray_512.size()));
                 m_AlbedoMapTexArray_512.push_back(tex);
                 break;
             case TextureResolution::_1024:
-                tex->m_TexIndex = static_cast<int>(m_AlbedoMapTexArray_1024.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_AlbedoMapTexArray_1024.size()));
                 m_AlbedoMapTexArray_1024.push_back(tex);
                 break;
             case TextureResolution::_2048:
-                tex->m_TexIndex = static_cast<int>(m_AlbedoMapTexArray_2048.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_AlbedoMapTexArray_2048.size()));
                 m_AlbedoMapTexArray_2048.push_back(tex);
                 break;
             case TextureResolution::_4096:
-                tex->m_TexIndex = static_cast<int>(m_AlbedoMapTexArray_4096.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_AlbedoMapTexArray_4096.size()));
                 m_AlbedoMapTexArray_4096.push_back(tex);
                 break;
         }
-        m_CheckTextureExists.insert(tex->m_Data.m_Handle);
+        m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
     void TextureArrays::AddNormalMap(TextureResolution resolution, const Ref<Texture> &tex) {
@@ -46,32 +41,27 @@ namespace Real {
 
         switch (resolution) {
             case TextureResolution::_256:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_256.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_256.size()));
                 m_NormalMapTexArray_256.push_back(tex);
                 break;
             case TextureResolution::_512:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_512.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_512.size()));
                 m_NormalMapTexArray_512.push_back(tex);
                 break;
             case TextureResolution::_1024:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_1024.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_1024.size()));
                 m_NormalMapTexArray_1024.push_back(tex);
                 break;
             case TextureResolution::_2048:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_2048.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_2048.size()));
                 m_NormalMapTexArray_2048.push_back(tex);
                 break;
             case TextureResolution::_4096:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_4096.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_4096.size()));
                 m_NormalMapTexArray_4096.push_back(tex);
                 break;
         }
-        m_CheckTextureExists.insert(tex->m_Data.m_Handle);
+        m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
     void TextureArrays::AddRMATexturesMap(TextureResolution resolution, const Ref<Texture> &tex) {
@@ -79,32 +69,27 @@ namespace Real {
 
         switch (resolution) {
             case TextureResolution::_256:
-                tex->m_TexIndex = static_cast<int>(m_rmaMapTexArray_256.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_rmaMapTexArray_256.size()));
                 m_NormalMapTexArray_256.push_back(tex);
                 break;
             case TextureResolution::_512:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_512.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_512.size()));
                 m_NormalMapTexArray_512.push_back(tex);
                 break;
             case TextureResolution::_1024:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_1024.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_1024.size()));
                 m_NormalMapTexArray_1024.push_back(tex);
                 break;
             case TextureResolution::_2048:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_2048.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_2048.size()));
                 m_NormalMapTexArray_2048.push_back(tex);
                 break;
             case TextureResolution::_4096:
-                tex->m_TexIndex = static_cast<int>(m_NormalMapTexArray_4096.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_NormalMapTexArray_4096.size()));
                 m_NormalMapTexArray_4096.push_back(tex);
                 break;
         }
-        m_CheckTextureExists.insert(tex->m_Data.m_Handle);
+        m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
     void TextureArrays::AddHeightMap(TextureResolution resolution, const Ref<Texture> &tex) {
@@ -112,35 +97,30 @@ namespace Real {
 
         switch (resolution) {
             case TextureResolution::_256:
-                tex->m_TexIndex = static_cast<int>(m_HeightMapTexArray_256.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_HeightMapTexArray_256.size()));
                 m_HeightMapTexArray_256.push_back(tex);
                 break;
             case TextureResolution::_512:
-                tex->m_TexIndex = static_cast<int>(m_HeightMapTexArray_512.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_HeightMapTexArray_512.size()));
                 m_HeightMapTexArray_512.push_back(tex);
                 break;
             case TextureResolution::_1024:
-                tex->m_TexIndex = static_cast<int>(m_HeightMapTexArray_1024.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_HeightMapTexArray_1024.size()));
                 m_HeightMapTexArray_1024.push_back(tex);
                 break;
             case TextureResolution::_2048:
-                tex->m_TexIndex = static_cast<int>(m_HeightMapTexArray_2048.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_HeightMapTexArray_2048.size()));
                 m_HeightMapTexArray_2048.push_back(tex);
                 break;
             case TextureResolution::_4096:
-                tex->m_TexIndex = static_cast<int>(m_HeightMapTexArray_4096.size());
-                tex->m_ArrayIndex = m_TextureArrayIndex++;
+                tex->SetTexIndex(static_cast<int>(m_HeightMapTexArray_4096.size()));
                 m_HeightMapTexArray_4096.push_back(tex);
                 break;
         }
-        m_CheckTextureExists.insert(tex->m_Data.m_Handle);
+        m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
     bool TextureArrays::IsTextureExists(const Ref<Texture> &texture) const {
-        return m_CheckTextureExists.contains(texture->m_Data.m_Handle);
+        return m_CheckTextureExists.contains(texture->GetData().m_Handle);
     }
 }

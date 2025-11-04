@@ -18,24 +18,22 @@ void main() {
     vec3 result = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);
-    int texDiffLayer = GetTextureLayer(fs_in.MaterialIndex);
-    int texSpecLayer = GetTextureLayer2(fs_in.MaterialIndex);
-    vec3 matColor = GetBaseColor(fs_in.MaterialIndex).rgb;
+    // vec3 matColor = GetBaseColor(fs_in.MaterialIndex).rgb;
 
     for (int i = 0; i < lightCount; i++) {
         vec3 lightDir = GetLightDir(i);
         vec3 viewDir = normalize(GetViewPos() - fs_in.FragPos);
         vec3 halfwayDir = normalize(lightDir + viewDir);
 
-        float NdotH = pow(max(dot(normal, halfwayDir), 0.0), GetShininess(fs_in.MaterialIndex));
+        float NdotH = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
 
-        vec3 texDiff = texture(u_TextureArray, vec3(fs_in.UV, texDiffLayer)).rgb;
-        vec3 texSpec = texture(u_TextureArray, vec3(fs_in.UV, texSpecLayer)).rgb;
+        // vec3 texDiff = texture(u_TextureArray, vec3(fs_in.UV, texDiffLayer)).rgb;
+        // vec3 texSpec = texture(u_TextureArray, vec3(fs_in.UV, texSpecLayer)).rgb;
 
-        if (texDiffLayer < 0.0) texDiff = matColor;
-        if (texSpecLayer < 0.0) texSpec = vec3(0.0, 0.0, 0.0);
+        // if (texDiffLayer < 0.0) texDiff = matColor;
+        // if (texSpecLayer < 0.0) texSpec = vec3(0.0, 0.0, 0.0);
 
-        result += CalculateLighting(i, fs_in.Normal, NdotH, fs_in.FragPos, texDiff, texSpec, GetGlobalAmbient(), matColor);
+        result += CalculateLighting(i, fs_in.Normal, NdotH, fs_in.FragPos, vec3(1.0), vec3(1.0), GetGlobalAmbient(), vec3(1.0));
     }
 
     // Call SRGB_to_LinearSpace function to get correct result, this function applying Gamma Correction

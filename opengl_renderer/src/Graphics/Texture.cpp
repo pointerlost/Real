@@ -2,12 +2,63 @@
 // Created by pointerlost on 10/12/25.
 //
 #include "Graphics/Texture.h"
-#include "Core/AssetManager.h"
-#include "Core/Logger.h"
-#include "Core/Services.h"
-#include "Core/Utils.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
 namespace Real {
+
+    Texture::Texture(ImageFormatState format) : m_ImageFormatState(format), m_Type(TextureType::UNDEFINED)
+    {
+    }
+
+    Texture::Texture(const Ref<TextureData> &data, TextureType type) : m_Data(data.get()), m_Type(type)
+    {
+    }
+
+    void Texture::SetData(TextureData data) {
+        m_Data = data;
+    }
+
+    void Texture::SetFileInfo(FileInfo info) {
+        m_FileInfo = info;
+    }
+
+    void Texture::SetTexIndex(int idx) {
+        m_TexIndex = idx;
+    }
+
+    void Texture::SetTexArrayIndex(int idx) {
+        m_ArrayIndex = idx;
+    }
+
+    void Texture::SetType(TextureType type) {
+        m_Type = type;
+    }
+
+    void Texture::SetImageFormat(ImageFormatState format) {
+        m_ImageFormatState = format;
+    }
+
+    std::string Texture::GetTypeAsString(TextureType type) const {
+        switch (type) {
+            case TextureType::ALB:
+                return "ALB";
+            case TextureType::NRM:
+                return "NRM";
+            case TextureType::RGH:
+                return "RGH";
+            case TextureType::MTL:
+                return "MTL";
+            case TextureType::AO:
+                return "AO";
+            case TextureType::RMA:
+                return "RMA";
+            case TextureType::HEIGHT:
+                return "HEIGHT";
+
+            default:
+                return "UNDEFINED";
+        }
+    }
+
 }

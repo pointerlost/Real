@@ -12,6 +12,7 @@ find_package(assimp CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
+
 add_executable(${PROJECT_NAME}
     main/main.cpp
     src/Core/file_manager.cpp
@@ -100,6 +101,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor
 )
+
 target_include_directories(glad_local PUBLIC vendor/glad/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
@@ -110,11 +112,21 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     imgui::imgui
     assimp::assimp
     zstd::libzstd
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Compressonator.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Framework.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Common.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_DDS.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_KTX.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_EXR.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_TGA.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_SSE.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX512.a
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
 set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
-
 
 configure_file(
     include/Core/Config.h.in

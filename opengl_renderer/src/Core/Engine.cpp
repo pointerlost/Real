@@ -90,12 +90,9 @@ namespace Real {
 
         const auto& defaultMat = m_AssetManager->GetDefaultMat();
         const auto& material = Services::GetAssetManager()->CreateMaterialInstance("material");
-        material->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("floor_wood"));
         // material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
 
         const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("material2");
-        material2->AddTexture(TextureType::BaseColor, m_AssetManager->GetTexture("container2"));
-        material2->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
 
         auto& cube = m_Scene->CreateEntity("RightWall");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));

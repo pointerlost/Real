@@ -25,22 +25,22 @@ mat4 GetProjection() { return uCamera.projection;     }
 
 // TODO: #extension GL_ARB_bindless_texture : require
 struct Material {
-    vec4 baseColor;
-    vec4 emissiveMetallic;
-    int textureLayers[4]; // 0 = tex diffuse layer, 1 = tex specular layer, other indices padding (16-byte alignment)
-    float roughnessShininess[4]; // 0 = roughness, 1 = shininess
+    // Texture Override Colors
+    vec4 m_BaseColor;
+    vec4 m_NormalRMA; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
+
+    // Texture index
+    int albedoMapIdx;
+    int normalMapIdx;
+    int rmaMapIdx;
+    int heightMapIdx;
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
 };
+// TODO: write helpers for textures
 
-vec4 GetBaseColor(int idx)    { return materials[idx].baseColor; }
-vec3 GetEmissive(int idx)     { return materials[idx].emissiveMetallic.xyz;  }
-float GetMetallic(int idx)    { return materials[idx].emissiveMetallic.w;    }
-float GetRoughness(int idx)   { return materials[idx].roughnessShininess[0]; }
-float GetShininess(int idx)   { return materials[idx].roughnessShininess[1]; }
-int GetTextureLayer(int idx)  { return materials[idx].textureLayers[0]; }
-int GetTextureLayer2(int idx) { return materials[idx].textureLayers[1]; }
+
 
 // TODO: improvable from the perspective of memory padding
 struct Light {

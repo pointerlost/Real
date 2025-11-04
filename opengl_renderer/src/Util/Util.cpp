@@ -8,8 +8,8 @@
 
 namespace Real::Util {
 
-    FileInfo IterateDirectory(const std::string &folderPath) {
-        FileInfo fileInfo{};
+    std::vector<FileInfo> IterateDirectory(const std::string &folderPath) {
+        std::vector<FileInfo> files;
         namespace fs = std::filesystem;
 
         if (!File::Exists(folderPath)) {
@@ -19,17 +19,20 @@ namespace Real::Util {
 
         for (auto &p : fs::recursive_directory_iterator(folderPath)) {
             if (p.path().has_extension()) {
+                FileInfo fileInfo{};
                 fileInfo.name = p.path().filename();
-                fileInfo.extension = p.path().extension();
+                fileInfo.ext = p.path().extension();
                 fileInfo.stem = p.path().stem();
                 fileInfo.path = p.path();
+                files.emplace_back(fileInfo);
             }
         }
 
-        return fileInfo;
+        return files;
     }
 
     bool CheckSubStrExistsInString(const std::string &subStr, const std::string &string) {
         return string.find(subStr) != std::string::npos;
     }
+
 }

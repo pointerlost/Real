@@ -21,10 +21,10 @@ namespace Real {
         const Shader &GetShader(const std::string& name);
 
         [[nodiscard]] bool IsTextureCompressed(const std::string& name) const;
-        void LoadUncompressedTexture(const std::string& name, const std::string& filePath, TextureType type, const FileInfo& info);
-        void LoadUncompressedTexture(const std::string& name, const std::string& filePath, TextureType type);
-        void LoadUncompressedTexture(const std::string& name, const FileInfo &info, TextureType type);
-        void LoadUncompressedTextures(const std::string& name, void* mixedData, TextureType type);
+        Ref<Texture> LoadUncompressedTexture(const std::string& name, const std::string& filePath, TextureType type, const FileInfo& info = FileInfo());
+        Ref<Texture> LoadUncompressedTexture(const std::string& name, const FileInfo &info, TextureType type);
+        void LoadUncompressedTextures(const std::string& name, void* mixedData, TextureType type = TextureType::RMA);
+        void CreateCompressedTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
         void CreateTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
         void LoadTextures();
         Ref<Texture>& GetTexture(const std::string& name) {

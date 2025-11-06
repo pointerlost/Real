@@ -48,8 +48,7 @@ namespace Real {
         m_Buffers.camera.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 3);
         m_Buffers.material.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 4);
         m_Buffers.light.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 5);
-        // Texture array binding point = 6
-        m_Buffers.globalData.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 7);
+        m_Buffers.globalData.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 6);
     }
 
     void RenderContext::UploadToGPU() {

@@ -5,6 +5,7 @@
 #include <string>
 #include "Core/file_manager.h"
 #include "Core/Utils.h"
+#include "glad/glad.h"
 
 namespace Real {
 
@@ -42,7 +43,7 @@ namespace Real {
         int m_Height;
         int m_DataSize;
         int m_ChannelCount;
-        int m_Format;
+        GLenum m_Format;
         int m_InternalFormat;
         ImageCompressedType m_ImageCompressType;
     };
@@ -65,7 +66,7 @@ namespace Real {
         [[nodiscard]] const std::string& GetName() const { return m_FileInfo.stem; }
         [[nodiscard]] const std::string& GetFullName() const { return m_FileInfo.name; }
         [[nodiscard]] int GetIndex() const { return m_TexIndex; }
-        [[nodiscard]] int GetTexArrayIndex() const { return m_TexIndex; }
+        [[nodiscard]] int GetArrayIndex() const { return m_TexIndex; }
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] std::string GetTypeAsString(TextureType type) const;
         [[nodiscard]] ImageFormatState GetImageFormat() const { return m_ImageFormatState; }

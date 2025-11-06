@@ -2,6 +2,8 @@
 // Created by pointerlost on 10/12/25.
 //
 #include "Graphics/Texture.h"
+
+#include <utility>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
@@ -20,7 +22,7 @@ namespace Real {
     }
 
     void Texture::SetFileInfo(FileInfo info) {
-        m_FileInfo = info;
+        m_FileInfo = std::move(info);
     }
 
     void Texture::SetTexIndex(int idx) {

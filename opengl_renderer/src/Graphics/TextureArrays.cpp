@@ -8,7 +8,7 @@
 
 namespace Real {
 
-    void TextureArrays::AddAlbedoMap(TextureResolution resolution, const Ref<Texture>& tex) {
+    void TextureArrayManager::AddAlbedoMap(TextureResolution resolution, const Ref<Texture>& tex) {
         if (IsTextureExists(tex)) return;
 
         switch (resolution) {
@@ -36,7 +36,7 @@ namespace Real {
         m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
-    void TextureArrays::AddNormalMap(TextureResolution resolution, const Ref<Texture> &tex) {
+    void TextureArrayManager::AddNormalMap(TextureResolution resolution, const Ref<Texture> &tex) {
         if (IsTextureExists(tex)) return;
 
         switch (resolution) {
@@ -64,7 +64,7 @@ namespace Real {
         m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
-    void TextureArrays::AddRMATexturesMap(TextureResolution resolution, const Ref<Texture> &tex) {
+    void TextureArrayManager::AddRMATexturesMap(TextureResolution resolution, const Ref<Texture> &tex) {
         if (IsTextureExists(tex)) return;
 
         switch (resolution) {
@@ -92,7 +92,7 @@ namespace Real {
         m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
-    void TextureArrays::AddHeightMap(TextureResolution resolution, const Ref<Texture> &tex) {
+    void TextureArrayManager::AddHeightMap(TextureResolution resolution, const Ref<Texture> &tex) {
         if (IsTextureExists(tex)) return;
 
         switch (resolution) {
@@ -120,7 +120,69 @@ namespace Real {
         m_CheckTextureExists.insert(tex->GetData().m_Handle);
     }
 
-    bool TextureArrays::IsTextureExists(const Ref<Texture> &texture) const {
-        return m_CheckTextureExists.contains(texture->GetData().m_Handle);
+    const std::vector<Ref<Texture>> & TextureArrayManager::GetTextureArray(TextureResolution resolution, TextureType type) {
+        if (type == TextureType::ALB) {
+            switch (resolution) {
+                case TextureResolution::_256:
+                    return m_AlbedoMapTexArray_256;
+                case TextureResolution::_512:
+                    return m_AlbedoMapTexArray_512;
+                case TextureResolution::_1024:
+                    return m_AlbedoMapTexArray_1024;
+                case TextureResolution::_2048:
+                    return m_AlbedoMapTexArray_2048;
+                case TextureResolution::_4096:
+                    return m_AlbedoMapTexArray_4096;
+            }
+        }
+        else if (type == TextureType::NRM) {
+            switch (resolution) {
+                case TextureResolution::_256:
+                    return m_NormalMapTexArray_256;
+                case TextureResolution::_512:
+                    return m_NormalMapTexArray_512;
+                case TextureResolution::_1024:
+                    return m_NormalMapTexArray_1024;
+                case TextureResolution::_2048:
+                    return m_NormalMapTexArray_2048;
+                case TextureResolution::_4096:
+                    return m_NormalMapTexArray_4096;
+            }
+        }
+        else if (type == TextureType::RMA) {
+            switch (resolution) {
+                case TextureResolution::_256:
+                    return m_rmaMapTexArray_256;
+                case TextureResolution::_512:
+                    return m_rmaMapTexArray_512;
+                case TextureResolution::_1024:
+                    return m_rmaMapTexArray_1024;
+                case TextureResolution::_2048:
+                    return m_rmaMapTexArray_2048;
+                case TextureResolution::_4096:
+                    return m_rmaMapTexArray_4096;
+            }
+        }
+        else if (type == TextureType::HEIGHT) {
+            switch (resolution) {
+                case TextureResolution::_256:
+                    return m_HeightMapTexArray_256;
+                case TextureResolution::_512:
+                    return m_HeightMapTexArray_512;
+                case TextureResolution::_1024:
+                    return m_HeightMapTexArray_1024;
+                case TextureResolution::_2048:
+                    return m_HeightMapTexArray_2048;
+                case TextureResolution::_4096:
+                    return m_HeightMapTexArray_4096;
+            }
+        }
+        return
+
+    }
+
+    bool TextureArrayManager::IsTextureExists(const Ref<Texture> &texture) const {
+        const auto handle = texture->GetData().m_Handle;
+        return m_CheckTextureExists.contains(handle) && handle != 0;
     }
 }

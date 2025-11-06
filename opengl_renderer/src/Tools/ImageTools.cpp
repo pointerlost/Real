@@ -11,7 +11,7 @@
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
 
-namespace Real::Tools {
+namespace Real::tools {
 
     Ref<Texture> PackTexturesToChannels(const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3) {
         if (!tex1 || !tex2 || !tex3) {

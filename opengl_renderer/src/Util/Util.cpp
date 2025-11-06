@@ -5,8 +5,9 @@
 
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
+#include "Graphics/Texture.h"
 
-namespace Real::Util {
+namespace Real::util {
 
     std::vector<FileInfo> IterateDirectory(const std::string &folderPath) {
         std::vector<FileInfo> files;
@@ -35,4 +36,64 @@ namespace Real::Util {
         return string.find(subStr) != std::string::npos;
     }
 
+    int FindClosestPowerOfTwo(int num) {
+        int x = 1;
+        int y = 0;
+        while (x < num) {
+            y = x;
+            x <<= 1;
+        }
+        return abs(y - num) > abs(x - num) ? x : y;
+    }
+
+    ImageCompressedType PickTextureCompressionType(TextureType type) {
+        switch (type) {
+            case TextureType::ALB:
+            case TextureType::RMA:
+                return ImageCompressedType::BC7;
+
+            case TextureType::NRM:
+                return ImageCompressedType::BC5;
+
+            case TextureType::HEIGHT:
+            case TextureType::RGH:
+            case TextureType::MTL:
+            case TextureType::AO:
+                return ImageCompressedType::BC4;
+
+            default:
+                return ImageCompressedType::UNDEFINED;
+        }
+    }
+
+    GLenum ConvertChannelCountToGLType(int channelCount) {
+        switch (channelCount) {
+            case 1:
+                return GL_R8;
+            case 2:
+                return GL_RG8;
+            case 4:
+                return GL_RGBA8;
+
+            default:
+                return GL_RGB8;
+        }
+    }
+
+    TextureType StringToEnumTextureType(const std::string &type) {
+        if (type == "ALB") {
+            return TextureType::ALB;
+        } else if (type == "NRM") {
+            return TextureType::NRM;
+        } else if (type == "RGH") {
+            return TextureType::RGH;
+        } else if (type == "MTL") {
+            return TextureType::MTL;
+        } else if (type == "AO") {
+            return TextureType::AO;
+        } else if (type == "HEIGHT") {
+            return TextureType::HEIGHT;
+        }
+        return TextureType::UNDEFINED;
+    }
 }

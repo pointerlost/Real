@@ -14,10 +14,14 @@ namespace Real {
 namespace Real {
 
     struct Material {
-        Ref<Texture> m_AlbedoMap;
-        Ref<Texture> m_NormalMap;
-        Ref<Texture> m_rmaMap;
-        Ref<Texture> m_HeightMap;
+        std::string m_AlbedoMapName;
+        std::string m_NormalMapName;
+        std::string m_rmaMapName;
+        std::string m_HeightMapName;
+        // Ref<Texture> m_AlbedoMap;
+        // Ref<Texture> m_NormalMap;
+        // Ref<Texture> m_rmaMap;
+        // Ref<Texture> m_HeightMap;
     };
 
     struct MaterialInstance {

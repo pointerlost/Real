@@ -22,7 +22,7 @@ namespace Real {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 
-    /* concatenate everything into a string */
+    /* Concatenate everything into a string */
     template <typename... Args>
     std::string ConcatStr(Args... args) {
         return (static_cast<std::string>(args) + ...);

@@ -23,23 +23,30 @@ mat4 GetProjView()   { return uCamera.viewProjection; }
 mat4 GetView()       { return uCamera.view;           }
 mat4 GetProjection() { return uCamera.projection;     }
 
-// TODO: #extension GL_ARB_bindless_texture : require
+// TODO: I won't use it bindless textures for now! | #extension GL_ARB_bindless_texture : require
 struct Material {
     // Texture Override Colors
     vec4 m_BaseColor;
     vec4 m_NormalRMA; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
 
     // Texture index
-    int albedoMapIdx;
-    int normalMapIdx;
-    int rmaMapIdx;
-    int heightMapIdx;
+    ivec2 albedoMapLookupData;
+    ivec2 normalMapLookupData;
+    ivec2 rmaMapLookupData;
+    ivec2 heightMapLookupData;
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
 };
-// TODO: write helpers for textures
-
+vec4 GetMatBaseColor(int idx) { return materials[idx].m_BaseColor; }
+float GetMatNormalColor(int idx) { return materials[idx].m_NormalRMA[0]; }
+float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalRMA[1]; }
+float GetMatMetallicColor(int idx) { return materials[idx].m_NormalRMA[2]; }
+float GetMatAOColor(int idx) { return materials[idx].m_NormalRMA[3]; }
+ivec2 GetAlbedoLookupData(int idx) { return materials[idx].albedoMapLookupData; }
+ivec2 GetNormalMapLookupData(int idx) { return materials[idx].normalMapLookupData; }
+ivec2 GetRMAMapLookupData(int idx) { return materials[idx].rmaMapLookupData; }
+ivec2 GetHeightMapLookupData(int idx) { return materials[idx].heightMapLookupData; }
 
 
 // TODO: improvable from the perspective of memory padding
@@ -92,11 +99,11 @@ layout (std430, binding = 1) buffer EntityMetaData {
 };
 
 
-// Texture array
-layout (binding = 6) uniform sampler2DArray u_TextureArray;
+// Texture arrays
+uniform sampler2DArray textureMapArrays[20]; // Per-type, Per-resolutions
 
 // Global Data
-layout(std140, binding = 7) uniform GlobalDataUBO {
+layout(std140, binding = 6) uniform GlobalDataUBO {
     vec4 GlobalAmbient; // last index padding
     int lightCount[4]; // 0 = lightCount, other indices padding
 } uGlobalData;

@@ -12,7 +12,6 @@ find_package(assimp CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
-
 add_executable(${PROJECT_NAME}
     main/main.cpp
     src/Core/file_manager.cpp
@@ -92,6 +91,10 @@ add_executable(${PROJECT_NAME}
     src/Tools/ImageTools.cpp
     include/Graphics/TextureArrays.h
     src/Graphics/TextureArrays.cpp
+        include/Common/Scheduling/Threads.h
+        src/Common/Scheduling/Threads.cpp
+        include/Common/Macros.h
+        include/Core/Types.h
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
@@ -112,6 +115,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     imgui::imgui
     assimp::assimp
     zstd::libzstd
+
+    # Compressonator
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Compressonator.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Framework.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core.a

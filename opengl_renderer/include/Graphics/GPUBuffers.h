@@ -27,11 +27,11 @@ namespace Real {
         glm::vec4 m_BaseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
         glm::vec4 m_NormalRMA = {}; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
 
-        // TODO: store override colors inside materialInstance, use MaterialBase as a texture storage!!!
-        int albedoMapIdx;
-        int normalMapIdx;
-        int rmaMapIdx;
-        int heightMapIdx;
+        // lookup table provides us texIndex and texArrayIndex
+        glm::ivec2 albedoMapLookupData;
+        glm::ivec2 normalMapLookupData;
+        glm::ivec2 rmaMapLookupData;
+        glm::ivec2 heightMapLookupData;
     };
 
     struct CameraUBO {

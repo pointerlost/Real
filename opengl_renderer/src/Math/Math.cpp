@@ -70,4 +70,8 @@ namespace Real::Math {
 
         return true;
     }
+
+    int FindMax(int firstNum, int secondNum) {
+        return std::max(firstNum, secondNum);
+    }
 }

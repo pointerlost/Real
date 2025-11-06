@@ -44,7 +44,7 @@ namespace Real {
         int m_DataSize;
         int m_ChannelCount;
         GLenum m_Format;
-        int m_InternalFormat;
+        GLenum m_InternalFormat;
         ImageCompressedType m_ImageCompressType;
     };
 

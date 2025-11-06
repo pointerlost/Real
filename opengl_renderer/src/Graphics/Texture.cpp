@@ -2,10 +2,7 @@
 // Created by pointerlost on 10/12/25.
 //
 #include "Graphics/Texture.h"
-
 #include <utility>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
 
 namespace Real {
 

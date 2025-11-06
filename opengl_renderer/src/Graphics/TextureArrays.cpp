@@ -177,8 +177,7 @@ namespace Real {
                     return m_HeightMapTexArray_4096;
             }
         }
-        return
-
+        return {};
     }
 
     bool TextureArrayManager::IsTextureExists(const Ref<Texture> &texture) const {

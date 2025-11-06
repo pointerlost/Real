@@ -4,7 +4,7 @@
 #pragma once
 #include <string>
 #include <vector>
-
+#include "compressonator/include/cmp_compressonatorlib/compressonator.h"
 #include "glad/glad.h"
 
 namespace Real {
@@ -21,5 +21,9 @@ namespace Real::util {
     [[nodiscard]] int FindClosestPowerOfTwo(int num);
     ImageCompressedType PickTextureCompressionType(TextureType type);
     GLenum ConvertChannelCountToGLType(int channelCount);
+    GLenum CompressTypeToGLEnum(ImageCompressedType type);
+    std::string CompressTypeToString(ImageCompressedType type);
     TextureType StringToEnumTextureType(const std::string& type);
+    std::string TextureTypeEnumToString(TextureType type);
+    CMP_FORMAT GetCMPFormatWithCompressType(ImageCompressedType type);
 }

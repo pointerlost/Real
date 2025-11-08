@@ -7,51 +7,67 @@
 #include "Graphics/Material.h"
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
+#include "Math/Math.h"
 #include "Util/Util.h"
 
 namespace Real::tools {
 
-    Ref<Texture> PackTexturesToChannels(const std::string& name, const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3) {
+    Ref<Texture> PackTexturesToRGBChannels(const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3) {
         if (!tex1 && !tex2 && !tex3) {
             Warn("There is no texture! from: " + std::string(__FILE__));
             return {};
         }
-        constexpr int channelCount = 3; // RGB
-
         Ref<Texture> mixedTexture = CreateRef<Texture>();
-        // Create mixedTexture data
-        const auto mixedTexRawData = new uint8_t[tex1->GetData().m_DataSize];
+        // mixedTexture->SetData(tex1->GetData());
 
-        const auto tex1Data = static_cast<unsigned char *>(tex1->GetData().m_Data);
-        const auto tex2Data = static_cast<unsigned char *>(tex2->GetData().m_Data);
-        const auto tex3Data = static_cast<unsigned char *>(tex3->GetData().m_Data);
+        const auto tex1Data = static_cast<uint8_t *>(tex1->GetData().m_Data);
+        const auto tex2Data = static_cast<uint8_t *>(tex2->GetData().m_Data);
+        const auto tex3Data = static_cast<uint8_t *>(tex3->GetData().m_Data);
 
         // All textures have the same resolution
         const int texWidth = mixedTexture->GetData().m_Width;
         const int texHeight = mixedTexture->GetData().m_Height;
+        constexpr int channelCount = 3;
+        const int dataSize = texWidth * texHeight * channelCount * 1;
+
+        // Create mixedTexture data
+        mixedTexture->GetData().m_Data = new uint8_t[dataSize];
+        uint8_t* mixedTexRawData = static_cast<uint8_t*>(mixedTexture->GetData().m_Data);
 
         for (int y = 0; y < texHeight; y++) {
             for (int x = 0; x < texWidth; x++) {
-                const int pixelIdx = (y * texWidth + x) * channelCount;
-                mixedTexRawData[pixelIdx + 0] = tex1Data[pixelIdx + 0];
-                mixedTexRawData[pixelIdx + 1] = tex2Data[pixelIdx + 1];
-                mixedTexRawData[pixelIdx + 2] = tex3Data[pixelIdx + 2];
+                const int p = y * texWidth + x;
+
+                const int src1 = p * tex1->GetData().m_ChannelCount;
+                const int src2 = p * tex2->GetData().m_ChannelCount;
+                const int src3 = p * tex3->GetData().m_ChannelCount;
+
+                const int dst = p * 3;
+
+                mixedTexRawData[dst + 0] = tex1Data[src1];
+                mixedTexRawData[dst + 1] = tex2Data[src2];
+                mixedTexRawData[dst + 2] = tex3Data[src3];
             }
         }
+        auto& mixedData = mixedTexture->GetData();
         // Copy the local mixed text data into the original text data to free up memory
-        memcpy(mixedTexture->GetData().m_Data, mixedTexRawData, mixedTexture->GetData().m_DataSize);
-        delete[] mixedTexRawData;
 
-        return std::move(mixedTexture);
+        mixedData.m_ChannelCount = 3;
+        mixedData.m_DataSize = dataSize;
+        mixedData.m_Format = util::ConvertChannelCountToGLType(3, mixedTexture->GetName());
+        mixedData.m_ImageCompressType = util::PickTextureCompressionType(util::StringToEnumTextureType("RMA"));
+        mixedData.m_InternalFormat = util::CompressTypeToGLEnum(mixedTexture->GetData().m_ImageCompressType);
+
+        return mixedTexture;
     }
 
-    Ref<Texture> PackTexturesToChannels(const std::string& name, const std::array<Ref<Texture>, 3>& textures) {
-        return PackTexturesToChannels(name, textures[0], textures[1], textures[2]);
+    Ref<Texture> PackTexturesRGBToChannels(const std::array<Ref<Texture>, 3> &textures) {
+        return PackTexturesToRGBChannels(textures[0], textures[1], textures[2]);
     }
 
     void CompressTextureToBCn(Ref<Texture>& texture, const std::string& destPath) {
-        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetName())) {
-            Info("Texture already compressed! Texture name: " + texture->GetName());
+        if (!texture) {
+            Warn("[CompressTextureToBCn] Texture nullptr!");
             return;
         }
 
@@ -59,8 +75,9 @@ namespace Real::tools {
         const int inputPixelCount   = texData.m_Width * texData.m_Height;
         const int inputChannelCount = texData.m_ChannelCount;
 
-        int8_t* inputData = new int8_t[texData.m_DataSize];
+        uint8_t* inputData = new uint8_t[texData.m_DataSize];
 
+        // Info(util::TextureTypeEnumToString(texture->GetType())  + ": " + std::to_string(texData.m_DataSize));
         for (int i = 0; i < inputPixelCount; ++i)
         {
             inputData[i * inputChannelCount + 0] = 0xFF;
@@ -72,15 +89,13 @@ namespace Real::tools {
         // Init framework plugin and IO interfaces
         CMP_InitFramework();
 
-        // TODO: We can specify format texture-based like (albedo = BC1, so on.)
-        // TODO: there is a problem: We are loading texture as 8-bit, but using 16-bit compression options!!
+        // TODO: Treat it as 8-bit everything except the 16-bit We don't have 16 bit option yet!
         CMP_FORMAT destFormat;
-        Info(util::CompressTypeToString(texData.m_ImageCompressType));
-        texData.m_InternalFormat = util::CompressTypeToGLEnum(texData.m_ImageCompressType);
         destFormat = util::GetCMPFormatWithCompressType(texData.m_ImageCompressType);
 
         // Create the MipSet to hold the input data
         CMP_MipSet inputTexture = {};
+        // TODO: Treat it as 8-bit everything except the 16-bit We don't have 16 bit option yet!
         if (CMP_CreateMipSet(&inputTexture, texData.m_Width, texData.m_Height, 1, CF_8bit, TT_2D) != CMP_OK) {
             Error("[CMP_CreateMipSet] Failed to create MipSet");
             return;
@@ -130,6 +145,8 @@ namespace Real::tools {
         CMP_UINT srcStride = inputTexture.m_nWidth / 4;
         CMP_UINT dstStride = resultTexture.m_nWidth / 8;
 
+        texture->GetData().m_ImageSize = numBlocksX * numBlocksY * util::TexFormat_compressed_GetBytesPerBlock(texture->GetData().m_ImageCompressType);
+
         for (CMP_UINT y = 0; y < numBlocksY; ++y)
         {
             for (CMP_UINT x = 0; x < numBlocksX; ++x)
@@ -148,6 +165,9 @@ namespace Real::tools {
         CMP_DestroyBlockEncoder(&bcnEncoder);
 
         // Save the result to a file
+        if (texture->GetFileInfo().stem.empty()) {
+            Info(util::TextureTypeEnumToString(texture->GetType()));
+        }
         std::string fullName = destPath + texture->GetFileInfo().stem + ".dds";
         status = CMP_SaveTexture(fullName.c_str(), &resultTexture);
 

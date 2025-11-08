@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <iostream>
-#include <format>
 
 namespace Real {
 
@@ -11,10 +10,6 @@ namespace Real {
     constexpr void Info(const T& message) {
         std::cout << "INFO: " << message << "\n";
     }
-
-    // inline void InfoFmt(const std::string& message) {
-    //     printf(std::format(__FILE__ , message).c_str());
-    // }
 
     template <typename T>
     constexpr void Warn(const T& message) {
@@ -25,5 +20,10 @@ namespace Real {
     constexpr void Error(const T& message) {
         std::cerr << "ERROR: " << message << "\n";
         throw std::runtime_error(message);
+    }
+
+    template <typename... Args>
+    constexpr void WarnDebugExtraInfo(Args&&... args) {
+        // TODO: fill
     }
 }

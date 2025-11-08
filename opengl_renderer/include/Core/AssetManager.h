@@ -24,7 +24,7 @@ namespace Real {
         [[nodiscard]] bool IsTextureCompressed(const std::string& name) const;
         Ref<Texture> LoadUncompressedTexture(const std::string& name, const std::string& filePath, TextureType type, const FileInfo& info = FileInfo());
         Ref<Texture> LoadUncompressedTexture(const std::string& name, const FileInfo &info, TextureType type);
-        void LoadUncompressedTextures(const std::string& name, void* mixedData, TextureType type = TextureType::RMA);
+        Ref<Texture> LoadUncompressedTextures(const std::string& name, const Ref<Texture>& mixedTextures, const glm::ivec2& resolution, TextureType type = TextureType::RMA);
         void CreateCompressedTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
         void CreateTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
         void LoadTextures();

@@ -43,6 +43,7 @@ namespace Real {
         int m_Height;
         int m_DataSize;
         int m_ChannelCount;
+        GLsizei m_ImageSize;
         GLenum m_Format;
         GLenum m_InternalFormat;
         ImageCompressedType m_ImageCompressType;
@@ -50,8 +51,8 @@ namespace Real {
 
     struct Texture {
     public:
-        explicit Texture(ImageFormatState format = ImageFormatState::UNCOMPRESSED);
-        explicit Texture(const Ref<TextureData>& data, TextureType type = TextureType::UNDEFINED);
+        explicit Texture(ImageFormatState format = ImageFormatState::UNCOMPRESSED, bool isDefaultTex = false);
+        explicit Texture(const Ref<TextureData>& data, TextureType type = TextureType::UNDEFINED, bool isDefaultTex = false);
         Texture(const Texture&) = default;
 
         void SetData(TextureData data);
@@ -70,12 +71,14 @@ namespace Real {
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] std::string GetTypeAsString(TextureType type) const;
         [[nodiscard]] ImageFormatState GetImageFormat() const { return m_ImageFormatState; }
+        [[nodiscard]] bool IsDefault() const { return m_IsDefault; }
 
     private:
         TextureData m_Data{};
-        TextureType m_Type;
-        FileInfo m_FileInfo;
+        TextureType m_Type{};
+        FileInfo m_FileInfo{};
         ImageFormatState m_ImageFormatState = ImageFormatState::UNCOMPRESSED;
+        bool m_IsDefault = false;
 
         int m_TexIndex = -1;
         int m_ArrayIndex = -1;

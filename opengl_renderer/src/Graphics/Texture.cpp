@@ -6,11 +6,13 @@
 
 namespace Real {
 
-    Texture::Texture(ImageFormatState format) : m_ImageFormatState(format), m_Type(TextureType::UNDEFINED)
+    Texture::Texture(ImageFormatState format, bool isDefaultTex)
+        : m_Type(TextureType::UNDEFINED), m_ImageFormatState(format), m_IsDefault(isDefaultTex)
     {
     }
 
-    Texture::Texture(const Ref<TextureData> &data, TextureType type) : m_Data(data.get()), m_Type(type)
+    Texture::Texture(const Ref<TextureData> &data, TextureType type, bool isDefaultTex)
+        : m_Data(data.get()), m_Type(type), m_IsDefault(isDefaultTex)
     {
     }
 

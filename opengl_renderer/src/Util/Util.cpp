@@ -49,6 +49,7 @@ namespace Real::util {
     }
 
     ImageCompressedType PickTextureCompressionType(TextureType type) {
+        // TODO: when we add HDR Skyboxes match to BC6
         switch (type) {
             case TextureType::ALB:
             case TextureType::RMA:
@@ -64,21 +65,24 @@ namespace Real::util {
                 return ImageCompressedType::BC4;
 
             default:
+                Warn("Returning UNDEFINED Texture type for: " + TextureTypeEnumToString(type));
                 return ImageCompressedType::UNDEFINED;
         }
     }
 
-    GLenum ConvertChannelCountToGLType(int channelCount) {
+    GLenum ConvertChannelCountToGLType(int channelCount, const std::string& name) {
         switch (channelCount) {
             case 1:
                 return GL_R8;
             case 2:
                 return GL_RG8;
+            case 3:
+                return GL_RGB8;
             case 4:
                 return GL_RGBA8;
 
             default:
-                return GL_RGB8;
+                Warn("There is no GLType for this channel count, tex name: " + name);
         }
     }
 
@@ -100,7 +104,7 @@ namespace Real::util {
                 return GL_COMPRESSED_RGBA_BPTC_UNORM;
 
             default:
-                Warn("This image compression type does not have a GLenum!");
+                Warn("This image compression type does not have a GLenum: " + CompressTypeToString(type));
                 return GL_INVALID_ENUM;
         }
     }
@@ -132,6 +136,8 @@ namespace Real::util {
             return TextureType::ALB;
         } else if (type == "NRM") {
             return TextureType::NRM;
+        } else if (type == "RMA") {
+            return TextureType::RMA;
         } else if (type == "RGH") {
             return TextureType::RGH;
         } else if (type == "MTL") {
@@ -141,6 +147,7 @@ namespace Real::util {
         } else if (type == "HEIGHT") {
             return TextureType::HEIGHT;
         }
+        Info("Type returning UNDEFINED for: " + type);
         return TextureType::UNDEFINED;
     }
 
@@ -162,6 +169,7 @@ namespace Real::util {
                 return "RMA";
 
             default:
+                Warn("Texture type returning UNDEFINED for: " + TextureTypeEnumToString(type));
                 return "UNDEFINED";
         }
     }
@@ -184,7 +192,55 @@ namespace Real::util {
                 return CMP_FORMAT_BC7; // 8-bit
 
             default:
+                Warn("[GetCMPFormatWithCompressType] Unknown format!");
                 return CMP_FORMAT_Unknown;
         }
     }
+
+    // Bit Per Pixel
+    uint TexFormat_uncompressed_GetBitPerTexel(TextureType type) {
+        switch (type) {
+            case TextureType::ALB:
+            case TextureType::NRM:
+            case TextureType::RMA:
+                return 32;
+
+            case TextureType::RGH:
+            case TextureType::MTL:
+            case TextureType::AO:
+            case TextureType::HEIGHT:
+                return 8;
+
+            default: // TextureType::UNDEFINED
+                return 1;
+        }
+    }
+
+    uint TexFormat_uncompressed_GetBytePerTexel(TextureType type) {
+        return TexFormat_uncompressed_GetBitPerTexel(type) / 8;
+    }
+
+    uint TexFormat_compressed_GetBytesPerBlock(ImageCompressedType type) {
+        switch (type) {
+            case ImageCompressedType::BC1:
+                return 8;
+            case ImageCompressedType::BC2:
+                return 16;
+            case ImageCompressedType::BC3:
+                return 16;
+            case ImageCompressedType::BC4:
+                return 8;
+            case ImageCompressedType::BC5:
+                return 16;
+            case ImageCompressedType::BC6:
+                return 16;
+            case ImageCompressedType::BC7:
+                return 16;
+
+            default:
+                Warn("There is no ImageFormatState for this type!!! returning null val!");
+                return 0;
+        }
+    }
+
 }

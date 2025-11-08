@@ -20,10 +20,13 @@ namespace Real::util {
 
     [[nodiscard]] int FindClosestPowerOfTwo(int num);
     ImageCompressedType PickTextureCompressionType(TextureType type);
-    GLenum ConvertChannelCountToGLType(int channelCount);
+    GLenum ConvertChannelCountToGLType(int channelCount, const std::string& name = std::string());
     GLenum CompressTypeToGLEnum(ImageCompressedType type);
     std::string CompressTypeToString(ImageCompressedType type);
     TextureType StringToEnumTextureType(const std::string& type);
     std::string TextureTypeEnumToString(TextureType type);
     CMP_FORMAT GetCMPFormatWithCompressType(ImageCompressedType type);
+    uint TexFormat_uncompressed_GetBitPerTexel(TextureType type);
+    uint TexFormat_uncompressed_GetBytePerTexel(TextureType type);
+    uint TexFormat_compressed_GetBytesPerBlock(ImageCompressedType type);
 }

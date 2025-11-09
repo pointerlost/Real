@@ -23,6 +23,8 @@
 #include <stb/stb_image.h>
 #include <stb_image_resize2.h>
 
+#include "Graphics/TextureArrays.h"
+
 namespace Real {
 
     AssetManager::AssetManager() {
@@ -244,9 +246,11 @@ namespace Real {
                 channelFlag = STBIR_RGB;
         }
 
-        const auto newWidth = util::FindClosestPowerOfTwo(data.m_Width);
-        const auto newHeight = util::FindClosestPowerOfTwo(data.m_Height);
-        const auto newResolution = Math::FindMax(newWidth, newHeight);
+        auto newWidth = util::FindClosestPowerOfTwo(data.m_Width);
+        auto newHeight = util::FindClosestPowerOfTwo(data.m_Height);
+        if (newWidth < 256) newWidth = 256;
+        if (newHeight > 4096) newHeight = 4096;
+        auto newResolution = Math::FindMax(newWidth, newHeight);
 
         // Resize Texture And Set resizing type srgb for ALBEDO coz color data needs gamma correction
         if (type == TextureType::ALB) {
@@ -267,6 +271,9 @@ namespace Real {
         data.m_Format = util::ConvertChannelCountToGLType(data.m_ChannelCount, util::TextureTypeEnumToString(type));
         data.m_InternalFormat = util::CompressTypeToGLEnum(util::PickTextureCompressionType(type));
         data.m_ImageCompressType = util::PickTextureCompressionType(type);
+
+        // We have to check, if the enum matches the resolution!!
+        TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(newResolution), texture);
 
         // We are deciding for m_InternalFormat in Compress-time
         return m_Textures[name] = texture;

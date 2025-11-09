@@ -7,6 +7,10 @@
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
 
+namespace Real {
+    enum class TextureResolution;
+}
+
 struct ImFont;
 namespace Real { struct MaterialInstance; }
 

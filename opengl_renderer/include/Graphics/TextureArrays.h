@@ -2,8 +2,11 @@
 // Created by pointerlost on 11/1/25.
 //
 #pragma once
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+#include "Texture.h"
 #include "Core/Utils.h"
 
 namespace Real {
@@ -16,58 +19,26 @@ namespace Real {
 
 namespace Real {
 
-    enum class TextureResolution {
-        _256,
-        _512,
-        _1024,
-        _2048,
-        _4096,
+    enum class TextureResolution : uint {
+        _256 = 256,
+        _512 = 512,
+        _1024 = 1024,
+        _2048 = 2048,
+        _4096 = 4096,
+        UNDEFINED = 0,
     };
 
     struct TextureArrayManager {
-        void AddAlbedoMap(TextureResolution resolution, const Ref<Texture>& tex);
-        void AddNormalMap(TextureResolution resolution, const Ref<Texture>& tex);
-        void AddRMATexturesMap(TextureResolution resolution, const Ref<Texture>& tex);
-        void AddHeightMap(TextureResolution resolution, const Ref<Texture>& tex);
+        static void AddTextureMap(TextureType arrayType, TextureResolution resolution, Ref<Texture> texMap);
 
     private:
-        std::array<std::vector<Ref<Texture>>, 20> m_TextureArrays;
-        // BC7 compression
-        std::vector<Ref<Texture>> m_AlbedoMapTexArray_256;
-        std::vector<Ref<Texture>> m_AlbedoMapTexArray_512;
-        std::vector<Ref<Texture>> m_AlbedoMapTexArray_1024;
-        std::vector<Ref<Texture>> m_AlbedoMapTexArray_2048;
-        std::vector<Ref<Texture>> m_AlbedoMapTexArray_4096;
-
-        // BC5 compression
-        std::vector<Ref<Texture>> m_NormalMapTexArray_256;
-        std::vector<Ref<Texture>> m_NormalMapTexArray_512;
-        std::vector<Ref<Texture>> m_NormalMapTexArray_1024;
-        std::vector<Ref<Texture>> m_NormalMapTexArray_2048;
-        std::vector<Ref<Texture>> m_NormalMapTexArray_4096;
-
-        // BC4 compression | Roughness, Metallic, AO maps
-        std::vector<Ref<Texture>> m_rmaMapTexArray_256;
-        std::vector<Ref<Texture>> m_rmaMapTexArray_512;
-        std::vector<Ref<Texture>> m_rmaMapTexArray_1024;
-        std::vector<Ref<Texture>> m_rmaMapTexArray_2048;
-        std::vector<Ref<Texture>> m_rmaMapTexArray_4096;
-
-        // BC4 compression
-        std::vector<Ref<Texture>> m_HeightMapTexArray_256;
-        std::vector<Ref<Texture>> m_HeightMapTexArray_512;
-        std::vector<Ref<Texture>> m_HeightMapTexArray_1024;
-        std::vector<Ref<Texture>> m_HeightMapTexArray_2048;
-        std::vector<Ref<Texture>> m_HeightMapTexArray_4096;
-
-        std::unordered_set<int> m_CheckTextureExists;
-
-        inline static int m_TextureArrayIndex = 0;
+        // [0][] = albedoMap, [1][] = normalMap, [2][] = rmaMap, [3][] = heightMap
+        // [][0] = res256, [][1] = res512, [][2] = res1024, [][3] = res2048, [][4] = res4096
+        static std::vector<Ref<Texture>> m_TextureArrays[4][5];
 
     private:
-        const std::vector<Ref<Texture>>& GetTextureArray(TextureResolution resolution, TextureType type);
-        void GetTexArrayWithResolution(TextureResolution res, TextureType type);
-
-        bool IsTextureExists(const Ref<Texture>& texture) const;
+        static const std::vector<Ref<Texture>>& GetTextureArray(TextureType arrayType, TextureResolution res);
+        static size_t TexArrayTypeToIndex(TextureType arrayType);
+        static size_t TexArrayResolutionToIndex(TextureResolution res);
     };
 }

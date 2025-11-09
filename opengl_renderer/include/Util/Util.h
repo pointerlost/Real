@@ -29,4 +29,5 @@ namespace Real::util {
     uint TexFormat_uncompressed_GetBitPerTexel(TextureType type);
     uint TexFormat_uncompressed_GetBytePerTexel(TextureType type);
     uint TexFormat_compressed_GetBytesPerBlock(ImageCompressedType type);
+
 }

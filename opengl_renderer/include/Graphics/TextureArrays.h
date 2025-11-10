@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "Texture.h"
@@ -19,26 +18,31 @@ namespace Real {
 
 namespace Real {
 
-    enum class TextureResolution : uint {
-        _256 = 256,
-        _512 = 512,
-        _1024 = 1024,
-        _2048 = 2048,
-        _4096 = 4096,
-        UNDEFINED = 0,
+    enum class TextureResolution {
+        _256,
+        _512,
+        _1024,
+        _2048,
+        _4096,
+        UNDEFINED,
     };
 
     struct TextureArrayManager {
-        static void AddTextureMap(TextureType arrayType, TextureResolution resolution, Ref<Texture> texMap);
+        static void AddTextureMap(TextureType texType, TextureResolution resolution, Ref<Texture> texMap);
+        static const std::vector<Ref<Texture>>& GetTextureArray(TextureType arrayType, TextureResolution res);
+        static void PrepareTextureArrays();
+        static void BindTextureArrays();
 
     private:
         // [0][] = albedoMap, [1][] = normalMap, [2][] = rmaMap, [3][] = heightMap
         // [][0] = res256, [][1] = res512, [][2] = res1024, [][3] = res2048, [][4] = res4096
         static std::vector<Ref<Texture>> m_TextureArrays[4][5];
+        static std::unordered_map<std::string, GLuint> m_TextureArrayHandles;
+        inline static size_t m_TexArrayIndex = 0;
 
     private:
-        static const std::vector<Ref<Texture>>& GetTextureArray(TextureType arrayType, TextureResolution res);
         static size_t TexArrayTypeToIndex(TextureType arrayType);
-        static size_t TexArrayResolutionToIndex(TextureResolution res);
+        static void CreateCompressedTextureArray(const std::string& texMapName, const std::vector<Ref<Texture>>& textureArray);
+        static size_t TexArrayResolutionToIndex(TextureResolution resolution);
     };
 }

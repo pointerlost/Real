@@ -31,7 +31,6 @@ namespace Real::opengl {
 
         // Bind Shader and VAO
         shader.Bind();
-        assetManager->BindTextureArray();
         meshManager->BindUniversalVAO();
 
         // Set uniforms

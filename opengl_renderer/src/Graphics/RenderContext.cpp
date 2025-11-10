@@ -2,6 +2,8 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/RenderContext.h"
+
+#include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Editor/EditorState.h"
 #include "Graphics/Buffer.h"
@@ -39,6 +41,8 @@ namespace Real {
         m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
 
         m_Buffers.globalData.Create(m_GPUDatas.globalData, 1 * sizeof(GlobalUBO), opengl::BufferType::UBO);
+
+        Services::GetAssetManager()->LoadTexturesToGPU();
     }
 
     void RenderContext::BindGPUBuffers() const {

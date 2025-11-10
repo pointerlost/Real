@@ -23,21 +23,18 @@ namespace Real {
         std::string PreprocessorForShaders(const std::string& filePath);
         const Shader &GetShader(const std::string& name);
 
+        void LoadTexturesToGPU() const;
         Ref<Texture> CreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2& resolution, int channelCount);
         Ref<Texture> GetDefaultTexture(const std::string& name);
         [[nodiscard]] bool IsTextureCompressed(const std::string& name) const;
         Ref<Texture> LoadUncompressedTexture(const std::string& name, const std::string& filePath, TextureType type, const FileInfo& info = FileInfo());
         Ref<Texture> LoadUncompressedTexture(const std::string& name, const FileInfo &info, TextureType type);
         Ref<Texture> LoadUncompressedTextures(const std::string& name, const Ref<Texture>& mixedTextures, const glm::ivec2& resolution, TextureType type = TextureType::RMA);
-        void CreateCompressedTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
-        void CreateTextureArray(const glm::ivec2& resolution, const std::vector<Ref<Texture>>& textures);
-        void LoadTextures();
+        void LoadTexturesFromFile();
         Ref<Texture>& GetTexture(const std::string& name);
         Ref<MaterialInstance> GetDefaultMat();
         [[nodiscard]] bool IsTextureExists(const std::string& name) const { return m_Textures.contains(name); }
         Ref<MaterialInstance>& CreateMaterialInstance(const std::string& name);
-
-        void BindTextureArray() const;
 
         // TODO: Load fonts from file!!
         void AddFontStyle(const std::string& fontName, ImFont* font);

@@ -123,6 +123,10 @@ namespace Real {
         return m_Shaders.at(name);
     }
 
+    void AssetManager::LoadTexturesToGPU() const {
+        TextureArrayManager::PrepareTextureArrays();
+    }
+
     Ref<Texture> AssetManager::CreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2 &resolution, int channelCount) {
         if (IsTextureExists(name))
             return m_Textures[name];
@@ -273,7 +277,7 @@ namespace Real {
         data.m_ImageCompressType = util::PickTextureCompressionType(type);
 
         // We have to check, if the enum matches the resolution!!
-        TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(newResolution), texture);
+        TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(newResolution) , texture);
 
         // We are deciding for m_InternalFormat in Compress-time
         return m_Textures[name] = texture;
@@ -312,67 +316,12 @@ namespace Real {
         info.ext = name.substr(name.size() - 4);
         mixedTextures->SetFileInfo(info);
 
+        TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(data.m_Width), mixedTextures);
+
         return m_Textures[name] = mixedTextures;
     }
 
-    void AssetManager::CreateCompressedTextureArray(const glm::ivec2 &resolution,
-        const std::vector<Ref<Texture>> &textures)
-    {
-        static int textureArrayIndex = 0;
-        // Create texture array
-        GLuint texArray;
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
-        // Allocate the storage
-        glTextureStorage3D(texArray, 1, textures[0]->GetData().m_InternalFormat, resolution.x, resolution.y, textures.size());
-
-        for (const auto& tex : textures) {
-            tex->SetTexArrayIndex(textureArrayIndex);
-
-            auto& texData = tex->GetData();
-            // Use GL compressed types for format
-            glCompressedTexSubImage3D(texArray, 0, 0, 0, tex->GetIndex(), texData.m_Width, texData.m_Height, 1,
-                texData.m_InternalFormat, texData.m_ImageSize, texData.m_Data
-            );
-            // glTextureSubImage3D(texArray, 0, 0, 0, tex->GetIndex(), texData.m_Width, texData.m_Height, 1, texData.m_InternalFormat, GL_UNSIGNED_BYTE, texData.m_Data);
-            stbi_image_free(texData.m_Data); // Clean up vRAM
-            texData.m_Data = nullptr;
-        }
-        // Set parameters
-        glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(texArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(texArray, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(texArray, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        textureArrayIndex++;
-    }
-
-    void AssetManager::CreateTextureArray(const glm::ivec2 &resolution, const std::vector<Ref<Texture>>& textures) {
-        static int textureArrayIndex = 0;
-        // Create texture array
-        GLuint texArray;
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
-        // Allocate the storage
-        glTextureStorage3D(texArray, 1, textures[0]->GetData().m_InternalFormat, resolution.x, resolution.y, textures.size());
-
-        for (const auto& tex : textures) {
-            tex->SetTexArrayIndex(textureArrayIndex);
-
-            auto& texData = tex->GetData();
-            // Use GL compressed types for format
-            glTextureSubImage3D(texArray, 0, 0, 0, tex->GetIndex(), texData.m_Width, texData.m_Height, 1, texData.m_InternalFormat, GL_UNSIGNED_BYTE, texData.m_Data);
-            stbi_image_free(texData.m_Data); // Clean up vRAM
-            texData.m_Data = nullptr;
-        }
-        // Set parameters
-        glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(texArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTextureParameteri(texArray, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(texArray, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        textureArrayIndex++;
-    }
-
-    void AssetManager::LoadTextures() {
+    void AssetManager::LoadTexturesFromFile() {
         // Pack same textures into one type like; (Wood _ALB, Wood _NRM, Wood _RMA)
         std::unordered_map<std::string, std::unordered_map<std::string, Ref<Texture>>> packedSameTextures;
         // Load compress_me textures
@@ -432,9 +381,6 @@ namespace Real {
                     }
                 }
             }
-
-            /* *********************************** TEXTURE ARRAY CREATION *********************************** */
-            CreateCompressedTextureArray()
         }
 
         // Compress all the Textures with threads
@@ -465,9 +411,6 @@ namespace Real {
         const auto material = CreateRef<MaterialInstance>();
         m_Materials[name] = material;
         return m_Materials[name];
-    }
-
-    void AssetManager::BindTextureArray() const {
     }
 
     void AssetManager::AddFontStyle(const std::string &fontName, ImFont *font) {

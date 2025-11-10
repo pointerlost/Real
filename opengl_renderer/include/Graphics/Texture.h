@@ -10,7 +10,6 @@
 namespace Real {
 
     enum class TextureType {
-        UNDEFINED,
         ALB,
         NRM,
         RGH,
@@ -18,15 +17,16 @@ namespace Real {
         AO,
         RMA,
         HEIGHT,
+        UNDEFINED,
     };
 
     enum class ImageFormatState {
         UNCOMPRESSED,
-        COMPRESSED
+        COMPRESSED,
+        UNDEFINED,
     };
 
     enum class ImageCompressedType {
-        UNDEFINED,
         BC1,
         BC2,
         BC3,
@@ -34,6 +34,7 @@ namespace Real {
         BC5,
         BC6,
         BC7,
+        UNDEFINED,
     };
 
     struct TextureData {

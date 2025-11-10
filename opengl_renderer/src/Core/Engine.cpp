@@ -67,7 +67,7 @@ namespace Real {
 
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
-        m_AssetManager->LoadTextures();
+        m_AssetManager->LoadTexturesFromFile();
 
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();

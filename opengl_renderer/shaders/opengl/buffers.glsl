@@ -98,8 +98,8 @@ layout (std430, binding = 1) buffer EntityMetaData {
     EntityData entityData[];
 };
 
-
-// Texture arrays
+// Texture arrays | Albedo x 5 | Normal x 5 | RMA x 5 | Height x 5
+// We are using 5 different resolution for per type (256,512,1024,2048,4096)
 uniform sampler2DArray textureMapArrays[20]; // Per-type, Per-resolutions
 
 // Global Data

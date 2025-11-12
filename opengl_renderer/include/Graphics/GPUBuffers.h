@@ -28,10 +28,10 @@ namespace Real {
         glm::vec4 m_NormalRMA = {}; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
 
         // lookup table provides us texIndex and texArrayIndex
-        glm::ivec2 albedoMapLookupData;
-        glm::ivec2 normalMapLookupData;
-        glm::ivec2 rmaMapLookupData;
-        glm::ivec2 heightMapLookupData;
+        int m_BindlessAlbedoIdx;
+        int m_BindlessNormalIdx;
+        int m_BindlessRMAIdx;
+        int m_BindlessHeightIdx;
     };
 
     struct CameraUBO {

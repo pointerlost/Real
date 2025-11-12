@@ -4,6 +4,7 @@
 #include "Graphics/Material.h"
 
 #include "Core/AssetManager.h"
+#include "Core/Logger.h"
 #include "Core/Services.h"
 
 namespace Real {
@@ -14,16 +15,50 @@ namespace Real {
         gpuData.m_BaseColor = m_BaseColor;
         gpuData.m_NormalRMA = m_NormalRMA;
 
-        const auto& albedo = assetManager->GetTexture(m_Base->m_AlbedoMapName);
-        const auto& normal = assetManager->GetTexture(m_Base->m_NormalMapName);
-        const auto& rma    = assetManager->GetTexture(m_Base->m_rmaMapName);
-        const auto& height = assetManager->GetTexture(m_Base->m_HeightMapName);
+        Ref<Texture> albedo = nullptr;
+        Ref<Texture> normal = nullptr;
+        Ref<Texture> rma    = nullptr;
+        Ref<Texture> height = nullptr;
 
-        // Upload texture lookup data to GPU, texIndex, texArrayIndex
-        gpuData.albedoMapLookupData = { albedo->GetIndex(), albedo->GetArrayIndex() };
-        gpuData.normalMapLookupData = { normal->GetIndex(), normal->GetArrayIndex() };
-        gpuData.rmaMapLookupData    = { rma->GetIndex(),    rma->GetArrayIndex()    };
-        gpuData.heightMapLookupData = { height->GetIndex(), height->GetArrayIndex() };
+        if (m_Base->m_AlbedoMap)
+            albedo = assetManager->GetTexture(m_Base->m_AlbedoMap->GetName());
+        if (m_Base->m_NormalMap)
+            normal = assetManager->GetTexture(m_Base->m_NormalMap->GetName());
+        if (m_Base->m_rmaMap)
+            rma    = assetManager->GetTexture(m_Base->m_rmaMap->GetName());
+        if (m_Base->m_HeightMap)
+            height = assetManager->GetTexture(m_Base->m_HeightMap->GetName());
+
+        if (albedo)
+            gpuData.m_BindlessAlbedoIdx = { albedo->GetIndex() };
+        if (normal)
+            gpuData.m_BindlessNormalIdx = { normal->GetIndex() };
+        if (rma)
+            gpuData.m_BindlessRMAIdx    = { rma->GetIndex()    };
+        if (height)
+            gpuData.m_BindlessHeightIdx = { height->GetIndex() };
+
         return gpuData;
     }
+
+    /* TEXTURE ARRAY
+        if (m_Base->m_AlbedoMap)
+            albedo = assetManager->GetTexture(m_Base->m_AlbedoMap->GetName());
+        if (m_Base->m_NormalMap)
+            normal = assetManager->GetTexture(m_Base->m_NormalMap->GetName());
+        if (m_Base->m_rmaMap)
+            rma    = assetManager->GetTexture(m_Base->m_rmaMap->GetName());
+        if (m_Base->m_HeightMap)
+            height = assetManager->GetTexture(m_Base->m_HeightMap->GetName());
+
+        // Upload texture lookup data to GPU (texIndex, texArrayIndex)
+        if (albedo)
+            gpuData.albedoMapLookupData = { albedo->GetArrayIndex(), albedo->GetIndex() };
+        if (normal)
+            gpuData.normalMapLookupData = { normal->GetArrayIndex(), normal->GetIndex() };
+        if (rma)
+            gpuData.rmaMapLookupData    = { rma->GetArrayIndex(),    rma->GetIndex()    };
+        if (height)
+            gpuData.heightMapLookupData = { height->GetArrayIndex(), height->GetIndex() };
+     */
 }

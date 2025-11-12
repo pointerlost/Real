@@ -95,6 +95,7 @@ add_executable(${PROJECT_NAME}
         src/Common/Scheduling/Threads.cpp
         include/Common/Macros.h
         include/Core/Types.h
+        include/Common/Scheduling/TaskManager.h
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

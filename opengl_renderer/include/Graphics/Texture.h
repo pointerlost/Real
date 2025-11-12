@@ -37,51 +37,62 @@ namespace Real {
         UNDEFINED,
     };
 
-    struct TextureData {
+    struct OpenGLTextureData {
         void* m_Data;
-        int m_Handle;
         int m_Width;
         int m_Height;
         int m_DataSize;
         int m_ChannelCount;
+        GLuint m_Handle;
         GLsizei m_ImageSize;
         GLenum m_Format;
         GLenum m_InternalFormat;
+        GLenum m_GLCompressedType;
         ImageCompressedType m_ImageCompressType;
     };
 
     struct Texture {
     public:
         explicit Texture(ImageFormatState format = ImageFormatState::UNCOMPRESSED, bool isDefaultTex = false);
-        explicit Texture(const Ref<TextureData>& data, TextureType type = TextureType::UNDEFINED, bool isDefaultTex = false);
+        explicit Texture(const Ref<OpenGLTextureData>& data, TextureType type = TextureType::UNDEFINED, bool isDefaultTex = false);
         Texture(const Texture&) = default;
 
-        void SetData(TextureData data);
+        void SetData(OpenGLTextureData data);
         void SetFileInfo(FileInfo info);
-        void SetTexIndex(int idx);
-        void SetTexArrayIndex(int idx);
         void SetType(TextureType type);
+        void SetIndex(int idx);
         void SetImageFormat(ImageFormatState format);
 
-        TextureData& GetData() { return m_Data; }
+        OpenGLTextureData& GetData() { return m_Data; }
         FileInfo& GetFileInfo() { return m_FileInfo; }
-        [[nodiscard]] const std::string& GetName() const { return m_FileInfo.stem; }
+        [[nodiscard]] const std::string& GetName() const { return m_FileInfo.name; }
+        [[nodiscard]] const std::string& GetStem() const { return m_FileInfo.stem; }
         [[nodiscard]] const std::string& GetFullName() const { return m_FileInfo.name; }
-        [[nodiscard]] int GetIndex() const { return m_TexIndex; }
-        [[nodiscard]] int GetArrayIndex() const { return m_TexIndex; }
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] std::string GetTypeAsString(TextureType type) const;
         [[nodiscard]] ImageFormatState GetImageFormat() const { return m_ImageFormatState; }
         [[nodiscard]] bool IsDefault() const { return m_IsDefault; }
+        [[nodiscard]] bool IsCompressed() const { return m_ImageFormatState == ImageFormatState::COMPRESSED; }
+        [[nodiscard]] bool HasData() const { return m_Data.m_Data != nullptr; }
+        [[nodiscard]] bool HasBindlessHandle() const { return m_glBindlessHandle != 0; }
+        [[nodiscard]] std::pair<int, int> GetResolution() const { return std::make_pair(m_Data.m_Width, m_Data.m_Height); }
+        [[nodiscard]] int GetIndex() const { return m_Index; }
+        [[nodiscard]] GLuint GetBindlessHandle() const { return m_glBindlessHandle; }
+        [[nodiscard]] GLuint& GetBindlessHandle() { return m_glBindlessHandle; }
+
+        void Create();
 
     private:
-        TextureData m_Data{};
+        OpenGLTextureData m_Data{};
+        GLuint m_glBindlessHandle = 0;
         TextureType m_Type{};
         FileInfo m_FileInfo{};
         ImageFormatState m_ImageFormatState = ImageFormatState::UNCOMPRESSED;
         bool m_IsDefault = false;
 
-        int m_TexIndex = -1;
-        int m_ArrayIndex = -1;
+        int m_Index = 0;
+
+    private:
+        void CreateBindlessAndMakeResident();
     };
 }

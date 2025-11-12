@@ -9,5 +9,5 @@ namespace Real { struct Texture; }
 namespace Real::tools {
     [[nodiscard]] Ref<Texture> PackTexturesToRGBChannels(const Ref<Texture> &tex1, const Ref<Texture> &tex2, const Ref<Texture> &tex3);
     [[nodiscard]] Ref<Texture> PackTexturesRGBToChannels(const std::array<Ref<Texture>, 3> &textures);
-    void CompressTextureToBCn(Ref<Texture>& texture, const std::string& destPath);
+    void CompressTextureToBCn(const Ref<Texture>& texture, const std::string& destPath);
 }

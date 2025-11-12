@@ -18,7 +18,8 @@ void main() {
     vec3 result = vec3(0.0);
 
     vec3 normal = normalize(fs_in.Normal);
-    // vec3 matColor = GetBaseColor(fs_in.MaterialIndex).rgb;
+    vec3 matColor = GetMatBaseColor(fs_in.MaterialIndex).rgb;
+    vec3 aoColor = texture(textureMapArrays[GetRMAMapLookupData(fs_in.MaterialIndex).x], vec3(fs_in.UV, GetRMAMapLookupData(fs_in.MaterialIndex).y)).rgb;
 
     for (int i = 0; i < lightCount; i++) {
         vec3 lightDir = GetLightDir(i);
@@ -33,9 +34,9 @@ void main() {
         // if (texDiffLayer < 0.0) texDiff = matColor;
         // if (texSpecLayer < 0.0) texSpec = vec3(0.0, 0.0, 0.0);
 
-        result += CalculateLighting(i, fs_in.Normal, NdotH, fs_in.FragPos, vec3(1.0), vec3(1.0), GetGlobalAmbient(), vec3(1.0));
+        result += CalculateLighting(i, fs_in.Normal, NdotH, fs_in.FragPos, vec3(1.0), vec3(1.0), GetGlobalAmbient(), matColor);
     }
 
     // Call SRGB_to_LinearSpace function to get correct result, this function applying Gamma Correction
-    FragColor = vec4(Convert_LinearSpace_to_sRGB(result), 1.0);
+    FragColor = vec4(Convert_LinearSpace_to_sRGB(result), 1.0) * aoColor;
 }

@@ -17,8 +17,8 @@ namespace Real::tools {
             Warn("There is no texture! from: " + std::string(__FILE__));
             return {};
         }
+
         Ref<Texture> mixedTexture = CreateRef<Texture>();
-        // mixedTexture->SetData(tex1->GetData());
 
         const auto tex1Data = static_cast<uint8_t *>(tex1->GetData().m_Data);
         const auto tex2Data = static_cast<uint8_t *>(tex2->GetData().m_Data);
@@ -65,11 +65,12 @@ namespace Real::tools {
         return PackTexturesToRGBChannels(textures[0], textures[1], textures[2]);
     }
 
-    void CompressTextureToBCn(Ref<Texture>& texture, const std::string& destPath) {
+    void CompressTextureToBCn(const Ref<Texture>& texture, const std::string& destPath) {
         if (!texture) {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return;
         }
+        if (texture->IsCompressed()) return;
 
         auto& texData = texture->GetData();
         const int inputPixelCount   = texData.m_Width * texData.m_Height;
@@ -92,6 +93,7 @@ namespace Real::tools {
         // TODO: Treat it as 8-bit everything except the 16-bit We don't have 16 bit option yet!
         CMP_FORMAT destFormat;
         destFormat = util::GetCMPFormatWithCompressType(texData.m_ImageCompressType);
+        texData.m_GLCompressedType = util::CompressTypeToGLEnum(texData.m_ImageCompressType);
 
         // Create the MipSet to hold the input data
         CMP_MipSet inputTexture = {};

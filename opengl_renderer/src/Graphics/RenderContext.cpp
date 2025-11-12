@@ -27,7 +27,12 @@ namespace Real {
             MAX_ENTITIES * sizeof(MaterialSSBO), opengl::BufferType::SSBO
         );
 
-        m_Buffers.light.Create(m_GPUDatas.lights, MAX_LIGHTS * sizeof(LightSSBO), opengl::BufferType::SSBO
+        m_Buffers.texture.Create(m_GPUDatas.textures,
+            MAX_ENTITIES * sizeof(GLuint64), opengl::BufferType::SSBO
+        );
+
+        m_Buffers.light.Create(m_GPUDatas.lights,
+            MAX_LIGHTS * sizeof(LightSSBO), opengl::BufferType::SSBO
         );
 
         m_Buffers.entityData.Create(m_GPUDatas.entityData,
@@ -51,8 +56,9 @@ namespace Real {
         m_Buffers.transform.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 2);
         m_Buffers.camera.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 3);
         m_Buffers.material.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 4);
-        m_Buffers.light.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 5);
-        m_Buffers.globalData.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 6);
+        m_Buffers.texture.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 5);
+        m_Buffers.light.Bind(GL_SHADER_STORAGE_BUFFER, opengl::BufferType::SSBO, 6);
+        m_Buffers.globalData.Bind(GL_UNIFORM_BUFFER, opengl::BufferType::UBO, 7);
     }
 
     void RenderContext::UploadToGPU() {
@@ -75,6 +81,13 @@ namespace Real {
         m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
             m_GPUDatas.materials.size() * sizeof(MaterialSSBO), opengl::BufferType::SSBO
         );
+
+        // Is it necessary? we don't uploading textures per-frame
+        /*
+        m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
+            m_GPUDatas.textures.size() * sizeof(GLuint64), opengl::BufferType::SSBO
+        );
+        */
 
         // Update Lights
         m_Buffers.light.UploadToGPU(m_GPUDatas.lights,

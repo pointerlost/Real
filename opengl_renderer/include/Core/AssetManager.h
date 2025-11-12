@@ -34,7 +34,7 @@ namespace Real {
         Ref<Texture>& GetTexture(const std::string& name);
         Ref<MaterialInstance> GetDefaultMat();
         [[nodiscard]] bool IsTextureExists(const std::string& name) const { return m_Textures.contains(name); }
-        Ref<MaterialInstance>& CreateMaterialInstance(const std::string& name);
+        Ref<MaterialInstance>& CreateMaterialInstance(const std::string& name, const std::array<std::string, 4> &arrayTypes);
 
         // TODO: Load fonts from file!!
         void AddFontStyle(const std::string& fontName, ImFont* font);

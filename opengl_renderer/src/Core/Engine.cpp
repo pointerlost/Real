@@ -88,11 +88,10 @@ namespace Real {
 
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
-        const auto& defaultMat = m_AssetManager->GetDefaultMat();
-        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("material");
-        // material->AddTexture(TextureType::Specular, m_AssetManager->GetTexture("container2_specular"));
+        m_Renderer->GetRenderContext()->InitResources();
 
-        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("material2");
+        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("Metal049A-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
+        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("MetalPlates005-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
 
         auto& cube = m_Scene->CreateEntity("RightWall");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
@@ -127,9 +126,8 @@ namespace Real {
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
         light.AddComponent<LightComponent>().m_Light = Light{LightType::SPOT};
-        light.AddComponent<MaterialComponent>().m_Instance = defaultMat;
+        light.AddComponent<MaterialComponent>().m_Instance = material2;
 
-        m_Renderer->GetRenderContext()->InitResources();
         Info("Resources loaded successfully!");
     }
 

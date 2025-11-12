@@ -23,6 +23,7 @@ namespace Real {
     struct GPUData {
         std::vector<TransformSSBO> transforms;
         std::vector<MaterialSSBO> materials;
+        std::vector<GLuint64> textures;
         std::vector<LightSSBO> lights;
         std::vector<DrawElementsIndirectCommand> drawCommands;
         std::vector<EntityMetadata> entityData;
@@ -33,6 +34,7 @@ namespace Real {
     struct GPUBuffers {
         opengl::Buffer transform;
         opengl::Buffer material;
+        opengl::Buffer texture;
         opengl::Buffer light;
         opengl::Buffer drawCommand;
         opengl::Buffer entityData;

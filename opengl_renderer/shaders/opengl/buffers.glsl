@@ -1,6 +1,8 @@
 #ifndef BUFFERS_GLSL
 #define BUFFERS_GLSL
 
+#extension GL_ARB_bindless_texture : require
+
 struct Transform {
     mat4 modelMatrix;
     mat4 normalMatrix; // unused w (padding)
@@ -23,17 +25,17 @@ mat4 GetProjView()   { return uCamera.viewProjection; }
 mat4 GetView()       { return uCamera.view;           }
 mat4 GetProjection() { return uCamera.projection;     }
 
-// TODO: I won't use it bindless textures for now! | #extension GL_ARB_bindless_texture : require
+
 struct Material {
     // Texture Override Colors
     vec4 m_BaseColor;
     vec4 m_NormalRMA; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
 
     // Texture index
-    ivec2 albedoMapLookupData;
-    ivec2 normalMapLookupData;
-    ivec2 rmaMapLookupData;
-    ivec2 heightMapLookupData;
+    int m_BindlessAlbedoIdx;
+    int m_BindlessNormalIdx;
+    int m_BindlessRMAIdx;
+    int m_BindlessHeightIdx;
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
@@ -43,11 +45,34 @@ float GetMatNormalColor(int idx) { return materials[idx].m_NormalRMA[0]; }
 float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalRMA[1]; }
 float GetMatMetallicColor(int idx) { return materials[idx].m_NormalRMA[2]; }
 float GetMatAOColor(int idx) { return materials[idx].m_NormalRMA[3]; }
-ivec2 GetAlbedoLookupData(int idx) { return materials[idx].albedoMapLookupData; }
-ivec2 GetNormalMapLookupData(int idx) { return materials[idx].normalMapLookupData; }
-ivec2 GetRMAMapLookupData(int idx) { return materials[idx].rmaMapLookupData; }
-ivec2 GetHeightMapLookupData(int idx) { return materials[idx].heightMapLookupData; }
+int GetAlbedoTexIdx(int idx) { return materials[idx].m_BindlessAlbedoIdx; }
+int GetNormalTexIdx(int idx) { return materials[idx].m_BindlessNormalIdx; }
+int GetRMATexIdx(int idx) { return materials[idx].m_BindlessRMAIdx; }
+int GetHeightTexIdx(int idx) { return materials[idx].m_BindlessHeightIdx; }
 
+layout (std430, binding = 5) buffer TextureBuffer {
+    uint64_t bindlessTextures[];
+};
+
+vec4 GetAlbedoSampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetAlbedoTexIdx(matIdx)];
+    return texture(sampler2D(handle), UV);
+}
+
+vec4 GetNormalSampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetNormalTexIdx(matIdx)];
+    return texture(sampler2D(handle), UV).rgb;
+}
+
+vec4 GetRMASampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    return texture(sampler2D(handle), UV).rgb;
+}
+
+vec4 GetHeightSampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetHeightTexIdx(matIdx)];
+    return texture(sampler2D(handle), UV).rgb;
+}
 
 // TODO: improvable from the perspective of memory padding
 struct Light {
@@ -61,7 +86,7 @@ struct Light {
     float linear;
     float quadratic;
 };
-layout(std430, binding = 5) buffer LightSSBO {
+layout(std430, binding = 6) buffer LightSSBO {
     Light lights[];
 };
 
@@ -98,12 +123,8 @@ layout (std430, binding = 1) buffer EntityMetaData {
     EntityData entityData[];
 };
 
-// Texture arrays | Albedo x 5 | Normal x 5 | RMA x 5 | Height x 5
-// We are using 5 different resolution for per type (256,512,1024,2048,4096)
-uniform sampler2DArray textureMapArrays[20]; // Per-type, Per-resolutions
-
 // Global Data
-layout(std140, binding = 6) uniform GlobalDataUBO {
+layout(std140, binding = 7) uniform GlobalDataUBO {
     vec4 GlobalAmbient; // last index padding
     int lightCount[4]; // 0 = lightCount, other indices padding
 } uGlobalData;

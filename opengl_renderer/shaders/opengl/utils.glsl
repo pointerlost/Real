@@ -2,6 +2,7 @@
 #define UTILS_GLSL
 
 const float gamma = 2.2;
+const float PI = 3.14159265359;
 
 // TODO: Converting algorithm can improve!
 vec3 Convert_sRGB_to_LinearSpace(vec3 content) {

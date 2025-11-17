@@ -7,6 +7,7 @@
 
 namespace Real {
 
+    // Basic multitasking class for now...
     class Thread {
     public:
         template <typename T, typename... Args>

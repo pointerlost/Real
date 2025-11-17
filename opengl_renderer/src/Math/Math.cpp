@@ -5,7 +5,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/matrix_decompose.hpp"
 
-namespace Real::Math {
+namespace Real::math {
 
     bool DecomposeTransform(const glm::mat4 &transform, glm::vec3& translation, glm::quat &rotation, glm::vec3 &scale) {
         // From glm::decompose in matrix_decompose.inl

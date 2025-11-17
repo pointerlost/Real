@@ -1,4 +1,5 @@
 #version 460
+#extension GL_NV_gpu_shader5 : enable
 #include "opengl/buffers.glsl"
 
 layout (location = 0) in vec3 aPos;

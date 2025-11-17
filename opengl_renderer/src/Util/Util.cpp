@@ -34,13 +34,12 @@ namespace Real::util {
         return files;
     }
 
-    bool CheckSubStrExistsInString(const std::string &subStr, const std::string &string) {
+    bool IsSubString(const std::string &subStr, const std::string &string) {
         return string.find(subStr) != std::string::npos;
     }
 
     int FindClosestPowerOfTwo(int num) {
-        int x = 1;
-        int y = 0;
+        int x = 1, y = 0;
         while (x < num) {
             y = x;
             x <<= 1;
@@ -65,136 +64,99 @@ namespace Real::util {
                 return ImageCompressedType::BC4;
 
             default:
-                Warn("Returning UNDEFINED Texture type for: " + TextureTypeEnumToString(type));
+                Warn("Returning UNDEFINED Texture type for: " + EnumToString_TextureType(type));
                 return ImageCompressedType::UNDEFINED;
         }
     }
 
     GLenum ConvertChannelCountToGLType(int channelCount, const std::string& name) {
         switch (channelCount) {
-            case 1:
-                return GL_R8;
-            case 2:
-                return GL_RG8;
-            case 3:
-                return GL_RGB8;
-            case 4:
-                return GL_RGBA8;
+            case 1: return GL_R8;
+            case 2: return GL_RG8;
+            case 3: return GL_RGB8;
+            case 4: return GL_RGBA8;
 
             default:
                 Warn("There is no GLType for this channel count, tex name: " + name);
+                return UINT_MAX;
         }
     }
 
-    GLenum CompressTypeToGLEnum(ImageCompressedType type) {
+    GLenum ImageCompressTypeToGLEnum(ImageCompressedType type) {
         switch (type) {
-            case ImageCompressedType::BC1:
-                return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            case ImageCompressedType::BC2:
-                return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            case ImageCompressedType::BC3:
-                return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            case ImageCompressedType::BC4:
-                return GL_COMPRESSED_RED_RGTC1_EXT;
-            case ImageCompressedType::BC5:
-                return GL_COMPRESSED_RED_GREEN_RGTC2_EXT;
-            case ImageCompressedType::BC6:
-                return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
-            case ImageCompressedType::BC7:
-                return GL_COMPRESSED_RGBA_BPTC_UNORM;
+            case ImageCompressedType::BC1: return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+            case ImageCompressedType::BC2: return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+            case ImageCompressedType::BC3: return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+            case ImageCompressedType::BC4: return GL_COMPRESSED_RED_RGTC1_EXT;
+            case ImageCompressedType::BC5: return GL_COMPRESSED_RED_GREEN_RGTC2_EXT;
+            case ImageCompressedType::BC6: return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
+            case ImageCompressedType::BC7: return GL_COMPRESSED_RGBA_BPTC_UNORM;
 
-            default:
-                Warn("This image compression type does not have a GLenum: " + CompressTypeToString(type));
-                return GL_INVALID_ENUM;
+            default: return GL_INVALID_ENUM;
         }
     }
 
-    std::string CompressTypeToString(ImageCompressedType type) {
+    std::string ImageCompressTypeToString(ImageCompressedType type) {
         switch (type) {
-            case ImageCompressedType::BC1:
-                return "BC1";
-            case ImageCompressedType::BC2:
-                return "BC2";
-            case ImageCompressedType::BC3:
-                return "BC3";
-            case ImageCompressedType::BC4:
-                return "BC4";
-            case ImageCompressedType::BC5:
-                return "BC5";
-            case ImageCompressedType::BC6:
-                return "BC6";
-            case ImageCompressedType::BC7:
-                return "BC7";
+            case ImageCompressedType::BC1: return "BC1";
+            case ImageCompressedType::BC2: return "BC2";
+            case ImageCompressedType::BC3: return "BC3";
+            case ImageCompressedType::BC4: return "BC4";
+            case ImageCompressedType::BC5: return "BC5";
+            case ImageCompressedType::BC6: return "BC6";
+            case ImageCompressedType::BC7: return "BC7";
 
-            default:
-                return "UNDEFINED";
+            default: return "UNDEFINED";
         }
     }
 
-    TextureType StringToEnumTextureType(const std::string &type) {
-        if (type == "ALB") {
-            return TextureType::ALB;
-        } else if (type == "NRM") {
-            return TextureType::NRM;
-        } else if (type == "RMA") {
-            return TextureType::RMA;
-        } else if (type == "RGH") {
-            return TextureType::RGH;
-        } else if (type == "MTL") {
-            return TextureType::MTL;
-        } else if (type == "AO") {
-            return TextureType::AO;
-        } else if (type == "HEIGHT") {
-            return TextureType::HEIGHT;
-        }
+    TextureType StringToEnum_TextureType(const std::string &type) {
+        if (type == "ALB")    return TextureType::ALB;
+        if (type == "NRM")    return TextureType::NRM;
+        if (type == "RMA")    return TextureType::RMA;
+        if (type == "RGH")    return TextureType::RGH;
+        if (type == "MTL")    return TextureType::MTL;
+        if (type == "AO")     return TextureType::AO;
+        if (type == "HEIGHT") return TextureType::HEIGHT;
+
         Info("Type returning UNDEFINED for: " + type);
         return TextureType::UNDEFINED;
     }
 
-    std::string TextureTypeEnumToString(TextureType type) {
+    std::string EnumToString_TextureType(TextureType type) {
         switch (type) {
-            case TextureType::ALB:
-                return "ALB";
-            case TextureType::NRM:
-                return "NRM";
-            case TextureType::RGH:
-                return "RGH";
-            case TextureType::MTL:
-                return "MTL";
-            case TextureType::AO:
-                return "AO";
-            case TextureType::HEIGHT:
-                return "HEIGHT";
-            case TextureType::RMA:
-                return "RMA";
+            case TextureType::ALB:    return "ALB";
+            case TextureType::NRM:    return "NRM";
+            case TextureType::RGH:    return "RGH";
+            case TextureType::MTL:    return "MTL";
+            case TextureType::AO:     return "AO";
+            case TextureType::HEIGHT: return "HEIGHT";
+            case TextureType::RMA:    return "RMA";
 
             default:
-                Warn("Texture type returning UNDEFINED for: " + TextureTypeEnumToString(type));
+                Warn("Texture type returning UNDEFINED for: " + EnumToString_TextureType(type));
                 return "UNDEFINED";
         }
     }
 
-    CMP_FORMAT GetCMPFormatWithCompressType(ImageCompressedType type) {
+    CMP_FORMAT GetCMPFormat(ImageCompressedType type) {
         switch (type) {
-            case ImageCompressedType::BC1:
-                return CMP_FORMAT_BC1; // 8-bit
-            case ImageCompressedType::BC2:
-                return CMP_FORMAT_BC2; // 8-bit
-            case ImageCompressedType::BC3:
-                return CMP_FORMAT_BC3; // 8-bit
-            case ImageCompressedType::BC4:
-                return CMP_FORMAT_BC4; // 8-bit
-            case ImageCompressedType::BC5:
-                return CMP_FORMAT_BC5; // 8-bit
-            case ImageCompressedType::BC6:
-                return CMP_FORMAT_BC6H; // This one using 16-bit option
-            case ImageCompressedType::BC7:
-                return CMP_FORMAT_BC7; // 8-bit
+            case ImageCompressedType::BC1: return CMP_FORMAT_BC1;  // 8-bit
+            case ImageCompressedType::BC2: return CMP_FORMAT_BC2;  // 8-bit
+            case ImageCompressedType::BC3: return CMP_FORMAT_BC3;  // 8-bit
+            case ImageCompressedType::BC4: return CMP_FORMAT_BC4;  // 8-bit
+            case ImageCompressedType::BC5: return CMP_FORMAT_BC5;  // 8-bit
+            case ImageCompressedType::BC6: return CMP_FORMAT_BC6H; // This one using 16-bit option
+            case ImageCompressedType::BC7: return CMP_FORMAT_BC7;  // 8-bit
 
             default:
                 Warn("[GetCMPFormatWithCompressType] Unknown format!");
                 return CMP_FORMAT_Unknown;
         }
+    }
+
+    std::string GetDefaultTextureName(TextureType type, int width) {
+        return std::string("default_" + EnumToString_TextureType(type) + "_" + std::to_string(width));
     }
 
     // Bit Per Pixel
@@ -223,17 +185,12 @@ namespace Real::util {
     uint TexFormat_compressed_GetBytesPerBlock(ImageCompressedType type) {
         switch (type) {
             case ImageCompressedType::BC1:
-                return 8;
-            case ImageCompressedType::BC2:
-                return 16;
-            case ImageCompressedType::BC3:
-                return 16;
             case ImageCompressedType::BC4:
                 return 8;
+            case ImageCompressedType::BC2:
+            case ImageCompressedType::BC3:
             case ImageCompressedType::BC5:
-                return 16;
             case ImageCompressedType::BC6:
-                return 16;
             case ImageCompressedType::BC7:
                 return 16;
 
@@ -243,4 +200,45 @@ namespace Real::util {
         }
     }
 
+    GLenum TextureWrapModeToGLEnum(TextureWrapMode mode) {
+        switch (mode) {
+            case TextureWrapMode::REPEAT:          return GL_REPEAT;
+            case TextureWrapMode::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+            case TextureWrapMode::CLAMP_TO_EDGE:   return GL_CLAMP_TO_EDGE;
+            case TextureWrapMode::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
+
+            default:
+                Warn("There is no wrapping mode for this type!");
+                return GL_REPEAT;
+        }
+    }
+
+    GLenum TextureFilterModeToGLEnum(TextureFilterMode filter) {
+        switch (filter) {
+            case TextureFilterMode::LINEAR:  return GL_LINEAR;
+            case TextureFilterMode::NEAREST: return GL_NEAREST;
+            default: return GL_REPEAT;
+        }
+    }
+
+    GLenum glCheckError_(const char *file, int line) {
+        GLenum errorCode;
+        while ((errorCode = glGetError()) != GL_NO_ERROR)
+        {
+            std::string error;
+            switch (errorCode)
+            {
+                case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+                case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+                case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+                case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+                case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+                case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+                case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+                default: ;
+            }
+            std::cout << error << " | " << file << " (" << line << ")" << std::endl;
+        }
+        return errorCode;
+    }
 }

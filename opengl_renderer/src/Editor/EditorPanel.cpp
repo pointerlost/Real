@@ -181,7 +181,7 @@ namespace Real::UI {
                 glm::vec3 translation, scale;
                 glm::quat rotate;
 
-                Math::DecomposeTransform(model, translation, rotate, scale);
+                math::DecomposeTransform(model, translation, rotate, scale);
                 transform.SetTranslate(translation);
                 transform.SetRotation(rotate);
                 transform.SetScale(scale);

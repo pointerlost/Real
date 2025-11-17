@@ -8,16 +8,16 @@
 #include "Core/Utils.h"
 
 namespace Real {
-    struct Texture;
+    struct OpenGLTexture;
 }
 
 namespace Real {
 
     struct Material {
-        Ref<Texture> m_AlbedoMap;
-        Ref<Texture> m_NormalMap;
-        Ref<Texture> m_rmaMap;
-        Ref<Texture> m_HeightMap;
+        Ref<OpenGLTexture> m_AlbedoMap;
+        Ref<OpenGLTexture> m_NormalMap;
+        Ref<OpenGLTexture> m_rmaMap;
+        Ref<OpenGLTexture> m_HeightMap;
     };
 
     struct MaterialInstance {

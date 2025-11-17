@@ -15,10 +15,10 @@ namespace Real {
         gpuData.m_BaseColor = m_BaseColor;
         gpuData.m_NormalRMA = m_NormalRMA;
 
-        Ref<Texture> albedo = nullptr;
-        Ref<Texture> normal = nullptr;
-        Ref<Texture> rma    = nullptr;
-        Ref<Texture> height = nullptr;
+        Ref<OpenGLTexture> albedo = nullptr;
+        Ref<OpenGLTexture> normal = nullptr;
+        Ref<OpenGLTexture> rma    = nullptr;
+        Ref<OpenGLTexture> height = nullptr;
 
         if (m_Base->m_AlbedoMap)
             albedo = assetManager->GetTexture(m_Base->m_AlbedoMap->GetName());

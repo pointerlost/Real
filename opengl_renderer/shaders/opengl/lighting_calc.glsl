@@ -1,86 +1,61 @@
 #ifndef LIGHTING_CALC_GLSL
 #define LIGHTING_CALC_GLSL
 
-vec3 CalcDirectionalLight(int lightIndex, float NdotL, float NdotH, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-    // Ambient calc
-    vec3 ambient = globalAmbient * matColor * texDiff;
-    // Diffuse calc
-    vec3 diffuse = NdotL * GetLightDiffuse(lightIndex) * texDiff;
+vec3 GetNormalFromMap(vec3 normalMap, vec3 fragPos, vec2 TexCoords)
+{
+    vec3 tangentNormal = normalMap * 2.0 - 1.0;
 
-    // specular calc
-    vec3 specular = NdotH * GetLightSpecular(lightIndex);
+    vec3 Q1  = dFdx(fragPos);
+    vec3 Q2  = dFdy(fragPos);
+    vec2 st1 = dFdx(TexCoords);
+    vec2 st2 = dFdy(TexCoords);
 
-    return clamp(ambient + diffuse + specular, 0.0, 1.0);
+    vec3 N   = normalize(normalMap);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
 }
 
-vec3 CalcSpotLight(int lightIndex, float NdotL, float NdotH, vec3 FtoLight, float distance, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-    // Ambient calc
-    vec3 ambient = texDiff * globalAmbient * matColor;
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness*roughness;
+    float a2 = a*a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
 
-    vec3 diffuse, specular = vec3(0.0);
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
 
-    // Calc angle between light forward and fragment direction
-    float theta = dot(FtoLight, GetLightDir(lightIndex));
-    float epsilon = GetCutOff(lightIndex) - GetOuterCutOff(lightIndex);
-    float intensity = clamp((theta - GetOuterCutOff(lightIndex)) / epsilon, 0.0, 1.0);
-
-    if (theta > GetOuterCutOff(lightIndex)) {
-        float attenuation = 1.0 / (GetLightConstant(lightIndex) + GetLightLinear(lightIndex) * distance +
-                        GetLightQuadratic(lightIndex) * (distance * distance));
-
-        // Diffuse calc
-        diffuse = NdotL * GetLightDiffuse(lightIndex) * texDiff * attenuation * intensity;
-
-        // Specular calc
-        specular = NdotH * GetLightSpecular(lightIndex) * texSpec * attenuation * intensity;
-    }
-
-    return clamp(ambient + diffuse + specular, 0.0, 1.0);
+    return nom / denom;
 }
 
-vec3 CalcPointLight(int lightIndex, float NdotL, float NdotH, float distance, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-    float attenuation = 1.0 / (GetLightConstant(lightIndex) + GetLightLinear(lightIndex) * distance +
-                        GetLightQuadratic(lightIndex) * (distance * distance));
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
 
-    // Ambient calc
-    vec3 ambient = texDiff * globalAmbient * matColor;
+    float nom   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
 
-    // Diffuse calc
-    vec3 diffuse = NdotL * GetLightDiffuse(lightIndex) * texDiff * attenuation;
-
-    // specular calc
-    vec3 specular = NdotH * GetLightSpecular(lightIndex) * texSpec * attenuation;
-
-    return clamp(ambient + diffuse + specular, 0.0, 1.0);
+    return nom / denom;
 }
 
-vec3 CalculateLighting(int lightIndex, vec3 normal, float NdotH, vec3 fragPos, vec3 texDiff, vec3 texSpec, vec3 globalAmbient, vec3 matColor) {
-    int type = GetLightType(lightIndex);
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
-    // Convert textures to Linear space
-    texDiff = Convert_sRGB_to_LinearSpace(texDiff);
-    texSpec = Convert_sRGB_to_LinearSpace(texSpec);
+    return ggx1 * ggx2;
+}
 
-    if (type == 0) {
-        vec3 FtoLight = GetLightPos(lightIndex) - fragPos;
-        float distanceLength = length(FtoLight);
-        vec3 lightDir = normalize(FtoLight);
-        float NdotL = max(dot(normal, lightDir), 0.0);
-        return CalcPointLight(lightIndex, NdotL, NdotH, distanceLength, texDiff, texSpec, globalAmbient, matColor);
-    }
-    else if (type == 1) {
-        vec3 lightDir = GetLightDir(lightIndex);
-        float NdotL = max(dot(normal, lightDir), 0.0);
-        return CalcDirectionalLight(lightIndex, NdotL, NdotH, texDiff, texSpec, globalAmbient, matColor);
-    }
-    else if (type == 2) {
-        vec3 lightPos = GetLightPos(lightIndex);
-        vec3 FtoLight = normalize(lightPos - fragPos);
-        float NdotL = max(dot(normal, FtoLight), 0.0);
-        float distance = length(lightPos - fragPos);
-        return CalcSpotLight(lightIndex, NdotL, NdotH, FtoLight, distance, texDiff, texSpec, globalAmbient, matColor);
-    }
-    return vec3(1.0, 0.0, 0.0); // red color for debugging
+vec3 fresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
 #endif

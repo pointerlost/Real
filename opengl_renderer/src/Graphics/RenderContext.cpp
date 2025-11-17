@@ -23,12 +23,13 @@ namespace Real {
             MAX_ENTITIES * sizeof(TransformSSBO), opengl::BufferType::SSBO
         );
 
-        m_Buffers.material.Create(m_GPUDatas.materials,
-            MAX_ENTITIES * sizeof(MaterialSSBO), opengl::BufferType::SSBO
-        );
-
+        m_GPUDatas.textures = Services::GetAssetManager()->GetBindlessTextureHandles();
         m_Buffers.texture.Create(m_GPUDatas.textures,
             MAX_ENTITIES * sizeof(GLuint64), opengl::BufferType::SSBO
+        );
+
+        m_Buffers.material.Create(m_GPUDatas.materials,
+            MAX_ENTITIES * sizeof(MaterialSSBO), opengl::BufferType::SSBO
         );
 
         m_Buffers.light.Create(m_GPUDatas.lights,
@@ -46,8 +47,6 @@ namespace Real {
         m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(CameraUBO), opengl::BufferType::UBO);
 
         m_Buffers.globalData.Create(m_GPUDatas.globalData, 1 * sizeof(GlobalUBO), opengl::BufferType::UBO);
-
-        Services::GetAssetManager()->LoadTexturesToGPU();
     }
 
     void RenderContext::BindGPUBuffers() const {
@@ -83,11 +82,9 @@ namespace Real {
         );
 
         // Is it necessary? we don't uploading textures per-frame
-        /*
         m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
             m_GPUDatas.textures.size() * sizeof(GLuint64), opengl::BufferType::SSBO
         );
-        */
 
         // Update Lights
         m_Buffers.light.UploadToGPU(m_GPUDatas.lights,
@@ -112,15 +109,14 @@ namespace Real {
         for (auto [entity, transform, mesh, material] : view.each()) {
             EntityMetadata entityData;
 
-            // The order is matter transformation should update first because ConvertToGPUFormat has update
             // Transform GPU data
             TransformSSBO gpuTransform = transform.m_Transform.ConvertToGPUFormat();
-            const int transformIdx = (int)m_GPUDatas.transforms.size();
+            const int transformIdx = static_cast<int>(m_GPUDatas.transforms.size());
             m_GPUDatas.transforms.push_back(gpuTransform);
 
             // Material GPU data
             MaterialSSBO gpuMaterial = material.m_Instance->ConvertToGPUFormat();
-            const int materialIdx = (int)m_GPUDatas.materials.size();
+            const int materialIdx = static_cast<int>(m_GPUDatas.materials.size());
             m_GPUDatas.materials.push_back(gpuMaterial);
 
             const auto& meshData = Services::GetMeshManager()->GetMeshData(mesh.m_MeshName);
@@ -130,14 +126,14 @@ namespace Real {
             command.instanceCount = 1;
             command.baseVertex = 0; // Use 0 because we've already baked the offset (idx + vertexOffset)
             command.firstIndex = meshData.m_IndexOffset;
-            command.baseInstance = (uint)i++;
+            command.baseInstance = static_cast<uint>(i++);
             m_GPUDatas.drawCommands.push_back(command);
 
             // Entity GPU data
             entityData.transformIndex = transformIdx;
             entityData.materialIndex  = materialIdx;
-            entityData.indexCount  = (int)meshData.m_IndexCount;
-            entityData.indexOffset = (int)meshData.m_IndexOffset;
+            entityData.indexCount  = static_cast<int>(meshData.m_IndexCount);
+            entityData.indexOffset = static_cast<int>(meshData.m_IndexOffset);
             m_GPUDatas.entityData.push_back(entityData);
         }
 
@@ -151,7 +147,8 @@ namespace Real {
     }
 
     void RenderContext::CollectCamera() {
-        /* TODO: An update is required to add multiple cameras during run-time
+        /*
+         * TODO: An update is required to add multiple cameras during run-time
          * (currently, adding multiple cameras may cause to crash)!!
          */
         const auto camera = Services::GetEditorState()->camera;
@@ -173,6 +170,7 @@ namespace Real {
     }
 
     void RenderContext::CleanPrevFrame() {
+        // TODO: need dirty tracking system to avoid unnecessary uploads
         m_GPUDatas.drawCommands.clear();
         m_GPUDatas.entityData.clear();
         m_GPUDatas.lights.clear();

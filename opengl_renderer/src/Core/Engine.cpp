@@ -54,20 +54,22 @@ namespace Real {
         m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
         m_InspectorPanel = CreateScope<UI::InspectorPanel>();
         m_EditorPanel = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
+        Info("EditorPanel initialized successfully!");
 
         const auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
         const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
         Services::GetAssetManager()->LoadShader(vert, frag, "main");
+        Info("Shaders loaded successfully!");
 
         // const auto shadowMapVertex = ConcatStr(SHADERS_DIR, "opengl/shadow_map.vert");
         // const auto shadowMapFrag = ConcatStr(SHADERS_DIR, "opengl/shadow_map.frag");
         // m_AssetManager->LoadShader(shadowMapVertex, shadowMapFrag, "shadow_map");
 
         m_MeshManager->InitResources();
+        m_AssetManager->LoadTexturesFromFile();
 
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
-        m_AssetManager->LoadTexturesFromFile();
 
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();
@@ -87,8 +89,6 @@ namespace Real {
         camera3.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(10.0, 2.0, 5.0));
 
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
-
-        m_Renderer->GetRenderContext()->InitResources();
 
         const auto& material = Services::GetAssetManager()->CreateMaterialInstance("Metal049A-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
         const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("MetalPlates005-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
@@ -128,6 +128,8 @@ namespace Real {
         light.AddComponent<LightComponent>().m_Light = Light{LightType::SPOT};
         light.AddComponent<MaterialComponent>().m_Instance = material2;
 
+        m_Renderer->GetRenderContext()->InitResources();
+
         Info("Resources loaded successfully!");
     }
 
@@ -153,6 +155,7 @@ namespace Real {
     void Engine::RenderPhase() const {
         // Draw OpenGL stuff
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
+        // TODO: Requires double buffering to switch between each other (Thread-safe and to keep sync CPU-GPU)
     }
 
     void Engine::UpdatePhase() const {
@@ -167,6 +170,7 @@ namespace Real {
         Services::SetMeshManager(m_MeshManager.get());
         Services::SetEditorTimer(m_EditorTimer.get());
         Services::SetEditorState(m_EditorState.get());
+        Info("Services initialized successfully!");
     }
 
     void Engine::InitAsset() {
@@ -189,7 +193,8 @@ namespace Real {
         // glEnable(GL_FRAMEBUFFER_SRGB);
 
         glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
+        // glDepthFunc(GL_LEQUAL);
+        // glDepthFunc(GL_EQUAL);
         // glEnable(GL_STENCIL_TEST);
 
         // This only has affect if depth testing is enabled
@@ -204,7 +209,7 @@ namespace Real {
         while (!glfwWindowShouldClose(window) && !Input::IsKeyPressed(REAL_KEY_ESCAPE)) {
             StartPhase();
             UpdatePhase();
-            RenderPhase();
+            RenderPhase(); // TODO: Thread-safe rendering
             EndPhase(window);
         }
     }

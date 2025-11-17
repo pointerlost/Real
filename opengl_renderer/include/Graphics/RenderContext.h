@@ -11,7 +11,7 @@
 #include "Core/Utils.h"
 
 namespace Real {
-    struct Texture;
+    struct OpenGLTexture;
 }
 
 namespace Real {

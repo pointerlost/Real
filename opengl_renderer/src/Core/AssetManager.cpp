@@ -23,6 +23,7 @@
 #include <stb/stb_image.h>
 #include <stb_image_resize2.h>
 
+#include "Core/Config.h"
 #include "Graphics/TextureArrays.h"
 
 namespace Real {
@@ -34,25 +35,22 @@ namespace Real {
          * until we will use as a texture in UI or something else, in this case we can compress them.
         */
         auto create_default_tex = [this](TextureType type, int channelCount) {
-            constexpr int constantFactor = 2;
             int resolution = 256;
 
             for (size_t i = 0; i <= 4; i++) {
                 // For example name = default_ALB_256, default_RMA_2048, etc.
-                const auto name = "default_" + util::TextureTypeEnumToString(type) + "_" + std::to_string(resolution);
-                CreateDefaultTexture(name, type, glm::ivec2(constantFactor * resolution, constantFactor * resolution), channelCount);
+                const auto name = "default_" + util::EnumToString_TextureType(type) + "_" + std::to_string(resolution);
+                CreateDefaultTexture(name, type, glm::ivec2(resolution, resolution), channelCount);
                 resolution *= 2;
             }
         };
 
-        Thread t;
-        t.Submit(create_default_tex, TextureType::ALB, 3);
-        t.Submit(create_default_tex, TextureType::NRM, 3);
-        t.Submit(create_default_tex, TextureType::RGH, 1);
-        t.Submit(create_default_tex, TextureType::MTL, 1);
-        t.Submit(create_default_tex, TextureType::AO, 1);
-        t.Submit(create_default_tex, TextureType::HEIGHT, 1);
-        t.JoinAll();
+        create_default_tex(TextureType::ALB, 3);
+        create_default_tex(TextureType::NRM, 3);
+        create_default_tex(TextureType::RGH, 1);
+        create_default_tex(TextureType::MTL, 1);
+        create_default_tex(TextureType::AO, 1);
+        create_default_tex(TextureType::HEIGHT, 1);
     }
 
     void AssetManager::LoadShader(const std::string &vertexPath, const std::string &fragmentPath,
@@ -115,6 +113,9 @@ namespace Real {
                     // result.append(ConcatStr(line + "\n"));
                     result += ConcatStr(line + "\n");
                 }
+                else if (line.substr(0, 5) == "#endif") {
+                    break;
+                }
             }
         }
 
@@ -128,15 +129,15 @@ namespace Real {
         return m_Shaders.at(name);
     }
 
-    void AssetManager::LoadTexturesToGPU() const {
-        TextureArrayManager::PrepareAndBindTextureArrays();
+    void AssetManager::LoadTextureArraysToGPU() const {
+        // TextureArrayManager::PrepareAndBindTextureArrays();
     }
 
-    Ref<Texture> AssetManager::CreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2 &resolution, int channelCount) {
+    Ref<OpenGLTexture> AssetManager::CreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2 &resolution, int channelCount) {
         if (IsTextureExists(name))
             return m_Textures[name];
 
-        const Ref<Texture> defaultTex = CreateRef<Texture>(ImageFormatState::UNCOMPRESSED, true);
+        const Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>(ImageFormatState::UNCOMPRESSED, true);
         const auto imageSize = resolution.x * resolution.y * channelCount;
         auto* imageData = new uint8_t[imageSize];
 
@@ -196,22 +197,24 @@ namespace Real {
             default:
                 Warn("Channel count mismatch! from: " + std::string(__FILE__));
         }
-        auto& data = defaultTex->GetData();
-        data.m_Data = imageData;
-        data.m_Width = resolution.x;
-        data.m_Height = resolution.y;
+        TextureData data;
+        data.m_Data = new uint8_t[imageSize];
+        memcpy(data.m_Data, imageData, imageSize);
+        delete[] imageData;
+        data.m_Width    = resolution.x;
+        data.m_Height   = resolution.y;
         data.m_DataSize = imageSize;
-        data.m_ChannelCount = channelCount;
-        data.m_Format = util::ConvertChannelCountToGLType(channelCount, util::TextureTypeEnumToString(type));
-        data.m_InternalFormat = util::CompressTypeToGLEnum(util::PickTextureCompressionType(type));
-        data.m_ImageCompressType = util::PickTextureCompressionType(type);
-
+        // defaultTex->SetLevelData(data.m_Data, 0);
+        defaultTex->SetChannelCount(channelCount, 0);
+        defaultTex->SetFormat(util::ConvertChannelCountToGLType(channelCount, util::EnumToString_TextureType(type)), 0);
+        defaultTex->SetInternalFormat(util::ImageCompressTypeToGLEnum(util::PickTextureCompressionType(type)), 0);
+        defaultTex->SetCompressionType(util::PickTextureCompressionType(type));
         defaultTex->SetType(type);
 
         return m_Textures[name] = defaultTex;
     }
 
-    Ref<Texture> AssetManager::GetDefaultTexture(const std::string &name) {
+    Ref<OpenGLTexture> AssetManager::GetDefaultTexture(const std::string &name) {
         if (!IsTextureExists(name)) {
             Warn("Default Texture doesn't exists! returning random texture! :" + name);
             // TODO: Remove hardcoded default val
@@ -225,122 +228,50 @@ namespace Real {
         return File::Exists(ddsFilePath);
     }
 
-    Ref<Texture> AssetManager::LoadUncompressedTexture(const std::string& name, const std::string &filePath, TextureType type, const FileInfo& info) {
+    Ref<OpenGLTexture> AssetManager::LoadTextureCPUData(const std::string& name, TextureType type, const FileInfo& info) {
         if (IsTextureExists(name)) {
-            Info("Texture already exists! : " + name);
+            Info("Texture already exists! name:" + name);
             return m_Textures[name];
         }
 
-        const Ref<Texture> texture = CreateRef<Texture>(
+        const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>(
             IsTextureCompressed(info.stem) ? ImageFormatState::COMPRESSED : ImageFormatState::UNCOMPRESSED
         );
         texture->SetType(type);
         texture->SetFileInfo(info);
-        auto& data = texture->GetData();
+        texture->SetInternalFormat(util::ImageCompressTypeToGLEnum(util::PickTextureCompressionType(type)), 0);
+        texture->SetCompressionType(util::PickTextureCompressionType(type));
 
-        // RGB
-        data.m_Data = stbi_load(filePath.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, 0);
-        // Pick a channel flag for Texture resizing
-        stbir_pixel_layout channelFlag;
-        switch (data.m_ChannelCount) {
-            case 1:
-                channelFlag = STBIR_1CHANNEL;
-                break;
-            case 2:
-                channelFlag = STBIR_2CHANNEL;
-                break;
-            case 4:
-                channelFlag = STBIR_RGBA;
-                break;
-
-            default:
-                channelFlag = STBIR_RGB;
-        }
-
-        auto newWidth = util::FindClosestPowerOfTwo(data.m_Width);
-        auto newHeight = util::FindClosestPowerOfTwo(data.m_Height);
-        if (newWidth < 256) newWidth = 256;
-        if (newHeight > 4096) newHeight = 4096;
-        auto newResolution = Math::FindMax(newWidth, newHeight);
-
-        // Resize Texture And Set resizing type srgb for ALBEDO coz color data needs gamma correction
-        if (type == TextureType::ALB) {
-            data.m_Data = stbir_resize_uint8_srgb(static_cast<unsigned char*>(data.m_Data), data.m_Width, data.m_Height, 0,
-                static_cast<unsigned char*>(data.m_Data), newResolution, newResolution, 0, channelFlag
-            );
-        } else {
-            data.m_Data = stbir_resize_uint8_linear(static_cast<unsigned char*>(data.m_Data), data.m_Width, data.m_Height, 0,
-                static_cast<unsigned char*>(data.m_Data), newResolution, newResolution, 0, channelFlag
-            );
-        }
-        data.m_Width = newWidth;
-        data.m_Height = newHeight;
-
-        // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
-        data.m_DataSize = data.m_Width * data.m_Height * data.m_ChannelCount * 1;
-
-        data.m_Format = util::ConvertChannelCountToGLType(data.m_ChannelCount, util::TextureTypeEnumToString(type));
-        data.m_InternalFormat = util::CompressTypeToGLEnum(util::PickTextureCompressionType(type));
-        data.m_ImageCompressType = util::PickTextureCompressionType(type);
-
-
-        // We need this when we use texture arrays
-        // TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(newResolution) , texture);
-
-        // We are deciding for m_InternalFormat in Compress-time
-        texture->Create();
+        // texture->Create(); // Channel count can change with this function, so use SetFormat after this line
         texture->SetIndex(m_Textures.size());
+        texture->SetFormat(util::ConvertChannelCountToGLType(texture->GetChannelCount(0), util::EnumToString_TextureType(type)), 0);
         return m_Textures[name] = texture;
     }
 
-    Ref<Texture> AssetManager::LoadUncompressedTexture(const std::string &name, const FileInfo &info, TextureType type) {
-        return LoadUncompressedTexture(name, info.path, type, info);
-    }
-
-    Ref<Texture> AssetManager::LoadUncompressedTextures(const std::string &name, const Ref<Texture>& mixedTextures, const glm::ivec2& resolution, TextureType type) {
-        const auto& mixedRawData = mixedTextures->GetData().m_Data;
-        if (!mixedRawData) {
-            Warn("[LoadUncompressedTextures] mixedData nullptr! for: " + name);
-            return CreateDefaultTexture(name, type, resolution, 3);
-        }
+    Ref<OpenGLTexture> AssetManager::LoadPackedTexturesCPUData(const std::string &name, const Ref<OpenGLTexture>& mixedTextures) {
         if (IsTextureExists(name)) {
             Info("Texture already exists! : " + name);
             return m_Textures[name];
         }
-
-        auto& data = mixedTextures->GetData();
-
-        mixedTextures->SetType(type); // Set as RMA etc.
-        data.m_ChannelCount = 3; // Packed into RGB
-        data.m_Width = resolution.x;
-        data.m_Height = resolution.y;
-        data.m_DataSize = resolution.x * resolution.y * data.m_ChannelCount * 1;
-        data.m_Format = util::ConvertChannelCountToGLType(data.m_ChannelCount, util::TextureTypeEnumToString(type));
-        data.m_ImageCompressType = util::PickTextureCompressionType(type);
-        data.m_InternalFormat = util::CompressTypeToGLEnum(util::PickTextureCompressionType(type));
 
         FileInfo info;
         info.name = name;
         info.stem = name.substr(0, name.size() - 4); // Without extension
         info.path = std::string(ASSETS_DIR) + "textures/compress_me/" + name;
-        info.ext = name.substr(name.size() - 4);
+        info.ext  = name.substr(name.size() - 4);
 
         mixedTextures->SetFileInfo(info);
         mixedTextures->SetImageFormat(
             IsTextureCompressed(info.stem) ? ImageFormatState::COMPRESSED : ImageFormatState::UNCOMPRESSED
         );
 
-        // We need this when we use texture arrays
-        // TextureArrayManager::AddTextureMap(type, static_cast<TextureResolution>(data.m_Width), mixedTextures);
-
-        mixedTextures->Create();
-        mixedTextures->SetIndex(m_Textures.size());
+        LoadTextureCPUData(name, mixedTextures->GetType(), mixedTextures->GetFileInfo());
         return m_Textures[name] = mixedTextures;
     }
 
     void AssetManager::LoadTexturesFromFile() {
         // Pack same textures into one type like; (Wood _ALB, Wood _NRM, Wood _RMA)
-        std::unordered_map<std::string, std::unordered_map<std::string, Ref<Texture>>> packedSameTextures;
+        std::unordered_map<std::string, std::unordered_map<std::string, Ref<OpenGLTexture>>> packedSameTextures;
         // Load compress_me textures
         auto fileInfos = util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"));
         for (const auto& file : fileInfos) {
@@ -351,10 +282,9 @@ namespace Real {
             auto texType = fileStem.substr(dashPos + 1);
             auto texName = fileStem.substr(0, dashPos);
 
-            const TextureType type = util::StringToEnumTextureType(texType);
-            const auto& texture = LoadUncompressedTexture(file.name, file, type);
+            const TextureType type = util::StringToEnum_TextureType(texType);
+            const auto& texture = LoadTextureCPUData(file.name, type, file);
 
-            texture->SetFileInfo(file);
             // Pack same textures into group
             if (type == TextureType::RGH || type == TextureType::MTL || type == TextureType::AO) {
                 packedSameTextures[texName][fileStem] = texture;
@@ -364,67 +294,58 @@ namespace Real {
         // Pack textures into channels (only what is necessary) like roughness + metallic + ao = rma
         // TODO: this helper could be made more flexible to pack other maps
         for (const auto& [first, second] : packedSameTextures) {
-            std::array<Ref<Texture>, 3> rma;
+            std::array<Ref<OpenGLTexture>, 3> rma;
             size_t idx = 0;
             std::array processTypes = { TextureType::RGH, TextureType::MTL, TextureType::AO};
-            int texWidth = 0;
+            int defaultTexWidth = 0;
             std::string rmaName;
             for (auto& tex : std::views::values(second)) {
                 if (tex) {
                     rmaName = first + "_RMA" + tex->GetFileInfo().ext;
                     rma[idx++] = tex;
+                    defaultTexWidth = defaultTexWidth <= 0 ? tex->GetResolution(0).first : defaultTexWidth;
                 }
-                texWidth = texWidth <= 0 ? tex->GetData().m_Width : texWidth;
             }
             // Get default texture for missing textures
             for (size_t i = 0; i < 3; i++) {
                 if (!rma[i]) {
-                    auto name = "default_" + util::TextureTypeEnumToString(processTypes[i]) + "_" + std::to_string(texWidth);
+                    auto name = util::GetDefaultTextureName(processTypes[i], defaultTexWidth);
                     rma[i] = GetDefaultTexture(name);
                 }
             }
 
-            // Pack into channels
-            const auto& mixedTexture = tools::PackTexturesRGBToChannels(rma);
-            if (mixedTexture) {
-                // We are using RMA as a TextureType for now, remove hardcoded if
-                // Send texWidth for resolution because textures has the same dimensions
-                LoadUncompressedTextures(rmaName, mixedTexture, glm::ivec2(texWidth), TextureType::RMA);
-            }
+            LoadPackedTexturesCPUData(rmaName, tools::PackTexturesToRGBChannels(rma));
         }
 
         // Compress all the textures with threads
-        const Scope<Thread> t = CreateScope<Thread>();
+        // const Scope<Thread> t = CreateScope<Thread>();
         for (auto& tex : std::views::values(m_Textures)) {
             if (!tex) { Warn("texture nullptr!"); continue; }
             if (tex->IsDefault()) continue;
-            t->Submit(tools::CompressTextureToBCn, std::ref(tex), std::string(ASSETS_DIR) + "textures/compressed/");
+            std::string destPath = std::string(ASSETS_DIR) + "textures/compressed/";
+            tools::CompressTextureToBCn(tex, destPath, tex->GetCompressionType());
+            tex->Create();
+            // t->Submit(tools::CompressTextureToBCn, std::ref(tex), std::string(ASSETS_DIR) + "textures/compressed/");
         }
-        t->JoinAll();
+        // t->JoinAll();
+        // TODO: threads cause a crash when loading opengl state with create texture!?
     }
 
-    Ref<Texture>& AssetManager::GetTexture(const std::string &name) {
+    Ref<OpenGLTexture>& AssetManager::GetTexture(const std::string &name) {
         if (!IsTextureExists(name))
             Warn("Texture '" + name + "' can't find! returning nullptr!!");
         return m_Textures[name];
     }
 
-    Ref<MaterialInstance> AssetManager::GetDefaultMat() {
-        // TODO: Default material not have texture types, so textures are nullptr, fix it
-        const auto instance = CreateRef<MaterialInstance>();
-        m_Materials["default"] = instance;
-        return m_Materials["default"];
-    }
-
-    Ref<MaterialInstance>& AssetManager::CreateMaterialInstance(const std::string& name, const std::array<std::string, 4> &arrayTypes) {
+    Ref<MaterialInstance>& AssetManager::CreateMaterialInstance(const std::string& name, const std::array<std::string, 4> &fileFormats) {
         if (m_Materials.contains(name))
             return m_Materials[name];
 
         const auto material = CreateRef<MaterialInstance>();
-        material->m_Base->m_AlbedoMap = GetTexture(name + "_ALB" + arrayTypes[0]);
-        material->m_Base->m_AlbedoMap = GetTexture(name + "_NRM" + arrayTypes[1]);
-        material->m_Base->m_AlbedoMap = GetTexture(name + "_RMA" + arrayTypes[2]);
-        material->m_Base->m_AlbedoMap = GetTexture(name + "_HEIGHT" + arrayTypes[3]);
+        material->m_Base->m_AlbedoMap = GetTexture(name + "_ALB" + fileFormats[0]);
+        material->m_Base->m_NormalMap = GetTexture(name + "_NRM" + fileFormats[1]);
+        material->m_Base->m_rmaMap = GetTexture(name + "_RMA" + fileFormats[2]);
+        material->m_Base->m_HeightMap = GetTexture(name + "_HEIGHT" + fileFormats[3]);
 
         m_Materials[name] = material;
         return m_Materials[name];

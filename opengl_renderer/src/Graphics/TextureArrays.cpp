@@ -14,9 +14,9 @@
 
 namespace Real {
 
-    void TextureArrayManager::AddTextureMap(TextureType texType, TextureResolution resolution, const Ref<Texture> &texMap) {
+    void TextureArrayManager::AddTextureMap(TextureType texType, TextureResolution resolution, const Ref<OpenGLTexture> &texMap) {
         if (!texMap) {
-            Warn("Texture can't added to TextureArray (nullptr): " + util::TextureTypeEnumToString(texType));
+            Warn("Texture can't added to TextureArray (nullptr): " + util::EnumToString_TextureType(texType));
             return;
         }
         // texMap->SetTexArrayIndex(TexArrayTypeToArrayIndex(texType));
@@ -24,7 +24,7 @@ namespace Real {
         m_TextureArrays[TexArrayTypeToArrayIndex(texType)][TexArrayResolutionToIndex(resolution)].push_back(texMap);
     }
 
-    const std::vector<Ref<Texture>>& TextureArrayManager::GetTextureArray(TextureType arrayType, TextureResolution res) {
+    const std::vector<Ref<OpenGLTexture>>& TextureArrayManager::GetTextureArray(TextureType arrayType, TextureResolution res) {
         return m_TextureArrays[TexArrayTypeToArrayIndex(arrayType)][TexArrayResolutionToIndex(res)];
     }
 
@@ -74,39 +74,39 @@ namespace Real {
         }
     }
 
-    void TextureArrayManager::CreateCompressedTextureArray(const std::string& texMapName, const std::vector<Ref<Texture>>& textureArray) {
-        if (m_TextureArrayHandles.contains(texMapName)) {
-            Warn("TextureArray already loaded before with name: " + texMapName);
-            return;
-        }
-        // Create texture array
-        GLuint texArray;
-        glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
-
-        // Allocate the storage based firstTexData
-        const auto& firstTexData = textureArray[0]->GetData();
-        // Check if empty, because OpenGL does not support zero-sized arrays
-        if (!textureArray.empty()) {
-            glTextureStorage3D(texArray, 1, firstTexData.m_GLCompressedType, firstTexData.m_Width, firstTexData.m_Height, textureArray.size());
-
-            for (const auto& tex : textureArray) {
-                if (tex->HasData()) {
-                    auto& texData = tex->GetData();
-                    glCompressedTexSubImage3D(texArray, 0, 0, 0, tex->GetIndex(), texData.m_Width, texData.m_Height, 1,
-                        texData.m_GLCompressedType, texData.m_ImageSize, texData.m_Data
-                    );
-                    stbi_image_free(texData.m_Data); // Clean up vRAM
-                    texData.m_Data = nullptr;
-                }
-            }
-            // Set parameters
-            glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(texArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTextureParameteri(texArray, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(texArray, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        }
-
-        m_TextureArrayHandles[texMapName] = texArray;
+    void TextureArrayManager::CreateCompressedTextureArray(const std::string& texMapName, const std::vector<Ref<OpenGLTexture>>& textureArray) {
+        // if (m_TextureArrayHandles.contains(texMapName)) {
+        //     Warn("TextureArray already loaded before with name: " + texMapName);
+        //     return;
+        // }
+        // // Create texture array
+        // GLuint texArray;
+        // glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &texArray);
+        //
+        // // Allocate the storage based firstTexData
+        // const auto& firstTexData = textureArray[0]->GetData();
+        // // Check if empty, because OpenGL does not support zero-sized arrays
+        // if (!textureArray.empty()) {
+        //     glTextureStorage3D(texArray, 1, firstTexData.m_GLCompressedType, firstTexData.m_Width, firstTexData.m_Height, textureArray.size());
+        //
+        //     for (const auto& tex : textureArray) {
+        //         if (tex->HasData()) {
+        //             auto& texData = tex->GetData();
+        //             glCompressedTexSubImage3D(texArray, 0, 0, 0, tex->GetIndex(), texData.m_Width, texData.m_Height, 1,
+        //                 texData.m_GLCompressedType, texData.m_ImageSize, texData.m_Data
+        //             );
+        //             stbi_image_free(texData.m_Data); // Clean up vRAM
+        //             texData.m_Data = nullptr;
+        //         }
+        //     }
+        //     // Set parameters
+        //     glTextureParameteri(texArray, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //     glTextureParameteri(texArray, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //     glTextureParameteri(texArray, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //     glTextureParameteri(texArray, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // }
+        //
+        // m_TextureArrayHandles[texMapName] = texArray;
     }
 
     size_t TextureArrayManager::TexArrayResolutionToIndex(TextureResolution resolution) {

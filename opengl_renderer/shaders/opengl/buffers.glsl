@@ -1,8 +1,6 @@
 #ifndef BUFFERS_GLSL
 #define BUFFERS_GLSL
 
-#extension GL_ARB_bindless_texture : require
-
 struct Transform {
     mat4 modelMatrix;
     mat4 normalMatrix; // unused w (padding)
@@ -54,27 +52,37 @@ layout (std430, binding = 5) buffer TextureBuffer {
     uint64_t bindlessTextures[];
 };
 
-vec4 GetAlbedoSampler2D(int matIdx, vec2 UV) {
+vec3 GetAlbedoSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetAlbedoTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV);
+    return pow(texture(sampler2D(handle), UV).rgb, vec3(2.2));
 }
 
-vec4 GetNormalSampler2D(int matIdx, vec2 UV) {
+vec3 GetNormalSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetNormalTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).rgb;
 }
 
-vec4 GetRMASampler2D(int matIdx, vec2 UV) {
+float GetRoughnessSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).rgb;
+    return texture(sampler2D(handle), UV).r;
 }
 
-vec4 GetHeightSampler2D(int matIdx, vec2 UV) {
+float GetMetallicSampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    return texture(sampler2D(handle), UV).g;
+}
+
+float GetAOSampler2D(int matIdx, vec2 UV) {
+    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    return texture(sampler2D(handle), UV).b;
+}
+
+vec3 GetHeightSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetHeightTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).rgb;
 }
 
-// TODO: improvable from the perspective of memory padding
+// TODO: Improvable memory padding
 struct Light {
     vec4 pos_cutoff; // vec3 position,  w = cutOff
     vec4 dir_outer;  // vec3 direction, w = outerCutOff

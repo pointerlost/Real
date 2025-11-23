@@ -24,7 +24,7 @@ namespace Real::util {
             if (p.path().has_extension()) {
                 FileInfo fileInfo{};
                 fileInfo.name = p.path().filename();
-                fileInfo.ext = p.path().extension();
+                fileInfo.ext  = p.path().extension();
                 fileInfo.stem = p.path().stem();
                 fileInfo.path = p.path();
                 files.emplace_back(fileInfo);
@@ -47,66 +47,111 @@ namespace Real::util {
         return abs(y - num) > abs(x - num) ? x : y;
     }
 
-    ImageCompressedType PickTextureCompressionType(TextureType type) {
-        // TODO: when we add HDR Skyboxes match to BC6
-        switch (type) {
-            case TextureType::ALB:
-            case TextureType::RMA:
-                return ImageCompressedType::BC7;
-
-            case TextureType::NRM:
-                return ImageCompressedType::BC5;
-
-            case TextureType::HEIGHT:
-            case TextureType::RGH:
-            case TextureType::MTL:
-            case TextureType::AO:
-                return ImageCompressedType::BC4;
-
-            default:
-                Warn("Returning UNDEFINED Texture type for: " + EnumToString_TextureType(type));
-                return ImageCompressedType::UNDEFINED;
-        }
-    }
-
-    GLenum ConvertChannelCountToGLType(int channelCount, const std::string& name) {
+    int ConvertChannelCountToGLFormat(int channelCount, const std::string& name, bool srgb) {
         switch (channelCount) {
-            case 1: return GL_R8;
-            case 2: return GL_RG8;
-            case 3: return GL_RGB8;
-            case 4: return GL_RGBA8;
+            case 1: return GL_R;
+            case 2: return GL_RG;
+            case 3: return srgb ? GL_SRGB : GL_RGB;
+            case 4: return srgb ? GL_SRGB_ALPHA : GL_RGBA;
 
             default:
                 Warn("There is no GLType for this channel count, tex name: " + name);
-                return UINT_MAX;
+                return GL_INVALID_ENUM;
         }
     }
 
-    GLenum ImageCompressTypeToGLEnum(ImageCompressedType type) {
-        switch (type) {
-            case ImageCompressedType::BC1: return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            case ImageCompressedType::BC2: return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            case ImageCompressedType::BC3: return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            case ImageCompressedType::BC4: return GL_COMPRESSED_RED_RGTC1_EXT;
-            case ImageCompressedType::BC5: return GL_COMPRESSED_RED_GREEN_RGTC2_EXT;
-            case ImageCompressedType::BC6: return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT;
-            case ImageCompressedType::BC7: return GL_COMPRESSED_RGBA_BPTC_UNORM;
+    int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb) {
+        switch (channelCount) {
+            case 1: return GL_R8;
+            case 2: return GL_RG8;
+            case 3: return srgb ? GL_SRGB8 : GL_RGB8;
+            case 4: return srgb ? GL_SRGB8_ALPHA8 : GL_RGBA8;
 
-            default: return GL_INVALID_ENUM;
+            default:
+                Warn("There is no Internal format for this channel count!");
+                return GL_INVALID_ENUM;
         }
     }
 
-    std::string ImageCompressTypeToString(ImageCompressedType type) {
-        switch (type) {
-            case ImageCompressedType::BC1: return "BC1";
-            case ImageCompressedType::BC2: return "BC2";
-            case ImageCompressedType::BC3: return "BC3";
-            case ImageCompressedType::BC4: return "BC4";
-            case ImageCompressedType::BC5: return "BC5";
-            case ImageCompressedType::BC6: return "BC6";
-            case ImageCompressedType::BC7: return "BC7";
+    int GetCompressedInternalFormat(int channelCount) {
+        // TODO: when we add HDR Skyboxes match to BC6
+        switch (channelCount) {
+            case 4:
+            case 3: return GL_COMPRESSED_RGBA_BPTC_UNORM;
+            case 1: return GL_COMPRESSED_RED_RGTC1_EXT;
+            default:
+                Warn("Missing channel count Returning UNDEFINED Internal format");
+                return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        }
+    }
 
-            default: return "UNDEFINED";
+    std::string InternalFormatToString(int format) {
+        switch (format) {
+            case GL_COMPRESSED_RGBA_BPTC_UNORM: return "GL_COMPRESSED_RGBA_BPTC_UNORM";
+            case GL_COMPRESSED_RED_RGTC1_EXT: return "GL_COMPRESSED_RED_RGTC1_EXT";
+            default: return std::to_string(format);
+        }
+    }
+
+    CMP_FORMAT GetCMPDestinationFormat(int channelCount) {
+        switch (channelCount) {
+            case 1: return CMP_FORMAT_BC4;
+            case 2: return CMP_FORMAT_BC5;
+            case 3: case 4: return CMP_FORMAT_BC7;
+            default:
+                Warn("UNDEFINED CMP_FORMAT, for channelCount: " + std::to_string(channelCount));
+                return CMP_FORMAT_BC1;
+        }
+    }
+
+    std::string DebugCMPStatus(CMP_ERROR error) {
+        switch (error) {
+            case CMP_ERR_CMP_DESTINATION:   return "CMP_ERR_CMP_DESTINATION";
+            case CMP_ERR_FAILED_HOST_SETUP: return "CMP_ERR_FAILED_HOST_SETUP";
+            case CMP_ERR_GAMMA_OUTOFRANGE:  return "CMP_ERR_GAMMA_OUTOFRANGE";
+            case CMP_ERR_GENERIC: return "CMP_ERR_GENERIC";
+            case CMP_ERR_GPU_DOESNOT_SUPPORT_CMP_EXT: return "CMP_ERR_GPU_DOESNOT_SUPPORT_CMP_EXT";
+            case CMP_ERR_GPU_DOESNOT_SUPPORT_COMPUTE: return "CMP_ERR_GPU_DOESNOT_SUPPORT_COMPUTE";
+            case CMP_ERR_INVALID_DEST_TEXTURE:    return "CMP_ERR_INVALID_DEST_TEXTURE";
+            case CMP_ERR_INVALID_SOURCE_TEXTURE:  return "CMP_ERR_INVALID_SOURCE_TEXTURE";
+            case CMP_ERR_MEM_ALLOC_FOR_MIPSET:    return "CMP_ERR_MEM_ALLOC_FOR_MIPSET";
+            case CMP_ERR_NOPERFSTATS:             return "CMP_ERR_NOPERFSTATS";
+            case CMP_ERR_PLUGIN_FILE_NOT_FOUND:   return "CMP_ERR_PLUGIN_FILE_NOT_FOUND";
+            case CMP_ERR_NOSHADER_CODE_DEFINED:   return "CMP_ERR_NOSHADER_CODE_DEFINED";
+            case CMP_ERR_PLUGIN_SHAREDIO_NOT_SET: return "CMP_ERR_PLUGIN_SHAREDIO_NOT_SET";
+            case CMP_ERR_SIZE_MISMATCH:           return "CMP_ERR_SIZE_MISMATCH";
+            case CMP_ERR_UNABLE_TO_CREATE_ENCODER:     return "CMP_ERR_UNABLE_TO_CREATE_ENCODER";
+            case CMP_ERR_UNABLE_TO_INIT_CODEC:         return "CMP_ERR_UNABLE_TO_INIT_CODEC";
+            case CMP_ERR_UNABLE_TO_INIT_COMPUTELIB:    return "CMP_ERR_UNABLE_TO_INIT_COMPUTELIB";
+            case CMP_ERR_UNABLE_TO_INIT_D3DX:          return "CMP_ERR_UNABLE_TO_INIT_D3DX";
+            case CMP_ERR_UNABLE_TO_INIT_DECOMPRESSLIB: return "CMP_ERR_UNABLE_TO_INIT_DECOMPRESSLIB";
+            case CMP_ERR_UNABLE_TO_LOAD_ENCODER:       return "CMP_ERR_UNABLE_TO_LOAD_ENCODER";
+            case CMP_ERR_UNABLE_TO_LOAD_FILE:          return "CMP_ERR_UNABLE_TO_LOAD_FILE";
+            case CMP_ERR_UNKNOWN_DESTINATION_FORMAT:   return "CMP_ERR_UNKNOWN_DESTINATION_FORMAT";
+            case CMP_ERR_UNSUPPORTED_DEST_FORMAT:      return "CMP_ERR_UNSUPPORTED_DEST_FORMAT";
+            case CMP_ERR_UNSUPPORTED_GPU_ASTC_DECODE:  return "CMP_ERR_UNSUPPORTED_GPU_ASTC_DECODE";
+            case CMP_ERR_UNSUPPORTED_GPU_BASIS_DECODE: return "CMP_ERR_UNSUPPORTED_GPU_BASIS_DECODE";
+            case CMP_ERR_UNSUPPORTED_SOURCE_FORMAT:    return "CMP_ERR_UNSUPPORTED_SOURCE_FORMAT";
+
+            default: return "UNKNOWN ERROR!";
+        }
+    }
+
+    void DebugGLError() {
+        switch (const GLenum err = glGetError(); err) {
+            case GL_NO_ERROR:          Info("There is no GL error!"); break;
+            case GL_INVALID_ENUM:      Warn("GL_INVALID_ENUM");       break;
+            case GL_INVALID_VALUE:     Warn("GL_INVALID_VALUE");      break;
+            case GL_INVALID_OPERATION: Warn("GL_INVALID_OPERATION");  break;
+            case GL_INVALID_INDEX:     Warn("GL_INVALID_INDEX");      break;
+            case GL_STACK_OVERFLOW:    Warn("GL_STACK_OVERFLOW");     break;
+            case GL_STACK_UNDERFLOW:   Warn("GL_STACK_UNDERFLOW");    break;
+            case GL_OUT_OF_MEMORY:     Warn("GL_OUT_OF_MEMORY");      break;
+            case GL_CONTEXT_LOST:      Warn("GL_CONTEXT_LOST");       break;
+            case GL_TABLE_TOO_LARGE:   Warn("GL_TABLE_TOO_LARGE");    break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: Warn("GL_INVALID_FRAMEBUFFER_OPERATION"); break;
+
+            default: ;
         }
     }
 
@@ -139,22 +184,6 @@ namespace Real::util {
         }
     }
 
-    CMP_FORMAT GetCMPFormat(ImageCompressedType type) {
-        switch (type) {
-            case ImageCompressedType::BC1: return CMP_FORMAT_BC1;  // 8-bit
-            case ImageCompressedType::BC2: return CMP_FORMAT_BC2;  // 8-bit
-            case ImageCompressedType::BC3: return CMP_FORMAT_BC3;  // 8-bit
-            case ImageCompressedType::BC4: return CMP_FORMAT_BC4;  // 8-bit
-            case ImageCompressedType::BC5: return CMP_FORMAT_BC5;  // 8-bit
-            case ImageCompressedType::BC6: return CMP_FORMAT_BC6H; // This one using 16-bit option
-            case ImageCompressedType::BC7: return CMP_FORMAT_BC7;  // 8-bit
-
-            default:
-                Warn("[GetCMPFormatWithCompressType] Unknown format!");
-                return CMP_FORMAT_Unknown;
-        }
-    }
-
     std::string GetDefaultTextureName(TextureType type, int width) {
         return std::string("default_" + EnumToString_TextureType(type) + "_" + std::to_string(width));
     }
@@ -182,24 +211,6 @@ namespace Real::util {
         return TexFormat_uncompressed_GetBitPerTexel(type) / 8;
     }
 
-    uint TexFormat_compressed_GetBytesPerBlock(ImageCompressedType type) {
-        switch (type) {
-            case ImageCompressedType::BC1:
-            case ImageCompressedType::BC4:
-                return 8;
-            case ImageCompressedType::BC2:
-            case ImageCompressedType::BC3:
-            case ImageCompressedType::BC5:
-            case ImageCompressedType::BC6:
-            case ImageCompressedType::BC7:
-                return 16;
-
-            default:
-                Warn("There is no ImageFormatState for this type!!! returning null val!");
-                return 0;
-        }
-    }
-
     GLenum TextureWrapModeToGLEnum(TextureWrapMode mode) {
         switch (mode) {
             case TextureWrapMode::REPEAT:          return GL_REPEAT;
@@ -221,24 +232,4 @@ namespace Real::util {
         }
     }
 
-    GLenum glCheckError_(const char *file, int line) {
-        GLenum errorCode;
-        while ((errorCode = glGetError()) != GL_NO_ERROR)
-        {
-            std::string error;
-            switch (errorCode)
-            {
-                case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-                case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-                case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-                case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-                case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-                case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-                case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
-                default: ;
-            }
-            std::cout << error << " | " << file << " (" << line << ")" << std::endl;
-        }
-        return errorCode;
-    }
 }

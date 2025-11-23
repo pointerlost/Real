@@ -91,11 +91,11 @@ add_executable(${PROJECT_NAME}
     src/Tools/ImageTools.cpp
     include/Graphics/TextureArrays.h
     src/Graphics/TextureArrays.cpp
-        include/Common/Scheduling/Threads.h
-        src/Common/Scheduling/Threads.cpp
-        include/Common/Macros.h
-        include/Core/Types.h
-        include/Common/Scheduling/TaskManager.h
+    include/Common/Scheduling/Threads.h
+    src/Common/Scheduling/Threads.cpp
+    include/Common/Macros.h
+    include/Core/Types.h
+    include/Common/Scheduling/TaskManager.h
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

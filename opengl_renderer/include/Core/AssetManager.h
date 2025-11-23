@@ -23,16 +23,17 @@ namespace Real {
         const Shader &GetShader(const std::string& name);
 
         void LoadTextureArraysToGPU() const;
-        Ref<OpenGLTexture> CreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2& resolution, int channelCount);
-        Ref<OpenGLTexture> GetDefaultTexture(const std::string& name);
+        Ref<OpenGLTexture> GetOrCreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2& resolution, int channelCount);
         [[nodiscard]] bool IsTextureCompressed(const std::string& name) const;
-        Ref<OpenGLTexture> LoadTextureCPUData(const std::string& name, TextureType type, const FileInfo& info = FileInfo());
-        Ref<OpenGLTexture> LoadPackedTexturesCPUData(const std::string& name, const Ref<OpenGLTexture>& texture);
+        Ref<OpenGLTexture> LoadTextureOnlyCPUData(const std::string& name, TextureType type, const FileInfo& info = FileInfo());
+        void LoadPackedTexturesCPUData(const std::string& name, const Ref<OpenGLTexture>& texture);
 
-        void LoadTexturesFromFile();
+        void PrepareTexturesToUpload();
         Ref<OpenGLTexture>& GetTexture(const std::string& name);
         [[nodiscard]] bool IsTextureExists(const std::string& name) const { return m_Textures.contains(name); }
         Ref<MaterialInstance>& CreateMaterialInstance(const std::string& name, const std::array<std::string, 4> &fileFormats);
+
+        std::vector<GLuint64> UploadTexturesToGPU() const;
 
         // TODO: Load fonts from file!!
         void AddFontStyle(const std::string& fontName, ImFont* font);
@@ -41,6 +42,7 @@ namespace Real {
     private:
         std::unordered_map<std::string, Shader> m_Shaders;
         std::unordered_map<std::string, Ref<OpenGLTexture>> m_Textures;
+        std::unordered_map<std::string, Ref<OpenGLTexture>> m_DefaultTextures;
         std::unordered_map<std::string, Ref<MaterialInstance>> m_Materials;
         std::unordered_map<std::string, ImFont*> m_Fonts;
     };

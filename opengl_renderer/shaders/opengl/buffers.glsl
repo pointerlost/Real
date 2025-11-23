@@ -77,9 +77,9 @@ float GetAOSampler2D(int matIdx, vec2 UV) {
     return texture(sampler2D(handle), UV).b;
 }
 
-vec3 GetHeightSampler2D(int matIdx, vec2 UV) {
+float GetHeightSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetHeightTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).rgb;
+    return texture(sampler2D(handle), UV).r;
 }
 
 // TODO: Improvable memory padding

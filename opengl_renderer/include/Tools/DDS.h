@@ -2,13 +2,20 @@
 #include <cstdint>
 #include <GL/glext.h>
 
+#include "Core/Logger.h"
+
 #define FOURCC_DXT1 0x31545844 // "DXT1"
 #define FOURCC_DXT3 0x33545844 // "DXT3"
 #define FOURCC_DXT5 0x35545844 // "DXT5"
 #define FOURCC_DX10 0x30315844 // "DX10"
+#define FOURCC_BC4  0x20344342 // "BC4 "
+#define FOURCC_ATI1 0x31495441 // "ATI1" (AMD's name for BC4 unsigned)
+#define FOURCC_BC4U 0x55344342 // "BC4U" (Microsoft's name)
 
+
+static_assert(true); // Dummy assertion for pragma pack
+#pragma pack(push, 1)
 struct DDSHeader {
-    uint32_t dwMagic;
     uint32_t dwSize;
     uint32_t dwFlags;
     uint32_t dwHeight;
@@ -31,6 +38,7 @@ struct DDSHeader {
     uint32_t dwCaps4;
     uint32_t dwReserved2;
 };
+#pragma pack(pop)
 
 struct DDSHeaderDX10 {
     uint32_t dxgiFormat;
@@ -47,45 +55,71 @@ struct DDSFormatInfo {
     int channelCount;   // Number of channels (1 for grayscale, 3 for RGB, 4 for RGBA)
 };
 
-inline DDSFormatInfo GetDDSFormatInfo(const DDSHeader& header, DDSHeaderDX10* dx10Header) {
+inline DDSFormatInfo GetDDSFormatInfo(const DDSHeader& header, const DDSHeaderDX10* dx10Header) {
     DDSFormatInfo formatInfo = {};
-    if (header.ddspf_dwFourCC == FOURCC_DXT1) {
-        formatInfo.internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-        formatInfo.format = GL_RGBA; // DXT1 represents RGB data with optional alpha
-        formatInfo.blockSize = 8;
-        formatInfo.channelCount = (header.ddspf_dwABitMask) ? 4 : 3; // DXT1 may omit alpha
-    }
-    else if (header.ddspf_dwFourCC == FOURCC_DXT3 || header.ddspf_dwFourCC == FOURCC_DXT5) {
-        formatInfo.internalFormat = (header.ddspf_dwFourCC == FOURCC_DXT3)
-            ? GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
-            : GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-        formatInfo.format = GL_RGBA; // DXT3/5 represent RGBA data
-        formatInfo.blockSize = 16;
-        formatInfo.channelCount = 4; // DXT3/5 store RGBA
-    }
-    else if (header.ddspf_dwFourCC == FOURCC_DX10 && dx10Header) {
-        // DX10 header is present, check dxgiFormat
-        switch (dx10Header->dxgiFormat) {
-        case 98: // DXGI_FORMAT_BC7_UNORM
-            formatInfo.internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
-            formatInfo.format = GL_RGBA; // BC7 represents RGBA data
-            formatInfo.blockSize = 16;
-            formatInfo.channelCount = 4; // BC7 is always RGBA
+    switch (header.ddspf_dwFourCC) {
+        case FOURCC_DXT1:
+            formatInfo.blockSize = 8;
+            formatInfo.channelCount = header.ddspf_dwABitMask ? 4 : 3; // DXT1 may omit alpha
+            formatInfo.format = GL_RGBA; // DXT1 represents RGB data with optional alpha
+            formatInfo.internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
             break;
-        case 99: // DXGI_FORMAT_BC7_UNORM_SRGB
-            formatInfo.internalFormat = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB;
-            formatInfo.format = GL_SRGB_ALPHA; // BC7 in sRGB
+        case FOURCC_DXT3:
+        case FOURCC_DXT5:
             formatInfo.blockSize = 16;
-            formatInfo.channelCount = 4; // BC7 is always RGBA
+            formatInfo.channelCount = 4; // DXT3/5 store RGBA
+            formatInfo.format = GL_RGBA; // DXT3/5 represent RGBA data
+            formatInfo.internalFormat = (header.ddspf_dwFourCC == FOURCC_DXT3)
+                ? GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
+                : GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
             break;
+
+        case FOURCC_ATI1: // DXGI_FORMAT_BC4_UNORM or ATI1
+        case FOURCC_BC4:
+        case FOURCC_BC4U:
+            formatInfo.internalFormat = GL_COMPRESSED_RED_RGTC1_EXT;
+            formatInfo.format = GL_R; // BC4 represents R data
+            formatInfo.blockSize = 8;
+            formatInfo.channelCount = 1; // BC4 is always R
+            break;
+
+        case FOURCC_DX10:
+            if (dx10Header) {
+                // DX10 header is present, check dxgiFormat
+                switch (dx10Header->dxgiFormat) {
+                    case 80: // DXGI_FORMAT_BC4_UNORM
+                        formatInfo.internalFormat = GL_COMPRESSED_RED_RGTC1_EXT;
+                        formatInfo.format = GL_R; // BC4 represents R data
+                        formatInfo.blockSize = 8;
+                        formatInfo.channelCount = 1; // BC4 is always R
+                        break;
+
+                    case 98: // DXGI_FORMAT_BC7_UNORM
+                        formatInfo.internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM;
+                        formatInfo.format = GL_RGBA; // BC7 represents RGBA data
+                        formatInfo.blockSize = 16;
+                        formatInfo.channelCount = 4; // BC7 is always RGBA
+                        break;
+
+                    default:
+                        Real::Warn("Unsupported DX10 format: " + std::to_string(dx10Header->dxgiFormat));
+                        formatInfo.internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM;
+                        formatInfo.format = GL_RGBA; // BC7 represents RGBA data
+                        formatInfo.blockSize = 16;
+                        formatInfo.channelCount = 4; // BC7 is always RGBA
+                        break;
+                }
+            }
+            break;
+
         default:
-            std::cerr << "Unsupported DX10 format: " << dx10Header->dxgiFormat << "\n";
-            return {};
-        }
-    }
-    else {
-        std::cerr << "Unsupported DDS format: " << header.ddspf_dwFourCC << "\n";
-        return {};
+            Real::Warn("Unsupported DDS format: " + std::to_string(header.ddspf_dwFourCC));
+
+            formatInfo.blockSize = 16;
+            formatInfo.channelCount = 4; // DXT3/5 store RGBA
+            formatInfo.format = GL_RGBA; // DXT3/5 represent RGBA data
+            formatInfo.internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM;
+
     }
     return formatInfo;
 }

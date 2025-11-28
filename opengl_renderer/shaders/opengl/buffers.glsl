@@ -82,12 +82,10 @@ float GetHeightSampler2D(int matIdx, vec2 UV) {
     return texture(sampler2D(handle), UV).r;
 }
 
-// TODO: Improvable memory padding
 struct Light {
     vec4 pos_cutoff; // vec3 position,  w = cutOff
     vec4 dir_outer;  // vec3 direction, w = outerCutOff
-    vec4 diffuse;
-    vec4 specular;
+    vec4 radiance;   // vec3 radiance,  w = unused
     int type; // point = 0, directional = 1, spot = 2
     // Attenuation parameters
     float constant;
@@ -100,14 +98,13 @@ layout(std430, binding = 6) buffer LightSSBO {
 
 vec3 GetLightPos(int idx) { return lights[idx].pos_cutoff.xyz;  }
 vec3 GetLightDir(int idx) { return normalize(-lights[idx].dir_outer.xyz); }
-float GetCutOff(int idx)      { return lights[idx].pos_cutoff.w; }
-float GetOuterCutOff(int idx) { return lights[idx].dir_outer.w;  }
-vec3 GetLightDiffuse(int idx)  { return lights[idx].diffuse.xyz;  }
-vec3 GetLightSpecular(int idx) { return lights[idx].specular.xyz; }
-int GetLightType(int idx)      { return lights[idx].type; }
-float GetLightConstant(int idx)  { return lights[idx].constant;  }
-float GetLightLinear(int idx)    { return lights[idx].linear;    }
-float GetLightQuadratic(int idx) { return lights[idx].quadratic; }
+float GetCutOff(int idx)       { return lights[idx].pos_cutoff.w; }
+float GetOuterCutOff(int idx)  { return lights[idx].dir_outer.w;  }
+vec3 GetRadiance(int idx)      { return lights[idx].radiance.xyz; }
+int GetLightType(int idx)      { return lights[idx].type;         }
+float GetLightConstant(int idx)  { return lights[idx].constant;   }
+float GetLightLinear(int idx)    { return lights[idx].linear;     }
+float GetLightQuadratic(int idx) { return lights[idx].quadratic;  }
 
 // MULTI DRAW INDIRECT BUFFERS
 struct DrawElementsIndirectCommand {

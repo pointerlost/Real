@@ -1,4 +1,4 @@
-#version 460
+#version 460 core
 #extension GL_NV_gpu_shader5 : enable
 #include "opengl/buffers.glsl"
 

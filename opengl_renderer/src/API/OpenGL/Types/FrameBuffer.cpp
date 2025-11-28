@@ -3,25 +3,28 @@
 //
 #include "API/OpenGL/Types/FrameBuffer.h"
 
+#include <utility>
+
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 
 namespace Real::opengl {
 
-    FrameBuffer::FrameBuffer(const std::string &name, int width, int height) {
+    FrameBuffer::FrameBuffer(std::string name, int width, int height)
+        : m_Width(width), m_Height(height), m_Name(std::move(name))
+    {
     }
 
-    FrameBuffer::FrameBuffer(const std::string &name, const glm::ivec2 &screenSize) {
+    FrameBuffer::FrameBuffer(std::string name, const glm::ivec2 &screenSize)
+        : m_Width(screenSize.x), m_Height(screenSize.y), m_Name(std::move(name))
+    {
     }
 
     FrameBuffer::~FrameBuffer() {
         CleanUp();
     }
 
-    void FrameBuffer::Create(const std::string &name, int width, int height) {
-    }
-
-    void FrameBuffer::Create(const std::string &name, const glm::ivec2 &resolution) {
+    void FrameBuffer::Create() {
     }
 
     void FrameBuffer::Bind() const {

@@ -24,12 +24,9 @@ namespace Real {
         ~Light() = default;
         Light(const Light&) = default;
 
-        void AddDiffuse(const glm::vec3& diffuse) { m_Diffuse += diffuse; }
-        void SetDiffuse(const glm::vec3& diffuse) { m_Diffuse = diffuse;  }
-        void AddSpecular(const glm::vec3& specular) { m_Specular += specular; }
-        void SetSpecular(const glm::vec3& specular) { m_Specular = specular;  }
-        [[nodiscard]] const glm::vec3& GetDiffuse()  const { return m_Diffuse;  }
-        [[nodiscard]] const glm::vec3& GetSpecular() const { return m_Specular; }
+        void SetRadiance(const glm::vec3& radiance) { m_Radiance = radiance;  }
+        [[maybe_unused]] glm::vec3& GetRadiance()   { return m_Radiance;  }
+        [[nodiscard]] glm::vec3 GetRadiance() const { return m_Radiance;  }
 
         void SetConstant(float constant) { m_Constant = constant; }
         [[nodiscard]] float GetConstant() const { return m_Constant; }
@@ -49,8 +46,7 @@ namespace Real {
         [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
 
     private:
-        glm::vec3 m_Diffuse  = glm::vec3(1.0);
-        glm::vec3 m_Specular = glm::vec3(1.0);
+        glm::vec3 m_Radiance  = glm::vec3(1.0);
 
         // Attenuation parameters
         float m_Constant = 1.0;

@@ -17,18 +17,17 @@ namespace Real::opengl {
     class FrameBuffer {
     public:
         FrameBuffer() = default;
-        FrameBuffer(const std::string& name, int width, int height);
-        FrameBuffer(const std::string& name, const glm::ivec2& resolution);
-        ~FrameBuffer();
+        FrameBuffer(std::string name, int width, int height);
+        FrameBuffer(std::string name, const glm::ivec2& resolution);
         FrameBuffer(const FrameBuffer&) = default;
+        ~FrameBuffer();
 
-        void Create(const std::string& name, int width, int height);
-        void Create(const std::string& name, const glm::ivec2& resolution);
+        void Create();
         void Bind() const;
         void Unbind();
         void CheckIfStatusCompleted();
 
-        [[nodiscard]] GLuint GetHandle() const { return m_FBO; }
+        [[nodiscard]] GLuint GetHandle()           const { return m_FBO; }
         [[nodiscard]] glm::ivec2 GetViewportSize() const { return glm::ivec2{m_Width, m_Height}; }
         [[nodiscard]] const std::string& GetName() const { return m_Name; }
 

@@ -90,8 +90,8 @@ namespace Real {
 
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
-        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("Metal049A-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
-        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("Tiles108-2K", {".jpg", ".jpg", ".jpg", ".jpg"} );
+        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("Metal049A-4K", {".jpg", ".jpg", ".jpg", ".jpg"} );
+        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("MetalPlates005-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
 
         auto& cube = m_Scene->CreateEntity("RightWall");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
@@ -143,7 +143,7 @@ namespace Real {
         // Callbacks
         glfwPollEvents();
         glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Init UI
         m_EditorPanel->BeginFrame();
     }

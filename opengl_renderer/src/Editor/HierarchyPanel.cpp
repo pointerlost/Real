@@ -78,11 +78,11 @@ namespace Real::UI {
     void HierarchyPanel::DrawComponent(TransformComponent *comp, Scene* scene) {
         auto& transform = comp->m_Transform;
         auto position = transform.GetTranslate();
-        auto rotate = transform.GetRotationEuler();
-        auto scale = transform.GetScale();
+        auto rotate   = transform.GetRotationEuler();
+        auto scale    = transform.GetScale();
 
         constexpr auto textboxSize = ImVec2(25.0, 30.0);
-        constexpr auto textSize = ImVec2(70.0, 30.0);
+        constexpr auto textSize    = ImVec2(70.0, 30.0);
         constexpr float dragCount = 3.0;
         const auto dragSize = static_cast<float>((m_SizeX - 3.0 * textboxSize.x - textSize.x) / dragCount - 20.0);
         if (ImGui::CollapsingHeader("Transform Component")) {
@@ -148,15 +148,11 @@ namespace Real::UI {
     void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
         const auto& material = comp->m_Instance;
         auto& baseColor = material->m_BaseColor;
-        auto& normalColor = material->m_NormalRMA[0];
-        auto& roughness = material->m_NormalRMA[1];
-        auto& metallic = material->m_NormalRMA[2];
-        auto& ao = material->m_NormalRMA[3];
         constexpr auto textSize = ImVec2(45.0, 30.0);
         if (ImGui::CollapsingHeader("Material Component")) {
             // Base color
             {
-                auto textboxSize = ImVec2(22.0, 30.0);
+                constexpr auto  textboxSize = ImVec2(22.0, 30.0);
                 constexpr float dragCount = 4.0;
                 const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
 
@@ -188,22 +184,18 @@ namespace Real::UI {
 
     void HierarchyPanel::DrawComponent(LightComponent *comp, TransformComponent* transform, Scene* scene) {
         auto& light = comp->m_Light;
-        auto diffuse = light.GetDiffuse();
-        auto specular = light.GetSpecular();
-        auto constant = light.GetConstant();
-        auto linear = light.GetLinear();
-        auto quadratic = light.GetQuadratic();
-        auto cutOff = light.GetCutOff();
+        auto radiance    = light.GetRadiance();
+        auto constant    = light.GetConstant();
+        auto linear      = light.GetLinear();
+        auto quadratic   = light.GetQuadratic();
+        auto cutOff      = light.GetCutOff();
         auto outerCutOff = light.GetOuterCutOff();
 
         if (ImGui::CollapsingHeader("Light Component")) {
             const auto lightType = light.GetType();
 
-            if (ImGui::ColorEdit3("Diffuse", &diffuse[0])) {
-                light.SetDiffuse(diffuse);
-            }
-            if (ImGui::ColorEdit3("Specular", &specular[0])) {
-                light.SetSpecular(specular);
+            if (ImGui::ColorEdit3("Radiance", &radiance[0])) {
+                light.SetRadiance(radiance);
             }
 
             // Attenuation Parameters
@@ -268,9 +260,9 @@ namespace Real::UI {
 
     void HierarchyPanel::DrawComponent(CameraComponent *comp, Scene* scene) {
         auto& camera = comp->m_Camera;
-        auto near = camera.GetNear();
-        auto far = camera.GetFar();
-        auto fov = camera.GetFOV();
+        auto near   = camera.GetNear();
+        auto far    = camera.GetFar();
+        auto fov    = camera.GetFOV();
         auto aspect = camera.GetAspect();
 
         if (ImGui::CollapsingHeader("Camera Component")) {

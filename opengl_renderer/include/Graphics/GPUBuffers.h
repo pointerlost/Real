@@ -14,8 +14,7 @@ namespace Real {
     struct LightSSBO {
         glm::vec4 pos_cutoff{0.0}; // vec3 = position, float = cutoff
         glm::vec4 dir_outer{0.0}; // vec3 direction, float = outerCutoff
-        glm::vec4 diffuse{1.0};
-        glm::vec4 specular{0.7};
+        glm::vec4 radiance{0.0};
         int type = 0;
         // Attenuation parameters
         float constant = 1.0;

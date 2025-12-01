@@ -90,45 +90,45 @@ namespace Real {
 
         m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
 
-        const auto& material = Services::GetAssetManager()->CreateMaterialInstance("Metal049A-4K", {".jpg", ".jpg", ".jpg", ".jpg"} );
-        const auto& material2 = Services::GetAssetManager()->CreateMaterialInstance("MetalPlates005-1K", {".jpg", ".jpg", ".jpg", ".jpg"} );
+        m_Renderer->GetRenderContext()->InitResources();
+
+        const auto& material  = Services::GetAssetManager()->GetOrCreateMaterialInstance("Wood066-2K");
+        const auto& material_ = Services::GetAssetManager()->GetOrCreateMaterialInstance("WoodFloor043-2K");
 
         auto& cube = m_Scene->CreateEntity("RightWall");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
         cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
         cube.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube.AddComponent<MaterialComponent>().m_Instance = material;
+        cube.AddComponent<MaterialComponent>().m_Instance = material_;
 
         auto& cube2 = m_Scene->CreateEntity("LeftWall");
         cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-26.0, 1.5, 0.0));
         cube2.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
         cube2.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube2.AddComponent<MaterialComponent>().m_Instance = material;
+        cube2.AddComponent<MaterialComponent>().m_Instance = material_;
 
         auto& cube3 = m_Scene->CreateEntity("Floor");
         cube3.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 0.5, 98.0));
         cube3.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube3.AddComponent<MaterialComponent>().m_Instance = material;
+        cube3.AddComponent<MaterialComponent>().m_Instance = material_;
 
         auto& cube4 = m_Scene->CreateEntity("Roof");
         cube4.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 13.5, 0.0));
         cube4.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 4.0, 1.0));
         cube4.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube4.AddComponent<MaterialComponent>().m_Instance = material;
+        cube4.AddComponent<MaterialComponent>().m_Instance = material_;
 
         auto& cube5 = m_Scene->CreateEntity("Container");
         cube5.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 12.0));
         cube5.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0, 8.0, 8.0));
         cube5.AddComponent<MeshComponent>().m_MeshName = "cube";
-        cube5.AddComponent<MaterialComponent>().m_Instance = material2;
+        cube5.AddComponent<MaterialComponent>().m_Instance = material;
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
         light.AddComponent<MeshComponent>().m_MeshName = "cube";
-        light.AddComponent<LightComponent>().m_Light = Light{LightType::SPOT};
-        light.AddComponent<MaterialComponent>().m_Instance = material2;
-
-        m_Renderer->GetRenderContext()->InitResources();
+        light.AddComponent<LightComponent>().m_Light = Light{LightType::POINT};
+        light.AddComponent<MaterialComponent>().m_Instance = material;
 
         Info("Resources loaded successfully!");
     }
@@ -193,6 +193,7 @@ namespace Real {
         // glEnable(GL_FRAMEBUFFER_SRGB);
 
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEBUG_OUTPUT);
         // glDepthFunc(GL_LEQUAL);
         // glDepthFunc(GL_EQUAL);
         // glEnable(GL_STENCIL_TEST);

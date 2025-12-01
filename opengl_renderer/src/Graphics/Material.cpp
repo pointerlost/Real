@@ -2,41 +2,32 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/Material.h"
-
 #include "Core/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 
 namespace Real {
+    MaterialInstance::MaterialInstance(const std::string &name, const std::array<std::string, 4>& extensions) {
+        const auto& am = Services::GetAssetManager();
+        m_Base = am->GetOrCreateMaterialBase(name);
+
+        m_Base->m_Albedo = am->GetTexture(name + "_ALB"    + extensions[0]);
+        m_Base->m_Normal = am->GetTexture(name + "_NRM"    + extensions[1]);
+        m_Base->m_Height = am->GetTexture(name + "_HEIGHT" + extensions[2]);
+        m_Base->m_RMA    = am->GetTexture(name + "_RMA"    + extensions[3]);
+    }
 
     MaterialSSBO MaterialInstance::ConvertToGPUFormat() const {
-        const auto& assetManager = Services::GetAssetManager();
         MaterialSSBO gpuData{};
+
+        gpuData.m_BindlessAlbedoIdx = { m_Base->m_Albedo->GetIndex() };
+        gpuData.m_BindlessNormalIdx = { m_Base->m_Normal->GetIndex() };
+        gpuData.m_BindlessRMAIdx    = { m_Base->m_RMA->GetIndex()    };
+        gpuData.m_BindlessHeightIdx = { m_Base->m_Height->GetIndex() };
+
+        // Override colors
         gpuData.m_BaseColor = m_BaseColor;
         gpuData.m_NormalRMA = m_NormalRMA;
-
-        Ref<OpenGLTexture> albedo = nullptr;
-        Ref<OpenGLTexture> normal = nullptr;
-        Ref<OpenGLTexture> rma    = nullptr;
-        Ref<OpenGLTexture> height = nullptr;
-
-        if (m_Base->m_AlbedoMap)
-            albedo = assetManager->GetTexture(m_Base->m_AlbedoMap->GetName());
-        if (m_Base->m_NormalMap)
-            normal = assetManager->GetTexture(m_Base->m_NormalMap->GetName());
-        if (m_Base->m_rmaMap)
-            rma    = assetManager->GetTexture(m_Base->m_rmaMap->GetName());
-        if (m_Base->m_HeightMap)
-            height = assetManager->GetTexture(m_Base->m_HeightMap->GetName());
-
-        if (albedo)
-            gpuData.m_BindlessAlbedoIdx = { albedo->GetIndex() };
-        if (normal)
-            gpuData.m_BindlessNormalIdx = { normal->GetIndex() };
-        if (rma)
-            gpuData.m_BindlessRMAIdx    = { rma->GetIndex()    };
-        if (height)
-            gpuData.m_BindlessHeightIdx = { height->GetIndex() };
 
         return gpuData;
     }

@@ -5,7 +5,6 @@
 #include <stb_image_resize2.h>
 #include <utility>
 #include <GL/glext.h>
-
 #include "Core/AssetManager.h"
 #include "Core/CmakeConfig.h"
 #include "Core/Logger.h"
@@ -19,6 +18,18 @@ namespace Real {
     OpenGLTexture::OpenGLTexture(ImageFormatState format, TextureType type)
         : m_ImageFormatState(format), m_Type(type)
     {
+    }
+
+    OpenGLTexture::~OpenGLTexture() {
+        for (auto level : m_MipLevelsData) {
+            if (!level.m_Data) {
+                delete[] static_cast<uint8_t*>(level.m_Data);
+                level.m_Data = nullptr;
+            }
+        }
+        if (m_Handle != 0) {
+            glDeleteTextures(1, &m_Handle);
+        }
     }
 
     void OpenGLTexture::AddLevelData(TextureData data, int mipLevel) {
@@ -90,7 +101,7 @@ namespace Real {
     }
 
     void OpenGLTexture::SetMipLevelsData(const std::vector<TextureData> &mipLevels) {
-        CreateMipmaps(mipLevels);
+        CreateMipmapsFromDDS(mipLevels);
     }
 
     std::pair<int, int> OpenGLTexture::GetResolution(int mipLevel) {
@@ -141,23 +152,23 @@ namespace Real {
         CreateFromData(data, m_Type);
     }
 
-    void OpenGLTexture::CreateFromData(TextureData data, TextureType type) {
+    void OpenGLTexture::CreateFromData(const TextureData &data, TextureType type) {
         if (m_Handle == 0) {
             CreateHandle();
         }
+        if (data.m_Format == 0 || data.m_InternalFormat == 0) {
+            Warn("There is no format or internal format for: " + m_FileInfo.name);
+        }
         m_Type = type;
-        data.m_Format = util::ConvertChannelCountToGLFormat(data.m_ChannelCount);
-        data.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(data.m_ChannelCount);
-        CreateMipmaps(data);
+        // One mip level is enough for CPU-generated textures
+        m_MipLevelsData.push_back(data);
     }
 
     void OpenGLTexture::PrepareOptionsAndUploadToGPU() {
-        // We are packing these textures into nrChannels, so we don't need to send to GPU
-        if (m_Type == TextureType::RGH || m_Type == TextureType::MTL || m_Type == TextureType::AO) return;
-
         UploadMipLevels();
         SetTextureParameters();
-        CreateBindlessAndMakeResident();
+        CreateBindless();
+        MakeResident();
     }
 
     void OpenGLTexture::CreateHandle() {
@@ -167,17 +178,20 @@ namespace Real {
         }
     }
 
-    void OpenGLTexture::CreateBindlessAndMakeResident() {
+    void OpenGLTexture::CreateBindless() {
         // Create Texture bindless handle
         if (m_Handle == 0) {
             Warn("Texture handle is not exists!");
             return;
         }
-        m_BindlessHandleID = glGetTextureHandleARB(m_Handle);
         if (m_BindlessHandleID == 0) {
-            Warn("Bindless Handle can't created! tex name: " + m_FileInfo.name);
+            if (GLAD_GL_ARB_bindless_texture && GLAD_GL_ARB_gpu_shader_int64) {
+                m_BindlessHandleID = glGetTextureHandleARB(m_Handle);
+                if (m_BindlessHandleID == 0) {
+                    Warn("Bindless Handle can't created! tex name: " + m_FileInfo.name);
+                }
+            }
         }
-        MakeResident(m_BindlessHandleID);
     }
 
     void OpenGLTexture::UploadMipLevels() {
@@ -186,28 +200,53 @@ namespace Real {
             return;
         }
 
-        // Allocate enough memory for all the mip levels
-        glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].m_InternalFormat,
-            m_MipLevelsData[0].m_Width, m_MipLevelsData[0].m_Height
-        );
+        switch (m_ImageFormatState) {
+            case ImageFormatState::COMPRESSED: {
+                // Allocate enough memory for all the mip levels
+                glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].m_InternalFormat,
+                    m_MipLevelsData[0].m_Width, m_MipLevelsData[0].m_Height
+                );
 
-        for (int lvl = 0; lvl < m_MipLevelCount; lvl++) {
-            auto& data = m_MipLevelsData[lvl];
-            glCompressedTextureSubImage2D(m_Handle, lvl, 0, 0, data.m_Width, data.m_Height,
-                data.m_InternalFormat, (int)data.m_DataSize, data.m_Data
-            );
-            if (data.m_Data) {
-                data.m_Data = nullptr;
-                stbi_image_free(data.m_Data);
+                for (int lvl = 0; lvl < m_MipLevelCount; lvl++) {
+                    const auto& data = m_MipLevelsData[lvl];
+                    if (data.m_Width % 4 != 0 || data.m_Height % 4 != 0) {
+                        Warn("Compressed mip level " + std::to_string(lvl) +
+                             " has invalid dimensions " +
+                             std::to_string(data.m_Width) + "x" +
+                             std::to_string(data.m_Height) +
+                             " (must be multiples of 4)");
+                    }
+                    glCompressedTextureSubImage2D(m_Handle, lvl, 0, 0, data.m_Width, data.m_Height,
+                        data.m_InternalFormat, (int)data.m_DataSize, data.m_Data
+                    );
+                }
             }
+
+            case ImageFormatState::UNCOMPRESSED: {
+                // Allocate memory for uncompressed data
+                const auto& data = m_MipLevelsData[0];
+                m_MipLevelCount = CalculateMaxMipMapLevels(data.m_Width, data.m_Height);
+
+                // Allocate for all the mip levels
+                glTextureStorage2D(m_Handle, m_MipLevelCount, data.m_InternalFormat, data.m_Width, data.m_Height);
+                // Load first mip level data
+                glTextureSubImage2D(m_Handle, 0, 0, 0, data.m_Width, data.m_Height, data.m_Format, GL_UNSIGNED_BYTE, data.m_Data);
+                // Generate other mipmap levels
+                glGenerateTextureMipmap(m_Handle);
+            }
+
+            case ImageFormatState::COMPRESS_ME: Warn("There is texture should be compressed!!!");
+            case ImageFormatState::UNDEFINED:   Warn("Texture format state is UNDEFINED!");
+            default: ;
         }
     }
 
-    void OpenGLTexture::CreateMipmaps(const std::vector<TextureData> &levelsData) {
+    void OpenGLTexture::CreateMipmapsFromDDS(const std::vector<TextureData> &levelsData) {
         if (levelsData.empty()) {
             Warn("Texture data empty!");
             return;
         }
+        m_MipLevelsData.clear();
 
         m_MipLevelCount = (int)levelsData.size();
         if (m_MipLevelCount < 1) {
@@ -217,40 +256,30 @@ namespace Real {
         m_MipLevelsData = levelsData;
     }
 
-    void OpenGLTexture::CreateMipmaps(const TextureData &data) {
-        auto width  = data.m_Width;
-        auto height = data.m_Height;
-
-        m_MipLevelCount = CalculateMaxMipMapLevels(width, height);
-        m_MipLevelsData.resize(m_MipLevelCount, data);
-
-        // We are starting from level=1, so shit for once at the beginning
-        width  = math::FindMax(1u, width  >> 1);
-        height = math::FindMax(1u, height >> 1);
-
-        for (size_t level = 1; level < m_MipLevelCount; level++) {
-            m_MipLevelsData[level].m_Width  = width;
-            m_MipLevelsData[level].m_Height = height;
-            m_MipLevelsData[level].m_DataSize = width * height * m_MipLevelsData[0].m_ChannelCount;
-
-            width  = math::FindMax(1u, width  >> 1);
-            height = math::FindMax(1u, height >> 1);
-        }
-    }
-
     int OpenGLTexture::CalculateMaxMipMapLevels(int width, int height) {
-        if (width == 0 || height == 0) {
-            Warn("Width or Height can't be equal to zero for the mip level calculation!");
-            return {};
+        if (m_ImageFormatState == ImageFormatState::COMPRESSED) {
+            int levels = 1; // Level 0 (original)
+
+            int w = width;
+            int h = height;
+
+            while (w > 4 || h > 4) {
+                w = std::max(1, w >> 1);
+                h = std::max(1, h >> 1);
+                levels++;
+            }
+            return levels;
         }
-        const int maxDimension = math::FindMax(width, height);
-        return static_cast<int>(std::log2(maxDimension)) + 1;
+        // Uncompressed state
+        const int maxDimension = std::max(width, height);
+        return static_cast<int>(std::floor(std::log2(maxDimension))) + 1;
     }
 
     int OpenGLTexture::CalculateMaxMipMapLevels(const glm::ivec2 &res) {
         return CalculateMaxMipMapLevels(res.x, res.y);
     }
 
+    // TODO: we can use resizing for cubemaps to get same width and height (don't remove this shit for now!)
     void OpenGLTexture::Resize(const glm::ivec2& resolution, int mipLevel, bool srgbSpace) {
         // Pick a channel flag for Texture resizing
         if (resolution.x == 0 || resolution.y == 0) {
@@ -263,9 +292,9 @@ namespace Real {
 
         stbir_pixel_layout channelFlag;
         switch (m_MipLevelsData[mipLevel].m_ChannelCount) {
-            case 1: channelFlag = STBIR_1CHANNEL; break;
-            case 2: channelFlag = STBIR_2CHANNEL; break;
-            case 4: channelFlag = STBIR_RGBA;     break;
+            case 1: channelFlag  = STBIR_1CHANNEL; break;
+            case 2: channelFlag  = STBIR_2CHANNEL; break;
+            case 4: channelFlag  = STBIR_RGBA;     break;
             default: channelFlag = STBIR_RGB;
         }
 
@@ -289,13 +318,22 @@ namespace Real {
         data.m_Height = resolution.y;
     }
 
-    void OpenGLTexture::MakeResident(GLuint id) const {
-        glMakeTextureHandleResidentARB(id);
+    void OpenGLTexture::MakeResident() const {
+        if (m_BindlessHandleID != 0 && GLAD_GL_ARB_bindless_texture && GLAD_GL_ARB_gpu_shader_int64) {
+            if (!glIsTextureHandleResidentARB(m_BindlessHandleID)) {
+                glMakeTextureHandleResidentARB(m_BindlessHandleID);
+                return;
+            }
+            Warn("Texture is already resident!");
+            return;
+        }
+
+        Warn("There is no bindless handle! nor support for bindless handle!");
     }
 
-    void OpenGLTexture::MakeNonResident(GLuint id) const {
-        if (glIsTextureHandleResidentARB(id)) {
-            glMakeTextureHandleNonResidentARB(id);
+    void OpenGLTexture::MakeNonResident() const {
+        if (glIsTextureHandleResidentARB(m_BindlessHandleID)) {
+            glMakeTextureHandleNonResidentARB(m_BindlessHandleID);
         }
     }
 }

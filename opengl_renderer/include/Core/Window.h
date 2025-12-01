@@ -27,5 +27,8 @@ namespace Real::Graphics {
         GLFWwindow* m_Window = nullptr;
         GLFWmonitor* m_GlfwMonitor = nullptr;
         GLFWwindow* m_GlfwShare = nullptr;
+
+    private:
+        bool CheckOpenGLVersion();
     };
 }

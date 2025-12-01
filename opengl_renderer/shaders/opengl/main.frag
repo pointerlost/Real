@@ -1,5 +1,5 @@
 #version 460 core
-#extension GL_ARB_bindless_texture : require
+#extension GL_ARB_bindless_texture : enable
 #extension GL_ARB_gpu_shader_int64 : enable
 
 struct PerVertexData {
@@ -7,13 +7,6 @@ struct PerVertexData {
     int  materialIndex;
     vec3 normal;
     vec2 UV;
-};
-
-struct TexturePack {
-    vec3 albedo;
-    float roughness;
-    float metallic;
-    float ao;
 };
 
 in VS_OUT {
@@ -36,16 +29,12 @@ void main() {
     vec3 normal   = normalize(fs_in.Normal);
     vec3 matColor = GetMatBaseColor(fs_in.MaterialIndex).rgb;
 
-    vec3  albedo    = GetAlbedoSampler2D(fs_in.MaterialIndex, fs_in.UV) * matColor; // Multiple with tex override color
-    float roughness = GetRoughnessSampler2D(fs_in.MaterialIndex, fs_in.UV);
-    float metallic  = GetMetallicSampler2D(fs_in.MaterialIndex, fs_in.UV);
-    float ao        = GetAOSampler2D(fs_in.MaterialIndex, fs_in.UV);
-
-    TexturePack tp = TexturePack(albedo, roughness, metallic, ao);
+    TexturePack tp = GetTexturePack(fs_in.MaterialIndex, fs_in.UV);
+    tp.albedo *= matColor; // Mix with texture's override color for GUI
 
     vec3 N  = GetNormalFromMap(GetNormalSampler2D(fs_in.MaterialIndex, fs_in.UV), fs_in.FragPos, normal, fs_in.UV);
     vec3 V  = normalize(GetViewPos() - fs_in.FragPos);
-    vec3 F0 = mix(vec3(0.04), albedo, metallic);
+    vec3 F0 = mix(vec3(0.04), tp.albedo, tp.metallic);
 
     vec3 Lo = vec3(0.0);
     int lightCount = GetLightCount();
@@ -55,18 +44,17 @@ void main() {
 
     // TODO: Apply IBL ambient implementation after learning cubemaps and maybe HDR
     /*
-        // ambient lighting (note that the next IBL tutorial will replace
-        // this ambient lighting with environment lighting).
-            vec3 kS = fresnelSchlick(V, F0);
-            vec3 kD = 1.0 - kS;
-            kD *= 1.0 - metallic;
+        ambient lighting (note that the next IBL tutorial will replace
+        this ambient lighting with environment lighting).
     */
-    vec3 ambient = GetGlobalAmbient() * albedo * ao;
-
+    vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - tp.metallic;
+    vec3 ambient = (kD * tp.albedo) * GetGlobalAmbient() * tp.ao;
     vec3 color = ambient + Lo;
 
     // HDR tonemapping
-    color = color / (color + vec3(1.0));
+    // color = color / (color + vec3(1.0));
 
     // gamma correct
     color = Convert_LinearSpace_to_sRGB(color);

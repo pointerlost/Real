@@ -26,6 +26,7 @@ namespace Real {
     enum class ImageFormatState {
         UNCOMPRESSED,
         COMPRESSED,
+        COMPRESS_ME,
         UNDEFINED,
     };
 
@@ -55,6 +56,7 @@ namespace Real {
     public:
         explicit OpenGLTexture(ImageFormatState format = ImageFormatState::UNCOMPRESSED, TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;
+        ~OpenGLTexture();
 
         void AddLevelData(TextureData data, int mipLevel);
         void SetLevelData(void* data, int mipLevel);
@@ -83,7 +85,6 @@ namespace Real {
         [[nodiscard]] int GetIndex() const { return m_Index; }
         [[nodiscard]] bool HasBindlessID() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
-        [[nodiscard]] GLuint64& GetBindlessHandle() { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
         [[nodiscard]] ImageFormatState GetImageFormatState() const { return m_ImageFormatState; }
         [[nodiscard]] int GetInternalFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].m_InternalFormat; }
@@ -94,12 +95,13 @@ namespace Real {
 
         [[maybe_unused]] TextureData LoadFromFile(const std::string& path);
         void Create();
-        void CreateFromData(TextureData data, TextureType type);
+        void CreateFromData(const TextureData &data, TextureType type);
 
         void PrepareOptionsAndUploadToGPU();
         void Resize(const glm::ivec2& resolution, int mipLevel, bool srgbSpace = false);
-        void MakeResident(GLuint id) const;
-        void MakeNonResident(GLuint id) const;
+        void CreateBindless();
+        void MakeResident() const;
+        void MakeNonResident() const;
 
     private:
         GLuint m_Handle = 0;
@@ -118,10 +120,8 @@ namespace Real {
 
     private:
         void CreateHandle();
-        void CreateBindlessAndMakeResident();
         void UploadMipLevels();
-        void CreateMipmaps(const std::vector<TextureData> &levelsData);
-        void CreateMipmaps(const TextureData &data);
+        void CreateMipmapsFromDDS(const std::vector<TextureData> &levelsData);
         int CalculateMaxMipMapLevels(int width, int height);
         int CalculateMaxMipMapLevels(const glm::ivec2& res);
     };

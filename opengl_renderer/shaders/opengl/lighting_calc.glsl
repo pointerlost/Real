@@ -1,6 +1,5 @@
 #ifndef LIGHTING_CALC_GLSL
 #define LIGHTING_CALC_GLSL
-
 /*
     TODO: THE BIG PROBLEM HERE, REMOVE THESE FRAGMENT SHADER'S FUNCTIONS!
             AND SOLVE THE PROBLEM OF PREPROCESSOR !!!
@@ -11,13 +10,6 @@ struct PerVertexData {
     int materialIndex;
     vec3 normal;
     vec2 UV;
-};
-
-struct TexturePack {
-    vec3 albedo;
-    float roughness;
-    float metallic;
-    float ao;
 };
 
 vec3 GetNormalFromMap(vec3 normalMap, vec3 fragPos, vec3 vertexNormal, vec2 TexCoords)
@@ -120,7 +112,7 @@ vec3 CalculatePBR(Light light, PerVertexData pvd, vec3 N, vec3 F0, TexturePack t
     vec3 V = normalize(GetViewPos() - fragPos);
 
     if (light.type == 0) { // POINT
-        vec3 L = normalize(-lightDir);
+        vec3 L = normalize(lightPos - fragPos);
 
         float distance = length(lightPos - fragPos);
         float attenuation = 1.0 / (light.constant +
@@ -131,7 +123,7 @@ vec3 CalculatePBR(Light light, PerVertexData pvd, vec3 N, vec3 F0, TexturePack t
         return PrepareCommonPBRData(light, pvd, N, V, L, F0, tp) * attenuation;
     }
     else if (light.type == 1) { // DIRECTIONAL
-        vec3 L = normalize(lightPos - fragPos);
+        vec3 L = normalize(-lightDir);
 
         return PrepareCommonPBRData(light, pvd, N, V, L, F0, tp);
     }

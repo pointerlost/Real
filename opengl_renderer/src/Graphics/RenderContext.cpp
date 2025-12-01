@@ -2,6 +2,9 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/RenderContext.h"
+
+#include <bits/this_thread_sleep.h>
+
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Editor/EditorState.h"
@@ -10,6 +13,7 @@
 #include "Graphics/MeshManager.h"
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
+#include "Util/Util.h"
 
 namespace Real {
 
@@ -25,6 +29,9 @@ namespace Real {
         m_GPUDatas.textures = Services::GetAssetManager()->UploadTexturesToGPU();
         m_Buffers.texture.Create(m_GPUDatas.textures,
             MAX_ENTITIES * sizeof(GLuint64), opengl::BufferType::SSBO
+        );
+        m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
+            m_GPUDatas.textures.size() * sizeof(GLuint64), opengl::BufferType::SSBO
         );
 
         m_Buffers.material.Create(m_GPUDatas.materials,
@@ -78,11 +85,6 @@ namespace Real {
         // Update Materials
         m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
             m_GPUDatas.materials.size() * sizeof(MaterialSSBO), opengl::BufferType::SSBO
-        );
-
-        // Is it necessary? we don't uploading textures per-frame
-        m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
-            m_GPUDatas.textures.size() * sizeof(GLuint64), opengl::BufferType::SSBO
         );
 
         // Update Lights

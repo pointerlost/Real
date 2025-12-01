@@ -1,5 +1,8 @@
 #version 460 core
+#extension GL_ARB_shader_draw_parameters : enable
+#extension GL_ARB_gpu_shader_int64 : enable
 #extension GL_NV_gpu_shader5 : enable
+
 #include "opengl/buffers.glsl"
 
 layout (location = 0) in vec3 aPos;

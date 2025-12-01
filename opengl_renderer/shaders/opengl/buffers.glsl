@@ -23,6 +23,12 @@ mat4 GetProjView()   { return uCamera.viewProjection; }
 mat4 GetView()       { return uCamera.view;           }
 mat4 GetProjection() { return uCamera.projection;     }
 
+struct TexturePack {
+    vec3 albedo;
+    float roughness;
+    float metallic;
+    float ao;
+};
 
 struct Material {
     // Texture Override Colors
@@ -80,6 +86,14 @@ float GetAOSampler2D(int matIdx, vec2 UV) {
 float GetHeightSampler2D(int matIdx, vec2 UV) {
     uint64_t handle = bindlessTextures[GetHeightTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).r;
+}
+
+TexturePack GetTexturePack(int materialIndex, vec2 UV) {
+    vec3  albedo    = GetAlbedoSampler2D(materialIndex, UV);
+    float roughness = GetRoughnessSampler2D(materialIndex, UV);
+    float metallic  = GetMetallicSampler2D(materialIndex, UV);
+    float ao        = GetAOSampler2D(materialIndex, UV);
+    return TexturePack(albedo, roughness, metallic, ao);
 }
 
 struct Light {

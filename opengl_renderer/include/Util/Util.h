@@ -25,6 +25,7 @@ namespace Real::util {
     int ConvertChannelCountToGLFormat(int channelCount, const std::string& name = std::string(), bool srgb = false);
     int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb = false);
     int GetCompressedInternalFormat(int channelCount);
+    std::string FormatToString(int format);
     std::string InternalFormatToString(int format);
     CMP_FORMAT GetCMPDestinationFormat(int channelCount);
     std::string DebugCMPStatus(CMP_ERROR error);

@@ -85,6 +85,18 @@ namespace Real::util {
         }
     }
 
+    std::string FormatToString(int format) {
+        switch (format) {
+            case GL_R:    return "GL_R";
+            case GL_RG:   return "GL_RG";
+            case GL_RGB:  return "GL_RGB";
+            case GL_RGBA: return "GL_RGBA";
+
+            default:
+                return "GL_INVALID_FORMAT";
+        }
+    }
+
     std::string InternalFormatToString(int format) {
         switch (format) {
             case GL_COMPRESSED_RGBA_BPTC_UNORM: return "GL_COMPRESSED_RGBA_BPTC_UNORM";

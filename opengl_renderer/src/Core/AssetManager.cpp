@@ -31,28 +31,6 @@
 namespace Real {
 
     AssetManager::AssetManager() {
-        /*
-         * We are using default textures to mix other textures like;
-         * roughness + defaultMetallic + AO = RMA, in this case we don't have to compress default textures
-         * until we will use as a texture in UI or something else, in this case we can compress them.
-        */
-        auto create_default_tex = [this](TextureType type, int channelCount) {
-            int resolution = 256;
-
-            for (size_t i = 0; i <= 4; i++) {
-                // For example name = default_ALB_256, default_RMA_2048, etc.
-                const auto name = "default_" + util::EnumToString_TextureType(type) + "_" + std::to_string(resolution);
-                GetOrCreateDefaultTexture(name, type, glm::ivec2(resolution, resolution), channelCount);
-                resolution *= 2;
-            }
-        };
-
-        create_default_tex(TextureType::ALB, 3);
-        create_default_tex(TextureType::NRM, 3);
-        create_default_tex(TextureType::RGH, 1);
-        create_default_tex(TextureType::MTL, 1);
-        create_default_tex(TextureType::AO, 1);
-        create_default_tex(TextureType::HEIGHT, 1);
     }
 
     void AssetManager::LoadShader(const std::string &vertexPath, const std::string &fragmentPath,
@@ -139,41 +117,28 @@ namespace Real {
         if (m_DefaultTextures.contains(name))
             return m_DefaultTextures[name];
 
-        Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>();
+        const Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>();
         const auto imageSize = resolution.x * resolution.y * channelCount;
         auto* imageData = new uint8_t[imageSize];
 
-        uint8_t channelColor[3] = {UINT8_MAX};
+        uint8_t channelColor[4] = {UINT8_MAX};
+        // Pick default color for specific texture types to leave unharmed
         switch (type) {
-            case TextureType::ALB:
-                channelColor[0] = 128;
-                channelColor[1] = 128;
-                channelColor[2] = 128;
+            case TextureType::ALB: channelColor[0] = 128; channelColor[1] = 128;
+                                   channelColor[2] = 128; channelColor[3] = 255; // Optional alpha
                 break;
 
-            case TextureType::NRM:
-                channelColor[0] = 128;
-                channelColor[1] = 128;
-                channelColor[2] = 255;
+            case TextureType::NRM: channelColor[0] = 128; channelColor[1] = 128;
+                                   channelColor[2] = 255; channelColor[3] = 255; // Optional alpha
                 break;
 
-            case TextureType::RGH:
-                channelColor[0] = 128;
-                break;
-
+            case TextureType::RGH:    channelColor[0] = 128; break;
             case TextureType::MTL:
-            case TextureType::HEIGHT:
-                channelColor[0] = 0;
-                break;
+            case TextureType::HEIGHT: channelColor[0] = 0;   break;
+            case TextureType::AO:     channelColor[0] = 255; break;
 
-            case TextureType::AO:
-                channelColor[0] = 255;
-                break;
-
-            default:
-                channelColor[0] = UINT8_MAX;
-                channelColor[1] = UINT8_MAX;
-                channelColor[2] = UINT8_MAX;
+            default: channelColor[0] = UINT8_MAX; channelColor[1] = UINT8_MAX;
+                     channelColor[2] = UINT8_MAX; channelColor[3] = UINT8_MAX;
         }
 
         switch (channelCount) {
@@ -189,10 +154,12 @@ namespace Real {
                 }
                 break;
             case 3:
+            case 4:
                 for (size_t i = 0; i < imageSize; i+= channelCount) {
                     imageData[i + 0] = channelColor[0];
                     imageData[i + 1] = channelColor[1];
                     imageData[i + 2] = channelColor[2];
+                    imageData[i + 3] = channelColor[3];
                 }
                 break;
 
@@ -200,31 +167,30 @@ namespace Real {
                 Warn("Channel count mismatch! from: " + std::string(__FILE__));
         }
         TextureData data;
+
         data.m_Data = new uint8_t[imageSize];
         memcpy(data.m_Data, imageData, imageSize);
         delete[] imageData;
+
         data.m_ChannelCount = channelCount;
         data.m_DataSize = imageSize;
-        data.m_Width  = resolution.x;
-        data.m_Height = resolution.y;
-        data.m_Format = util::ConvertChannelCountToGLFormat(channelCount);
-        data.m_InternalFormat = util::ConvertChannelCountToGLFormat(channelCount);
+        data.m_Width    = resolution.x;
+        data.m_Height   = resolution.y;
+        data.m_Format   = util::ConvertChannelCountToGLFormat(channelCount);
+        data.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(channelCount);
 
         defaultTex->CreateFromData(data, type);
         return m_DefaultTextures[name] = defaultTex;
     }
 
     bool AssetManager::IsTextureCompressed(const std::string &stem) const {
-        const std::string ddsFilePath = std::string(ASSETS_DIR) +  "textures/compressed/" + stem + ".dds";
-        return File::Exists(ddsFilePath);
+        return File::Exists(std::string(ASSETS_DIR) +  "textures/compressed/" + stem + ".dds");
     }
 
-    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const std::string& name, TextureType type, const FileInfo& info) {
+    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const std::string& name) {
         if (IsTextureExists(name)) return m_Textures[name];
 
         const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
-        texture->SetType(type);
-        texture->SetFileInfo(info);
         texture->SetIndex(m_Textures.size());
         texture->Create();
 
@@ -246,6 +212,45 @@ namespace Real {
         m_Textures[name] = mixedTextures;
     }
 
+    void AssetManager::LoadTextures() {
+
+        // Pack first rma textures into nrChannels, then load to folder as RMA, then compress it if needed
+        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> packed_rma;
+
+        // Uncompressed State
+        for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
+            auto& stem = file.stem;
+            const auto dashPos = stem.find('_');
+
+            auto matName = stem.substr(0, dashPos);
+            const TextureType type = util::StringToEnum_TextureType(stem.substr(dashPos + 1));
+
+            const auto tex = LoadTextureOnlyCPUData(file.name);
+            tex->SetType(type);
+            tex->SetFileInfo(file);
+
+            const auto& mat = GetOrCreateMaterialBase(matName);
+            switch (type) {
+                case TextureType::ALB:    mat->m_Albedo = tex; break;
+                case TextureType::NRM:    mat->m_Normal = tex; break;
+                case TextureType::RMA:    mat->m_RMA    = tex; break;
+                case TextureType::HEIGHT: mat->m_Height = tex; break;
+                case TextureType::RGH:    packed_rma[matName][0] = tex; break;
+                case TextureType::MTL:    packed_rma[matName][1] = tex; break;
+                case TextureType::AO:     packed_rma[matName][2] = tex; break;
+                default: ;
+            }
+        }
+
+        for (auto& [materialName, rma_array] : packed_rma) {
+            tools::LoadRMATextures(rma_array, materialName);
+        }
+
+        // Compress_me State
+        for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
+        }
+    }
+
     void AssetManager::PrepareTexturesToUpload() {
         // Load compress_me textures
         std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> packedTextures = {};
@@ -260,11 +265,10 @@ namespace Real {
             const TextureType type = util::StringToEnum_TextureType(texType);
             auto texture = LoadTextureOnlyCPUData(file.name, type, file);
 
-            // Don't save the Roughness, metallic, ambient occlusion as DDS files, coz not necessary
+            // Don't save the Roughness, metallic, ambient occlusion as DDS files, coz we are using packed textures
             if (type != TextureType::RGH && type != TextureType::MTL && type != TextureType::AO) {
-                const auto compressionPath = std::string(ASSETS_DIR) + "textures/compressed/";
                 if (!IsTextureCompressed(fileStem)) {
-                    tools::CompressTextureToBCn(texture.get(), compressionPath);
+                    tools::CompressTextureToBCn(texture.get(), std::string(ASSETS_DIR) + "textures/compressed/");
                 }
                 // Read from DDS file after creation
                 tools::ReadCompressedDataFromDDSFile(texture.get());
@@ -288,7 +292,7 @@ namespace Real {
             for (size_t i = 0; i < 3; i++) {
                 if (rma[i]) {
                     ext = rma[i]->GetFileInfo().ext;
-                    resolution = rma[i]->GetResolution(0);
+                    resolution   = rma[i]->GetResolution(0);
                     channelCount = rma[i]->GetChannelCount(0);
                     break;
                 }
@@ -310,11 +314,10 @@ namespace Real {
             }
 
             auto packedTextureName = texName + "_RMA" + ext;
-            auto packedTex = tools::PackTexturesToRGBChannels(rma, true, 255);
+            auto packedTex = tools::PackTexturesToRGBChannels(rma);
             LoadPackedTexturesCPUData(packedTextureName, packedTex);
 
-            const auto compressionPath = std::string(ASSETS_DIR) + "textures/compressed/";
-            tools::CompressCPUGeneratedTexture(packedTex.get(), compressionPath);
+            tools::CompressCPUGeneratedTexture(packedTex.get(), std::string(ASSETS_DIR) + "textures/compressed/");
             tools::ReadCompressedDataFromDDSFile(packedTex.get());
         }
     }
@@ -325,27 +328,46 @@ namespace Real {
         return m_Textures[name];
     }
 
-    Ref<MaterialInstance>& AssetManager::CreateMaterialInstance(const std::string& name, const std::array<std::string, 4> &fileFormats) {
+    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const std::string &name) {
         if (m_Materials.contains(name))
             return m_Materials[name];
 
-        const auto material = CreateRef<MaterialInstance>();
-        material->m_Base->m_AlbedoMap = GetTexture(name + "_ALB" + fileFormats[0]);
-        material->m_Base->m_NormalMap = GetTexture(name + "_NRM" + fileFormats[1]);
-        material->m_Base->m_rmaMap    = GetTexture(name + "_RMA" + fileFormats[2]);
-        material->m_Base->m_HeightMap = GetTexture(name + "_HEIGHT" + fileFormats[3]);
+        return m_Materials[name] = CreateRef<Material>();
+    }
 
-        m_Materials[name] = material;
-        return m_Materials[name];
+    Ref<MaterialInstance>& AssetManager::GetOrCreateMaterialInstance(const std::string& name) {
+        if (m_MaterialInstances.contains(name))
+            return m_MaterialInstances[name];
+
+        return m_MaterialInstances[name] = CreateRef<MaterialInstance>(name);
     }
 
     std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
         std::vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
+            // We are packed this type into RMA texture, so skip it bindless handles for these types
+            // TODO: remove this shit, and create a good structure!
+            const auto type = tex->GetType();
+            if (type == TextureType::RGH || type == TextureType::MTL || type == TextureType::AO) continue;
+
             tex->PrepareOptionsAndUploadToGPU();
+            if (!tex->HasBindlessHandle()) {
+                Warn("There is no bindless handle for this texture!");
+                continue;
+            }
             bindlessIDs.push_back(tex->GetBindlessHandle());
         }
         return bindlessIDs;
+    }
+
+    void AssetManager::MakeTexturesResident() const {
+        for (const auto& tex : std::views::values(m_Textures)) {
+            if (!tex->HasBindlessHandle()) {
+                tex->CreateBindless();
+                Warn("There is no bindless handle for this texture!");
+            }
+            tex->MakeResident();
+        }
     }
 
     void AssetManager::AddFontStyle(const std::string &fontName, ImFont *font) {

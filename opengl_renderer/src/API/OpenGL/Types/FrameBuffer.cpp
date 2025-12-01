@@ -43,6 +43,14 @@ namespace Real::opengl {
         Info("GL FrameBuffer created successfully!");
     }
 
+    void FrameBuffer::SetTarget(GLenum target) {
+        m_Target = target;
+    }
+
+    void FrameBuffer::BindAttachment(GLenum attachment) {
+        glFramebufferTexture2D(m_Target, attachment, GL_TEXTURE_2D, m_Texture, NULL);
+    }
+
     void FrameBuffer::CleanUp() {
         glDeleteFramebuffers(1, &m_FBO);
     }

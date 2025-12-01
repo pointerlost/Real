@@ -12,11 +12,11 @@ namespace Real {
 
 namespace Real::tools {
     [[nodiscard]] Ref<OpenGLTexture> PackTexturesToRGBChannels(const Ref<OpenGLTexture> &tex1,
-        const Ref<OpenGLTexture> &tex2, const Ref<OpenGLTexture> &tex3, bool optionalAlpha = false, uint alpha = 255
+        const Ref<OpenGLTexture> &tex2, const Ref<OpenGLTexture> &tex3
     );
-    [[nodiscard]] Ref<OpenGLTexture> PackTexturesToRGBChannels(const std::array<Ref<OpenGLTexture>, 3> &textures,
-        bool optionalAlpha = false, uint alpha = 255
-    );
+    [[nodiscard]] Ref<OpenGLTexture> PackTexturesToRGBChannels(const std::array<Ref<OpenGLTexture>, 3> &textures);
+    void LoadRMATextures(std::array<Ref<OpenGLTexture>, 3> rma, const std::string& materialName);
+    void SaveTextureAsFile(OpenGLTexture* texture, const std::string &filename);
     void CompressTextureToBCn(OpenGLTexture* texture, const std::string& destPath);
     void CompressCPUGeneratedTexture(OpenGLTexture* texture, const std::string& destPath);
     void ReadCompressedDataFromDDSFile(OpenGLTexture* texture);

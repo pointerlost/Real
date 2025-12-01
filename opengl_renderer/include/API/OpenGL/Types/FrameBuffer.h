@@ -26,10 +26,13 @@ namespace Real::opengl {
         void Bind() const;
         void Unbind();
         void CheckIfStatusCompleted();
+        void SetTarget(GLenum target);
+        void BindAttachment(GLenum attachment);
 
         [[nodiscard]] GLuint GetHandle()           const { return m_FBO; }
         [[nodiscard]] glm::ivec2 GetViewportSize() const { return glm::ivec2{m_Width, m_Height}; }
         [[nodiscard]] const std::string& GetName() const { return m_Name; }
+        [[nodiscard]] const GLenum& GetTarget()    const { return m_Target; }
 
     private:
         void CleanUp();
@@ -38,6 +41,9 @@ namespace Real::opengl {
         GLuint m_FBO = 0;
         int m_Width = 800;
         int m_Height = 600;
+        GLenum m_Target = GL_FRAMEBUFFER;
         std::string m_Name = "null";
+
+        GLuint m_Texture = 0;
     };
 }

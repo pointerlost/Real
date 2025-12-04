@@ -27,6 +27,7 @@ namespace Real {
         UNCOMPRESSED,
         COMPRESSED,
         COMPRESS_ME,
+        DEFAULT,
         UNDEFINED,
     };
 
@@ -54,7 +55,7 @@ namespace Real {
 
     struct OpenGLTexture {
     public:
-        explicit OpenGLTexture(ImageFormatState format = ImageFormatState::UNCOMPRESSED, TextureType type = TextureType::UNDEFINED);
+        explicit OpenGLTexture(TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;
         ~OpenGLTexture();
 
@@ -77,6 +78,8 @@ namespace Real {
         FileInfo& GetFileInfo() { return m_FileInfo; }
         [[nodiscard]] const std::string& GetName() const { return m_FileInfo.name; }
         [[nodiscard]] const std::string& GetStem() const { return m_FileInfo.stem; }
+        [[nodiscard]] const std::string& GetPath() const { return m_FileInfo.path; }
+        [[nodiscard]] const std::string& GetExtension() const { return m_FileInfo.ext; }
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] bool IsCompressed() const { return m_ImageFormatState == ImageFormatState::COMPRESSED; }
         [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].m_Data != nullptr; }

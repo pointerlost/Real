@@ -66,7 +66,7 @@ namespace Real {
         // m_AssetManager->LoadShader(shadowMapVertex, shadowMapFrag, "shadow_map");
 
         m_MeshManager->InitResources();
-        m_AssetManager->PrepareTexturesToUpload();
+        m_AssetManager->LoadTextures();
 
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
@@ -92,8 +92,8 @@ namespace Real {
 
         m_Renderer->GetRenderContext()->InitResources();
 
-        const auto& material  = Services::GetAssetManager()->GetOrCreateMaterialInstance("Wood066-2K");
-        const auto& material_ = Services::GetAssetManager()->GetOrCreateMaterialInstance("WoodFloor043-2K");
+        const auto& material  = Services::GetAssetManager()->GetOrCreateMaterialInstance("Metal049A");
+        const auto& material_ = Services::GetAssetManager()->GetOrCreateMaterialInstance("Marble009");
 
         auto& cube = m_Scene->CreateEntity("RightWall");
         cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));

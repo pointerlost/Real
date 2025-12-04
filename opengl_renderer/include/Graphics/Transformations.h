@@ -10,6 +10,7 @@ namespace Real {
 
     class Transformations {
     public:
+        // TODO: implement it
         Transformations(const glm::vec3& translate, const glm::vec3& rotate, const glm::vec3& scale);
         Transformations(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale);
         Transformations() = default;

@@ -15,8 +15,8 @@
 
 namespace Real {
 
-    OpenGLTexture::OpenGLTexture(ImageFormatState format, TextureType type)
-        : m_ImageFormatState(format), m_Type(type)
+    OpenGLTexture::OpenGLTexture(TextureType type)
+        : m_Type(type)
     {
     }
 
@@ -156,12 +156,15 @@ namespace Real {
         if (m_Handle == 0) {
             CreateHandle();
         }
-        if (data.m_Format == 0 || data.m_InternalFormat == 0) {
-            Warn("There is no format or internal format for: " + m_FileInfo.name);
-        }
         m_Type = type;
         // One mip level is enough for CPU-generated textures
         m_MipLevelsData.push_back(data);
+        if (m_ImageFormatState == ImageFormatState::COMPRESS_ME || m_ImageFormatState == ImageFormatState::COMPRESSED) {
+            m_MipLevelsData[0].m_InternalFormat = util::GetCompressedInternalFormat(m_MipLevelsData[0].m_ChannelCount);
+        } else {
+            m_MipLevelsData[0].m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(m_MipLevelsData[0].m_ChannelCount);
+        }
+        m_MipLevelsData[0].m_Format = util::ConvertChannelCountToGLFormat(m_MipLevelsData[0].m_ChannelCount);
     }
 
     void OpenGLTexture::PrepareOptionsAndUploadToGPU() {
@@ -201,6 +204,9 @@ namespace Real {
         }
 
         switch (m_ImageFormatState) {
+            case ImageFormatState::COMPRESS_ME:
+                tools::CompressTextureToBCn(this, std::string(ASSETS_DIR) + "textures/compressed/");
+                // Don't break the switch statement and load compressed state!
             case ImageFormatState::COMPRESSED: {
                 // Allocate enough memory for all the mip levels
                 glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].m_InternalFormat,
@@ -220,7 +226,7 @@ namespace Real {
                         data.m_InternalFormat, (int)data.m_DataSize, data.m_Data
                     );
                 }
-            }
+            } break;
 
             case ImageFormatState::UNCOMPRESSED: {
                 // Allocate memory for uncompressed data
@@ -233,9 +239,8 @@ namespace Real {
                 glTextureSubImage2D(m_Handle, 0, 0, 0, data.m_Width, data.m_Height, data.m_Format, GL_UNSIGNED_BYTE, data.m_Data);
                 // Generate other mipmap levels
                 glGenerateTextureMipmap(m_Handle);
-            }
+            } break;
 
-            case ImageFormatState::COMPRESS_ME: Warn("There is texture should be compressed!!!");
             case ImageFormatState::UNDEFINED:   Warn("Texture format state is UNDEFINED!");
             default: ;
         }

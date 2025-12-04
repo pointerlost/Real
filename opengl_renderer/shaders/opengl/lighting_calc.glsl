@@ -128,12 +128,12 @@ vec3 CalculatePBR(Light light, PerVertexData pvd, vec3 N, vec3 F0, TexturePack t
         return PrepareCommonPBRData(light, pvd, N, V, L, F0, tp);
     }
     else if (light.type == 2) { // SPOT
-        vec3 L = normalize(lightPos - fragPos);
+        vec3 L = normalize(light.dir_outer.xyz);
 
         float cutOff      = light.pos_cutoff.w;
         float outerCutOff = light.dir_outer.w;
 
-        float theta     = dot(L, normalize(-lightDir));
+        float theta     = dot(normalize(lightDir), normalize(L));
         float epsilon   = cutOff - outerCutOff;
         float intensity = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
 

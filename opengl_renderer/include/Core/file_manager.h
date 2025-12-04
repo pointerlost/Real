@@ -17,5 +17,6 @@ namespace Real {
     public:
         [[nodiscard]] static std::string ReadFromFile(const std::string& path);
         [[nodiscard]] static bool Exists(const std::string& path);
+        [[maybe_unused]] static bool DeleteFile(const std::string& path);
     };
 }

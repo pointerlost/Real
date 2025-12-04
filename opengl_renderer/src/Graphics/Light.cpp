@@ -18,14 +18,14 @@ namespace Real {
     }
 
     LightSSBO Light::ConvertToGPUFormat(Transformations& transform) {
-        LightSSBO gpuData{};                                     // Convert angles to cosine
-        gpuData.pos_cutoff = glm::vec4(transform.GetTranslate(),  glm::cos(glm::radians(m_CutOff))); // Inner cone
+        LightSSBO gpuData{};                                          // Convert angles to cosine
+        gpuData.pos_cutoff = glm::vec4(transform.GetTranslate(),      glm::cos(glm::radians(m_CutOff)));      // Inner cone
         gpuData.dir_outer  = glm::vec4(transform.GetWorldDirection(), glm::cos(glm::radians(m_OuterCutOff))); // Outer cone
-        gpuData.radiance   = glm::vec4(m_Radiance, 1.0);
+        gpuData.radiance   = glm::vec4(m_Radiance, 1.0); // w unused
         gpuData.constant   = m_Constant;
         gpuData.linear     = m_Linear;
         gpuData.quadratic  = m_Quadratic;
-        gpuData.type = static_cast<int>(m_Type);
+        gpuData.type       = static_cast<int>(m_Type);
         return gpuData;
     }
 }

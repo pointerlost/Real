@@ -34,4 +34,16 @@ namespace Real {
     bool File::Exists(const std::string &path) {
         return std::filesystem::exists(path);
     }
+
+    bool File::DeleteFile(const std::string &path) {
+        if (Exists(path)) {
+            if (std::filesystem::remove(path)) {
+                return true;
+            }
+            Info("File can't deleted!");
+            return false;
+        }
+        Info("There is no file path to be remove!");
+        return false;
+    }
 }

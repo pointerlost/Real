@@ -7,14 +7,9 @@
 #include "Core/Services.h"
 
 namespace Real {
-    MaterialInstance::MaterialInstance(const std::string &name, const std::array<std::string, 4>& extensions) {
+    MaterialInstance::MaterialInstance(const std::string &name) {
         const auto& am = Services::GetAssetManager();
-        m_Base = am->GetOrCreateMaterialBase(name);
-
-        m_Base->m_Albedo = am->GetTexture(name + "_ALB"    + extensions[0]);
-        m_Base->m_Normal = am->GetTexture(name + "_NRM"    + extensions[1]);
-        m_Base->m_Height = am->GetTexture(name + "_HEIGHT" + extensions[2]);
-        m_Base->m_RMA    = am->GetTexture(name + "_RMA"    + extensions[3]);
+        m_Base = am->CreateMaterialBase(name);
     }
 
     MaterialSSBO MaterialInstance::ConvertToGPUFormat() const {

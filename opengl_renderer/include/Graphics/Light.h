@@ -6,9 +6,7 @@
 
 #include "GPUBuffers.h"
 
-namespace Real {
-    class Transformations;
-}
+namespace Real { class Transformations; }
 
 namespace Real {
 

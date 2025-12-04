@@ -179,6 +179,7 @@ namespace Real {
         data.m_Format   = util::ConvertChannelCountToGLFormat(channelCount);
         data.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(channelCount);
 
+        defaultTex->SetImageFormatState(ImageFormatState::DEFAULT);
         defaultTex->CreateFromData(data, type);
         return m_DefaultTextures[name] = defaultTex;
     }
@@ -187,49 +188,33 @@ namespace Real {
         return File::Exists(std::string(ASSETS_DIR) +  "textures/compressed/" + stem + ".dds");
     }
 
-    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const std::string& name) {
-        if (IsTextureExists(name)) return m_Textures[name];
+    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const FileInfo& file, TextureType type, ImageFormatState imageState) {
+        if (IsTextureExists(file.name)) return m_Textures[file.name];
 
         const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
+        texture->SetType(type);
+        texture->SetImageFormatState(imageState);
+        texture->SetFileInfo(file);
         texture->SetIndex(m_Textures.size());
         texture->Create();
 
-        return m_Textures[name] = texture;
-    }
-
-    void AssetManager::LoadPackedTexturesCPUData(const std::string &name, const Ref<OpenGLTexture>& mixedTextures) {
-        if (IsTextureExists(name)) return;
-
-        FileInfo info;
-        info.name = name;
-        info.stem = name.substr(0, name.size() - 4); // Without extension
-        info.path = std::string(ASSETS_DIR) + "textures/compress_me/" + name;
-        info.ext  = name.substr(name.size() - 4);
-
-        mixedTextures->SetFileInfo(info);
-
-        mixedTextures->CreateFromData(mixedTextures->GetLevelData(0), mixedTextures->GetType());
-        m_Textures[name] = mixedTextures;
+        return m_Textures[file.name] = texture;
     }
 
     void AssetManager::LoadTextures() {
-
         // Pack first rma textures into nrChannels, then load to folder as RMA, then compress it if needed
         std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> packed_rma;
 
-        // Uncompressed State
-        for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
+        const auto SaveTexture = [this, &packed_rma](const FileInfo& file, ImageFormatState imageState) {
             auto& stem = file.stem;
             const auto dashPos = stem.find('_');
 
-            auto matName = stem.substr(0, dashPos);
+            const auto matName = stem.substr(0, dashPos);
             const TextureType type = util::StringToEnum_TextureType(stem.substr(dashPos + 1));
 
-            const auto tex = LoadTextureOnlyCPUData(file.name);
-            tex->SetType(type);
-            tex->SetFileInfo(file);
+            const auto tex = LoadTextureOnlyCPUData(file, type, imageState);
 
-            const auto& mat = GetOrCreateMaterialBase(matName);
+            const auto& mat = CreateMaterialBase(matName);
             switch (type) {
                 case TextureType::ALB:    mat->m_Albedo = tex; break;
                 case TextureType::NRM:    mat->m_Normal = tex; break;
@@ -240,86 +225,49 @@ namespace Real {
                 case TextureType::AO:     packed_rma[matName][2] = tex; break;
                 default: ;
             }
-        }
+        };
 
-        for (auto& [materialName, rma_array] : packed_rma) {
-            tools::LoadRMATextures(rma_array, materialName);
+        // Uncompressed State
+        for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
+            SaveTexture(file, ImageFormatState::UNCOMPRESSED);
         }
 
         // Compress_me State
         for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
+            SaveTexture(file, ImageFormatState::COMPRESS_ME);
+        }
+
+        // Save RMA files and delete each one
+        for (auto& [materialName, rma_array] : packed_rma) {
+            const auto tex = tools::LoadRMATextures(rma_array, materialName);
+            const auto iState = tex->GetImageFormatState();
+            std::string filepath = std::string(ASSETS_DIR) + "textures/";
+
+            if (iState == ImageFormatState::COMPRESS_ME) {
+                filepath += "compress_me/" + materialName + "_RMA" + tex->GetFileInfo().ext;
+                if (!tools::SaveTextureAsFile(tex.get(), filepath)) {
+                    Warn("[COMPRESS_ME] RMA file can't save!");
+                }
+            }
+            else if (iState == ImageFormatState::UNCOMPRESSED) {
+                filepath += "uncompressed/" + materialName + "_RMA" + tex->GetFileInfo().ext;
+                if (!tools::SaveTextureAsFile(tex.get(), filepath)) {
+                    Warn("[UNCOMPRESSED] RMA file can't save!");
+                }
+            } else {
+                Warn("Image format state is UNDEFINED!");
+            }
+        }
+
+        // Compress textures and read from DDS
+        for (const auto& tex : std::views::values(m_Textures)) {
+            if (tex->GetImageFormatState() != ImageFormatState::COMPRESS_ME) continue;
+            tools::CompressTextureToBCn(tex.get(), std::string(ASSETS_DIR) + "textures/compressed/");
         }
     }
 
-    void AssetManager::PrepareTexturesToUpload() {
-        // Load compress_me textures
-        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> packedTextures = {};
-        for (const auto& file : util::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
-            // This fileName represents the full name without the 'extension', .jpg, .png etc.
-            auto& fileStem = file.stem;
-            const auto dashPos = fileStem.find('_');
-
-            auto texType = fileStem.substr(dashPos + 1);
-            auto texName = fileStem.substr(0, dashPos);
-
-            const TextureType type = util::StringToEnum_TextureType(texType);
-            auto texture = LoadTextureOnlyCPUData(file.name, type, file);
-
-            // Don't save the Roughness, metallic, ambient occlusion as DDS files, coz we are using packed textures
-            if (type != TextureType::RGH && type != TextureType::MTL && type != TextureType::AO) {
-                if (!IsTextureCompressed(fileStem)) {
-                    tools::CompressTextureToBCn(texture.get(), std::string(ASSETS_DIR) + "textures/compressed/");
-                }
-                // Read from DDS file after creation
-                tools::ReadCompressedDataFromDDSFile(texture.get());
-            } else {
-                switch (type) {
-                    case TextureType::RGH: packedTextures[texName][0] = texture; break;
-                    case TextureType::MTL: packedTextures[texName][1] = texture; break;
-                    case TextureType::AO:  packedTextures[texName][2] = texture; break;
-                    default: ;
-                }
-            }
-        }
-
-        for (auto& [texName, rma] : packedTextures) {
-            // Store these values to create missing cases
-            std::pair resolution = {1024, 1024};
-            int channelCount = 0;
-            std::string ext;
-
-            // Find the resolution of any existing texture to specify the missing cases!
-            for (size_t i = 0; i < 3; i++) {
-                if (rma[i]) {
-                    ext = rma[i]->GetFileInfo().ext;
-                    resolution   = rma[i]->GetResolution(0);
-                    channelCount = rma[i]->GetChannelCount(0);
-                    break;
-                }
-            }
-
-            for (size_t i = 0; i < 3; i++) {
-                if (!rma[i]) {
-                    TextureType missingType = {};
-                    switch (i) {
-                        case 0: missingType = TextureType::RGH; break;
-                        case 1: missingType = TextureType::MTL; break;
-                        case 2: missingType = TextureType::AO;  break;
-                        default: ;
-                    }
-                    rma[i] = GetOrCreateDefaultTexture(texName, missingType,
-                        glm::ivec2(resolution.first, resolution.second), channelCount
-                    );
-                }
-            }
-
-            auto packedTextureName = texName + "_RMA" + ext;
-            auto packedTex = tools::PackTexturesToRGBChannels(rma);
-            LoadPackedTexturesCPUData(packedTextureName, packedTex);
-
-            tools::CompressCPUGeneratedTexture(packedTex.get(), std::string(ASSETS_DIR) + "textures/compressed/");
-            tools::ReadCompressedDataFromDDSFile(packedTex.get());
-        }
+    void AssetManager::DeleteCPUTexture(const std::string& name) {
+        m_Textures.erase(name);
     }
 
     Ref<OpenGLTexture>& AssetManager::GetTexture(const std::string &name) {
@@ -328,11 +276,19 @@ namespace Real {
         return m_Textures[name];
     }
 
-    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const std::string &name) {
+    Ref<Material>& AssetManager::CreateMaterialBase(const std::string &name) {
         if (m_Materials.contains(name))
             return m_Materials[name];
 
         return m_Materials[name] = CreateRef<Material>();
+    }
+
+    Ref<Material> & AssetManager::GetMaterialBase(const std::string &name) {
+        if (!m_Materials.contains(name)) {
+            Warn("There is no Base material for this name: " + name);
+            return m_Materials[name] = CreateRef<Material>();
+        }
+        return m_Materials[name];
     }
 
     Ref<MaterialInstance>& AssetManager::GetOrCreateMaterialInstance(const std::string& name) {
@@ -345,16 +301,12 @@ namespace Real {
     std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
         std::vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
-            // We are packed this type into RMA texture, so skip it bindless handles for these types
-            // TODO: remove this shit, and create a good structure!
-            const auto type = tex->GetType();
-            if (type == TextureType::RGH || type == TextureType::MTL || type == TextureType::AO) continue;
-
             tex->PrepareOptionsAndUploadToGPU();
             if (!tex->HasBindlessHandle()) {
                 Warn("There is no bindless handle for this texture!");
                 continue;
             }
+            tex->SetIndex(bindlessIDs.size());
             bindlessIDs.push_back(tex->GetBindlessHandle());
         }
         return bindlessIDs;

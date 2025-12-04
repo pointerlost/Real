@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/24/25.
 //
 #include "Scene/Systems.h"
-#include "Core/Logger.h"
 #include "Scene/SystemUpdate.h"
 
 namespace Real {

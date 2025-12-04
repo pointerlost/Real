@@ -26,14 +26,14 @@ namespace Real {
         void LoadTextureArraysToGPU() const;
         Ref<OpenGLTexture> GetOrCreateDefaultTexture(const std::string& name, TextureType type, const glm::ivec2& resolution, int channelCount);
         [[nodiscard]] bool IsTextureCompressed(const std::string& name) const;
-        Ref<OpenGLTexture> LoadTextureOnlyCPUData(const std::string& name);
-        void LoadPackedTexturesCPUData(const std::string& name, const Ref<OpenGLTexture>& texture);
+        Ref<OpenGLTexture> LoadTextureOnlyCPUData(const FileInfo& file, TextureType type, ImageFormatState imageState);
 
         void LoadTextures();
-        void PrepareTexturesToUpload();
+        void DeleteCPUTexture(const std::string& name);
         Ref<OpenGLTexture>& GetTexture(const std::string& name);
         [[nodiscard]] bool IsTextureExists(const std::string& name) const { return m_Textures.contains(name); }
-        Ref<Material>& GetOrCreateMaterialBase(const std::string& name);
+        Ref<Material>& CreateMaterialBase(const std::string& name);
+        Ref<Material>& GetMaterialBase(const std::string& name);
         Ref<MaterialInstance>& GetOrCreateMaterialInstance(const std::string& name);
 
         std::vector<GLuint64> UploadTexturesToGPU() const;

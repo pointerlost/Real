@@ -9,9 +9,9 @@ namespace Real {
         if (!m_ModelMatrixDirty) return;
 
         const auto translate = glm::translate(glm::mat4(1.0f), m_Translate);
-        const auto rotate = glm::mat4_cast(m_Rotate);
-        const auto scale = glm::scale(glm::mat4(1.0f), m_Scale);
-        m_ModelMatrix = translate * rotate * scale;
+        const auto rotate    = glm::mat4_cast(m_Rotate);
+        const auto scale     = glm::scale(glm::mat4(1.0f), m_Scale);
+        m_ModelMatrix        = translate * rotate * scale;
 
         m_ModelMatrixDirty = false;
     }

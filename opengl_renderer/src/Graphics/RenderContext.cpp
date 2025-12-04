@@ -112,12 +112,12 @@ namespace Real {
 
             // Transform GPU data
             TransformSSBO gpuTransform = transform.m_Transform.ConvertToGPUFormat();
-            const int transformIdx = static_cast<int>(m_GPUDatas.transforms.size());
+            const int transformIdx     = static_cast<int>(m_GPUDatas.transforms.size());
             m_GPUDatas.transforms.push_back(gpuTransform);
 
             // Material GPU data
             MaterialSSBO gpuMaterial = material.m_Instance->ConvertToGPUFormat();
-            const int materialIdx = static_cast<int>(m_GPUDatas.materials.size());
+            const int materialIdx    = static_cast<int>(m_GPUDatas.materials.size());
             m_GPUDatas.materials.push_back(gpuMaterial);
 
             const auto& meshData = Services::GetMeshManager()->GetMeshData(mesh.m_MeshName);
@@ -125,16 +125,16 @@ namespace Real {
             DrawElementsIndirectCommand command;
             command.count = meshData.m_IndexCount;
             command.instanceCount = 1;
-            command.baseVertex = 0; // Use 0 because we've already baked the offset (idx + vertexOffset)
-            command.firstIndex = meshData.m_IndexOffset;
-            command.baseInstance = static_cast<uint>(i++);
+            command.baseVertex    = 0; // Use 0 because we've already baked the offset (idx + vertexOffset)
+            command.firstIndex    = meshData.m_IndexOffset;
+            command.baseInstance  = static_cast<uint>(i++);
             m_GPUDatas.drawCommands.push_back(command);
 
             // Entity GPU data
             entityData.transformIndex = transformIdx;
             entityData.materialIndex  = materialIdx;
-            entityData.indexCount  = static_cast<int>(meshData.m_IndexCount);
-            entityData.indexOffset = static_cast<int>(meshData.m_IndexOffset);
+            entityData.indexCount     = static_cast<int>(meshData.m_IndexCount);
+            entityData.indexOffset    = static_cast<int>(meshData.m_IndexOffset);
             m_GPUDatas.entityData.push_back(entityData);
         }
 

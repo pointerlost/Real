@@ -22,9 +22,7 @@ namespace Real {
     struct MaterialInstance {
         Ref<Material> m_Base = nullptr;
 
-        explicit MaterialInstance(const std::string& name,
-            const std::array<std::string, 4>& extensions = {".jpg", ".jpg", ".jpg", ".jpg"}
-        );
+        explicit MaterialInstance(const std::string& name);
         MaterialInstance(const MaterialInstance&) = default;
 
         // Instance override colors

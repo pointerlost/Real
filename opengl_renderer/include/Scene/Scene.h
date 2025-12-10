@@ -3,9 +3,7 @@
 //
 #pragma once
 #include "entt/entt.hpp"
-#include "Core/Logger.h"
 #include "Core/UUID.h"
-#include <glm/ext.hpp>
 #include "Graphics/Light.h"
 
 namespace Real {

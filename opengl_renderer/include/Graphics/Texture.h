@@ -2,46 +2,17 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
+#include <cstring>
 #include <string>
 #include <vector>
 #include <glm/vec2.hpp>
-
+#include "Common/RealEnum.h"
 #include "Core/file_manager.h"
 #include "Core/Utils.h"
+#include "Core/UUID.h"
 #include "glad/glad.h"
 
 namespace Real {
-
-    enum class TextureType {
-        ALB,
-        NRM,
-        RGH,
-        MTL,
-        AO,
-        RMA,
-        HEIGHT,
-        UNDEFINED,
-    };
-
-    enum class ImageFormatState {
-        UNCOMPRESSED,
-        COMPRESSED,
-        COMPRESS_ME,
-        DEFAULT,
-        UNDEFINED,
-    };
-
-    enum class TextureFilterMode {
-        NEAREST,
-        LINEAR,
-    };
-
-    enum class TextureWrapMode {
-        REPEAT,
-        MIRRORED_REPEAT,
-        CLAMP_TO_EDGE,
-        CLAMP_TO_BORDER
-    };
 
     struct TextureData {
         void* m_Data = nullptr;
@@ -51,15 +22,58 @@ namespace Real {
         uint m_DataSize = 0;
         int m_Format = {};
         int m_InternalFormat = {};
+
+        TextureData() = default;
+        ~TextureData() { delete[] static_cast<uint8_t*>(m_Data); }
+
+        // Copy constructor
+        TextureData(const TextureData& other) {
+            m_ChannelCount = other.m_ChannelCount;
+            m_Width    = other.m_Width;
+            m_Height   = other.m_Height;
+            m_DataSize = other.m_DataSize;
+            m_Format   = other.m_Format;
+            m_InternalFormat = other.m_InternalFormat;
+
+            if (other.m_Data && other.m_DataSize > 0) {
+                m_Data = new uint8_t[m_DataSize];
+                memcpy(m_Data, other.m_Data, m_DataSize);
+            }
+        }
+
+        // Copy assignment
+        TextureData& operator=(const TextureData& other) {
+            if (this == &other) return *this;
+
+            // free existing
+            delete[] static_cast<uint8_t*>(m_Data);
+
+            m_ChannelCount = other.m_ChannelCount;
+            m_Width    = other.m_Width;
+            m_Height   = other.m_Height;
+            m_DataSize = other.m_DataSize;
+            m_Format   = other.m_Format;
+            m_InternalFormat = other.m_InternalFormat;
+
+            if (other.m_Data && other.m_DataSize > 0) {
+                m_Data = new uint8_t[m_DataSize];
+                memcpy(m_Data, other.m_Data, m_DataSize);
+            } else {
+                m_Data = nullptr;
+            }
+
+            return *this;
+        }
     };
 
     struct OpenGLTexture {
-    public:
+        explicit OpenGLTexture(const TextureData &data, FileInfo info = FileInfo(), UUID uuid = UUID());
+        explicit OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
         explicit OpenGLTexture(TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;
         ~OpenGLTexture();
 
-        void AddLevelData(TextureData data, int mipLevel);
+        void AddLevelData(const TextureData &data, int mipLevel);
         void SetLevelData(void* data, int mipLevel);
         void SetFileInfo(FileInfo info);
         void SetType(TextureType type);
@@ -74,6 +88,8 @@ namespace Real {
         void SetWrapMode(TextureWrapMode mode);
         void SetFilterMode(TextureFilterMode mode);
         void SetMipLevelsData(const std::vector<TextureData>& mipLevels);
+        void SetUUID(uint64_t uuid);
+        void SetUUID(const UUID& uuid);
 
         FileInfo& GetFileInfo() { return m_FileInfo; }
         [[nodiscard]] const std::string& GetName() const { return m_FileInfo.name; }
@@ -95,6 +111,7 @@ namespace Real {
         [[nodiscard]] int GetMipMapCount() const { return m_MipLevelCount; }
         [[nodiscard]] int GetChannelCount(int mipLevel) const { return m_MipLevelsData[mipLevel].m_ChannelCount; }
         int& GetChannelCount(int mipLevel) { return m_MipLevelsData[mipLevel].m_ChannelCount; }
+        [[nodiscard]] UUID GetUUID() const { return m_UUID; }
 
         [[maybe_unused]] TextureData LoadFromFile(const std::string& path);
         void Create();
@@ -109,6 +126,7 @@ namespace Real {
     private:
         GLuint m_Handle = 0;
         GLuint64 m_BindlessHandleID = 0;
+        UUID m_UUID;
 
         int m_Index = 0;
         int m_BlockSize = 0;

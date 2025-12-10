@@ -9,6 +9,7 @@ namespace Real {
 
     struct UUID {
         UUID();
+        UUID(uint64_t uuid);
         UUID(const UUID&) = default;
 
         bool operator==(const UUID&) const = default;

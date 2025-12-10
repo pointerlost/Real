@@ -9,7 +9,7 @@
 namespace Real {
     MaterialInstance::MaterialInstance(const std::string &name) {
         const auto& am = Services::GetAssetManager();
-        m_Base = am->CreateMaterialBase(name);
+        m_Base = am->GetOrCreateMaterialBase(name);
     }
 
     MaterialSSBO MaterialInstance::ConvertToGPUFormat() const {
@@ -17,7 +17,7 @@ namespace Real {
 
         gpuData.m_BindlessAlbedoIdx = { m_Base->m_Albedo->GetIndex() };
         gpuData.m_BindlessNormalIdx = { m_Base->m_Normal->GetIndex() };
-        gpuData.m_BindlessRMAIdx    = { m_Base->m_RMA->GetIndex()    };
+        gpuData.m_BindlessRMAIdx    = { m_Base->m_ORM->GetIndex()    };
         gpuData.m_BindlessHeightIdx = { m_Base->m_Height->GetIndex() };
 
         // Override colors

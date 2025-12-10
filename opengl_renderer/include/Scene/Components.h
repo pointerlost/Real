@@ -10,6 +10,10 @@
 #include "Graphics/Transformations.h"
 
 namespace Real {
+    struct Model;
+}
+
+namespace Real {
     struct MaterialInstance;
 }
 
@@ -60,6 +64,12 @@ namespace Real {
         explicit MeshComponent(std::string  meshName) : m_MeshName(std::move(meshName)) {}
         MeshComponent() = default;
         MeshComponent(MeshComponent&) = default;
+    };
+
+    struct ModelComponent {
+        Ref<Model> m_Model;
+
+        explicit ModelComponent();
     };
 
     struct LightComponent {

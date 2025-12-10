@@ -5,17 +5,16 @@
 #include "GPUBuffers.h"
 #include "RenderCommand.h"
 #include <vector>
-
 #include "Buffer.h"
-#include "../Core/Config.h"
-#include "Core/Utils.h"
 
 namespace Real {
-    struct OpenGLTexture;
-}
-
-namespace Real {
+    class Entity;
     class Scene;
+    struct OpenGLTexture;
+
+    namespace Graphics {
+        struct MeshInfo;
+    }
 }
 
 namespace Real {
@@ -58,8 +57,11 @@ namespace Real {
         Scene* m_Scene;
 
     private:
-        void CollectCamera();
-        void CollectLights();
+        void CollectMaterial(const Entity* entity, int& materialIndex);
+        void CollectLight(const Entity* entity);
+        void CollectCamera(const Entity* entity);
+        Graphics::MeshInfo CollectMeshes(const Entity* entity);
+        void CollectModels(const Entity* entity);
         void CollectGlobalData();
         void CleanPrevFrame();
         void UploadToGPU();

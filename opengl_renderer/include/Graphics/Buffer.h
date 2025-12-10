@@ -6,15 +6,11 @@
 #include <iostream>
 #include <vector>
 
+#include "Common/RealEnum.h"
 #include "Core/Logger.h"
 #include "glad/glad.h"
 
 namespace Real::opengl {
-
-    enum class BufferType {
-        SSBO,
-        UBO,
-    };
 
     struct Buffer {
         Buffer() = default;

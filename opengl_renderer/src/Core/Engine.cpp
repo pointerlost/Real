@@ -66,7 +66,6 @@ namespace Real {
         // m_AssetManager->LoadShader(shadowMapVertex, shadowMapFrag, "shadow_map");
 
         m_MeshManager->InitResources();
-        m_AssetManager->LoadTextures();
 
         m_Scene = CreateScope<Scene>();
         m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
@@ -144,6 +143,7 @@ namespace Real {
         glfwPollEvents();
         glClearColor(0.07f, 0.07f, 0.07f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // Init UI
         m_EditorPanel->BeginFrame();
     }
@@ -155,7 +155,7 @@ namespace Real {
     void Engine::RenderPhase() const {
         // Draw OpenGL stuff
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
-        // TODO: Requires double buffering to switch between each other (Thread-safe and to keep sync CPU-GPU)
+        // TODO: Requires double buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
     void Engine::UpdatePhase() const {
@@ -179,7 +179,7 @@ namespace Real {
     }
 
     void Engine::InitMesh() {
-        m_MeshManager = CreateScope<MeshManager>();
+        m_MeshManager = CreateScope<MeshData>();
         Info("MeshManager initialized successfully!");
     }
 
@@ -187,7 +187,7 @@ namespace Real {
         /*
         TODO:
             when i learn the different rendering techniques, (e.g. more advanced deferred rendering)
-            need update to apply gamma correction in CPU, for now we will do in GPU-side
+            need update to apply gamma correction in CPU (is it worth?), for now we will do in GPU-side
         */
         // Activate automatic Gamma Correction
         // glEnable(GL_FRAMEBUFFER_SRGB);

@@ -53,7 +53,7 @@ namespace Real::tools {
             mixedTexRawData[i * channelCount + 3] = 255;
         }
 
-        mixedTexture->SetType(TextureType::RMA);
+        mixedTexture->SetType(TextureType::ORM);
         mixedData.m_ChannelCount = channelCount;
         mixedData.m_DataSize = dataSize;
         mixedData.m_Width    = width;
@@ -62,14 +62,14 @@ namespace Real::tools {
         mixedData.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(channelCount);
 
         FileInfo info;
-        info.name = materialName + "_RMA" + tex1->GetFileInfo().ext;
+        info.name = materialName + "_ORM" + tex1->GetFileInfo().ext;
         info.stem = info.name.substr(0, info.name.size() - 4); // Without extension
         info.path = std::string(ASSETS_DIR) + "textures/compressed/" + info.name;
         info.ext  = info.name.substr(info.name.size() - 4);
 
         mixedTexture->SetImageFormatState(tex1->GetImageFormatState());
         mixedTexture->SetFileInfo(info);
-        mixedTexture->CreateFromData(mixedData, TextureType::RMA);
+        mixedTexture->CreateFromData(mixedData, TextureType::ORM);
 
         // Clear seperated textures
         const auto& am = Services::GetAssetManager();
@@ -80,22 +80,20 @@ namespace Real::tools {
         File::DeleteFile(tex3->GetPath());
         am->DeleteCPUTexture(tex3->GetName());
 
+        if (!SaveTextureAsFile(mixedTexture.get(), info.path)) {
+            Warn("ORM packed texture can't saved!");
+        }
+
         return mixedTexture;
     }
 
-    Ref<OpenGLTexture> PackTexturesToRGBChannels(const std::array<Ref<OpenGLTexture>, 3> &textures,
-        const std::string& materialName)
-    {
-        return PackTexturesToRGBChannels(textures[0], textures[1], textures[2], materialName);
-    }
-
-    Ref<OpenGLTexture> LoadRMATextures(std::array<Ref<OpenGLTexture>, 3>& rma, const std::string &materialName) {
+    Ref<OpenGLTexture> PrepareAndPackRMATextures(std::array<Ref<OpenGLTexture>, 3>& orm, const std::string &materialName) {
         const auto& am = Services::GetAssetManager();
         std::pair<int, int> max_res{};
         FileInfo info;
         auto imagestate = ImageFormatState::UNDEFINED;
         // Detection for missing cases
-        for (const auto& tex : rma) {
+        for (const auto& tex : orm) {
             if (!tex) continue;
             auto res = tex->GetResolution(0);
             max_res = (res.first * res.second > max_res.first * max_res.second) ? res : max_res;
@@ -104,7 +102,7 @@ namespace Real::tools {
         }
 
         while (max_res.first == 0 || max_res.second == 0) {
-            const auto& mat = am->CreateMaterialBase(materialName);
+            const auto& mat = am->GetOrCreateMaterialBase(materialName);
             if (mat->m_Albedo) {
                 max_res = mat->m_Albedo->GetResolution(0);
             }
@@ -119,23 +117,23 @@ namespace Real::tools {
         }
 
         for (size_t i = 0; i < 3; i++) {
-            if (rma[i]) continue;
+            if (orm[i]) continue;
             std::string missingName;
             auto type = TextureType::UNDEFINED;
             switch (i) {
-                case 0: missingName = "default_RGH"; type = TextureType::RGH; break;
-                case 1: missingName = "default_MTL"; type = TextureType::MTL; break;
-                case 2: missingName = "default_AO";  type = TextureType::AO;  break;
+                case 0: missingName = "default_RGH"; type = TextureType::ROUGHNESS; break;
+                case 1: missingName = "default_MTL"; type = TextureType::METALLIC;  break;
+                case 2: missingName = "default_AO";  type = TextureType::AMBIENT_OCCLUSION; break;
                 default: ;
             }
 
             missingName += std::to_string(max_res.first) + '_' + std::to_string(max_res.second);
-            rma[i] = am->GetOrCreateDefaultTexture(missingName, type,
+            orm[i] = am->GetOrCreateDefaultTexture(missingName, type,
                 glm::ivec2(max_res.first, max_res.second), 1
             );
         }
 
-        for (const auto &tex : rma) {
+        for (const auto &tex : orm) {
             tex->SetFileInfo(info);
             tex->SetImageFormatState(imagestate);
 
@@ -145,7 +143,7 @@ namespace Real::tools {
             }
         }
 
-        return PackTexturesToRGBChannels(rma, materialName);
+        return PackTexturesToRGBChannels(orm, materialName);
     }
 
     bool SaveTextureAsFile(OpenGLTexture* texture, const std::string&destPath, int jpgQuality) {

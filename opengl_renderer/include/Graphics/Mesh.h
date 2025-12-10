@@ -14,9 +14,9 @@ namespace Real::Graphics {
     };
 
     struct MeshInfo {
-        uint32_t m_VertexCount;
-        uint32_t m_IndexCount;
-        uint32_t m_VertexOffset;
-        uint32_t m_IndexOffset;
+        uint64_t m_VertexCount;
+        uint64_t m_IndexCount;
+        uint64_t m_VertexOffset;
+        uint64_t m_IndexOffset;
     };
 }

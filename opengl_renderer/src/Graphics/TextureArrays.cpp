@@ -16,7 +16,7 @@ namespace Real {
 
     void TextureArrayManager::AddTextureMap(TextureType texType, TextureResolution resolution, const Ref<OpenGLTexture> &texMap) {
         if (!texMap) {
-            Warn("Texture can't added to TextureArray (nullptr): " + util::EnumToString_TextureType(texType));
+            Warn("Texture can't added to TextureArray (nullptr): " + util::TextureType_EnumToString(texType));
             return;
         }
         // texMap->SetTexArrayIndex(TexArrayTypeToArrayIndex(texType));

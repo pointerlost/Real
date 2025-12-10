@@ -9,17 +9,16 @@
 
 namespace Real {
 
-    const Graphics::MeshInfo &MeshManager::GetMeshData(const std::string &name) const {
-        if (!m_MeshInfos.contains(name)) {
+    const Graphics::MeshInfo &MeshData::GetMeshData(const UUID& uuid) const {
+        if (!m_MeshInfos.contains(uuid)) {
             Warn(ConcatStr("Mesh doesn't exists! error from file: ", __FILE__));
         }
-        return m_MeshInfos.at(name);
+        return m_MeshInfos.at(uuid);
     }
 
-    void MeshManager::CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint32_t> indices,
-            const std::string& name)
+    UUID MeshData::CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices, const UUID& uuid)
     {
-        if (m_MeshInfos.contains(name)) return; // Skip if mesh already exists
+        if (m_MeshInfos.contains(uuid)) return uuid; // Skip if mesh already exists
         Graphics::MeshInfo info{};
         info.m_VertexCount  = vertices.size();
         info.m_IndexCount   = indices.size();
@@ -32,20 +31,36 @@ namespace Real {
             m_AllIndices.push_back(idx + info.m_VertexOffset);
         }
 
-        m_MeshInfos[name] = info;
+        m_MeshInfos[uuid] = info;
     }
 
-    void MeshManager::InitResources() {
+    const Graphics::MeshInfo& MeshData::GetPrimitiveMeshData(const std::string &name) {
+        if (m_PrimitiveTypesUUIDs.contains(name)) {
+            Warn("There is no primitive type with this name: " + name);
+            return m_MeshInfos[m_PrimitiveTypesUUIDs["triangle"]];
+        }
+        return m_MeshInfos[m_PrimitiveTypesUUIDs[name]];
+    }
+
+    void MeshData3D::AddMesh3DToMeshData(std::vector<Graphics::Vertex> v, std::vector<uint64_t> i, const UUID& uuid) {
+        CreateSingleMesh(std::move(v), std::move(i), uuid);
+    }
+
+    void MeshData::InitResources() {
+        // TODO: Load primitive types from another location like ResourceLoader or something..
         auto [triFirst, triSecond] = MeshFactory::CreateTriangle();
-        CreateSingleMesh(triFirst, triSecond, "triangle");
+        m_PrimitiveTypesUUIDs["triangle"] = UUID();
+        CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs["triangle"]);
+
+        m_PrimitiveTypesUUIDs["cube"] = UUID();
         auto [cubeFirst, cubeSecond] = MeshFactory::CreateCube();
-        CreateSingleMesh(cubeFirst, cubeSecond, "cube");
+        CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs["cube"]);
 
         glCreateBuffers(1, &m_VBO);
         glNamedBufferData(m_VBO, m_AllVertices.size() * sizeof(Graphics::Vertex), m_AllVertices.data(), GL_STATIC_DRAW);
 
         glCreateBuffers(1, &m_EBO);
-        glNamedBufferData(m_EBO, m_AllIndices.size() * sizeof(uint32_t), m_AllIndices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(m_EBO, m_AllIndices.size() * sizeof(uint64_t), m_AllIndices.data(), GL_STATIC_DRAW);
 
         // Create and bind global vao
         glCreateVertexArrays(1, &m_UniversalVAO);

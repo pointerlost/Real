@@ -96,6 +96,13 @@ add_executable(${PROJECT_NAME}
     include/Common/Macros.h
     include/Core/Types.h
     include/Common/Scheduling/TaskManager.h
+    src/Graphics/ModelLoader.cpp
+    include/Graphics/ModelLoader.h
+    include/Common/RealEnum.h
+    include/Graphics/Model.h
+    include/Resource/ResourceLoader.h
+    include/Common/RealTypes.h
+    src/Resource/ResourceLoader.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
@@ -131,8 +138,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX512.a
 )
 
-set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
-set(ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
+set(SHADERS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
+set(ASSETS_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
 
 configure_file(
     include/Core/Config.h.in

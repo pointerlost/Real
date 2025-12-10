@@ -32,7 +32,7 @@ namespace Real {
         Scope<Timer> m_EditorTimer;
         Scope<EditorState> m_EditorState;
         Scope<Graphics::Window> m_Window;
-        Scope<MeshManager> m_MeshManager;
+        Scope<MeshData> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
         Scope<opengl::Renderer> m_Renderer;
         Scope<Scene> m_Scene;

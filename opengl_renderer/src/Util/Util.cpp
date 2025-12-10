@@ -3,8 +3,9 @@
 //
 #include "Util/Util.h"
 
+#include <fstream>
 #include <GL/glext.h>
-
+#include <nlohmann/json.hpp>
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Graphics/Texture.h"
@@ -23,10 +24,10 @@ namespace Real::util {
         for (auto &p : fs::recursive_directory_iterator(folderPath)) {
             if (p.path().has_extension()) {
                 FileInfo fileInfo{};
-                fileInfo.name = p.path().filename();
-                fileInfo.ext  = p.path().extension();
-                fileInfo.stem = p.path().stem();
-                fileInfo.path = p.path();
+                fileInfo.name = p.path().filename().string();
+                fileInfo.ext  = p.path().extension().string();
+                fileInfo.stem = p.path().stem().string();
+                fileInfo.path = p.path().string();
                 files.emplace_back(fileInfo);
             }
         }
@@ -36,6 +37,26 @@ namespace Real::util {
 
     bool IsSubString(const std::string &subStr, const std::string &string) {
         return string.find(subStr) != std::string::npos;
+    }
+
+    FileInfo CreateFileInfoFromPath(const std::string &path) {
+        FileInfo info;
+        const size_t slashPos = path.find_last_of("/\\");
+
+        if (slashPos == std::string::npos)
+            Warn("There is no '/' in the path, So can't created FileInfo!!! Fix it");
+
+        info.path = path;
+        info.name = path.substr(slashPos + 1);
+
+        const size_t dotPos = info.name.find_last_of('.');
+        if (dotPos == std::string::npos)
+            Warn("There is no '.' in the path, So can't created FileInfo!!! Fix it");
+
+        info.ext  = info.name.substr(dotPos);
+        info.stem = info.name.substr(0, dotPos);
+
+        return info;
     }
 
     int FindClosestPowerOfTwo(int num) {
@@ -83,6 +104,26 @@ namespace Real::util {
                 Warn("Missing channel count Returning UNDEFINED Internal format");
                 return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
         }
+    }
+
+    std::string ImageFormatState_EnumToString(ImageFormatState state) {
+        switch (state) {
+            case ImageFormatState::COMPRESS_ME:  return "compress_me";
+            case ImageFormatState::COMPRESSED:   return "compressed";
+            case ImageFormatState::UNCOMPRESSED: return "uncompressed";
+            case ImageFormatState::UNDEFINED:    return "undefined";
+            case ImageFormatState::DEFAULT:      return "default";
+            default: Warn("There is no image format state enum!!"); return "real_null";
+        }
+    }
+
+    ImageFormatState ImageFormatState_StringToEnum(std::string state) {
+        if (state == "compress_me")  return ImageFormatState::COMPRESS_ME;
+        if (state == "compressed")   return ImageFormatState::COMPRESSED;
+        if (state == "uncompressed") return ImageFormatState::UNCOMPRESSED;
+        if (state == "undefined")    return ImageFormatState::UNDEFINED;
+        if (state == "default")      return ImageFormatState::DEFAULT;
+        return ImageFormatState::real_null;
     }
 
     std::string FormatToString(int format) {
@@ -167,51 +208,61 @@ namespace Real::util {
         }
     }
 
-    TextureType StringToEnum_TextureType(const std::string &type) {
-        if (type == "ALB")    return TextureType::ALB;
-        if (type == "NRM")    return TextureType::NRM;
-        if (type == "RMA")    return TextureType::RMA;
-        if (type == "RGH")    return TextureType::RGH;
-        if (type == "MTL")    return TextureType::MTL;
-        if (type == "AO")     return TextureType::AO;
-        if (type == "HEIGHT") return TextureType::HEIGHT;
+    TextureType TextureType_StringToEnum(const std::string &type) {
+        if (type == "albedo" || type == "ALB")        return TextureType::ALBEDO;
+        if (type == "normal" || type == "NRM")        return TextureType::NORMAL;
+        if (type == "orm" || type == "ORM")           return TextureType::ORM;
+        if (type == "height" || type == "HEIGHT")     return TextureType::HEIGHT;
+        if (type == "emissive" || type == "EMISSIVE") return TextureType::EMISSIVE;
+        if (type == "ao" || type == "AO")             return TextureType::AMBIENT_OCCLUSION;
+        if (type == "roughness" || type == "RGH")     return TextureType::ROUGHNESS;
+        if (type == "metallic" || type == "MTL")      return TextureType::METALLIC;
+        if (type == "albedo_roughness" || type == "ALB_RGH")   return TextureType::ALBEDO_ROUGHNESS;
+        if (type == "alpha" || type == "ALPHA")                return TextureType::ALPHA;
+        if (type == "metallic_roughness" || type == "MTL_RGH") return TextureType::METALLIC_ROUGHNESS;
 
         Info("Type returning UNDEFINED for: " + type);
         return TextureType::UNDEFINED;
     }
 
-    std::string EnumToString_TextureType(TextureType type) {
+    std::string TextureType_EnumToString(TextureType type) {
         switch (type) {
-            case TextureType::ALB:    return "ALB";
-            case TextureType::NRM:    return "NRM";
-            case TextureType::RGH:    return "RGH";
-            case TextureType::MTL:    return "MTL";
-            case TextureType::AO:     return "AO";
-            case TextureType::HEIGHT: return "HEIGHT";
-            case TextureType::RMA:    return "RMA";
+            case TextureType::ALBEDO:             return "ALB";
+            case TextureType::NORMAL:             return "NRM";
+            case TextureType::ORM:                return "ORM";
+            case TextureType::HEIGHT:             return "HEIGHT";
+            case TextureType::EMISSIVE:           return "EMISSIVE";
+            case TextureType::AMBIENT_OCCLUSION:  return "AO";
+            case TextureType::ROUGHNESS:          return "RGH";
+            case TextureType::METALLIC:           return "MTL";
+            case TextureType::ALBEDO_ROUGHNESS:   return "ALB_RGH";
+            case TextureType::ALPHA:              return "ALPHA";
+            case TextureType::METALLIC_ROUGHNESS: return "MTL_RGH";
 
             default:
-                Warn("Texture type returning UNDEFINED for: " + EnumToString_TextureType(type));
+                Warn("Texture type returning UNDEFINED for: " + TextureType_EnumToString(type));
                 return "UNDEFINED";
         }
     }
 
     std::string GetDefaultTextureName(TextureType type, int width) {
-        return std::string("default_" + EnumToString_TextureType(type) + "_" + std::to_string(width));
+        return std::string("default_" + TextureType_EnumToString(type) + "_" + std::to_string(width));
     }
 
     // Bit Per Pixel
     uint TexFormat_uncompressed_GetBitPerTexel(TextureType type) {
         switch (type) {
-            case TextureType::ALB:
-            case TextureType::NRM:
-            case TextureType::RMA:
+            case TextureType::ALBEDO:
+            case TextureType::ALBEDO_ROUGHNESS:
+            case TextureType::NORMAL:
+            case TextureType::ORM:
                 return 32;
 
-            case TextureType::RGH:
-            case TextureType::MTL:
-            case TextureType::AO:
+            case TextureType::ROUGHNESS:
+            case TextureType::METALLIC:
+            case TextureType::AMBIENT_OCCLUSION:
             case TextureType::HEIGHT:
+            case TextureType::EMISSIVE:
                 return 8;
 
             default: // TextureType::UNDEFINED
@@ -244,4 +295,85 @@ namespace Real::util {
         }
     }
 
+    TextureType AssimpTextureTypeToRealType(aiTextureType type) {
+        switch (type) {
+            case aiTextureType_BASE_COLOR:
+            case aiTextureType_DIFFUSE:
+                return TextureType::ALBEDO;
+
+            case aiTextureType_NORMAL_CAMERA:
+            case aiTextureType_NORMALS:
+                return TextureType::NORMAL;
+
+            case aiTextureType_DISPLACEMENT:
+            case aiTextureType_HEIGHT:
+                return TextureType::HEIGHT;
+
+            case aiTextureType_AMBIENT_OCCLUSION:       return TextureType::AMBIENT_OCCLUSION;
+            case aiTextureType_METALNESS:               return TextureType::METALLIC;
+            case aiTextureType_EMISSIVE:                return TextureType::EMISSIVE;
+            case aiTextureType_DIFFUSE_ROUGHNESS:       return TextureType::ALBEDO_ROUGHNESS;
+            case aiTextureType_GLTF_METALLIC_ROUGHNESS: return TextureType::METALLIC_ROUGHNESS;
+
+            default: return TextureType::UNDEFINED;
+        }
+    }
+
+    nlohmann::json LoadJSON(const std::string &path) {
+        std::ifstream file(path);
+        if (!file.is_open()) {
+            Warn("Failed to open file: " + path);
+            return {};
+        }
+        nlohmann::json j;
+        file >> j; // parsing
+        return j;
+    }
+
+    TextureData ExtractChannel(const TextureData& data, int channelIndex) {
+        if (channelIndex < 0 || channelIndex >= data.m_ChannelCount) {
+            Warn("[Util::ExtractChannel] Invalid channel index! Fix it!");
+            return{};
+        }
+        TextureData d;
+        d.m_Width          = data.m_Width;
+        d.m_Height         = data.m_Height;
+        d.m_ChannelCount   = 1; // We are extracting '1' channel
+        d.m_DataSize       = data.m_Width * data.m_Height * 1;
+        d.m_Format         = ConvertChannelCountToGLFormat(d.m_ChannelCount);
+        d.m_InternalFormat = ConvertChannelCountToGLInternalFormat(d.m_ChannelCount);
+
+        d.m_Data = new uint8_t[d.m_DataSize];
+
+        const uint8_t* src = static_cast<const uint8_t*>(data.m_Data);
+        uint8_t* dst = static_cast<uint8_t*>(d.m_Data);
+
+        for (int i = 0; i < data.m_Width * data.m_Height; i++)
+            dst[i] = src[i * data.m_ChannelCount + channelIndex];
+
+        return d;
+    }
+
+    TextureData ExtractChannels(const TextureData& data, const std::vector<int> &wantedChannels) {
+        const int outC = wantedChannels.size();
+
+        TextureData d;
+        d.m_Width          = data.m_Width;
+        d.m_Height         = data.m_Height;
+        d.m_ChannelCount   = outC;
+        d.m_DataSize       = data.m_Width * data.m_Height * outC;
+        d.m_Format         = ConvertChannelCountToGLFormat(d.m_ChannelCount);
+        d.m_InternalFormat = ConvertChannelCountToGLInternalFormat(d.m_ChannelCount);
+
+        d.m_Data = new uint8_t[d.m_DataSize];
+
+        const uint8_t* src = static_cast<const uint8_t*>(data.m_Data);
+        uint8_t* dst = static_cast<uint8_t*>(d.m_Data);
+
+        for (int i = 0; i < data.m_Width * data.m_Height; i++)
+            for (int j = 0; j < outC; j++)
+                dst[i * outC + j] = src[i * data.m_ChannelCount + wantedChannels[j]];
+
+        return d;
+    }
 }

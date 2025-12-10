@@ -4,7 +4,7 @@
 #pragma once
 
 namespace Real {
-    class MeshManager;
+    class MeshData;
     class AssetManager;
     class Timer;
     struct EditorState;
@@ -12,14 +12,14 @@ namespace Real {
 
 namespace Real::Services {
     void SetAssetManager(AssetManager* manager);
-    void SetMeshManager(MeshManager* manager);
+    void SetMeshManager(MeshData* manager);
     void SetEditorTimer(Timer* timer);
     void SetEditorState(EditorState* state);
 }
 
 namespace Real::Services {
     AssetManager *GetAssetManager();
-    MeshManager *GetMeshManager();
+    MeshData *GetMeshManager();
     Timer *GetEditorTimer();
     EditorState* GetEditorState();
 }

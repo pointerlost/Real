@@ -4,21 +4,25 @@
 #include "Graphics/Texture.h"
 #include <stb_image_resize2.h>
 #include <utility>
-#include <GL/glext.h>
 #include "Core/AssetManager.h"
 #include "Core/CmakeConfig.h"
 #include "Core/Logger.h"
-#include "Math/Math.h"
 #include "stb/stb_image.h"
 #include "Tools/ImageTools.h"
 #include "Util/Util.h"
 
 namespace Real {
 
-    OpenGLTexture::OpenGLTexture(TextureType type)
-        : m_Type(type)
+    OpenGLTexture::OpenGLTexture(const TextureData &data, FileInfo info, UUID uuid)
+        : m_UUID(uuid), m_FileInfo(std::move(info))
     {
+        m_MipLevelsData.push_back(data);
     }
+
+    OpenGLTexture::OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate)
+        : m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo)) {}
+
+    OpenGLTexture::OpenGLTexture(TextureType type) : m_Type(type) {}
 
     OpenGLTexture::~OpenGLTexture() {
         for (auto level : m_MipLevelsData) {
@@ -32,7 +36,7 @@ namespace Real {
         }
     }
 
-    void OpenGLTexture::AddLevelData(TextureData data, int mipLevel) {
+    void OpenGLTexture::AddLevelData(const TextureData &data, int mipLevel) {
         if (mipLevel >= m_MipLevelsData.size() || mipLevel < 0 || m_MipLevelsData.empty()) {
             Warn("[AddLevelData] mipLevel mismatch!");
             return;
@@ -104,6 +108,14 @@ namespace Real {
         CreateMipmapsFromDDS(mipLevels);
     }
 
+    void OpenGLTexture::SetUUID(uint64_t uuid) {
+        m_UUID = UUID(uuid);
+    }
+
+    void OpenGLTexture::SetUUID(const UUID &uuid) {
+        m_UUID = uuid;
+    }
+
     std::pair<int, int> OpenGLTexture::GetResolution(int mipLevel) {
         if (mipLevel < 0 || (mipLevel >= m_MipLevelsData.size() && !m_MipLevelsData.empty()))
             Warn("MipLevel index mismatch!!! name: " + m_FileInfo.name);
@@ -148,8 +160,9 @@ namespace Real {
         if (m_Handle == 0) {
             CreateHandle();
         }
-        const auto data = LoadFromFile(m_FileInfo.path);
-        CreateFromData(data, m_Type);
+        // TODO: Fix it this shit
+        // const auto data = LoadFromFile(m_FileInfo.path);
+        // CreateFromData(data, m_Type);
     }
 
     void OpenGLTexture::CreateFromData(const TextureData &data, TextureType type) {

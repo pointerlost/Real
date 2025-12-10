@@ -7,15 +7,23 @@
 #include <vector>
 #include <glad/glad.h>
 #include "Mesh.h"
+#include "Core/UUID.h"
+
+namespace Real { struct OpenGLTexture; }
 
 namespace Real {
 
-    class MeshManager {
+    // TODO: MeshManager vs MeshData wrong naming fix it this shit
+    class MeshData {
     public:
+        MeshData() = default;
         void InitResources();
 
-        const std::unordered_map<std::string, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
-        [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const std::string& name) const;
+        UUID CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices, const UUID& uuid = UUID());
+
+        const std::unordered_map<UUID, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
+        [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const UUID& uuid) const;
+        [[maybe_unused]] const Graphics::MeshInfo &GetPrimitiveMeshData(const std::string& name);
         [[nodiscard]] GLuint GetUniversalVAO() const { return m_UniversalVAO; }
         void BindUniversalVAO() const { glBindVertexArray(m_UniversalVAO); }
         void UnbindCurrVAO() const { glBindVertexArray(0); }
@@ -23,13 +31,23 @@ namespace Real {
         [[nodiscard]] size_t GetMeshCount() const { return m_AllVertices.size(); }
 
     private:
-        std::unordered_map<std::string, Graphics::MeshInfo> m_MeshInfos;
+        std::unordered_map<UUID, Graphics::MeshInfo> m_MeshInfos;
+        std::unordered_map<std::string, UUID> m_PrimitiveTypesUUIDs;
         std::vector<Graphics::Vertex> m_AllVertices;
-        std::vector<uint32_t> m_AllIndices;
+        std::vector<uint64_t> m_AllIndices;
 
         unsigned int m_UniversalVAO = 0, m_VBO = 0, m_EBO = 0;
-    private:
-        void CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint32_t> indices,
-            const std::string& name);
+    };
+
+    class MeshData3D final : public MeshData {
+        void AddMesh3DToMeshData(std::vector<Graphics::Vertex> v, std::vector<uint64_t> i, const UUID& uuid);
+
+        [[nodiscard]] uint32_t GetIndexCount(const UUID& uuid) const {
+            return GetMeshData(uuid).m_IndexCount;
+        }
+
+        [[nodiscard]] uint32_t GetIndexOffSet(const UUID& uuid) const {
+            return GetMeshData(uuid).m_IndexOffset;
+        }
     };
 }

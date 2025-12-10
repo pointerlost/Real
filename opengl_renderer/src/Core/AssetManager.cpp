@@ -4,29 +4,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "Core/AssetManager.h"
-
 #include <condition_variable>
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 #include <fstream>
 #include <ranges>
-#include <set>
-#include <stack>
 #include <thread>
 #include <Core/CmakeConfig.h>
 #include "Graphics/Material.h"
 #include "queue"
-#include "Common/Scheduling/Threads.h"
 #include "Math/Math.h"
 #include "Tools/ImageTools.h"
 #include "Util/Util.h"
-
 #include <stb/stb_image.h>
-#include <stb_image_resize2.h>
-#include <unordered_set>
 
-#include "Core/Config.h"
-#include "Graphics/TextureArrays.h"
 
 namespace Real {
 
@@ -124,18 +115,22 @@ namespace Real {
         uint8_t channelColor[4] = {UINT8_MAX};
         // Pick default color for specific texture types to leave unharmed
         switch (type) {
-            case TextureType::ALB: channelColor[0] = 128; channelColor[1] = 128;
-                                   channelColor[2] = 128; channelColor[3] = 255; // Optional alpha
+            case TextureType::ALBEDO:
+                channelColor[0] = 128; channelColor[1] = 128;
+                channelColor[2] = 128; channelColor[3] = 255; // Optional alpha
                 break;
 
-            case TextureType::NRM: channelColor[0] = 128; channelColor[1] = 128;
-                                   channelColor[2] = 255; channelColor[3] = 255; // Optional alpha
+            case TextureType::NORMAL:
+                channelColor[0] = 128; channelColor[1] = 128;
+                channelColor[2] = 255; channelColor[3] = 255; // Optional alpha
                 break;
 
-            case TextureType::RGH:    channelColor[0] = 128; break;
-            case TextureType::MTL:
-            case TextureType::HEIGHT: channelColor[0] = 0;   break;
-            case TextureType::AO:     channelColor[0] = 255; break;
+            case TextureType::ROUGHNESS: channelColor[0] = 128; break;
+            case TextureType::METALLIC:
+            case TextureType::HEIGHT:
+                channelColor[0] = 0; break;
+
+            case TextureType::AMBIENT_OCCLUSION: channelColor[0] = 255; break;
 
             default: channelColor[0] = UINT8_MAX; channelColor[1] = UINT8_MAX;
                      channelColor[2] = UINT8_MAX; channelColor[3] = UINT8_MAX;
@@ -189,40 +184,67 @@ namespace Real {
     }
 
     Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const FileInfo& file, TextureType type, ImageFormatState imageState) {
-        if (IsTextureExists(file.name)) return m_Textures[file.name];
+        if (m_TexturesByName.contains(file.name)) return m_TexturesByName[file.name];
 
         const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
         texture->SetType(type);
         texture->SetImageFormatState(imageState);
         texture->SetFileInfo(file);
-        texture->SetIndex(m_Textures.size());
+        texture->SetIndex(m_TexturesByName.size());
         texture->Create();
 
-        return m_Textures[file.name] = texture;
+        return m_TexturesByName[file.name] = texture;
     }
 
-    void AssetManager::LoadTextures() {
-        // Pack first rma textures into nrChannels, then load to folder as RMA, then compress it if needed
-        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> packed_rma;
+    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const std::string &path, TextureType type,
+        ImageFormatState imageState)
+    {
+        if (m_TexturesByPath.contains(path)) return m_TexturesByPath[path];
 
-        const auto SaveTexture = [this, &packed_rma](const FileInfo& file, ImageFormatState imageState) {
+        const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
+        texture->SetType(type);
+        texture->SetImageFormatState(imageState);
+        texture->SetFileInfo(std::move(util::CreateFileInfoFromPath(path)));
+        texture->SetIndex(m_TexturesByName.size());
+        texture->Create();
+
+        return m_TexturesByPath[path] = texture;
+    }
+
+    TextureData AssetManager::LoadTextureFromFile(const std::string &path) {
+        TextureData data;
+        unsigned char* rawData = stbi_load(path.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, 0);
+        const auto size = data.m_Width * data.m_Height * data.m_ChannelCount;
+        data.m_Data = new uint8_t[size];
+        memcpy(data.m_Data, rawData, size);
+        stbi_image_free(rawData);
+        return data;
+    }
+
+    void AssetManager::LoadAssets() {
+
+        const auto SaveTexture = [this](const FileInfo& file, ImageFormatState imageState) {
             auto& stem = file.stem;
             const auto dashPos = stem.find('_');
 
             const auto matName = stem.substr(0, dashPos);
-            const TextureType type = util::StringToEnum_TextureType(stem.substr(dashPos + 1));
+            const TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
 
+            const auto texData = LoadTextureFromFile(file.path);
+            switch (type) {
+            }
             const auto tex = LoadTextureOnlyCPUData(file, type, imageState);
 
-            const auto& mat = CreateMaterialBase(matName);
+            const auto& mat = GetOrCreateMaterialBase(uuid);
             switch (type) {
-                case TextureType::ALB:    mat->m_Albedo = tex; break;
-                case TextureType::NRM:    mat->m_Normal = tex; break;
-                case TextureType::RMA:    mat->m_RMA    = tex; break;
-                case TextureType::HEIGHT: mat->m_Height = tex; break;
-                case TextureType::RGH:    packed_rma[matName][0] = tex; break;
-                case TextureType::MTL:    packed_rma[matName][1] = tex; break;
-                case TextureType::AO:     packed_rma[matName][2] = tex; break;
+                case TextureType::ALBEDO:            mat->m_Albedo    = tex; break;
+                case TextureType::NORMAL:            mat->m_Normal    = tex; break;
+                case TextureType::AMBIENT_OCCLUSION: mat->m_AO        = tex; break;
+                case TextureType::METALLIC:          mat->m_Metallic  = tex; break;
+                case TextureType::ROUGHNESS:         mat->m_Roughness = tex; break;
+                case TextureType::ORM:               mat->m_ORM       = tex; break;
+                case TextureType::HEIGHT:            mat->m_Height    = tex; break;
+                case TextureType::EMISSIVE:          mat->m_Emissive  = tex; break;
                 default: ;
             }
         };
@@ -237,65 +259,31 @@ namespace Real {
             SaveTexture(file, ImageFormatState::COMPRESS_ME);
         }
 
-        // Save RMA files and delete each one
-        for (auto& [materialName, rma_array] : packed_rma) {
-            const auto tex = tools::LoadRMATextures(rma_array, materialName);
-            const auto iState = tex->GetImageFormatState();
-            std::string filepath = std::string(ASSETS_DIR) + "textures/";
-
-            if (iState == ImageFormatState::COMPRESS_ME) {
-                filepath += "compress_me/" + materialName + "_RMA" + tex->GetFileInfo().ext;
-                if (!tools::SaveTextureAsFile(tex.get(), filepath)) {
-                    Warn("[COMPRESS_ME] RMA file can't save!");
-                }
-            }
-            else if (iState == ImageFormatState::UNCOMPRESSED) {
-                filepath += "uncompressed/" + materialName + "_RMA" + tex->GetFileInfo().ext;
-                if (!tools::SaveTextureAsFile(tex.get(), filepath)) {
-                    Warn("[UNCOMPRESSED] RMA file can't save!");
-                }
-            } else {
-                Warn("Image format state is UNDEFINED!");
-            }
-        }
-
         // Compress textures and read from DDS
-        for (const auto& tex : std::views::values(m_Textures)) {
+        for (const auto& tex : std::views::values(m_TexturesByName)) {
             if (tex->GetImageFormatState() != ImageFormatState::COMPRESS_ME) continue;
             tools::CompressTextureToBCn(tex.get(), std::string(ASSETS_DIR) + "textures/compressed/");
         }
     }
 
-    void AssetManager::DeleteCPUTexture(const std::string& name) {
-        m_Textures.erase(name);
-    }
-
-    Ref<OpenGLTexture>& AssetManager::GetTexture(const std::string &name) {
-        if (!IsTextureExists(name))
-            Warn("Texture '" + name + "' can't find! returning nullptr!!");
-        return m_Textures[name];
-    }
-
-    Ref<Material>& AssetManager::CreateMaterialBase(const std::string &name) {
-        if (m_Materials.contains(name))
-            return m_Materials[name];
-
-        return m_Materials[name] = CreateRef<Material>();
-    }
-
-    Ref<Material> & AssetManager::GetMaterialBase(const std::string &name) {
-        if (!m_Materials.contains(name)) {
-            Warn("There is no Base material for this name: " + name);
-            return m_Materials[name] = CreateRef<Material>();
+    Ref<OpenGLTexture> & AssetManager::GetTexture(const UUID &uuid) {
+        if (m_Textures.contains(uuid)) {
+            Warn("There is no texture with this UUID! returning nullptr!!!");
         }
-        return m_Materials[name];
+        return m_Textures[uuid];
     }
 
-    Ref<MaterialInstance>& AssetManager::GetOrCreateMaterialInstance(const std::string& name) {
-        if (m_MaterialInstances.contains(name))
-            return m_MaterialInstances[name];
+    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const UUID& uuid) {
+        if (m_Materials.contains(uuid))
+            return m_Materials[uuid];
+        return m_Materials[uuid] = CreateRef<Material>();
+    }
 
-        return m_MaterialInstances[name] = CreateRef<MaterialInstance>(name);
+    Ref<MaterialInstance>& AssetManager::GetOrCreateMaterialInstance(const UUID& uuid) {
+        if (m_MaterialInstances.contains(uuid))
+            return m_MaterialInstances[uuid];
+        // Should I save this UUID to asset database?
+        return m_MaterialInstances[uuid] = CreateRef<MaterialInstance>(uuid);
     }
 
     std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
@@ -340,5 +328,68 @@ namespace Real {
         }
         Warn(ConcatStr("Font doesn't exists! from: ", __FILE__, "\n name: ", fontName));
         return nullptr;
+    }
+
+    nlohmann::json AssetManager::LoadMaterialsFromAssetDB() {
+        using nlohmann::json;
+        json j = util::LoadJSON(std::string(ASSETS_DIR) + "asset_database/asset_database.json");
+
+        const auto mat = CreateRef<Material>();
+
+        mat->m_ID = UUID(j.value("uuid", 0ull));
+        mat->m_Name = j.value("name", "Unnamed");
+
+        auto loadTexUUID = [&](const std::string& key) -> UUID {
+            const uint64_t id = j["textures"].value(key, 0ull);
+            if (id == 0ull)
+                Warn("There is no UUID for this material: " + mat->m_Name);
+            return {id};
+        };
+
+        mat->m_Albedo   = loadTexUUID("albedo");
+        mat->m_Normal   = loadTexUUID("normal");
+        mat->m_ORM      = loadTexUUID("orm");
+        mat->m_Height   = loadTexUUID("height");
+        mat->m_Emissive = loadTexUUID("emissive");
+
+        return j;
+    }
+
+    nlohmann::json AssetManager::SaveMaterialToAssetDB(const Ref<Material>& mat) {
+        using nlohmann::json;
+        json j = util::LoadJSON(std::string(ASSETS_DIR) + "asset_database/asset_database.json");
+
+        // nlohmann doesn't know custom type, so cast to uint64_t
+        j["uuid"] = static_cast<uint64_t>(mat->m_ID);
+        // Save name for debugging purposes, don't use like a key
+        j["name"] = mat->m_Name;
+
+        j["textures"] = {
+            { "albedo",    static_cast<uint64_t>(mat->m_Albedo)   },
+            { "normal",    static_cast<uint64_t>(mat->m_Normal)   },
+            { "orm",       static_cast<uint64_t>(mat->m_ORM)      },
+            { "height",    static_cast<uint64_t>(mat->m_Height)   },
+            { "emissive",  static_cast<uint64_t>(mat->m_Emissive) },
+        };
+
+        return j;
+    }
+
+    nlohmann::json AssetManager::SaveTextureToAssetDB(const OpenGLTexture *texture) {
+        using nlohmann::json;
+        json j = util::LoadJSON(std::string(ASSETS_DIR) + "asset_database/asset_database.json");
+
+        // nlohmann doesn't know custom type, so cast to uint64_t
+        j["uuid"] = static_cast<uint64_t>(texture->GetUUID());
+        // Save file_info for ui or debugging purposes
+        j["file_info"] = {
+            { "name",      texture->GetName(), },
+            { "stem",      texture->GetStem(), },
+            { "path",      texture->GetPath(), },
+            { "extension", texture->GetExtension(), }
+        };
+
+        j["type"] = util::TextureType_EnumToString(texture->GetType());
+        j["image_format_state"] = util::ImageFormatState_EnumToString(texture->GetImageFormatState());
     }
 }

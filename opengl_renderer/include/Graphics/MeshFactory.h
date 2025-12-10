@@ -11,7 +11,7 @@ namespace Real {
 
     class MeshFactory {
     public:
-        static std::pair<std::vector<Graphics::Vertex>, std::vector<uint32_t>> CreateTriangle();
-        static std::pair<std::vector<Graphics::Vertex>, std::vector<uint32_t>> CreateCube();
+        static std::pair<std::vector<Graphics::Vertex>, std::vector<uint64_t>> CreateTriangle();
+        static std::pair<std::vector<Graphics::Vertex>, std::vector<uint64_t>> CreateCube();
     };
 }

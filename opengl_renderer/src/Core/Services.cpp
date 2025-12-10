@@ -3,11 +3,9 @@
 //
 #include "Core/Services.h"
 
-#include "Core/Timer.h"
-
 namespace {
     Real::AssetManager *s_AssetManager;
-    Real::MeshManager *s_MeshManager;
+    Real::MeshData *s_MeshManager;
     Real::Timer *s_EditorTimer;
     Real::EditorState* s_EditorState;
 }
@@ -17,7 +15,7 @@ namespace Real::Services {
         s_AssetManager = manager;
     }
 
-    void SetMeshManager(MeshManager *manager) {
+    void SetMeshManager(MeshData *manager) {
         s_MeshManager = manager;
     }
 
@@ -35,7 +33,7 @@ namespace Real::Services {
         return s_AssetManager;
     }
 
-    MeshManager *GetMeshManager() {
+    MeshData *GetMeshManager() {
         return s_MeshManager;
     }
 

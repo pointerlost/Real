@@ -74,4 +74,13 @@ namespace Real::math {
     int FindMax(int firstNum, int secondNum) {
         return std::max(firstNum, secondNum);
     }
+
+    int FindClosestPowerOfTwo(int num) {
+        int x = 1, y = 0;
+        while (x < num) {
+            y = x;
+            x <<= 1;
+        }
+        return abs(y - num) > abs(x - num) ? x : y;
+    }
 }

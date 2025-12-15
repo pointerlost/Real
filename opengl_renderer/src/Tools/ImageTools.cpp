@@ -16,25 +16,36 @@
 #include <Tools/DDS.h>
 #include <algorithm>
 #include "Core/CmakeConfig.h"
+#include "Core/file_manager.h"
 #include "Core/Services.h"
 
 namespace Real::tools {
 
-    Ref<OpenGLTexture> PackTexturesToRGBChannels(const Ref<OpenGLTexture> &tex1,
-        const Ref<OpenGLTexture> &tex2, const Ref<OpenGLTexture> &tex3, const std::string& materialName)
+    Ref<OpenGLTexture> PackTexturesToRGBChannels(const Ref<OpenGLTexture> &ao,
+        const Ref<OpenGLTexture> &rgh, const Ref<OpenGLTexture> &mtl, const std::string& materialName)
     {
-        if (!tex1 || !tex2 || !tex3) {
+        if (!ao || !rgh || !mtl) {
             Warn("Texture nullptr! from: " + std::string(__FILE__));
             return {};
         }
+        Ref<OpenGLTexture> nonDefaultTexFromORM;
+        if (ao->GetImageFormatState() != ImageFormatState::DEFAULT) {
+            nonDefaultTexFromORM = ao;
+        } else if (rgh->GetImageFormatState() != ImageFormatState::DEFAULT) {
+            nonDefaultTexFromORM = rgh;
+        } else if (mtl->GetImageFormatState() != ImageFormatState::DEFAULT) {
+            nonDefaultTexFromORM = mtl;
+        } else {
+            nonDefaultTexFromORM = ao;
+        }
 
         Ref<OpenGLTexture> mixedTexture = CreateRef<OpenGLTexture>();
-        const int width  = tex1->GetLevelData(0).m_Width;
-        const int height = tex1->GetLevelData(0).m_Height;
+        const int width  = nonDefaultTexFromORM->GetLevelData(0).m_Width;
+        const int height = nonDefaultTexFromORM->GetLevelData(0).m_Height;
 
-        const auto tex1RawData = static_cast<uint8_t *>(tex1->GetLevelData(0).m_Data);
-        const auto tex2RawData = static_cast<uint8_t *>(tex2->GetLevelData(0).m_Data);
-        const auto tex3RawData = static_cast<uint8_t *>(tex3->GetLevelData(0).m_Data);
+        const auto tex1RawData = static_cast<uint8_t *>(ao->GetLevelData(0).m_Data);
+        const auto tex2RawData = static_cast<uint8_t *>(rgh->GetLevelData(0).m_Data);
+        const auto tex3RawData = static_cast<uint8_t *>(mtl->GetLevelData(0).m_Data);
 
         // All textures have the same resolution
         constexpr int channelCount = 4;
@@ -62,29 +73,35 @@ namespace Real::tools {
         mixedData.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(channelCount);
 
         FileInfo info;
-        info.name = materialName + "_ORM" + tex1->GetFileInfo().ext;
+        info.name = materialName + "_ORM" + nonDefaultTexFromORM->GetFileInfo().ext;
         info.stem = info.name.substr(0, info.name.size() - 4); // Without extension
         info.path = std::string(ASSETS_DIR) + "textures/compressed/" + info.name;
         info.ext  = info.name.substr(info.name.size() - 4);
 
-        mixedTexture->SetImageFormatState(tex1->GetImageFormatState());
+        mixedTexture->SetImageFormatState(nonDefaultTexFromORM->GetImageFormatState());
         mixedTexture->SetFileInfo(info);
         mixedTexture->CreateFromData(mixedData, TextureType::ORM);
 
         // Clear seperated textures
         const auto& am = Services::GetAssetManager();
-        File::DeleteFile(tex1->GetPath());
-        am->DeleteCPUTexture(tex1->GetName());
-        File::DeleteFile(tex2->GetPath());
-        am->DeleteCPUTexture(tex2->GetName());
-        File::DeleteFile(tex3->GetPath());
-        am->DeleteCPUTexture(tex3->GetName());
+        fs::File::DeleteFile(ao->GetPath());
+        am->DeleteCPUTexture(ao->GetUUID());
+        fs::File::DeleteFile(rgh->GetPath());
+        am->DeleteCPUTexture(rgh->GetUUID());
+        fs::File::DeleteFile(mtl->GetPath());
+        am->DeleteCPUTexture(mtl->GetUUID());
 
         if (!SaveTextureAsFile(mixedTexture.get(), info.path)) {
             Warn("ORM packed texture can't saved!");
         }
 
         return mixedTexture;
+    }
+
+    Ref<OpenGLTexture> PackTexturesToRGBChannels(const std::array<Ref<OpenGLTexture>, 3> &orm,
+        const std::string &materialName)
+    {
+        return PackTexturesToRGBChannels(orm[0], orm[1], orm[2], materialName);
     }
 
     Ref<OpenGLTexture> PrepareAndPackRMATextures(std::array<Ref<OpenGLTexture>, 3>& orm, const std::string &materialName) {
@@ -102,15 +119,17 @@ namespace Real::tools {
         }
 
         while (max_res.first == 0 || max_res.second == 0) {
-            const auto& mat = am->GetOrCreateMaterialBase(materialName);
-            if (mat->m_Albedo) {
-                max_res = mat->m_Albedo->GetResolution(0);
+            const auto& ao  = am->GetTexture(orm[0]->GetUUID(), TextureType::AMBIENT_OCCLUSION);
+            const auto& rgh = am->GetTexture(orm[1]->GetUUID(), TextureType::ROUGHNESS);
+            const auto& mtl = am->GetTexture(orm[2]->GetUUID(), TextureType::METALLIC);
+            if (ao) {
+                max_res = max_res > ao->GetResolution(0) ? ao->GetResolution(0) : max_res;
             }
-            else if (mat->m_Normal) {
-                max_res = mat->m_Normal->GetResolution(0);
+            else if (rgh) {
+                max_res = max_res > rgh->GetResolution(0) ? rgh->GetResolution(0) : max_res;
             }
-            else if (mat->m_Height) {
-                max_res = mat->m_Height->GetResolution(0);
+            else if (mtl) {
+                max_res = max_res > mtl->GetResolution(0) ? mtl->GetResolution(0) : max_res;
             } else {
                 max_res = {1, 1};
             }
@@ -128,9 +147,7 @@ namespace Real::tools {
             }
 
             missingName += std::to_string(max_res.first) + '_' + std::to_string(max_res.second);
-            orm[i] = am->GetOrCreateDefaultTexture(missingName, type,
-                glm::ivec2(max_res.first, max_res.second), 1
-            );
+            orm[i] = am->GetOrCreateDefaultTexture(TextureType::ORM);
         }
 
         for (const auto &tex : orm) {
@@ -168,7 +185,7 @@ namespace Real::tools {
         return true;
     }
 
-    void CompressTextureToBCn(OpenGLTexture* texture, const std::string& destPath) {
+    void CompressTextureToBCn(OpenGLTexture* texture) {
         if (!texture) {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return;
@@ -225,7 +242,8 @@ namespace Real::tools {
         }
 
         // Save the result to compressed folder
-        std::string fullName = destPath + texture->GetFileInfo().stem + ".dds";
+        const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
+        const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
         cmp_status = CMP_SaveTexture(fullName.c_str(), &MipSetCmp);
 
         // Clean up buffers
@@ -234,12 +252,14 @@ namespace Real::tools {
 
         texture->SetImageFormatState(ImageFormatState::COMPRESSED);
 
-        ReadCompressedDataFromDDSFile(texture);
-
         if (cmp_status != CMP_OK) {
-            std::printf("Error %d: Saving processed file %s\n", cmp_status, destPath.c_str());
-            return;
+            std::printf("Error %d: Saving processed file %s\n", cmp_status, compressed_dir.c_str());
         }
+    }
+
+    void CompressTextureAndReadFromFile(OpenGLTexture *texture) {
+        CompressTextureToBCn(texture);
+        ReadCompressedDataFromDDSFile(texture);
     }
 
     void CompressCPUGeneratedTexture(OpenGLTexture *texture, const std::string &destPath) {
@@ -342,7 +362,7 @@ namespace Real::tools {
         std::vector<TextureData> mipLevelsData;
 
         const auto ddsPath = std::string(ASSETS_DIR) + "textures/compressed/" + texture->GetStem() + ".dds";
-        if (!File::Exists(ddsPath)) {
+        if (!fs::File::Exists(ddsPath)) {
             Warn("There is no DDS file with this name: " + ddsPath);
             return;
         }

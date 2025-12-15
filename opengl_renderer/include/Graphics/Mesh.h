@@ -4,6 +4,7 @@
 #pragma once
 #include <iostream>
 #include <glm/ext.hpp>
+#include <Core/UUID.h>
 
 namespace Real::Graphics {
 
@@ -18,5 +19,6 @@ namespace Real::Graphics {
         uint64_t m_IndexCount;
         uint64_t m_VertexOffset;
         uint64_t m_IndexOffset;
+        UUID m_MaterialUUID;
     };
 }

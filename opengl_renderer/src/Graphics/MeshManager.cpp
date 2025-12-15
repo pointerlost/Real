@@ -6,6 +6,7 @@
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 #include "Graphics/MeshFactory.h"
+#include <span>
 
 namespace Real {
 
@@ -16,14 +17,16 @@ namespace Real {
         return m_MeshInfos.at(uuid);
     }
 
-    UUID MeshData::CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices, const UUID& uuid)
+    UUID MeshData::CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices,
+        const UUID& matUUID, const UUID& meshUUID)
     {
-        if (m_MeshInfos.contains(uuid)) return uuid; // Skip if mesh already exists
+        if (m_MeshInfos.contains(meshUUID)) return meshUUID; // Skip if mesh already exists
         Graphics::MeshInfo info{};
         info.m_VertexCount  = vertices.size();
         info.m_IndexCount   = indices.size();
         info.m_VertexOffset = m_AllVertices.size();
         info.m_IndexOffset  = m_AllIndices.size();
+        info.m_MaterialUUID = matUUID;
 
         m_AllVertices.insert(m_AllVertices.end(), vertices.begin(), vertices.end());
 
@@ -31,7 +34,62 @@ namespace Real {
             m_AllIndices.push_back(idx + info.m_VertexOffset);
         }
 
-        m_MeshInfos[uuid] = info;
+        m_MeshInfos[meshUUID] = info;
+        return meshUUID;
+    }
+
+    UUID MeshData::LoadMeshFromFile(const std::vector<Graphics::Vertex>& vertices, const std::vector<uint64_t>& indices,
+        const Graphics::MeshInfo& info, const UUID &meshUUID)
+    {
+        if (m_MeshInfos.contains(meshUUID)) return meshUUID;
+
+        m_AllVertices.insert(m_AllVertices.end(), vertices.begin(), vertices.end());
+
+        for (const auto idx : indices) {
+            m_AllIndices.push_back(idx + info.m_VertexOffset);
+        }
+
+        m_MeshInfos[meshUUID] = info;
+        return meshUUID;
+    }
+
+    std::span<const Graphics::Vertex> MeshData::ViewVertices(const UUID &uuid) const {
+        if (!m_MeshInfos.contains(uuid)) return{};
+
+        const auto& info = m_MeshInfos.at(uuid);
+        return std::span<const Graphics::Vertex>(
+            m_AllVertices.data() + info.m_VertexOffset,
+            info.m_VertexCount
+        );
+    }
+
+    std::vector<Graphics::Vertex> MeshData::ViewVerticesPointToEnd(const UUID &point) {
+        if (!m_MeshInfos.contains(point)) return{};
+        const auto& info = m_MeshInfos.at(point);
+        return std::vector<Graphics::Vertex>(
+            m_AllVertices.begin() + info.m_VertexOffset,
+            m_AllVertices.end()
+        );
+    }
+
+    std::span<const uint64_t> MeshData::ViewIndices(const UUID &uuid) const {
+        if (!m_MeshInfos.contains(uuid)) return{};
+
+        const auto& info = m_MeshInfos.at(uuid);
+        return std::span<const uint64_t>(
+            m_AllIndices.data() + info.m_IndexOffset,
+            info.m_IndexCount
+        );
+    }
+
+    std::vector<uint64_t> MeshData::ViewIndicesPointToEnd(const UUID &point) {
+        if (!m_MeshInfos.contains(point)) return{};
+
+        const auto& info = m_MeshInfos.at(point);
+        return std::vector<uint64_t>(
+            m_AllIndices.begin() + info.m_IndexOffset,
+            m_AllIndices.end()
+        );
     }
 
     const Graphics::MeshInfo& MeshData::GetPrimitiveMeshData(const std::string &name) {
@@ -40,6 +98,10 @@ namespace Real {
             return m_MeshInfos[m_PrimitiveTypesUUIDs["triangle"]];
         }
         return m_MeshInfos[m_PrimitiveTypesUUIDs[name]];
+    }
+
+    const UUID& MeshData::GetPrimitiveUUID(const std::string &name) {
+        return m_PrimitiveTypesUUIDs[name];
     }
 
     void MeshData3D::AddMesh3DToMeshData(std::vector<Graphics::Vertex> v, std::vector<uint64_t> i, const UUID& uuid) {

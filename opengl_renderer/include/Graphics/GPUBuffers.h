@@ -24,19 +24,20 @@ namespace Real {
 
     struct MaterialSSBO {
         glm::vec4 m_BaseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
-        glm::vec4 m_NormalRMA = {}; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
+        glm::vec4 m_NormalORM = {}; // 0 = normal, 1 = ambient occlusion, 2 = roughness, 3 = metallic
 
         // lookup table provides us texIndex and texArrayIndex
         int m_BindlessAlbedoIdx;
         int m_BindlessNormalIdx;
-        int m_BindlessRMAIdx;
+        int m_BindlessORMIdx;
         int m_BindlessHeightIdx;
+        int m_BindlessEmissiveIdx;
     };
 
     struct CameraUBO {
-        glm::vec4 position = glm::vec4(0.0);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
+        glm::vec4 position       = glm::vec4(0.0f);
+        glm::mat4 view           = glm::mat4(1.0f);
+        glm::mat4 projection     = glm::mat4(1.0f);
         glm::mat4 viewProjection = glm::mat4(1.0f);
     };
 

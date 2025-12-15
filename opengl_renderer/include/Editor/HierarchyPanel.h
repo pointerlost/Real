@@ -4,12 +4,10 @@
 #pragma once
 #include <imgui.h>
 #include "IPanel.h"
-#include "../Core/Config.h"
+#include "Core/Config.h"
 #include "Scene/Components.h"
 
-namespace Real::UI {
-    class EditorPanel;
-}
+namespace Real::UI { class EditorPanel; }
 
 namespace Real::UI {
 
@@ -32,8 +30,7 @@ namespace Real::UI {
         void DrawComponents(Scene* scene);
         void DrawComponent(TagComponent* comp, Scene* scene);
         void DrawComponent(TransformComponent* comp, Scene* scene);
-        void DrawComponent(MaterialComponent* comp, Scene* scene);
-        void DrawComponent(MeshComponent* comp, Scene* scene);
+        void DrawComponent(MeshRendererComponent* comp, Scene* scene);
         void DrawComponent(LightComponent* comp, TransformComponent* tc, Scene* scene);
         void DrawComponent(CameraComponent* comp, Scene* scene);
 

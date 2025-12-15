@@ -1,22 +1,26 @@
 //
 // Created by pointerlost on 10/12/25.
 //
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "Graphics/Texture.h"
-#include <stb_image_resize2.h>
 #include <utility>
 #include "Core/AssetManager.h"
-#include "Core/CmakeConfig.h"
 #include "Core/Logger.h"
 #include "stb/stb_image.h"
+#include <stb_image_resize2.h>
+
+#include "Core/file_manager.h"
 #include "Tools/ImageTools.h"
 #include "Util/Util.h"
 
 namespace Real {
 
-    OpenGLTexture::OpenGLTexture(const TextureData &data, FileInfo info, UUID uuid)
-        : m_UUID(uuid), m_FileInfo(std::move(info))
+    OpenGLTexture::OpenGLTexture(const TextureData &data, TextureType type,
+        ImageFormatState image_state, FileInfo info, UUID uuid)
+        : m_UUID(uuid), m_ImageFormatState(image_state), m_FileInfo(std::move(info))
     {
-        m_MipLevelsData.push_back(data);
+        CreateFromData(data, type);
     }
 
     OpenGLTexture::OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate)
@@ -129,7 +133,7 @@ namespace Real {
     }
 
     TextureData OpenGLTexture::LoadFromFile(const std::string &path) {
-        if (!File::Exists(path)) {
+        if (!fs::File::Exists(path)) {
             Warn("File path can't find! path: " + path);
             return {};
         }
@@ -161,8 +165,8 @@ namespace Real {
             CreateHandle();
         }
         // TODO: Fix it this shit
-        // const auto data = LoadFromFile(m_FileInfo.path);
-        // CreateFromData(data, m_Type);
+        const auto data = LoadFromFile(m_FileInfo.path);
+        CreateFromData(data, m_Type);
     }
 
     void OpenGLTexture::CreateFromData(const TextureData &data, TextureType type) {
@@ -218,7 +222,7 @@ namespace Real {
 
         switch (m_ImageFormatState) {
             case ImageFormatState::COMPRESS_ME:
-                tools::CompressTextureToBCn(this, std::string(ASSETS_DIR) + "textures/compressed/");
+                tools::CompressTextureAndReadFromFile(this);
                 // Don't break the switch statement and load compressed state!
             case ImageFormatState::COMPRESSED: {
                 // Allocate enough memory for all the mip levels
@@ -229,11 +233,8 @@ namespace Real {
                 for (int lvl = 0; lvl < m_MipLevelCount; lvl++) {
                     const auto& data = m_MipLevelsData[lvl];
                     if (data.m_Width % 4 != 0 || data.m_Height % 4 != 0) {
-                        Warn("Compressed mip level " + std::to_string(lvl) +
-                             " has invalid dimensions " +
-                             std::to_string(data.m_Width) + "x" +
-                             std::to_string(data.m_Height) +
-                             " (must be multiples of 4)");
+                        Warn("Compressed mip level size mismatch, texture name: " + GetName());
+                        break;
                     }
                     glCompressedTextureSubImage2D(m_Handle, lvl, 0, 0, data.m_Width, data.m_Height,
                         data.m_InternalFormat, (int)data.m_DataSize, data.m_Data
@@ -254,7 +255,7 @@ namespace Real {
                 glGenerateTextureMipmap(m_Handle);
             } break;
 
-            case ImageFormatState::UNDEFINED:   Warn("Texture format state is UNDEFINED!");
+            case ImageFormatState::UNDEFINED: Warn("Texture format state is UNDEFINED!");
             default: ;
         }
     }

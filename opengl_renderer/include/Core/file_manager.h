@@ -3,15 +3,13 @@
 //
 #pragma once
 #include <filesystem>
+#include <vector>
 
 namespace Real {
+    struct FileInfo;
+}
 
-    struct FileInfo {
-        std::string name; // Full name
-        std::string path; // Full path
-        std::string stem; // Name without extension
-        std::string ext;  // Extension
-    };
+namespace Real::fs {
 
     class File {
     public:
@@ -19,4 +17,7 @@ namespace Real {
         [[nodiscard]] static bool Exists(const std::string& path);
         [[maybe_unused]] static bool DeleteFile(const std::string& path);
     };
+
+    [[nodiscard]] std::vector<FileInfo> IterateDirectory(const std::string& folderPath);
+    FileInfo CreateFileInfoFromPath(const std::string& path);
 }

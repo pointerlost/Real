@@ -2,9 +2,14 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
+#include "Core/Utils.h"
 #include "entt/entt.hpp"
 #include "Core/UUID.h"
 #include "Graphics/Light.h"
+
+namespace Real {
+    struct Model;
+}
 
 namespace Real {
     class Entity;
@@ -37,6 +42,11 @@ namespace Real {
         Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
 
         Entity* GetEntityWithUUID(UUID uuid);
+        void OnModelAssigned(Entity parent, Ref<Model> model);
+
+    private:
+        template <typename T>
+        void OnComponentAdded(Entity entity, T& component);
 
     private:
         entt::registry m_Registry;

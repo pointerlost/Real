@@ -12,6 +12,7 @@
 #include "Editor/HierarchyPanel.h"
 #include "Editor/InspectorPanel.h"
 #include "Graphics/MeshManager.h"
+#include "Graphics/ModelLoader.h"
 #include "Graphics/Renderer.h"
 #include "Input/CameraInput.h"
 #include "Scene/Entity.h"
@@ -32,6 +33,7 @@ namespace Real {
         Scope<Timer> m_EditorTimer;
         Scope<EditorState> m_EditorState;
         Scope<Graphics::Window> m_Window;
+        Scope<ModelLoader> m_ModelLoader;
         Scope<MeshData> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
         Scope<opengl::Renderer> m_Renderer;
@@ -55,6 +57,7 @@ namespace Real {
         void InitAsset();
         void InitMesh();
         void SetOpenGLStateFunctions();
+        void InitGameResources(); // This is not permanent, just use it debugging purpose
 
         // TODO: Snapshot editor to game-time
     };

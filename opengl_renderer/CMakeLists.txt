@@ -103,6 +103,10 @@ add_executable(${PROJECT_NAME}
     include/Resource/ResourceLoader.h
     include/Common/RealTypes.h
     src/Resource/ResourceLoader.cpp
+        include/Serialization/Json.h
+        src/Serialization/Json.cpp
+        include/Serialization/Binary.h
+        src/Serialization/Binary.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

@@ -34,15 +34,7 @@ namespace Real {
         }
     }
 
-    void MaterialUpdate::Update(Scene *scene, float deltaTime) {
-        const auto& view = scene->GetAllEntitiesWith<MaterialComponent>();
-
-        for (const auto& [entity, material] : view.each()) {
-            // TODO: material component need an update function
-        }
-    }
-
-    void MeshUpdate::Update(Scene *scene, float deltaTime) {
+    void MeshRendererUpdate::Update(Scene *scene, float deltaTime) {
     }
 
     void CameraUpdate::Update(Scene *scene, float deltaTime) {

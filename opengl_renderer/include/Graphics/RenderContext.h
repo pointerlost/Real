@@ -57,11 +57,9 @@ namespace Real {
         Scene* m_Scene;
 
     private:
-        void CollectMaterial(const Entity* entity, int& materialIndex);
         void CollectLight(const Entity* entity);
         void CollectCamera(const Entity* entity);
-        Graphics::MeshInfo CollectMeshes(const Entity* entity);
-        void CollectModels(const Entity* entity);
+        std::vector<Graphics::MeshInfo> CollectMeshes(const Entity* entity);
         void CollectGlobalData();
         void CleanPrevFrame();
         void UploadToGPU();

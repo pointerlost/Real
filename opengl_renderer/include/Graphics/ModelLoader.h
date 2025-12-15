@@ -8,6 +8,7 @@
 #include "MeshManager.h"
 #include "Model.h"
 #include "Texture.h"
+#include "Common/RealTypes.h"
 
 namespace Real {
     struct ModelBinaryHeader;
@@ -22,24 +23,19 @@ namespace Real {
 
     class ModelLoader {
     public:
-        void LoadAll(const std::string& dir_path);
+        void LoadAll(const std::string& rootDir);
         Ref<Model> Load(const std::string& filePath, ImageFormatState state = ImageFormatState::COMPRESS_ME);
 
     private:
         void ProcessNode(aiNode* node, const aiScene* scene, const std::string& directory);
         MeshEntry ProcessMesh(aiMesh* mesh, const aiScene* scene, const std::string& directory);
-        Ref<Material> ProcessMaterial(const aiMaterial* mat, const std::string& directory);
+        Ref<Material> ProcessMaterial(const aiMaterial* mat, int materialIndex, const std::string& directory);
 
         TextureType GetRealTypeFromAssimpTexType(aiTextureType type);
-
-        ModelBinaryHeader LoadFromBinaryFile(const std::string& path);
-        [[nodiscard]] bool WriteToBinaryFile(const std::string& path, ModelBinaryHeader binaryHeader,
-            std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices
-        ) const;
-
     private:
         Ref<Model> m_CurrentModel;
         std::string m_CurrentDirectory;
+        ModelBinaryHeader m_CurrentBinaryFile;
         ImageFormatState m_CurrImageFormatState = ImageFormatState::COMPRESS_ME;
     };
 }

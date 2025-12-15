@@ -50,11 +50,11 @@ namespace Real::UI {
         if (entity->HasComponent<TransformComponent>()) {
             DrawComponent(entity->GetComponent<TransformComponent>(), scene);
         }
-        if (entity->HasComponent<MaterialComponent>()) {
-            DrawComponent(entity->GetComponent<MaterialComponent>(), scene);
-        }
-        if (entity->HasComponent<MeshComponent>()) {
-            DrawComponent(entity->GetComponent<MeshComponent>(), scene);
+        // if (entity->HasComponent<MaterialComponent>()) {
+            // DrawComponent(entity->GetComponent<MaterialComponent>(), scene);
+        // }
+        if (entity->HasComponent<MeshRendererComponent>()) {
+            DrawComponent(entity->GetComponent<MeshRendererComponent>(), scene);
         }
         if (entity->HasComponent<LightComponent>()) {
             DrawComponent(entity->GetComponent<LightComponent>(), entity->GetComponent<TransformComponent>(), scene);
@@ -144,40 +144,40 @@ namespace Real::UI {
             }
         }
     }
+    //
+    // void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
+    //     const auto& material = comp->m_Instance;
+    //     auto& baseColor = material->m_BaseColor;
+    //     constexpr auto textSize = ImVec2(45.0, 30.0);
+    //     if (ImGui::CollapsingHeader("Material Component")) {
+    //         // Base color
+    //         {
+    //             constexpr auto  textboxSize = ImVec2(22.0, 30.0);
+    //             constexpr float dragCount = 4.0;
+    //             const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
+    //
+    //             DrawCustomTextShape("Color", textSize, ImVec4(0.1019, 0.1568, 0.1372, 1.0));
+    //             ImGui::SameLine();
+    //             DrawCustomTextShape("R", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
+    //             ImGui::SameLine();
+    //             DrawCustomSizedDragger(dragSize, baseColor.r, 0.001, 0.0, 1.0, "%.2f");
+    //             ImGui::SameLine();
+    //             DrawCustomTextShape("G", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
+    //             ImGui::SameLine();
+    //             DrawCustomSizedDragger(dragSize, baseColor.g, 0.001, 0.0, 1.0, "%.2f");
+    //             ImGui::SameLine();
+    //             DrawCustomTextShape("B", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
+    //             ImGui::SameLine();
+    //             DrawCustomSizedDragger(dragSize, baseColor.b, 0.001, 0.0, 1.0, "%.2f");
+    //             ImGui::SameLine();
+    //             DrawCustomTextShape("A", textboxSize, ImVec4(1.0, 1.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
+    //             ImGui::SameLine();
+    //             DrawCustomSizedDragger(dragSize, baseColor.a, 0.001, 0.0, 1.0, "%.2f");
+    //         }
+    //     }
+    // }
 
-    void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
-        const auto& material = comp->m_Instance;
-        auto& baseColor = material->m_BaseColor;
-        constexpr auto textSize = ImVec2(45.0, 30.0);
-        if (ImGui::CollapsingHeader("Material Component")) {
-            // Base color
-            {
-                constexpr auto  textboxSize = ImVec2(22.0, 30.0);
-                constexpr float dragCount = 4.0;
-                const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
-
-                DrawCustomTextShape("Color", textSize, ImVec4(0.1019, 0.1568, 0.1372, 1.0));
-                ImGui::SameLine();
-                DrawCustomTextShape("R", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-                ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, baseColor.r, 0.001, 0.0, 1.0, "%.2f");
-                ImGui::SameLine();
-                DrawCustomTextShape("G", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-                ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, baseColor.g, 0.001, 0.0, 1.0, "%.2f");
-                ImGui::SameLine();
-                DrawCustomTextShape("B", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-                ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, baseColor.b, 0.001, 0.0, 1.0, "%.2f");
-                ImGui::SameLine();
-                DrawCustomTextShape("A", textboxSize, ImVec4(1.0, 1.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-                ImGui::SameLine();
-                DrawCustomSizedDragger(dragSize, baseColor.a, 0.001, 0.0, 1.0, "%.2f");
-            }
-        }
-    }
-
-    void HierarchyPanel::DrawComponent(MeshComponent *comp, Scene* scene) {
+    void HierarchyPanel::DrawComponent(MeshRendererComponent *comp, Scene* scene) {
         if (ImGui::CollapsingHeader("Mesh Component")) {
         }
     }

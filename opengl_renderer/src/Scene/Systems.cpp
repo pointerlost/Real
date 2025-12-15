@@ -10,8 +10,7 @@ namespace Real {
         m_Updatables.push_back(CreateScope<CameraUpdate>());
         m_Updatables.push_back(CreateScope<TransformUpdate>());
         m_Updatables.push_back(CreateScope<VelocityUpdate>());
-        m_Updatables.push_back(CreateScope<MaterialUpdate>());
-        m_Updatables.push_back(CreateScope<MeshUpdate>());
+        m_Updatables.push_back(CreateScope<MeshRendererUpdate>());
         m_Updatables.push_back(CreateScope<LightUpdate>());
     }
 

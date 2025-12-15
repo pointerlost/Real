@@ -40,10 +40,11 @@ namespace Real {
         };
         // Texture arrays | Albedo x 5 | Normal x 5 | RMA x 5 | Height x 5
         // We are using 5 different resolution for per type (256,512,1024,2048,4096)
-        create_compressed_tex_array("albedoArray", TextureType::ALB);
-        create_compressed_tex_array("normalArray", TextureType::NRM);
-        create_compressed_tex_array("rmaArray", TextureType::RMA);
+        create_compressed_tex_array("albedoArray", TextureType::ALBEDO);
+        create_compressed_tex_array("normalArray", TextureType::NORMAL);
+        create_compressed_tex_array("rmaArray", TextureType::ORM);
         create_compressed_tex_array("heightArray", TextureType::HEIGHT);
+        create_compressed_tex_array("emissiveArray", TextureType::EMISSIVE);
 
         BindTextureArrays();
 
@@ -60,17 +61,12 @@ namespace Real {
 
     size_t TextureArrayManager::TexArrayTypeToArrayIndex(TextureType arrayType) {
         switch (arrayType) {
-            case TextureType::ALB:
-                return 0;
-            case TextureType::NRM:
-                return 1;
-            case TextureType::RMA:
-                return 2;
-            case TextureType::HEIGHT:
-                return 3;
-
-            default:
-                return 0;
+            case TextureType::ALBEDO:   return 0;
+            case TextureType::NORMAL:   return 1;
+            case TextureType::ORM:      return 2;
+            case TextureType::HEIGHT:   return 3;
+            case TextureType::EMISSIVE: return 4;
+            default: return 0;
         }
     }
 

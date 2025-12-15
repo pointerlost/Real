@@ -12,6 +12,7 @@ namespace Real {
         UUID(uint64_t uuid);
         UUID(const UUID&) = default;
 
+        [[nodiscard]] bool IsNull() const { return m_UUID == 0; };
         bool operator==(const UUID&) const = default;
         operator uint64_t() const { return m_UUID; }
 

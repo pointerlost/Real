@@ -124,16 +124,16 @@ namespace Real::UI {
         const auto& assetManager = Services::GetAssetManager();
 
         const ImGuiIO& io = ImGui::GetIO();
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; File::Exists(fontFile)) {
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
             assetManager->AddFontStyle("Ubuntu-Regular", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; File::Exists(fontFile)) {
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
             assetManager->AddFontStyle("Ubuntu-Regular-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; File::Exists(fontFile)) {
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
             assetManager->AddFontStyle("Ubuntu-Bold", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; File::Exists(fontFile)) {
+        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
             assetManager->AddFontStyle("Ubuntu-Bold-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
     }

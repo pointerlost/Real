@@ -14,11 +14,7 @@ namespace Real {
         void Update(Scene *scene, float deltaTime) override;
     };
 
-    class MaterialUpdate final : public Systems {
-        void Update(Scene *scene, float deltaTime) override;
-    };
-
-    class MeshUpdate final : public Systems {
+    class MeshRendererUpdate final : public Systems {
         void Update(Scene *scene, float deltaTime) override;
     };
 

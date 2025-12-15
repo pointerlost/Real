@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <iostream>
+#include <span>
 #include <unordered_map>
 #include <vector>
 #include <glad/glad.h>
@@ -19,11 +20,22 @@ namespace Real {
         MeshData() = default;
         void InitResources();
 
-        UUID CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices, const UUID& uuid = UUID());
+        UUID CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices,
+            const UUID& matUUID, const UUID& meshUUID = UUID()
+        );
+        UUID LoadMeshFromFile(const std::vector<Graphics::Vertex>& vertices, const std::vector<uint64_t>& indices,
+            const Graphics::MeshInfo& info, const UUID& meshUUID = UUID()
+        );
+
+        std::span<const Graphics::Vertex> ViewVertices(const UUID& uuid) const;
+        std::vector<Graphics::Vertex> ViewVerticesPointToEnd(const UUID& point);
+        std::span<const uint64_t> ViewIndices(const UUID& uuid) const;
+        std::vector<uint64_t> ViewIndicesPointToEnd(const UUID& point);
 
         const std::unordered_map<UUID, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
         [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const UUID& uuid) const;
         [[maybe_unused]] const Graphics::MeshInfo &GetPrimitiveMeshData(const std::string& name);
+        [[maybe_unused]] const UUID& GetPrimitiveUUID(const std::string& name);
         [[nodiscard]] GLuint GetUniversalVAO() const { return m_UniversalVAO; }
         void BindUniversalVAO() const { glBindVertexArray(m_UniversalVAO); }
         void UnbindCurrVAO() const { glBindVertexArray(0); }

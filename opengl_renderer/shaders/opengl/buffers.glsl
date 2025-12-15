@@ -33,25 +33,26 @@ struct TexturePack {
 struct Material {
     // Texture Override Colors
     vec4 m_BaseColor;
-    vec4 m_NormalRMA; // 0 = normal, 1 = roughness, 2 = metallic, 3 = ambient occlusion
+    vec4 m_NormalORM; // 0 = normal, 1 = ao, 2 = roughness, 3 = metallic
 
     // Texture index
     int m_BindlessAlbedoIdx;
     int m_BindlessNormalIdx;
-    int m_BindlessRMAIdx;
+    int m_BindlessORMIdx;
     int m_BindlessHeightIdx;
+    int m_BindlessEmissiveIdx;
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
 };
 vec4 GetMatBaseColor(int idx) { return materials[idx].m_BaseColor; }
-float GetMatNormalColor(int idx) { return materials[idx].m_NormalRMA[0]; }
-float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalRMA[1]; }
-float GetMatMetallicColor(int idx) { return materials[idx].m_NormalRMA[2]; }
-float GetMatAOColor(int idx) { return materials[idx].m_NormalRMA[3]; }
+float GetMatNormalColor(int idx) { return materials[idx].m_NormalORM[0]; }
+float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalORM[1]; }
+float GetMatMetallicColor(int idx) { return materials[idx].m_NormalORM[2]; }
+float GetMatAOColor(int idx) { return materials[idx].m_NormalORM[3]; }
 int GetAlbedoTexIdx(int idx) { return materials[idx].m_BindlessAlbedoIdx; }
 int GetNormalTexIdx(int idx) { return materials[idx].m_BindlessNormalIdx; }
-int GetRMATexIdx(int idx) { return materials[idx].m_BindlessRMAIdx; }
+int GetORMTexIdx(int idx) { return materials[idx].m_BindlessORMIdx; }
 int GetHeightTexIdx(int idx) { return materials[idx].m_BindlessHeightIdx; }
 
 layout (std430, binding = 5) buffer TextureBuffer {
@@ -69,17 +70,17 @@ vec3 GetNormalSampler2D(int matIdx, vec2 UV) {
 }
 
 float GetRoughnessSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).r;
 }
 
 float GetMetallicSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).g;
 }
 
 float GetAOSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetRMATexIdx(matIdx)];
+    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
     return texture(sampler2D(handle), UV).b;
 }
 

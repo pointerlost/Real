@@ -2,72 +2,21 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
-#include <cstring>
 #include <string>
 #include <vector>
-#include <glm/vec2.hpp>
 #include "Common/RealEnum.h"
-#include "Core/file_manager.h"
+#include "Common/RealTypes.h"
 #include "Core/Utils.h"
 #include "Core/UUID.h"
 #include "glad/glad.h"
 
 namespace Real {
 
-    struct TextureData {
-        void* m_Data = nullptr;
-        int m_ChannelCount = 0;
-        int m_Width = 0;
-        int m_Height = 0;
-        uint m_DataSize = 0;
-        int m_Format = {};
-        int m_InternalFormat = {};
-
-        TextureData() = default;
-        ~TextureData() { delete[] static_cast<uint8_t*>(m_Data); }
-
-        // Copy constructor
-        TextureData(const TextureData& other) {
-            m_ChannelCount = other.m_ChannelCount;
-            m_Width    = other.m_Width;
-            m_Height   = other.m_Height;
-            m_DataSize = other.m_DataSize;
-            m_Format   = other.m_Format;
-            m_InternalFormat = other.m_InternalFormat;
-
-            if (other.m_Data && other.m_DataSize > 0) {
-                m_Data = new uint8_t[m_DataSize];
-                memcpy(m_Data, other.m_Data, m_DataSize);
-            }
-        }
-
-        // Copy assignment
-        TextureData& operator=(const TextureData& other) {
-            if (this == &other) return *this;
-
-            // free existing
-            delete[] static_cast<uint8_t*>(m_Data);
-
-            m_ChannelCount = other.m_ChannelCount;
-            m_Width    = other.m_Width;
-            m_Height   = other.m_Height;
-            m_DataSize = other.m_DataSize;
-            m_Format   = other.m_Format;
-            m_InternalFormat = other.m_InternalFormat;
-
-            if (other.m_Data && other.m_DataSize > 0) {
-                m_Data = new uint8_t[m_DataSize];
-                memcpy(m_Data, other.m_Data, m_DataSize);
-            } else {
-                m_Data = nullptr;
-            }
-
-            return *this;
-        }
-    };
-
     struct OpenGLTexture {
-        explicit OpenGLTexture(const TextureData &data, FileInfo info = FileInfo(), UUID uuid = UUID());
+        explicit OpenGLTexture(const TextureData &data, TextureType type,
+            ImageFormatState image_state = ImageFormatState::UNCOMPRESSED,
+            FileInfo info = FileInfo(), UUID uuid = UUID()
+        );
         explicit OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
         explicit OpenGLTexture(TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;

@@ -24,35 +24,36 @@ namespace Real {
 namespace Real { struct FileInfo; }
 
 namespace Real::util {
-    [[nodiscard]] std::vector<FileInfo> IterateDirectory(const std::string& folderPath);
-    bool IsSubString(const std::string& subStr, const std::string& string);
-    FileInfo CreateFileInfoFromPath(const std::string& path);
-
-    [[nodiscard]] int FindClosestPowerOfTwo(int num);
-    int ConvertChannelCountToGLFormat(int channelCount, const std::string& name = std::string(), bool srgb = false);
-    int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb = false);
-    int GetCompressedInternalFormat(int channelCount);
+    /* ***************************************** TEXTURE STATE  ************************************** */
     std::string ImageFormatState_EnumToString(ImageFormatState state);
-    ImageFormatState ImageFormatState_StringToEnum(std::string state);
-    std::string FormatToString(int format);
-    std::string InternalFormatToString(int format);
-    CMP_FORMAT GetCMPDestinationFormat(int channelCount);
-    std::string DebugCMPStatus(CMP_ERROR error);
-    void DebugGLError();
-    TextureType TextureType_StringToEnum(const std::string& type);
     std::string TextureType_EnumToString(TextureType type);
     std::string GetDefaultTextureName(TextureType type, int width);
+    std::string FormatToString(int format);
+    std::string InternalFormatToString(int format);
+    ImageFormatState ImageFormatState_StringToEnum(std::string state);
+    CMP_FORMAT GetCMPDestinationFormat(int channelCount);
+    TextureType TextureType_StringToEnum(const std::string& type);
     uint TexFormat_uncompressed_GetBitPerTexel(TextureType type);
     uint TexFormat_uncompressed_GetBytePerTexel(TextureType type);
     GLenum TextureWrapModeToGLEnum(TextureWrapMode mode);
     GLenum TextureFilterModeToGLEnum(TextureFilterMode filter);
-
     TextureType AssimpTextureTypeToRealType(aiTextureType type);
-
-    TextureData ExtractChannel(TextureData data, int channelIndex);
+    int TextureTypeToChannelCount(TextureType type);
+    int ConvertChannelCountToGLFormat(int channelCount, const std::string& name = std::string(), bool srgb = false);
+    int GetCompressedInternalFormat(int channelCount);
+    int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb = false);
+    TextureData ExtractChannel(const TextureData& data, int channelIndex);
     TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex);
-    TextureData ExtractChannels(TextureData data, const std::vector<int>& wantedChannels);
+    TextureData ExtractChannels(const TextureData& data, const std::vector<int>& wantedChannels);
     TextureData ExtractChannels(void* data, int width, int height, int channels, const std::vector<int>& wantedChannels);
 
-    nlohmann::json LoadJSON(const std::string& path);
+    /* ***************************************** APIs DEBUG STATE  ************************************** */
+    void DebugGLError();
+    std::string DebugCMPStatus(CMP_ERROR error);
+
+    /* ***************************************** ENGINE STATE  ************************************** */
+    bool TryParseUUID(const std::string& strUUID, UUID& uuid);
+
+    /* ***************************************** MIXED STATE  ************************************** */
+    bool IsSubString(const std::string& subStr, const std::string& string);
 }

@@ -12,60 +12,31 @@
 
 namespace Real::util {
 
-    std::vector<FileInfo> IterateDirectory(const std::string &folderPath) {
-        std::vector<FileInfo> files;
-        namespace fs = std::filesystem;
-
-        if (!File::Exists(folderPath)) {
-            Warn("Folder doesn't exists: " + folderPath);
-            return {};
-        }
-
-        for (auto &p : fs::recursive_directory_iterator(folderPath)) {
-            if (p.path().has_extension()) {
-                FileInfo fileInfo{};
-                fileInfo.name = p.path().filename().string();
-                fileInfo.ext  = p.path().extension().string();
-                fileInfo.stem = p.path().stem().string();
-                fileInfo.path = p.path().string();
-                files.emplace_back(fileInfo);
-            }
-        }
-
-        return files;
-    }
-
     bool IsSubString(const std::string &subStr, const std::string &string) {
         return string.find(subStr) != std::string::npos;
     }
 
-    FileInfo CreateFileInfoFromPath(const std::string &path) {
-        FileInfo info;
-        const size_t slashPos = path.find_last_of("/\\");
+    int TextureTypeToChannelCount(TextureType type) {
+        switch (type) {
+            case TextureType::ALBEDO:
+            case TextureType::NORMAL:
+            case TextureType::ORM:
+            case TextureType::EMISSIVE:
+            case TextureType::ALBEDO_ROUGHNESS:
+                return 4;
 
-        if (slashPos == std::string::npos)
-            Warn("There is no '/' in the path, So can't created FileInfo!!! Fix it");
+            case TextureType::METALLIC_ROUGHNESS:
+                return 2;
 
-        info.path = path;
-        info.name = path.substr(slashPos + 1);
+            case TextureType::AMBIENT_OCCLUSION:;
+            case TextureType::ROUGHNESS:
+            case TextureType::METALLIC:
+            case TextureType::HEIGHT:
+            case TextureType::ALPHA:
+                return 1;
 
-        const size_t dotPos = info.name.find_last_of('.');
-        if (dotPos == std::string::npos)
-            Warn("There is no '.' in the path, So can't created FileInfo!!! Fix it");
-
-        info.ext  = info.name.substr(dotPos);
-        info.stem = info.name.substr(0, dotPos);
-
-        return info;
-    }
-
-    int FindClosestPowerOfTwo(int num) {
-        int x = 1, y = 0;
-        while (x < num) {
-            y = x;
-            x <<= 1;
+            default: Warn("There is no channel count for this texture type: " + TextureType_EnumToString(type)); return 1;
         }
-        return abs(y - num) > abs(x - num) ? x : y;
     }
 
     int ConvertChannelCountToGLFormat(int channelCount, const std::string& name, bool srgb) {
@@ -319,15 +290,13 @@ namespace Real::util {
         }
     }
 
-    nlohmann::json LoadJSON(const std::string &path) {
-        std::ifstream file(path);
-        if (!file.is_open()) {
-            Warn("Failed to open file: " + path);
-            return {};
+    bool TryParseUUID(const std::string &strUUID, UUID &uuid) {
+        try {
+            uuid = UUID(std::stoul(strUUID));
+            return true;
+        } catch (...) {
+            return false;
         }
-        nlohmann::json j;
-        file >> j; // parsing
-        return j;
     }
 
     TextureData ExtractChannel(const TextureData& data, int channelIndex) {

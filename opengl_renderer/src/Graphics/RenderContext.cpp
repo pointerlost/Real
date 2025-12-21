@@ -174,9 +174,9 @@ namespace Real {
         }
 
         if (entity->HasComponent<ModelComponent>()) {
-            const auto& meshes = entity->GetComponent<ModelComponent>()->m_Model->m_Meshes;
-            for (const auto& entry : meshes) {
-                m_Result.push_back(Services::GetMeshManager()->GetMeshData(entry.m_SubMeshID));
+            const auto& meshes = entity->GetComponent<ModelComponent>()->m_Model->m_MeshUUIDs;
+            for (const auto& uuid : meshes) {
+                m_Result.push_back(Services::GetMeshManager()->GetMeshData(uuid));
             }
         }
 

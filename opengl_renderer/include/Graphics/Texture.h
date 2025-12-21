@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
-#include <string>
 #include <vector>
 #include "Common/RealEnum.h"
 #include "Common/RealTypes.h"
@@ -13,12 +12,12 @@
 namespace Real {
 
     struct OpenGLTexture {
-        explicit OpenGLTexture(const TextureData &data, TextureType type,
+        explicit OpenGLTexture(const TextureData &data, bool isSTBAllocated, TextureType type,
             ImageFormatState image_state = ImageFormatState::UNCOMPRESSED,
             FileInfo info = FileInfo(), UUID uuid = UUID()
         );
-        explicit OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
-        explicit OpenGLTexture(TextureType type = TextureType::UNDEFINED);
+        explicit OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
+        explicit OpenGLTexture(bool isSTBAllocated = false, TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;
         ~OpenGLTexture();
 
@@ -50,7 +49,7 @@ namespace Real {
         [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].m_Data != nullptr; }
         [[nodiscard]] bool HasBindlessHandle() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] std::pair<int, int> GetResolution(int mipLevel);
-        [[nodiscard]] int GetIndex() const { return m_Index; }
+        [[nodiscard]] int GetIndex() const { return m_GPUIndex; }
         [[nodiscard]] bool HasBindlessID() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
@@ -65,19 +64,22 @@ namespace Real {
         [[maybe_unused]] TextureData LoadFromFile(const std::string& path);
         void Create();
         void CreateFromData(const TextureData &data, TextureType type);
+        void CleanUpCPUData();
 
         void PrepareOptionsAndUploadToGPU();
         void Resize(const glm::ivec2& resolution, int mipLevel, bool srgbSpace = false);
         void CreateBindless();
         void MakeResident() const;
         void MakeNonResident() const;
+        [[nodiscard]] bool IsCPUGenerated() const;
 
     private:
         GLuint m_Handle = 0;
         GLuint64 m_BindlessHandleID = 0;
-        UUID m_UUID;
+        UUID m_UUID{};
 
-        int m_Index = 0;
+        bool m_IsSTBAllocated = false;
+        int m_GPUIndex = 0;
         int m_BlockSize = 0;
         int m_MipLevelCount = 0;
         std::vector<TextureData> m_MipLevelsData;

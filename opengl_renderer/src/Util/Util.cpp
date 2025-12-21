@@ -23,12 +23,10 @@ namespace Real::util {
             case TextureType::ORM:
             case TextureType::EMISSIVE:
             case TextureType::ALBEDO_ROUGHNESS:
+            case TextureType::METALLIC_ROUGHNESS:
                 return 4;
 
-            case TextureType::METALLIC_ROUGHNESS:
-                return 2;
-
-            case TextureType::AMBIENT_OCCLUSION:;
+            case TextureType::AMBIENT_OCCLUSION:
             case TextureType::ROUGHNESS:
             case TextureType::METALLIC:
             case TextureType::HEIGHT:
@@ -39,7 +37,7 @@ namespace Real::util {
         }
     }
 
-    int ConvertChannelCountToGLFormat(int channelCount, const std::string& name, bool srgb) {
+    int GetGLFormat(int channelCount, bool srgb) {
         switch (channelCount) {
             case 1: return GL_R;
             case 2: return GL_RG;
@@ -47,12 +45,12 @@ namespace Real::util {
             case 4: return srgb ? GL_SRGB_ALPHA : GL_RGBA;
 
             default:
-                Warn("There is no GLType for this channel count, tex name: " + name);
+                Warn("There is no GLType for this channel count: " + std::to_string(channelCount));
                 return GL_INVALID_ENUM;
         }
     }
 
-    int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb) {
+    int GetGLInternalFormat(int channelCount, bool srgb) {
         switch (channelCount) {
             case 1: return GL_R8;
             case 2: return GL_RG8;
@@ -72,7 +70,7 @@ namespace Real::util {
             case 3: return GL_COMPRESSED_RGBA_BPTC_UNORM;
             case 1: return GL_COMPRESSED_RED_RGTC1_EXT;
             default:
-                Warn("Missing channel count Returning UNDEFINED Internal format");
+                Warn("[GetCompressedInternalFormat] Missing channel count Returning UNDEFINED Internal format");
                 return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
         }
     }
@@ -112,7 +110,7 @@ namespace Real::util {
     std::string InternalFormatToString(int format) {
         switch (format) {
             case GL_COMPRESSED_RGBA_BPTC_UNORM: return "GL_COMPRESSED_RGBA_BPTC_UNORM";
-            case GL_COMPRESSED_RED_RGTC1_EXT: return "GL_COMPRESSED_RED_RGTC1_EXT";
+            case GL_COMPRESSED_RED_RGTC1_EXT:   return "GL_COMPRESSED_RED_RGTC1_EXT";
             default: return std::to_string(format);
         }
     }
@@ -121,9 +119,12 @@ namespace Real::util {
         switch (channelCount) {
             case 1: return CMP_FORMAT_BC4;
             case 2: return CMP_FORMAT_BC5;
-            case 3: case 4: return CMP_FORMAT_BC7;
-            default:
-                Warn("UNDEFINED CMP_FORMAT, for channelCount: " + std::to_string(channelCount));
+
+            case 3:
+            case 4:
+                return CMP_FORMAT_BC7;
+
+            default: Warn("UNDEFINED CMP_FORMAT, for channelCount: " + std::to_string(channelCount));
                 return CMP_FORMAT_BC1;
         }
     }
@@ -192,10 +193,11 @@ namespace Real::util {
         if (type == "alpha" || type == "ALPHA")                return TextureType::ALPHA;
         if (type == "metallic_roughness" || type == "MTL_RGH") return TextureType::METALLIC_ROUGHNESS;
 
-        Info("Type returning UNDEFINED for: " + type);
+        Info("[TextureType_StringToEnum] Type returning UNDEFINED for: " + type);
         return TextureType::UNDEFINED;
     }
 
+    // This method returns the type as a suffix, not a full string
     std::string TextureType_EnumToString(TextureType type) {
         switch (type) {
             case TextureType::ALBEDO:             return "ALB";
@@ -211,7 +213,7 @@ namespace Real::util {
             case TextureType::METALLIC_ROUGHNESS: return "MTL_RGH";
 
             default:
-                Warn("Texture type returning UNDEFINED for: " + TextureType_EnumToString(type));
+                Warn("[TextureType_EnumToString] Texture type returning UNDEFINED for: " + TextureType_EnumToString(type));
                 return "UNDEFINED";
         }
     }
@@ -309,8 +311,8 @@ namespace Real::util {
         d.m_Height         = data.m_Height;
         d.m_ChannelCount   = 1; // We are extracting '1' channel
         d.m_DataSize       = data.m_Width * data.m_Height * 1;
-        d.m_Format         = ConvertChannelCountToGLFormat(d.m_ChannelCount);
-        d.m_InternalFormat = ConvertChannelCountToGLInternalFormat(d.m_ChannelCount);
+        d.m_Format         = GetGLFormat(d.m_ChannelCount);
+        d.m_InternalFormat = GetGLInternalFormat(d.m_ChannelCount);
 
         d.m_Data = new uint8_t[d.m_DataSize];
 
@@ -331,8 +333,8 @@ namespace Real::util {
         d.m_Height         = data.m_Height;
         d.m_ChannelCount   = outC;
         d.m_DataSize       = data.m_Width * data.m_Height * outC;
-        d.m_Format         = ConvertChannelCountToGLFormat(d.m_ChannelCount);
-        d.m_InternalFormat = ConvertChannelCountToGLInternalFormat(d.m_ChannelCount);
+        d.m_Format         = GetGLFormat(d.m_ChannelCount);
+        d.m_InternalFormat = GetGLInternalFormat(d.m_ChannelCount);
 
         d.m_Data = new uint8_t[d.m_DataSize];
 

@@ -11,6 +11,7 @@ namespace Real {
     };
 
     enum class TextureType {
+        // Don't change the order | If you want to change the order look up for AssetManager::LoadDefaultTextures()
         ALBEDO,
         NORMAL,
         AMBIENT_OCCLUSION,

@@ -39,9 +39,9 @@ namespace Real::util {
     GLenum TextureFilterModeToGLEnum(TextureFilterMode filter);
     TextureType AssimpTextureTypeToRealType(aiTextureType type);
     int TextureTypeToChannelCount(TextureType type);
-    int ConvertChannelCountToGLFormat(int channelCount, const std::string& name = std::string(), bool srgb = false);
+    int GetGLFormat(int channelCount, bool srgb = false);
     int GetCompressedInternalFormat(int channelCount);
-    int ConvertChannelCountToGLInternalFormat(int channelCount, bool srgb = false);
+    int GetGLInternalFormat(int channelCount, bool srgb = false);
     TextureData ExtractChannel(const TextureData& data, int channelIndex);
     TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex);
     TextureData ExtractChannels(const TextureData& data, const std::vector<int>& wantedChannels);

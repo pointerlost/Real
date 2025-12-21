@@ -17,20 +17,14 @@ namespace Real {
     // TODO: MeshManager vs MeshData wrong naming fix it this shit
     class MeshData {
     public:
-        MeshData() = default;
         void InitResources();
 
         UUID CreateSingleMesh(std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices,
             const UUID& matUUID, const UUID& meshUUID = UUID()
         );
-        UUID LoadMeshFromFile(const std::vector<Graphics::Vertex>& vertices, const std::vector<uint64_t>& indices,
-            const Graphics::MeshInfo& info, const UUID& meshUUID = UUID()
-        );
 
         std::span<const Graphics::Vertex> ViewVertices(const UUID& uuid) const;
-        std::vector<Graphics::Vertex> ViewVerticesPointToEnd(const UUID& point);
         std::span<const uint64_t> ViewIndices(const UUID& uuid) const;
-        std::vector<uint64_t> ViewIndicesPointToEnd(const UUID& point);
 
         const std::unordered_map<UUID, Graphics::MeshInfo>& GetAllMeshes() { return m_MeshInfos; }
         [[nodiscard]] const Graphics::MeshInfo &GetMeshData(const UUID& uuid) const;
@@ -40,7 +34,8 @@ namespace Real {
         void BindUniversalVAO() const { glBindVertexArray(m_UniversalVAO); }
         void UnbindCurrVAO() const { glBindVertexArray(0); }
 
-        [[nodiscard]] size_t GetMeshCount() const { return m_AllVertices.size(); }
+        [[nodiscard]] size_t GetVerticesCount() const { return m_AllVertices.size(); }
+        [[nodiscard]] size_t GetIndicesCount()  const { return m_AllIndices.size(); }
 
     private:
         std::unordered_map<UUID, Graphics::MeshInfo> m_MeshInfos;

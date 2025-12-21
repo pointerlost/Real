@@ -17,7 +17,7 @@
 namespace Real::opengl {
 
     Renderer::Renderer(Scene* scene) : m_Scene(scene),
-        sceneRenderContext(CreateScope<RenderContext>(m_Scene))
+        m_SceneRenderContext(CreateScope<RenderContext>(m_Scene))
     {
     }
 
@@ -27,7 +27,7 @@ namespace Real::opengl {
         const auto shader = assetManager->GetShader("main");
 
         // Bind gpu buffer to binding points
-        sceneRenderContext->BindGPUBuffers();
+        m_SceneRenderContext->BindGPUBuffers();
 
         // Bind Shader and VAO
         shader.Bind();
@@ -35,7 +35,7 @@ namespace Real::opengl {
 
         // Set uniforms
 
-        const auto& gpuData = sceneRenderContext->GetGPURenderData();
+        const auto& gpuData = m_SceneRenderContext->GetGPURenderData();
         if (!gpuData.drawCommands.empty()) {
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetRenderContext()->GetBuffers().drawCommand.GetHandle());
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(gpuData.drawCommands.size()), 0);
@@ -45,6 +45,6 @@ namespace Real::opengl {
     }
 
     void Renderer::BindGPUBuffers() const {
-        sceneRenderContext->BindGPUBuffers();
+        m_SceneRenderContext->BindGPUBuffers();
     }
 }

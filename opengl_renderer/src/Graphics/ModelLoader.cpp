@@ -1,14 +1,15 @@
 //
 // Created by pointerlost on 12/4/25.
 //
-#include <fstream>
 #include <Graphics/ModelLoader.h>
+#include <fstream>
 #include <utility>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Common/Macros.h"
 #include "Core/AssetManager.h"
 #include "Core/CmakeConfig.h"
+#include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
@@ -20,6 +21,7 @@ namespace Real {
 
     void ModelLoader::LoadAll(const std::string &rootDir) {
         namespace std_fs = std::filesystem;
+        const auto& am = Services::GetAssetManager();
 
         auto IsModelFile = [](const std_fs::path& p) {
             if (!p.has_extension()) return false;
@@ -32,45 +34,82 @@ namespace Real {
             return;
         }
 
-        for (const auto& entry : std_fs::recursive_directory_iterator(rootDir)) {
-            if (!entry.is_regular_file()) continue;
+        std::vector<std_fs::path> modelFolders;
+        static const std::unordered_set<std::string> extensions = {
+            ".png",
+            ".tga",
+            ".jpg",
+            ".tif",
+            ".bmp",
+            ".webp"
+        };
 
-            const std::filesystem::path& modelPath = entry.path();
-            if (!IsModelFile(modelPath)) {
-                Info(ConcatStr(modelPath, " skipped!"));
-                continue;
+        for (const auto& entry : std_fs::directory_iterator(rootDir)) {
+            if (entry.is_directory() && !am->IsModelExist(entry.path().filename().string())) {
+                modelFolders.push_back(entry.path());
             }
-            Load(modelPath.string(), ImageFormatState::COMPRESS_ME);
+        }
+
+        for (const auto& folder : modelFolders) {
+            m_TextureIndex.clear();
+            std::vector<std::string> modelsPath;
+            const auto& modelName = folder.filename().string();
+
+            for (const auto& entry : std_fs::recursive_directory_iterator(folder)) {
+                if (entry.is_regular_file() && IsModelFile(entry.path())) {
+                    m_CurrentDirectory = entry.path().parent_path().string();
+                    modelsPath.push_back(entry.path().string());
+                }
+                else if (entry.is_regular_file()) {
+                    if (extensions.contains(entry.path().extension())) {
+                        m_TextureIndex[entry.path().stem().string()].push_back(entry.path());
+                    }
+                }
+            }
+
+            for (const auto& modelPath : modelsPath) {
+                if (IsModelFile(modelPath)) {
+                    if (modelPath.substr(modelPath.size() - 4) == ".fbx")
+                        m_IsFBX = true;
+                    Load(modelPath, modelName, ImageFormatState::COMPRESS_ME);
+                    m_IsFBX = false;
+                }
+            }
         }
     }
 
-    Ref<Model> ModelLoader::Load(const std::string &filePath, ImageFormatState state) {
+    Ref<Model> ModelLoader::Load(const std::string &filePath, const std::string& name, ImageFormatState state) {
         if (!fs::File::Exists(filePath)) {
             Warn("Model file not found: " + filePath);
             return nullptr;
         }
-        const auto& am = Services::GetAssetManager();
         const auto& mm = Services::GetMeshManager();
 
         // Reset state
         m_CurrentModel = CreateRef<Model>();
+        m_CurrentModel->m_Name = name;
         m_CurrImageFormatState = state;
         m_CurrentModel->m_FileInfo = fs::CreateFileInfoFromPath(filePath);
-        m_CurrentDirectory         = std::filesystem::path(m_CurrentModel->m_FileInfo.path).parent_path().string();
-        m_CurrentModel->m_Name     = std::filesystem::path(m_CurrentDirectory).filename().string();
 
         // Create assimp importer
         Assimp::Importer importer;
 
         // flags for complex models
-        constexpr unsigned int importFlags =
+        unsigned int importFlags =
             aiProcess_Triangulate |
             aiProcess_GenSmoothNormals |
             aiProcess_FlipUVs |
             aiProcess_JoinIdenticalVertices |
-            aiProcess_CalcTangentSpace |      // For normal mapping
-            aiProcess_OptimizeMeshes |        // Important for large models
+            aiProcess_OptimizeMeshes   |      // Important for large models
             aiProcess_ImproveCacheLocality;   // Better performance
+
+        // TODO: I'll add this flag when I add tangents and bitangents!
+        // aiProcess_CalcTangentSpace |      /* For normal mapping */
+
+        if (m_IsFBX) { // Do some optimization because .fbx models are slower than gltf or something.
+            importFlags &= ~aiProcess_OptimizeMeshes;
+            importFlags &= ~aiProcess_ImproveCacheLocality;
+        }
 
         // Load the scene
         const aiScene* scene = importer.ReadFile(filePath, importFlags);
@@ -82,99 +121,133 @@ namespace Real {
         }
 
         // Start processing from root node
-        ProcessNode(scene->mRootNode, scene, m_CurrentDirectory);
+        ProcessNode(scene->mRootNode, scene);
 
-        const auto& vertices = mm->ViewVerticesPointToEnd(m_CurrentModel->m_Meshes[0].m_SubMeshID);
-        const auto& indices  = mm->ViewIndicesPointToEnd(m_CurrentModel->m_Meshes[0].m_SubMeshID);
         const auto& binary_path = std::string(ASSETS_RUNTIME_DIR) + "models/" + m_CurrentModel->m_Name + ".model";
-        serialization::binary::WriteModel(binary_path, m_CurrentBinaryFile, vertices, indices);
-        am->SaveModelToAssetDB(m_CurrentModel);
+
+        // Create model binary file
+        ModelBinaryHeader binary_file{};
+        binary_file.m_Magic     = REAL_MAGIC; // Real magic number
+        binary_file.m_Version   = 1;
+        binary_file.m_MeshCount = m_CurrentModel->m_MeshUUIDs.size();
+        binary_file.m_UUID      = m_CurrentModel->m_UUID;
+
+        serialization::binary::WriteModel(
+            binary_path,
+            binary_file,
+            m_CurrentModel->m_MeshUUIDs
+        );
+        Services::GetAssetManager()->SaveModelToAssetDB(m_CurrentModel);
 
         return m_CurrentModel;
     }
 
-    void ModelLoader::ProcessNode(aiNode *node, const aiScene *scene, const std::string &directory) {
+    void ModelLoader::ProcessNode(const aiNode *node, const aiScene *scene) {
          // Process all meshes in this node
          for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-             aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-             MeshEntry meshEntry = ProcessMesh(mesh, scene, directory);
-             m_CurrentModel->m_Meshes.push_back(meshEntry);
+             const aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
+             ProcessMesh(mesh, scene);
          }
 
          // Process all children nodes
          for (unsigned int i = 0; i < node->mNumChildren; i++) {
-             ProcessNode(node->mChildren[i], scene, directory);
+             ProcessNode(node->mChildren[i], scene);
          }
      }
 
-    MeshEntry ModelLoader::ProcessMesh(aiMesh *mesh, const aiScene *scene, const std::string &directory) {
-         // Create containers for vertex data
-         std::vector<Graphics::Vertex> vertices;
-         std::vector<uint64_t> indices;
+    MeshBinaryHeader ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene) {
+        const auto& mm = Services::GetMeshManager();
+        // Create containers for vertex data
+        std::vector<Graphics::Vertex> vertices;
+        std::vector<uint64_t> indices;
 
-         // Process vertices
-         vertices.reserve(mesh->mNumVertices);
-         for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-             Graphics::Vertex vertex{};
+        // Process vertices
+        vertices.reserve(mesh->mNumVertices);
+        for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+            Graphics::Vertex vertex{};
 
-             // Position
-             vertex.m_Position.x = mesh->mVertices[i].x;
-             vertex.m_Position.y = mesh->mVertices[i].y;
-             vertex.m_Position.z = mesh->mVertices[i].z;
+            // Position
+            vertex.m_Position.x = mesh->mVertices[i].x;
+            vertex.m_Position.y = mesh->mVertices[i].y;
+            vertex.m_Position.z = mesh->mVertices[i].z;
 
-             // Normal
-             if (mesh->HasNormals()) {
-                 vertex.m_Normal.x = mesh->mNormals[i].x;
-                 vertex.m_Normal.y = mesh->mNormals[i].y;
-                 vertex.m_Normal.z = mesh->mNormals[i].z;
-             } else {
-                 vertex.m_Normal = glm::vec3(0.0, 1.0, 0.0);
-             }
+            // Normal
+            if (mesh->HasNormals()) {
+                vertex.m_Normal.x = mesh->mNormals[i].x;
+                vertex.m_Normal.y = mesh->mNormals[i].y;
+                vertex.m_Normal.z = mesh->mNormals[i].z;
+            } else {
+                vertex.m_Normal = glm::vec3(0.0, 1.0, 0.0);
+            }
 
-             // UV
-             if (mesh->mTextureCoords[0]) {
-                 vertex.m_UV.x = mesh->mTextureCoords[0][i].x;
-                 vertex.m_UV.y = mesh->mTextureCoords[0][i].y;
-             } else {
-                 vertex.m_UV = glm::vec2(0.0, 0.0);
-             }
+            // UV
+            if (mesh->HasTextureCoords(0)) {
+                vertex.m_UV.x = mesh->mTextureCoords[0][i].x;
+                vertex.m_UV.y = mesh->mTextureCoords[0][i].y;
+            } else {
+                vertex.m_UV = glm::vec2(0.0, 0.0);
+            }
 
-             vertices.push_back(vertex);
-         }
+            // Tangent and Bitangent
+            if (mesh->HasTangentsAndBitangents()) {
+                // TODO: I'll update this condition when I add tangents and bitangents!
+            }
 
-         // Process indices
-         for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
-             const aiFace face = mesh->mFaces[i];
-             for (unsigned int j = 0; j < face.mNumIndices; j++) {
-                 indices.push_back(face.mIndices[j]);
-             }
-         }
+            vertices.push_back(vertex);
+        }
 
-         // Process Material
-         Ref<Material> real_material;
-         if (mesh->mMaterialIndex >= 0) {
-             const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-             real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex, directory);
-         }
+        // Process indices
+        for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+            const aiFace face = mesh->mFaces[i];
+            for (unsigned int j = 0; j < face.mNumIndices; j++) {
+                indices.push_back(face.mIndices[j]);
+            }
+        }
 
-         const auto meshID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, real_material->m_ID);
+        auto materialUUID = UUID();
+        if (mesh->mMaterialIndex >= 0) {
+            const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+            const Ref<Material> real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
+            materialUUID = real_material ? real_material->m_UUID : materialUUID;
+        }
 
-         return { meshID, real_material->m_ID };
+        const auto meshID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, materialUUID);
+
+        MeshBinaryHeader header;
+        header.m_Magic        = REAL_MAGIC;
+        header.m_Version      = 1;
+        header.m_MeshUUID     = meshID;
+        header.m_MaterialUUID = materialUUID;
+        header.m_VertexCount  = vertices.size();
+        header.m_IndexCount   = indices.size();
+        header.m_VertexOffset = mm->GetVerticesCount();
+        header.m_IndexOffset  = mm->GetIndicesCount();
+
+        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "models/" + mesh->mName.C_Str() + ".mesh";
+        serialization::binary::WriteMesh(mBinaryPath, header, vertices, indices);
+        Services::GetAssetManager()->SaveMeshToAssetDB(header, mesh->mName.C_Str());
+
+        return header;
     }
 
-    Ref<Material> ModelLoader::ProcessMaterial(const aiMaterial *mat, int materialIndex, const std::string &directory) {
+    Ref<Material> ModelLoader::ProcessMaterial(const aiMaterial *mat, int materialIndex) {
         const auto& am = Services::GetAssetManager();
-        const auto material = CreateRef<Material>();
+
+        std::unordered_set<TextureType> processedTypes;
+        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
 
         // Material naming
         aiString matName;
         mat->Get(AI_MATKEY_NAME, matName);
         const auto baseName = matName.length > 0 ? matName.C_Str() : "Material_" + std::to_string(materialIndex);
+
+        const auto matUUID = UUID();
+        const auto& material = am->GetOrCreateMaterialBase(matUUID);
         material->m_Name = m_CurrentModel->m_Name + "_" + baseName;
+        material->m_UUID = matUUID;
 
         std::string destPath = std::string(ASSETS_DIR) + "textures/";
-        if (m_CurrImageFormatState == ImageFormatState::COMPRESS_ME)       destPath += "compress_me/";
-        else if (m_CurrImageFormatState == ImageFormatState::UNCOMPRESSED) destPath += "uncompressed/";
+        m_CurrImageFormatState == ImageFormatState::UNCOMPRESSED ? destPath += "uncompressed/" : destPath += "compress_me/";
 
         static std::unordered_map<TextureType, std::string_view> suffix {
             { TextureType::ALBEDO,            "_ALB"      },
@@ -188,102 +261,155 @@ namespace Real {
             // Other special cases detecting in LoadTexture lambda
         };
 
-        auto SaveTextureToFolder = [&](OpenGLTexture* tex, const std::string& dstPath) {
-            if (!tex) {
-                Warn("[ModelLoader][SaveTextureToFolder] Texture nullptr!");
-                return;
+        auto Create = [&](TextureData& td, const std::string& path, const TextureType type) {
+            FileInfo fi = fs::CreateFileInfoFromPath(path);
+            const auto tex = CreateRef<OpenGLTexture>(td, true, type, ImageFormatState::COMPRESS_ME, fi);
+            if (type == TextureType::AMBIENT_OCCLUSION) {
+                m_ormPack[material->m_Name][0] = tex;
             }
-            if (!tools::SaveTextureAsFile(tex, dstPath)) {
-                Warn(dstPath + " can't saved to destination path!");
-                // TODO: add fallback
+            if (type == TextureType::ROUGHNESS) {
+                m_ormPack[material->m_Name][1] = tex;
             }
+            if (type == TextureType::METALLIC) {
+                m_ormPack[material->m_Name][2] = tex;
+            }
+            return tex;
         };
 
-        auto CreateAndSave = [&](TextureData& td, const std::string& path, TextureType type) {
-            FileInfo fi = fs::CreateFileInfoFromPath(path);
-            const auto tex = CreateRef<OpenGLTexture>(td, type, ImageFormatState::COMPRESS_ME, fi);
-            tools::CompressTextureAndReadFromFile(tex.get());
-            SaveTextureToFolder(tex.get(), fi.path);
-            am->SaveTextureToAssetDB(tex.get());
+        auto Save = [&](const Ref<OpenGLTexture>& tex) {
+            if (tex->GetImageFormatState() == ImageFormatState::DEFAULT || !tools::SaveTextureAsFile(tex.get(), tex->GetFileInfo().path)) {
+                Warn("Can't saved to destination path: " + tex->GetFileInfo().path);
+            } else {
+                tools::CompressTextureAndReadFromFile(tex.get());
+                // Save after compression to use compressed data
+                am->SaveCPUTexture(tex);
+            }
             return tex->GetUUID();
+        };
+
+        auto CreateAndSave = [&](TextureData& td, const std::string& path, const TextureType type) {
+            const auto tex = Create(td, path, type);
+            switch (type) {
+                case TextureType::ALBEDO:   material->m_Albedo   = tex->GetUUID(); break;
+                case TextureType::NORMAL:   material->m_Normal   = tex->GetUUID(); break;
+                case TextureType::HEIGHT:   material->m_Height   = tex->GetUUID(); break;
+                case TextureType::EMISSIVE: material->m_Emissive = tex->GetUUID(); break;
+                default: ;
+            }
+            return Save(tex);
         };
 
         auto LoadTexture = [&](aiTextureType aiType) {
             if (mat->GetTextureCount(aiType) == 0) return;
+            const auto realType = util::AssimpTextureTypeToRealType(aiType);
+
+            if (processedTypes.contains(realType)) return; // Skip if already processed before
 
             aiString texPath;
-            aiTextureMapping mapping;
-            unsigned int UVidx = 0;
-            float blend = 1.0f;
-            aiTextureOp op = aiTextureOp_Add;
-            aiTextureMapMode mapMode = aiTextureMapMode_Wrap;
+            if (mat->GetTexture(aiType, 0, &texPath) != AI_SUCCESS) return;
 
-            if (mat->GetTexture(aiType, 0, &texPath, &mapping, &UVidx, &blend, &op, &mapMode) != AI_SUCCESS)
-                return;
+            std::string pathStr = texPath.C_Str();
+            std::ranges::replace(pathStr, '\\', '/');
+            const std::filesystem::path p(pathStr);
 
-            const std::string filename = texPath.C_Str();
-            const std::filesystem::path fullInputPath = std::filesystem::path(directory) / filename;
+            std::string path;
+            std::string ext = p.extension().string();
 
-            const auto realType = util::AssimpTextureTypeToRealType(aiType);
-            TextureData texData = am->LoadTextureFromFile(fullInputPath.string());
-            texData.m_DataSize  = texData.m_Width * texData.m_Height * texData.m_ChannelCount;
-            texData.m_Format    = util::ConvertChannelCountToGLFormat(texData.m_ChannelCount);
-            texData.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(texData.m_ChannelCount);
+            if (m_TextureIndex.contains(p.stem().string())) {
+                const auto realPath = ChooseBest(m_TextureIndex[p.stem().string()]);
+                path = realPath.string();
+                ext  = realPath.extension().string();
+            } else {
+                Warn("Missing texture for material: " +  material->m_Name + p.string() + " skipping!");
+                return; // Skip if texture does not exist
+            }
 
-            if (realType == TextureType::ALBEDO_ROUGHNESS) {
+            if (path.empty()) return;
+            TextureData texData = am->LoadTextureFromFile(path, realType);
+            if (!texData.m_Data) return;
+            processedTypes.insert(realType);
+
+            if (realType == TextureType::ALBEDO_ROUGHNESS && texData.m_ChannelCount > 3) {
                 auto alb = util::ExtractChannels(texData, {0,1,2});
                 material->m_Albedo = CreateAndSave(alb,
-                    destPath + m_CurrentModel->m_Name + "_ALB" + fullInputPath.extension().string(),
+                    destPath + material->m_Name + "_ALB" + ext,
                     TextureType::ALBEDO
                 );
 
-                auto rgh = util::ExtractChannel(texData, 3);
-                material->m_Roughness = CreateAndSave(rgh,
-                    destPath + m_CurrentModel->m_Name + "_RGH" + fullInputPath.extension().string(),
+                auto rghData = util::ExtractChannel(texData, 3);
+                const auto rgh = Create(rghData,
+                    destPath + material->m_Name + "_RGH" + ext,
                     TextureType::ROUGHNESS
                 );
                 return;
             }
-
-            if (realType == TextureType::METALLIC_ROUGHNESS) {
-                auto mtl = util::ExtractChannel(texData, 0);
-                material->m_Metallic = CreateAndSave(mtl,
-                    destPath + m_CurrentModel->m_Name + "_MTL" + fullInputPath.extension().string(),
-                    TextureType::METALLIC
-                );
-
-                auto rgh = util::ExtractChannel(texData, 1);
-                material->m_Roughness = CreateAndSave(rgh,
-                    destPath + m_CurrentModel->m_Name + "_RGH" + fullInputPath.extension().string(),
-                    TextureType::ROUGHNESS
-                );
+            if (realType == TextureType::ALBEDO_ROUGHNESS) {
+                CreateAndSave(texData, destPath + material->m_Name + "_ALB" + ext, TextureType::ALBEDO);
                 return;
             }
 
             if (const auto it = suffix.find(realType); it != suffix.end()) {
-                const auto outPath = destPath + m_CurrentModel->m_Name + std::string(it->second) + fullInputPath.extension().string();
-                CreateAndSave(texData, outPath, it->first);
+                const auto outPath = destPath + material->m_Name + std::string(it->second) + ext;
+                if (realType == TextureType::AMBIENT_OCCLUSION ||
+                    realType == TextureType::ROUGHNESS         ||
+                    realType == TextureType::METALLIC)
+                {
+                    Create(texData, outPath, it->first);
+                }
+                else {
+                    CreateAndSave(texData, outPath, it->first);
+                }
             }
         };
 
-        // Check all the texture types from assimp and load
-        for (int i = 0; i <= aiTextureType_GLTF_METALLIC_ROUGHNESS; i++) {
-            const auto aiType = static_cast<aiTextureType>(i);
-            if (aiType == aiTextureType_UNKNOWN || aiType == aiTextureType_NONE) continue;
-            LoadTexture(aiType);
+        LoadTexture(aiTextureType_BASE_COLOR);
+        LoadTexture(aiTextureType_DIFFUSE);
+        LoadTexture(aiTextureType_NORMAL_CAMERA);
+        LoadTexture(aiTextureType_NORMALS);
+        LoadTexture(aiTextureType_METALNESS);
+        LoadTexture(aiTextureType_DIFFUSE_ROUGHNESS);
+        LoadTexture(aiTextureType_GLTF_METALLIC_ROUGHNESS);
+        LoadTexture(aiTextureType_AMBIENT_OCCLUSION);
+        LoadTexture(aiTextureType_LIGHTMAP);
+        LoadTexture(aiTextureType_EMISSIVE);
+        LoadTexture(aiTextureType_HEIGHT);
+        LoadTexture(aiTextureType_DISPLACEMENT);
+        LoadTexture(aiTextureType_OPACITY);
+
+        // Save ORM(Packed) Textures
+        for (const auto& pack : std::views::values(m_ormPack)) {
+            const auto ao  = pack[0] ? pack[0] : am->GetOrCreateDefaultTexture(TextureType::AMBIENT_OCCLUSION);
+            const auto rgh = pack[1] ? pack[1] : am->GetOrCreateDefaultTexture(TextureType::ROUGHNESS);
+            const auto mtl = pack[2] ? pack[2] : am->GetOrCreateDefaultTexture(TextureType::METALLIC);
+            const auto orm = tools::PackTexturesToRGBChannels({ao, rgh, mtl}, material->m_Name);
+            if (orm && orm->GetImageFormatState() != ImageFormatState::DEFAULT) {
+                tools::CompressTextureAndReadFromFile(orm.get());
+                material->m_ORM = orm->GetUUID();
+            }
         }
 
-        const auto& ao  = am->GetTexture(material->m_AO,        TextureType::AMBIENT_OCCLUSION);
-        const auto& rgh = am->GetTexture(material->m_Roughness, TextureType::ROUGHNESS);
-        const auto& mtl = am->GetTexture(material->m_Metallic,  TextureType::METALLIC);
-        const auto& orm = tools::PackTexturesToRGBChannels({ao, rgh, mtl}, m_CurrentModel->m_Name);
-
-        tools::CompressTextureAndReadFromFile(orm.get());
-        material->m_ORM = orm->GetUUID();
-        am->SaveTextureToAssetDB(orm.get());
-        am->SaveMaterialToAssetDB(material);
-
         return material;
+    }
+
+    std::filesystem::path ModelLoader::ChooseBest(const std::vector<std::filesystem::path> &paths) {
+        // Prefer by order
+        static constexpr std::array<std::string_view, 6> priority = {
+            ".png",
+            ".tga",
+            ".jpg",
+            ".tif",
+            ".bmp",
+            ".webp"
+        };
+
+        for (auto& ext : priority)
+            for (auto& p : paths)
+                if (p.extension() == ext)
+                    return p;
+
+        if (paths.empty()) return {};
+
+        return paths.front();
     }
 
     TextureType ModelLoader::GetRealTypeFromAssimpTexType(aiTextureType type) {

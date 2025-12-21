@@ -17,10 +17,9 @@ namespace Real::tools {
     [[maybe_unused]] Ref<OpenGLTexture> PackTexturesToRGBChannels(
         const std::array<Ref<OpenGLTexture>, 3> &orm, const std::string& materialName
     );
-    Ref<OpenGLTexture> PrepareAndPackRMATextures(std::array<Ref<OpenGLTexture>, 3>& orm, const std::string& materialName);
     [[maybe_unused]] bool SaveTextureAsFile(OpenGLTexture* texture, const std::string&destPath, int jpgQuality = 90);
-    void CompressCPUGeneratedTexture(OpenGLTexture* texture, const std::string& destPath);
-    void CompressTextureToBCn(OpenGLTexture* texture);
+    bool CompressCPUGeneratedTexture(OpenGLTexture* texture, float fQuality = 0.9f);
+    bool CompressTextureToBCn(OpenGLTexture* texture, float fQuality = 0.9f);
     void CompressTextureAndReadFromFile(OpenGLTexture* texture);
     void ReadCompressedDataFromDDSFile(OpenGLTexture* texture);
 }

@@ -9,6 +9,7 @@
 
 #include "CmakeConfig.h"
 #include "UUID.h"
+#include "Graphics/Material.h"
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
 
@@ -28,43 +29,45 @@ namespace Real {
     class AssetManager {
     public:
         AssetManager();
-        void Update();
-        [[maybe_unused]] nlohmann::json GetAssetDB();
-        void LoadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
-        std::string PreprocessorForShaders(const std::string& filePath);
-        [[nodiscard]] const Shader &GetShader(const std::string& name);
 
+        /* *********************************** TEXTURE STATE ************************************ */
+        void SaveCPUTexture(const Ref<OpenGLTexture> &tex);
         void LoadTextureArraysToGPU() const;
-        [[nodiscard]] Ref<OpenGLTexture> GetOrCreateDefaultTexture(TextureType type);
-        [[maybe_unused]] bool IsTextureCompressed(const std::string& name) const;
-        [[nodiscard]] Ref<OpenGLTexture> LoadTextureOnlyCPUData(const FileInfo& file, TextureType type, ImageFormatState imageState, const UUID& uuid);
-        [[nodiscard]] Ref<OpenGLTexture> LoadTextureOnlyCPUData(const std::string& path, TextureType type, ImageFormatState imageState, const UUID& uuid);
-
-        TextureData LoadTextureFromFile(const std::string& path);
-
-        void LoadAssets();
+        [[maybe_unused]] Ref<OpenGLTexture>& GetOrCreateDefaultTexture(TextureType type);
+        [[maybe_unused]] bool IsTextureCompressed(const std::string& stem) const;
+        TextureData LoadTextureFromFile(const std::string& path, TextureType type = TextureType::UNDEFINED);
         void DeleteCPUTexture(const UUID& uuid);
-        [[nodiscard]] Ref<OpenGLTexture> GetTexture(const UUID& uuid, TextureType type);
-        [[nodiscard]] Ref<Material>& GetOrCreateMaterialBase(const UUID& uuid);
-        Ref<Material> GetOrCreateMaterialBase(const std::string &name);
+        [[nodiscard]] const Ref<OpenGLTexture>& GetTexture(const UUID& uuid, TextureType type);
 
-        [[nodiscard]] Ref<MaterialInstance>& GetOrCreateMaterialInstance(const UUID& uuid);
-        [[nodiscard]] std::vector<GLuint64> UploadTexturesToGPU() const;
-        void MakeTexturesResident() const;
+        /* *********************************** MATERIAL STATE ************************************ */
+        [[maybe_unused]] Ref<Material>& GetOrCreateMaterialBase(const UUID& uuid);
+        [[maybe_unused]] Ref<Material>& GetOrCreateMaterialBase(const std::string &name);
+        [[maybe_unused]] Ref<MaterialInstance>& GetOrCreateMaterialInstance(const UUID& uuid);
+
+        /* *********************************** DATABASE STATE ************************************ */
+        [[maybe_unused]] nlohmann::json& GetAssetDB();
+        void SaveTextureToAssetDB(const OpenGLTexture* texture);
+        void SaveMaterialToAssetDB(const Ref<Material>& mat);
+        void SaveModelToAssetDB(const Ref<Model>& model);
+        void SaveMeshToAssetDB(const MeshBinaryHeader &header, const std::string& name);
+
+        /* *********************************** GENERAL STATE ************************************ */
+        [[nodiscard]] const Shader &GetShader(const std::string& name);
+        bool IsModelExist(const std::string& name);
+        bool IsMaterialExist(const std::string& name);
+        void RenameMaterial(const std::string& newName, const UUID& uuid);
+        void SaveModelCPU(const Ref<Model>& model);
 
         // TODO: Load fonts from file!!
         void AddFontStyle(const std::string& fontName, ImFont* font);
         ImFont* GetFontStyle(const std::string& fontName);
 
-        /************************************  MATERIAL STATE *************************************/
-        void SaveModelToAssetDB(const Ref<Model>& model);
-        void SaveModelCPU(const Ref<Model>& model);
-        void LoadModelsFromAssetDB();
-        void LoadMaterialsFromAssetDB();
-        void SaveMaterialToAssetDB(const Ref<Material>& mat);
-        void SaveTextureToAssetDB(const OpenGLTexture* texture);
-        void LoadTexturesFromAssetDB();
-        void RenameMaterial(const std::string& newName, const UUID& uuid);
+        /* ********************************** LOADING STATE ************************************ */
+        void Update();
+        void LoadNewAssetsToDataBase();
+        void LoadAssetsFromDataBase();
+        void LoadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
+        [[nodiscard]] std::vector<GLuint64> UploadTexturesToGPU() const;
 
     private:
         std::unordered_map<std::string, Shader> m_Shaders; // Should we store with UUID??? maybe next time
@@ -74,6 +77,7 @@ namespace Real {
         std::unordered_map<std::string, UUID> m_MaterialNameToUUID;
         std::unordered_map<UUID, Ref<MaterialInstance>> m_MaterialInstances;
         std::unordered_map<UUID, Ref<Model>> m_Models;
+        std::unordered_map<std::string, UUID> m_ModelNameToUUID;
         std::unordered_map<TextureType, Ref<OpenGLTexture>> m_DefaultTextures;
         std::unordered_map<std::string, ImFont*> m_Fonts;
         static constexpr auto ASSET_DB_PATH = ASSETS_DIR "asset_database/asset_database.json";
@@ -84,5 +88,13 @@ namespace Real {
     private:
         void MarkDirtyAssetDB();
         void UpdateAssetDB();
+        void LoadTexturesFromAssetDB();
+        void LoadMaterialsFromAssetDB();
+        void LoadModelsFromAssetDB();
+        void LoadMeshesFromAssetDB();
+
+        void LoadDefaultTextures();
+        std::vector<Ref<OpenGLTexture>> GetMaterialTextures(const Material* mat);
+        std::string PreprocessorForShaders(const std::string& filePath);
     };
 }

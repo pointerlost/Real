@@ -9,7 +9,7 @@ namespace Real {
 
     struct UUID {
         UUID();
-        UUID(uint64_t uuid);
+        explicit UUID(uint64_t uuid);
         UUID(const UUID&) = default;
 
         [[nodiscard]] bool IsNull() const { return m_UUID == 0; };
@@ -17,7 +17,7 @@ namespace Real {
         operator uint64_t() const { return m_UUID; }
 
     private:
-        uint64_t m_UUID;
+        uint64_t m_UUID = 0;
     };
 }
 

@@ -16,6 +16,8 @@
 #include "Util/Util.h"
 #include <stb/stb_image.h>
 
+#include "Core/file_manager.h"
+#include "Core/Services.h"
 #include "Graphics/Model.h"
 #include "Serialization/Binary.h"
 #include "Serialization/Json.h"
@@ -33,11 +35,28 @@ namespace Real {
             m_AssetDB["materials"] = nlohmann::json::object();
     }
 
+    void AssetManager::SaveCPUTexture(const Ref<OpenGLTexture> &tex) {
+        if (!m_Textures.contains(tex->GetUUID())) {
+            m_Textures[tex->GetUUID()] = tex;
+        }
+    }
+
     void AssetManager::Update() {
         UpdateAssetDB();
     }
 
-    nlohmann::json AssetManager::GetAssetDB() {
+    void AssetManager::LoadNewAssetsToDataBase() {
+        // If not already added, save the materials to the database
+        for (const auto& mat : std::views::values(m_Materials)) {
+            for (const auto& tex : GetMaterialTextures(mat.get())) {
+                SaveTextureToAssetDB(GetTexture( tex->GetUUID(), tex->GetType() ).get());
+                m_LoadedTexturesPath.insert(tex->GetPath());
+            }
+            SaveMaterialToAssetDB(mat);
+        }
+    }
+
+    nlohmann::json& AssetManager::GetAssetDB() {
         if (!s_LoadedAssetDB) {
             m_AssetDB = serialization::json::Load(ASSET_DB_PATH);
             s_LoadedAssetDB = true;
@@ -64,10 +83,7 @@ namespace Real {
         string result;
         queue<string> glslContentQueue;
 
-        if (!fs::File::Exists(filePath)) {
-            Warn("Path doesn't exists: " + filePath);
-            return{};
-        }
+        if (!fs::File::Exists(filePath)) return {};
 
         ifstream stream(filePath, ios::in);
         if (!stream.is_open()) {
@@ -125,12 +141,12 @@ namespace Real {
         // TextureArrayManager::PrepareAndBindTextureArrays();
     }
 
-    Ref<OpenGLTexture> AssetManager::GetOrCreateDefaultTexture(TextureType type) {
+    Ref<OpenGLTexture>& AssetManager::GetOrCreateDefaultTexture(TextureType type) {
         if (m_DefaultTextures.contains(type))
             return m_DefaultTextures[type];
 
         const auto channelCount = util::TextureTypeToChannelCount(type);
-        constexpr glm::ivec2 resolution{1, 1}; // If I want to compress my default textures, pick 4x4 as resolution!!
+        constexpr glm::ivec2 resolution{1, 1}; // If you want to compress default textures, pick 4x4 as resolution!!
 
         const Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>();
 
@@ -201,112 +217,111 @@ namespace Real {
         data.m_DataSize       = imageSize;
         data.m_Width          = resolution.x;
         data.m_Height         = resolution.y;
-        data.m_Format         = util::ConvertChannelCountToGLFormat(channelCount);
-        data.m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(channelCount);
+        data.m_Format         = util::GetGLFormat(channelCount);
+        data.m_InternalFormat = util::GetGLInternalFormat(channelCount);
 
         defaultTex->SetImageFormatState(ImageFormatState::DEFAULT);
         defaultTex->CreateFromData(data, type);
+        m_Textures[defaultTex->GetUUID()] = defaultTex;
         return m_DefaultTextures[type] = defaultTex;
     }
 
     bool AssetManager::IsTextureCompressed(const std::string &stem) const {
-        return fs::File::Exists(std::string(ASSETS_DIR) +  "textures/compressed/" + stem + ".dds");
+        return fs::File::Exists(std::string(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
     }
 
-    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const FileInfo& file, TextureType type, ImageFormatState imageState, const UUID& uuid) {
-        if (m_Textures.contains(uuid)) return m_Textures[uuid];
+    TextureData AssetManager::LoadTextureFromFile(const std::string &path, TextureType type) {
+        if (!fs::File::Exists(path)) { Warn("There is no texture: " + path); }
+        const int desiredChannels = type != TextureType::UNDEFINED ? util::TextureTypeToChannelCount(type) : 0;
 
-        const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
-        texture->SetType(type);
-        texture->SetImageFormatState(imageState);
-        texture->SetFileInfo(file);
-        texture->SetIndex(m_Textures.size());
-        texture->Create();
-
-        return m_Textures[uuid] = texture;
-    }
-
-    Ref<OpenGLTexture> AssetManager::LoadTextureOnlyCPUData(const std::string &path, TextureType type,
-        ImageFormatState imageState, const UUID& uuid)
-    {
-        if (m_Textures.contains(uuid)) return m_Textures[uuid];
-
-        const Ref<OpenGLTexture> texture = CreateRef<OpenGLTexture>();
-        texture->SetType(type);
-        texture->SetImageFormatState(imageState);
-        texture->SetFileInfo(std::move(fs::CreateFileInfoFromPath(path)));
-        texture->SetIndex(m_Textures.size());
-        texture->Create();
-
-        return m_Textures[uuid] = texture;
-    }
-
-    TextureData AssetManager::LoadTextureFromFile(const std::string &path) {
         TextureData data;
-        unsigned char* rawData = stbi_load(path.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, 0);
-        const auto size = data.m_Width * data.m_Height * data.m_ChannelCount;
-        data.m_Data = new uint8_t[size];
-        memcpy(data.m_Data, rawData, size);
-        stbi_image_free(rawData);
+        data.m_Data     = stbi_load(path.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, desiredChannels);
+        data.m_ChannelCount = desiredChannels != 0 ? desiredChannels : data.m_ChannelCount;
+        // We are using bytesPerChannel = 1 because of using 8-bit textures
+        data.m_DataSize = data.m_Width * data.m_Height * data.m_ChannelCount * 1;
+        data.m_Format   = util::GetGLFormat(data.m_ChannelCount);
+        data.m_InternalFormat = util::GetGLInternalFormat(data.m_ChannelCount);
+
+        if (!data.m_Data) { Warn("[LoadTextureFromFile] stbi_load returning nullptr! Fix it"); }
+        if (data.m_ChannelCount == 0) { Warn("[LoadTextureFromFile] has 0 channel count!!! Texture loading failed!"); }
         return data;
     }
 
-    void AssetManager::LoadAssets() {
+    void AssetManager::LoadAssetsFromDataBase() {
+        LoadDefaultTextures();
         LoadTexturesFromAssetDB();
         LoadMaterialsFromAssetDB();
+        LoadMeshesFromAssetDB();
+        LoadModelsFromAssetDB();
 
-        const auto SaveTexture = [this](const FileInfo& file, ImageFormatState image_state) {
+        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
+
+        const auto SaveTexture = [this, &m_ormPack](const FileInfo& file, ImageFormatState image_state) {
+            if (m_LoadedTexturesPath.contains(file.path)) return; // If already loaded skip it
+
             auto& stem = file.stem;
             const auto dashPos = stem.find('_');
-            if (m_LoadedTexturesPath.contains(file.path)) return;
-
             const auto matName = stem.substr(0, dashPos);
             const TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
 
-            const auto texData = LoadTextureFromFile(file.path);
-            const auto texture = CreateRef<OpenGLTexture>(texData, type, image_state, file);
+            const auto texData = LoadTextureFromFile(file.path, type);
+            const auto texture = CreateRef<OpenGLTexture>(texData, true, type, image_state, file);
+
+            if (type == TextureType::AMBIENT_OCCLUSION) {
+                m_ormPack[matName][0] = texture;
+                return;
+            }
+            if (type == TextureType::ROUGHNESS) {
+                m_ormPack[matName][1] = texture;
+                return;
+            }
+            if (type == TextureType::METALLIC) {
+                m_ormPack[matName][2] = texture;
+                return;
+            }
+
             if (image_state == ImageFormatState::COMPRESS_ME) {
                 tools::CompressTextureAndReadFromFile(texture.get());
             }
             m_Textures[texture->GetUUID()] = texture;
-            SaveTextureToAssetDB(texture.get());
 
             const auto& mat = GetOrCreateMaterialBase(matName);
             switch (type) {
-                case TextureType::ALBEDO:            mat->m_Albedo    = texture->GetUUID(); break;
-                case TextureType::NORMAL:            mat->m_Normal    = texture->GetUUID(); break;
-                case TextureType::AMBIENT_OCCLUSION: mat->m_AO        = texture->GetUUID(); break;
-                case TextureType::ROUGHNESS:         mat->m_Roughness = texture->GetUUID(); break;
-                case TextureType::METALLIC:          mat->m_Metallic  = texture->GetUUID(); break;
-                case TextureType::ORM:               mat->m_ORM       = texture->GetUUID(); break;
-                case TextureType::HEIGHT:            mat->m_Height    = texture->GetUUID(); break;
-                case TextureType::EMISSIVE:          mat->m_Emissive  = texture->GetUUID(); break;
+                case TextureType::ALBEDO:   mat->m_Albedo   = texture->GetUUID(); break;
+                case TextureType::NORMAL:   mat->m_Normal   = texture->GetUUID(); break;
+                case TextureType::ORM:      mat->m_ORM      = texture->GetUUID(); break;
+                case TextureType::HEIGHT:   mat->m_Height   = texture->GetUUID(); break;
+                case TextureType::EMISSIVE: mat->m_Emissive = texture->GetUUID(); break;
                 default: ;
             }
         };
 
-        // Uncompressed State
+        // Uncompressed State (Load from file)
         for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
             SaveTexture(file, ImageFormatState::UNCOMPRESSED);
         }
 
-        // Compress_me State
+        // Compress_me State (Load from file)
         for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
             SaveTexture(file, ImageFormatState::COMPRESS_ME);
         }
 
-        // If not already added, save the materials to the database
-        for (const auto& mat : std::views::values(m_Materials)) {
-            const auto& ao  = GetTexture(mat->m_AO,        TextureType::AMBIENT_OCCLUSION);
-            const auto& rgh = GetTexture(mat->m_Roughness, TextureType::ROUGHNESS);
-            const auto& mtl = GetTexture(mat->m_Metallic,  TextureType::METALLIC);
-            const auto& orm = tools::PackTexturesToRGBChannels(ao, rgh, mtl, mat->m_Name);
+        // Process ORM textures
+        for (const auto& [matName, pack] : m_ormPack) {
+            const auto& ao  = pack[0] ? pack[0] : GetOrCreateDefaultTexture(TextureType::AMBIENT_OCCLUSION);
+            const auto& rgh = pack[1] ? pack[1] : GetOrCreateDefaultTexture(TextureType::ROUGHNESS);
+            const auto& mtl = pack[2] ? pack[2] : GetOrCreateDefaultTexture(TextureType::METALLIC);
+            const auto& orm = tools::PackTexturesToRGBChannels(ao, rgh, mtl, matName);
+            if (!orm || orm->GetImageFormatState() == ImageFormatState::DEFAULT) {
+                continue;
+            }
+            m_LoadedTexturesPath.insert(orm->GetPath());
+            GetOrCreateMaterialBase(matName)->m_ORM = orm->GetUUID();
             tools::CompressTextureAndReadFromFile(orm.get());
-            SaveTextureToAssetDB(orm.get());
-
-            mat->m_ORM = orm->GetUUID();
-            SaveMaterialToAssetDB(mat);
         }
+
+        // Bulk upload
+        UpdateAssetDB();
     }
 
     void AssetManager::DeleteCPUTexture(const UUID &uuid) {
@@ -315,22 +330,24 @@ namespace Real {
         }
     }
 
-    Ref<OpenGLTexture> AssetManager::GetTexture(const UUID &uuid, TextureType type) {
+    const Ref<OpenGLTexture>& AssetManager::GetTexture(const UUID &uuid, TextureType type) {
         if (!m_Textures.contains(uuid)) {
-            Warn("There is no texture with this UUID! returning nullptr!!!");
-            return GetOrCreateDefaultTexture(type);
+            const auto& tex = GetOrCreateDefaultTexture(type);
+            m_Textures[tex->GetUUID()] = tex;
+            return tex;
         }
         return m_Textures[uuid];
     }
 
     Ref<Material>& AssetManager::GetOrCreateMaterialBase(const UUID& uuid) {
-        if (m_Materials.contains(uuid)) {
-            return m_Materials[uuid];
+        auto [it, inserted] = m_Materials.try_emplace(uuid);
+        if (inserted) {
+            it->second = CreateRef<Material>(uuid);
         }
-        return m_Materials[uuid] = CreateRef<Material>();
+        return it->second;
     }
 
-    Ref<Material> AssetManager::GetOrCreateMaterialBase(const std::string& name) {
+    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const std::string& name) {
         if (m_MaterialNameToUUID.contains(name)) {
             if (m_Materials.contains(m_MaterialNameToUUID[name]))
                 return m_Materials[m_MaterialNameToUUID[name]];
@@ -354,18 +371,11 @@ namespace Real {
             }
             tex->SetIndex(bindlessIDs.size());
             bindlessIDs.push_back(tex->GetBindlessHandle());
+
+            // Clean the texture data after uploading it to the GPU
+            tex->CleanUpCPUData();
         }
         return bindlessIDs;
-    }
-
-    void AssetManager::MakeTexturesResident() const {
-        for (const auto& tex : std::views::values(m_Textures)) {
-            if (!tex->HasBindlessHandle()) {
-                tex->CreateBindless();
-                Warn("There is no bindless handle for this texture!");
-            }
-            tex->MakeResident();
-        }
     }
 
     void AssetManager::AddFontStyle(const std::string &fontName, ImFont *font) {
@@ -388,6 +398,18 @@ namespace Real {
         return nullptr;
     }
 
+    bool AssetManager::IsModelExist(const std::string &name) {
+        if (m_ModelNameToUUID.contains(name) && m_Models.contains(m_ModelNameToUUID[name]))
+            return true;
+        return false;
+    }
+
+    bool AssetManager::IsMaterialExist(const std::string &name) {
+        if (m_MaterialNameToUUID.contains(name) && m_Materials.contains(m_MaterialNameToUUID[name]))
+            return true;
+        return false;
+    }
+
     void AssetManager::SaveModelToAssetDB(const Ref<Model>& model) {
         if (m_Models.contains(model->m_UUID)) return;
 
@@ -405,8 +427,7 @@ namespace Real {
         m["file_extension"] = model->m_FileInfo.ext;
 
         MarkDirtyAssetDB();
-
-        m_Models[model->m_UUID] = model;
+        SaveModelCPU(model);
     }
 
     void AssetManager::SaveModelCPU(const Ref<Model> &model) {
@@ -418,7 +439,7 @@ namespace Real {
         for (const auto& [uuidStr, modeldata] : m_AssetDB["models"].items()) {
             UUID uuid;
             if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalıd UUID in material DB");
+                Warn("Invalid UUID in material DB");
                 continue;
             }
 
@@ -435,24 +456,25 @@ namespace Real {
             model->m_Name = modeldata["name"];
 
             m_Models[uuid] = model;
+            m_ModelNameToUUID[model->m_Name] = uuid;
         }
     }
 
     void AssetManager::LoadMaterialsFromAssetDB() {
-        for (const auto& [uuidStr, matData] : m_AssetDB["materials"].items()) {
+        for (const auto& [uuidStr, mat_data] : m_AssetDB["materials"].items()) {
             UUID uuid;
             if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalıd UUID in material DB");
+                Warn("Invalid UUID in Material DB");
                 continue;
             }
-            const std::string name = matData.value("name", "Material");
+            const std::string name = mat_data.value("name", "Material");
             if (m_MaterialNameToUUID.contains(name)) continue; // if material already added skip it
 
             const Ref<Material> mat = CreateRef<Material>(uuid);
             mat->m_Name = name;
 
-            if (matData.contains("textures")) {
-                const nlohmann::json& t = matData["textures"];
+            if (mat_data.contains("textures")) {
+                const nlohmann::json& t = mat_data["textures"];
 
                 mat->m_Albedo   = UUID(t.value("albedo",   0ULL));
                 mat->m_Normal   = UUID(t.value("normal",   0ULL));
@@ -461,13 +483,14 @@ namespace Real {
                 mat->m_Emissive = UUID(t.value("emissive", 0ULL));
             }
 
-            m_Materials[uuid] = mat; // your material registry
+            m_Materials[uuid] = mat; // Material registry
             m_MaterialNameToUUID[name] = uuid; // Cache material
         }
     }
 
     void AssetManager::SaveMaterialToAssetDB(const Ref<Material>& mat) {
-        const std::string uuidStr = std::to_string(mat->m_ID);
+        const std::string uuidStr = std::to_string(mat->m_UUID);
+        if (m_AssetDB["materials"].contains(uuidStr)) return; // If it already exists
 
         nlohmann::json& material = m_AssetDB["materials"][uuidStr];
 
@@ -485,6 +508,7 @@ namespace Real {
 
     void AssetManager::SaveTextureToAssetDB(const OpenGLTexture *texture) {
         const std::string uuidStr = std::to_string(texture->GetUUID());
+        if (m_AssetDB["textures"].contains(uuidStr)) return; // If it already exists
 
         nlohmann::json& tex = m_AssetDB["textures"][uuidStr];
 
@@ -499,24 +523,47 @@ namespace Real {
     }
 
     void AssetManager::LoadTexturesFromAssetDB() {
-        for (const auto& [uuidStr, texdata] : m_AssetDB["textures"].items()) {
+        for (const auto& [uuidStr, tex_data] : m_AssetDB["textures"].items()) {
             FileInfo fi;
-            fi.name = texdata.value("name", "null");
-            fi.stem = texdata.value("stem", "null");
-            fi.path = texdata.value("path", "null");
-            fi.ext  = texdata.value("extension", "null");
+            fi.name = tex_data.value("name", "null");
+            fi.stem = tex_data.value("stem", "null");
+            fi.path = tex_data.value("path", "null");
+            fi.ext  = tex_data.value("extension", "null");
 
-            if (m_LoadedTexturesPath.contains(fi.path)) continue; // If texture already added skip it
+            UUID uuid;
+            if (!util::TryParseUUID(uuidStr, uuid)) {
+                Warn("Invalid UUID in Material DB");
+                continue;
+            }
+            const auto type = util::TextureType_StringToEnum(tex_data["type"]);
+            const auto td   = LoadTextureFromFile(fi.path, type);
+            const auto ifs  = util::ImageFormatState_StringToEnum(tex_data["image_format_state"]);
 
-            const auto td   = LoadTextureFromFile(fi.path);
-            const auto type = util::TextureType_StringToEnum(texdata["type"]);
-            const auto ifs  = util::ImageFormatState_StringToEnum(texdata["image_format_state"]);
-            const auto uuid = UUID(std::stoull(uuidStr));
-
-            const auto texture = CreateRef<OpenGLTexture>(td, type, ifs, fi, uuid);
+            const auto texture = CreateRef<OpenGLTexture>(td, true, type, ifs, fi, uuid);
 
             m_Textures[uuid] = texture;
             m_LoadedTexturesPath.insert(fi.path); // Cache texture
+        }
+    }
+
+    void AssetManager::SaveMeshToAssetDB(const MeshBinaryHeader &header, const std::string& name) {
+        const std::string uuidStr = std::to_string(header.m_MeshUUID);
+        if (m_AssetDB["meshes"].contains(uuidStr)) return;
+
+        nlohmann::json& m = m_AssetDB["meshes"][uuidStr];
+
+        // Binary file path
+        m["binary"] = std::string(ASSETS_RUNTIME_DIR) + "models/" + name + ".mesh";
+        m["name"]   = name; // Engine asset name
+
+        MarkDirtyAssetDB();
+    }
+
+    void AssetManager::LoadMeshesFromAssetDB() {
+        for (const auto& [uuidStr, mesh_data] : m_AssetDB["meshes"].items()) {
+            const auto& path = mesh_data["binary"];
+            // Save meshes to mesh manager
+            serialization::binary::LoadMesh(path);
         }
     }
 
@@ -528,6 +575,8 @@ namespace Real {
 
         // Update JSON
         m_AssetDB["materials"][uuidStr]["name"] = newName;
+
+        // TODO: Should i change the texture names as well???
 
         // Update run-time caches
         const auto& mat = m_Materials[uuid];
@@ -544,8 +593,38 @@ namespace Real {
 
     void AssetManager::UpdateAssetDB() {
         if (!m_AssetDBDirty) return;
-
         serialization::json::Save(ASSET_DB_PATH, m_AssetDB);
         m_AssetDBDirty = false;
+    }
+
+    void AssetManager::LoadDefaultTextures() {
+        auto LoadDefaultTex = [this](TextureType type) {
+            if (!m_DefaultTextures.contains(type)) {
+                GetOrCreateDefaultTexture(type);
+            }
+        };
+
+        for (int i = 0; i <= (int)TextureType::EMISSIVE; i++) {
+            LoadDefaultTex(static_cast<TextureType>(i));
+        }
+    }
+
+    std::vector<Ref<OpenGLTexture>> AssetManager::GetMaterialTextures(const Material *mat) {
+        std::vector<Ref<OpenGLTexture>> textures;
+
+        auto tryAddTexture = [&](const UUID textureId) {
+            if (const auto it = m_Textures.find(textureId); it != m_Textures.end()) {
+                if (it->second->GetImageFormatState() == ImageFormatState::DEFAULT) return;
+                textures.push_back(it->second);
+            }
+        };
+
+        tryAddTexture(mat->m_Albedo);
+        tryAddTexture(mat->m_Normal);
+        tryAddTexture(mat->m_ORM);
+        tryAddTexture(mat->m_Height);
+        tryAddTexture(mat->m_Emissive);
+
+        return textures;
     }
 }

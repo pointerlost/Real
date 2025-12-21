@@ -17,11 +17,11 @@ namespace Real::opengl {
         explicit Renderer(Scene* scene);
         void Render(Entity* camera);
 
-        [[nodiscard]] RenderContext* GetRenderContext() const { return sceneRenderContext.get(); }
+        [[nodiscard]] RenderContext* GetRenderContext() const { return m_SceneRenderContext.get(); }
 
     private:
         Scene* m_Scene;
-        Scope<RenderContext> sceneRenderContext;
+        Scope<RenderContext> m_SceneRenderContext;
 
     private:
         void BindGPUBuffers() const;

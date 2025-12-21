@@ -15,6 +15,7 @@
 #include "Graphics/ModelLoader.h"
 #include "Graphics/Renderer.h"
 #include "Input/CameraInput.h"
+#include "Resource/ResourceLoader.h"
 #include "Scene/Entity.h"
 #include "Scene/Scene.h"
 #include "Scene/Systems.h"
@@ -27,6 +28,7 @@ namespace Real {
         ~Engine();
 
         void InitResources();
+        void InitGameResources(); // This is not permanent, just use it debugging purpose
         void Running();
 
     private:
@@ -43,6 +45,7 @@ namespace Real {
         Scope<UI::HierarchyPanel> m_HierarchyPanel;
         Scope<UI::InspectorPanel> m_InspectorPanel;
         Scope<Systems> m_Systems;
+        Scope<ResourceLoader> m_ResourceLoader;
 
         // Scope<Timer> m_GameTimer;
     private:
@@ -53,11 +56,18 @@ namespace Real {
         void RenderPhase() const;
         void EndPhase(GLFWwindow* window);
 
+        void InitWindow();
         void InitServices() const;
-        void InitAsset();
-        void InitMesh();
+        void InitSystems();
+        void InitEditorState();
+        void InitEditorScene();
+        void InitEditorRenderer();
+        void InitEditorUIState();
+        void InitEditorCamera();
+        void InitResourceLoader();
+        void InitAssetManager();
+        void InitMeshManager();
         void SetOpenGLStateFunctions();
-        void InitGameResources(); // This is not permanent, just use it debugging purpose
 
         // TODO: Snapshot editor to game-time
     };

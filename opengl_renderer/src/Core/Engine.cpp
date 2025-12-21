@@ -30,65 +30,30 @@ namespace Real {
         m_EditorTimer.reset();
         m_Window.reset();
         m_EditorState.reset();
-        m_ModelLoader.reset();
         ShutDown();
     }
 
     void Engine::InitResources() {
-        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
-        m_Window->Init();
-
+        InitWindow();
         InitCallbacks(m_Window->GetGLFWWindow());
+        InitSystems();
+        InitAssetManager();
+        InitMeshManager();
 
-        m_Systems = CreateScope<Systems>();
-        // Init sub-systems
-        m_Systems->Init();
+        // Editor state
+        InitEditorState();
+        InitEditorScene();
+        InitEditorRenderer();
 
-        m_EditorTimer = CreateScope<Timer>();
-        m_EditorTimer->Start();
-        m_EditorState = CreateScope<EditorState>();
-
-        m_ModelLoader = CreateScope<ModelLoader>();
-        m_ModelLoader->LoadAll(std::string(ASSETS_SOURCE_DIR) + "models/");
-
-        InitAsset();
-        InitMesh();
         InitServices();
 
-        // m_AssetManager->LoadAssets();
+        InitEditorUIState();
+        InitEditorCamera();
 
-        // Init UI (the order is matter!!!)
-        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
-        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
-        m_EditorPanel    = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
-        Info("EditorPanel initialized successfully!");
+        // Load all the resources with the ResourceLoader
+        InitResourceLoader();
 
-        const auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
-        const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
-        Services::GetAssetManager()->LoadShader(vert, frag, "main");
-        Info("Shaders loaded successfully!");
-
-        // const auto shadowMapVertex = ConcatStr(SHADERS_DIR, "opengl/shadow_map.vert");
-        // const auto shadowMapFrag = ConcatStr(SHADERS_DIR, "opengl/shadow_map.frag");
-        // m_AssetManager->LoadShader(shadowMapVertex, shadowMapFrag, "shadow_map");
-
-        m_MeshManager->InitResources();
-
-        m_Scene = CreateScope<Scene>();
-        m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
-
-        m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
-        (void)m_EditorState->camera->AddComponent<CameraComponent>();
-        (void)m_EditorState->camera->AddComponent<VelocityComponent>();
-        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
-
-        m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
-
-        m_Renderer->GetRenderContext()->InitResources();
-
-        InitGameResources();
-
-        Info("Resources loaded successfully!");
+        Info("Engine Resources loaded successfully!");
     }
 
     void Engine::ShutDown() {
@@ -111,6 +76,12 @@ namespace Real {
         glfwSwapBuffers(window);
     }
 
+    void Engine::InitWindow() {
+        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
+        m_Window->Init();
+        Info("Window initialized successfully!");
+    }
+
     void Engine::RenderPhase() const {
         // Draw OpenGL stuff
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
@@ -120,9 +91,9 @@ namespace Real {
     void Engine::UpdatePhase() const {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
+        m_AssetManager->Update();
         m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
-        m_AssetManager->Update();
     }
 
     void Engine::InitServices() const {
@@ -133,20 +104,74 @@ namespace Real {
         Info("Services initialized successfully!");
     }
 
-    void Engine::InitAsset() {
+    void Engine::InitSystems() {
+        m_Systems = CreateScope<Systems>();
+        // Init sub-systems
+        m_Systems->Init();
+        Info("Systems initialized successfully!");
+    }
+
+    void Engine::InitEditorState() {
+        m_EditorTimer = CreateScope<Timer>();
+        m_EditorTimer->Start();
+        m_EditorState = CreateScope<EditorState>();
+        Info("Editor State initialized successfully!");
+    }
+
+    void Engine::InitEditorScene() {
+        m_Scene = CreateScope<Scene>();
+        Info("Editor Scene initialized successfully!");
+    }
+
+    void Engine::InitEditorRenderer() {
+        m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
+        Info("Editor Renderer initialized successfully!");
+    }
+
+    void Engine::InitEditorUIState() {
+        // The order is matter!!!
+        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
+        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
+        m_EditorPanel    = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
+        Info("EditorPanel initialized successfully!");
+    }
+
+    void Engine::InitEditorCamera() {
+        // Editor camera
+        m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
+        (void)m_EditorState->camera->AddComponent<CameraComponent>();
+        (void)m_EditorState->camera->AddComponent<VelocityComponent>();
+        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
+
+        if (m_EditorState->camera) {
+            m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
+        } else {
+            Warn("There is no camera in editor state!!!");
+        }
+        Info("Editor Camera and Camera input initialized successfully!");
+    }
+
+    void Engine::InitResourceLoader() {
+        m_ResourceLoader = CreateScope<ResourceLoader>(m_Renderer->GetRenderContext());
+        m_ResourceLoader->Load();
+        Info("Resource loader initialized successfully!");
+    }
+
+    void Engine::InitAssetManager() {
         m_AssetManager = CreateScope<AssetManager>();
         Info("AssetManager initialized successfully!");
     }
 
-    void Engine::InitMesh() {
+    void Engine::InitMeshManager() {
         m_MeshManager = CreateScope<MeshData>();
+        m_MeshManager->InitResources();
         Info("MeshManager initialized successfully!");
     }
 
     void Engine::SetOpenGLStateFunctions() {
         /*
         TODO:
-            when i learn the different rendering techniques, (e.g. more advanced deferred rendering)
+            When i learn the different rendering techniques, (e.g. more advanced deferred rendering)
             need update to apply gamma correction in CPU (is it worth?), for now we will do in GPU-side
         */
         // Activate automatic Gamma Correction

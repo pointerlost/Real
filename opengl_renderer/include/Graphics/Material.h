@@ -12,7 +12,7 @@ namespace Real { struct OpenGLTexture; }
 namespace Real {
 
     struct Material {
-        UUID m_ID = UUID(0);
+        UUID m_UUID = UUID(0);
         std::string m_Name{};
 
         UUID m_Albedo   = UUID(0);
@@ -21,9 +21,10 @@ namespace Real {
         UUID m_Height   = UUID(0);
         UUID m_Emissive = UUID(0);
 
-        UUID m_AO        = UUID(0); // This texture not using in cpu or gpu anymore, just have to package into m_ORM
-        UUID m_Roughness = UUID(0); // This texture not using in cpu or gpu anymore, just have to package into m_ORM
-        UUID m_Metallic  = UUID(0); // This texture not using in cpu or gpu anymore, just have to package into m_ORM
+        Material() = default;
+        Material(const Material&) = default;
+        explicit Material(const UUID& uuid) : m_UUID(uuid) {}
+        explicit Material(uint64_t uuid) : m_UUID(UUID(uuid)) {}
     };
 
     struct MaterialInstance {

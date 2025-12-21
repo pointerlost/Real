@@ -73,7 +73,7 @@ namespace Real {
         m_Registry.emplace<TagComponent>(entity, tag);
         m_Registry.emplace<IDComponent>(entity, uuid);
         m_Registry.emplace<TransformComponent>(entity);
-        m_Registry.emplace<MeshRendererComponent>(entity, mm->GetPrimitiveUUID("cube"), am->GetOrCreateMaterialBase("Marble009")->m_ID);
+        m_Registry.emplace<MeshRendererComponent>(entity, mm->GetPrimitiveUUID("cube"), am->GetOrCreateMaterialBase("Marble009")->m_UUID);
         // TODO: add fallback for mesh and material
 
         m_Entities[uuid] = entity;

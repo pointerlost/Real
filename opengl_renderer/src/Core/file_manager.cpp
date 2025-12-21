@@ -2,9 +2,10 @@
 // Created by pointerlost on 9/7/25.
 //
 #include "Core/file_manager.h"
+#include <filesystem>
+#include <algorithm>
 #include <fstream>
 #include "Core/Logger.h"
-#include <Common/RealTypes.h>
 
 namespace Real::fs {
 
@@ -34,7 +35,7 @@ namespace Real::fs {
         return std::filesystem::exists(path);
     }
 
-    bool File::DeleteFile(const std::string &path) {
+    bool File::Delete(const std::string &path) {
         if (Exists(path)) {
             if (std::filesystem::remove(path)) {
                 return true;
@@ -70,21 +71,15 @@ namespace Real::fs {
     }
 
     FileInfo CreateFileInfoFromPath(const std::string &path) {
+        std::string pathStr = path;
+        std::ranges::replace(pathStr, '\\', '/');
+        const std::filesystem::path p(pathStr);
+
         FileInfo info;
-        const size_t slashPos = path.find_last_of("/\\");
-
-        if (slashPos == std::string::npos)
-            Warn("There is no '/' in the path, So can't created FileInfo!!! Fix it");
-
-        info.path = path;
-        info.name = path.substr(slashPos + 1);
-
-        const size_t dotPos = info.name.find_last_of('.');
-        if (dotPos == std::string::npos)
-            Warn("There is no '.' in the path, So can't created FileInfo!!! Fix it");
-
-        info.ext  = info.name.substr(dotPos);
-        info.stem = info.name.substr(0, dotPos);
+        info.name = p.filename().string();
+        info.stem = p.stem().string();
+        info.path = p.string();
+        info.ext  = p.extension().string();
 
         return info;
     }

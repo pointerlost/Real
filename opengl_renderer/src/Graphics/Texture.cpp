@@ -16,25 +16,22 @@
 
 namespace Real {
 
-    OpenGLTexture::OpenGLTexture(const TextureData &data, TextureType type,
+    OpenGLTexture::OpenGLTexture(const TextureData &data, bool isSTBAllocated, TextureType type,
         ImageFormatState image_state, FileInfo info, UUID uuid)
-        : m_UUID(uuid), m_ImageFormatState(image_state), m_FileInfo(std::move(info))
+        : m_UUID(uuid), m_IsSTBAllocated(isSTBAllocated), m_ImageFormatState(image_state), m_FileInfo(std::move(info))
     {
         CreateFromData(data, type);
     }
 
-    OpenGLTexture::OpenGLTexture(FileInfo fileinfo, ImageFormatState imagestate)
-        : m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo)) {}
+    OpenGLTexture::OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate)
+        : m_IsSTBAllocated(isSTBAllocated), m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo)) {}
 
-    OpenGLTexture::OpenGLTexture(TextureType type) : m_Type(type) {}
+    OpenGLTexture::OpenGLTexture(bool isSTBAllocated, TextureType type)
+        : m_IsSTBAllocated(isSTBAllocated), m_Type(type) {}
 
     OpenGLTexture::~OpenGLTexture() {
-        for (auto level : m_MipLevelsData) {
-            if (!level.m_Data) {
-                delete[] static_cast<uint8_t*>(level.m_Data);
-                level.m_Data = nullptr;
-            }
-        }
+        CleanUpCPUData(); // Clean if it has not already been cleaned
+
         if (m_Handle != 0) {
             glDeleteTextures(1, &m_Handle);
         }
@@ -65,7 +62,7 @@ namespace Real {
     }
 
     void OpenGLTexture::SetIndex(int idx) {
-        m_Index = idx;
+        m_GPUIndex = idx;
     }
 
     void OpenGLTexture::SetFormat(int format, int mipLevel) {
@@ -157,6 +154,9 @@ namespace Real {
         }
         // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
         data.m_DataSize = data.m_Width * data.m_Height * data.m_ChannelCount * 1;
+        data.m_Format   = util::GetGLFormat(data.m_ChannelCount);
+        data.m_InternalFormat = util::GetGLInternalFormat(data.m_ChannelCount);
+        m_IsSTBAllocated = true;
         return data;
     }
 
@@ -164,7 +164,6 @@ namespace Real {
         if (m_Handle == 0) {
             CreateHandle();
         }
-        // TODO: Fix it this shit
         const auto data = LoadFromFile(m_FileInfo.path);
         CreateFromData(data, m_Type);
     }
@@ -179,9 +178,22 @@ namespace Real {
         if (m_ImageFormatState == ImageFormatState::COMPRESS_ME || m_ImageFormatState == ImageFormatState::COMPRESSED) {
             m_MipLevelsData[0].m_InternalFormat = util::GetCompressedInternalFormat(m_MipLevelsData[0].m_ChannelCount);
         } else {
-            m_MipLevelsData[0].m_InternalFormat = util::ConvertChannelCountToGLInternalFormat(m_MipLevelsData[0].m_ChannelCount);
+            m_MipLevelsData[0].m_InternalFormat = util::GetGLInternalFormat(m_MipLevelsData[0].m_ChannelCount);
         }
-        m_MipLevelsData[0].m_Format = util::ConvertChannelCountToGLFormat(m_MipLevelsData[0].m_ChannelCount);
+        m_MipLevelsData[0].m_Format = util::GetGLFormat(m_MipLevelsData[0].m_ChannelCount);
+    }
+
+    void OpenGLTexture::CleanUpCPUData() {
+        for (auto& level : m_MipLevelsData) {
+            if (level.m_Data) {
+                if (m_IsSTBAllocated) {
+                    stbi_image_free(level.m_Data);
+                } else {
+                    delete[] static_cast<uint8_t*>(level.m_Data);
+                }
+                level.m_Data = nullptr;
+            }
+        }
     }
 
     void OpenGLTexture::PrepareOptionsAndUploadToGPU() {
@@ -224,6 +236,7 @@ namespace Real {
             case ImageFormatState::COMPRESS_ME:
                 tools::CompressTextureAndReadFromFile(this);
                 // Don't break the switch statement and load compressed state!
+
             case ImageFormatState::COMPRESSED: {
                 // Allocate enough memory for all the mip levels
                 glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].m_InternalFormat,
@@ -354,5 +367,9 @@ namespace Real {
         if (glIsTextureHandleResidentARB(m_BindlessHandleID)) {
             glMakeTextureHandleNonResidentARB(m_BindlessHandleID);
         }
+    }
+
+    bool OpenGLTexture::IsCPUGenerated() const {
+        return !m_IsSTBAllocated;
     }
 }

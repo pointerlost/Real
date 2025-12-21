@@ -15,94 +15,151 @@
 
 namespace Real::serialization::binary {
 
-    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader,
-        std::vector<Graphics::Vertex> vertices, std::vector<uint64_t> indices)
-    {
-        std::ofstream file(path, std::ios::binary);
+    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader, const std::vector<UUID>& meshUUIDs) {
+        std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
-            Warn("Can't created model binary file: " + path);
+            Warn("[Write] Model binary file can't opening: " + path);
             return;
         }
 
-        // Write magic numbers
-        file.write(reinterpret_cast<char*>(binaryHeader.m_Magic), sizeof(uint32_t));
+        // Update the mesh count to be sure
+        binaryHeader.m_MeshCount = static_cast<uint32_t>(meshUUIDs.size());
 
-        // Write version
-        file.write(reinterpret_cast<char*>(&binaryHeader.m_Version), sizeof(uint32_t));
+        // Write entire header once
+        file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
 
-        // Write UUID
-        file.write(reinterpret_cast<char*>(&binaryHeader.m_UUID), sizeof(uint64_t));
+        std::vector<uint64_t> raw_ids;
+        raw_ids.reserve(meshUUIDs.size());
+        for (const auto& uuid : meshUUIDs) {
+            raw_ids.push_back(static_cast<uint64_t>(uuid));
+        }
+        // Bulk upload Mesh UUIDs
+        file.write(reinterpret_cast<const char*>(raw_ids.data()), raw_ids.size() * sizeof(uint64_t));
 
-        // Write Per Mesh data
-        size_t count = binaryHeader.m_MeshData.size();
-        file.write(reinterpret_cast<char *>(&count), sizeof(count));
-        file.write(reinterpret_cast<const char *>(binaryHeader.m_MeshData.data()), count * sizeof(MeshEntry));
-
-        // Write Mesh Info
-        file.write(reinterpret_cast<const char *>(&binaryHeader.m_MeshInfo), sizeof(binaryHeader.m_MeshInfo));
-
-        const auto& vc = binaryHeader.m_MeshInfo.m_VertexCount;
-        const auto& ic = binaryHeader.m_MeshInfo.m_IndexCount;
-
-        file.write(reinterpret_cast<char*>(vertices.data()), vc * sizeof(Graphics::Vertex));
-        file.write(reinterpret_cast<char*>(indices.data()),  ic * sizeof(uint64_t));
+        if (!file) {
+            Warn("Failed to write data!");
+            return;
+        }
 
         file.close();
     }
 
-    ModelBinaryHeader LoadModel(const std::string &path) {
+    UUID LoadModel(const std::string &path) {
         const auto& am = Services::GetAssetManager();
-        const auto& mm = Services::GetMeshManager();
-        ModelBinaryHeader m_binary;
         std::vector<Graphics::Vertex> vertices;
         std::vector<uint64_t> indices;
 
-        std::fstream file(path, std::ios::binary);
+        std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
-            Warn("There is no file, path: " + path);
+            Warn("[Load] Model binary file can't opening: " + path);
             return{};
         }
 
-        // Read REAL magic numbers
-        file.read(reinterpret_cast<char*>(&m_binary.m_Magic), 4);
-        if (m_binary.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
-            Warn("Real magic number mismatch!");
+        ModelBinaryHeader header;
+
+        // Read ENTIRE header
+        file.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+        // Validate REAL magic numbers
+        if (header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
+            Warn("Real Magic number mismatch!");
             return{};
         }
 
-        // Read Version
-        file.read(reinterpret_cast<char*>(&m_binary.m_Version), sizeof(uint32_t));
-
-        // Read UUID
-        file.read(reinterpret_cast<char*>(&m_binary.m_UUID), sizeof(uint64_t));
-
-        // Read mesh count
-        file.read((char*)&m_binary.m_MeshCount, sizeof(uint64_t));
-        m_binary.m_MeshData.resize(m_binary.m_MeshCount);
-
-        // Read per mesh data
-        file.read(reinterpret_cast<char*>(m_binary.m_MeshData.data()), m_binary.m_MeshCount * sizeof(MeshEntry));
-
-        // Read Mesh Info
-        file.read(reinterpret_cast<char*>(&m_binary.m_MeshInfo), sizeof(Graphics::MeshInfo));
-
-        const auto& vc = m_binary.m_MeshInfo.m_VertexCount;
-        const auto& ic = m_binary.m_MeshInfo.m_IndexCount;
-
-        vertices.resize(vc);
-        indices.resize(ic);
-
-        // Read vertices and indices
-        file.read(reinterpret_cast<char*>(vertices.data()), vc * sizeof(Graphics::Vertex));
-        file.read(reinterpret_cast<char*>(indices.data()),  ic * sizeof(uint64_t));
-
-        file.close();
-
-        mm->LoadMeshFromFile(vertices, indices, m_binary.m_MeshInfo);
         const auto& fi = fs::CreateFileInfoFromPath(path);
-        const auto& m  = CreateRef<Model>(m_binary, fi);
+        const auto& m  = CreateRef<Model>(header, fi);
         am->SaveModelCPU(m);
 
-        return m_binary;
+        if (header.m_MeshCount > 0) {
+            std::vector<uint64_t> raw_ids(header.m_MeshCount);
+            file.read(reinterpret_cast<char*>(raw_ids.data()), header.m_MeshCount * sizeof(uint64_t));
+
+            m->m_MeshUUIDs.reserve(header.m_MeshCount);
+            for (uint64_t raw_id : raw_ids) {
+                m->m_MeshUUIDs.emplace_back(raw_id);
+            }
+        }
+
+        if (!file) {
+            Warn("Failed to read data!");
+            return{};
+        }
+
+        // Close Binary file
+        file.close();
+
+        return m->m_UUID;
     }
+
+    void WriteMesh(const std::string &path, const MeshBinaryHeader &binaryHeader,
+        const std::vector<Graphics::Vertex>& vertices, const std::vector<uint64_t>& indices)
+    {
+        std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
+        if (!file) {
+            Warn("[Write] Mesh binary file can't opening: " + path);
+            return;
+        }
+
+        file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
+
+        if (!vertices.empty()) {
+            file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(Graphics::Vertex));
+        } else {
+            Warn("[WriteMesh] Vertices are empty!");
+        }
+
+        if (!indices.empty()) {
+            file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(uint64_t));
+        } else {
+            Warn("[WriteMesh] Indices are empty!");
+        }
+
+        if (!file) {
+            Warn("Failed to write data!");
+            return;
+        }
+
+        file.close();
+    }
+
+    UUID LoadMesh(const std::string &path) {
+        std::ifstream file(path, std::ios::binary | std::ios::in);
+        if (!file) {
+            Warn("[Load] Mesh binary file can't opening: " + path);
+            return{};
+        }
+
+        MeshBinaryHeader header;
+        file.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+        // Validate REAL magic numbers
+        if (header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
+            Warn("Real Magic number mismatch!");
+            return{};
+        }
+
+        std::vector<Graphics::Vertex> vertices(header.m_VertexCount);
+        if (header.m_VertexCount > 0) {
+            file.read(reinterpret_cast<char*>(vertices.data()), header.m_VertexCount * sizeof(Graphics::Vertex));
+        }
+
+        std::vector<uint64_t> indices(header.m_IndexCount);
+        if (header.m_IndexCount > 0) {
+            file.read(reinterpret_cast<char*>(indices.data()), header.m_IndexCount * sizeof(uint64_t));
+        }
+
+        if (!file) {
+            Warn("Failed to read data!");
+            return{};
+        }
+
+        // Call the UUID constructor before sending UUIDs
+        const auto meshUUID = UUID(header.m_MeshUUID);
+        const auto matUUID  = UUID(header.m_MaterialUUID);
+        Services::GetMeshManager()->CreateSingleMesh(vertices, indices, matUUID, meshUUID);
+
+        file.close();
+        return meshUUID;
+    }
+
 }

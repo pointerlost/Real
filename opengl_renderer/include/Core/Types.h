@@ -12,4 +12,9 @@
 #include <utility>
 
 namespace Real {
+
+    enum class EngineMode {
+        Editor,
+        Runtime
+    };
 }

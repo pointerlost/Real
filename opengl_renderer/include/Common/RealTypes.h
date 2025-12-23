@@ -37,7 +37,7 @@ namespace Real {
         uint32_t m_Magic = REAL_MAGIC;
         uint32_t m_Version = 1;
 
-        uint64_t m_MeshUUID{};
+        uint64_t m_UUID{};
         uint64_t m_MaterialUUID{};
 
         uint64_t m_VertexCount{};
@@ -46,5 +46,11 @@ namespace Real {
         uint64_t m_IndexOffset{};
     };
 #pragma pack(pop)
+
+    struct MeshLoadResult {
+        MeshBinaryHeader header;
+        std::vector<Graphics::Vertex> vertices;
+        std::vector<uint64_t> indices;
+    };
 
 }

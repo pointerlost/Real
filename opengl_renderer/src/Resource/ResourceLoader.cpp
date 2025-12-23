@@ -3,6 +3,7 @@
 //
 #include "Resource/ResourceLoader.h"
 
+#include "Core/AssetImporter.h"
 #include "Core/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
@@ -23,15 +24,15 @@ namespace Real {
     }
 
     void ResourceLoader::LoadAssets() {
-        const auto& am = Services::GetAssetManager();
-
+        const auto& ai = Services::GetAssetImporter();
         // The order is matter!!
-        am->LoadAssetsFromDataBase();
+        ai->ImportFromDatabase();
         m_ModelLoader->LoadAll(std::string(ASSETS_SOURCE_DIR) + "models/");
-
         // If there are new assets from the ModelLoader, upload them to the database!
         // We can also add new loading states here...
-        am->LoadNewAssetsToDataBase();
+        ai->LoadNewAssetsToDataBase();
+
+        m_RenderContext->GetGPURenderData().textures = Services::GetAssetManager()->UploadTexturesToGPU();
 
         Info("[ResourceLoader] Assets loaded successfully!");
     }

@@ -16,6 +16,7 @@
 #include "Util/Util.h"
 #include <stb/stb_image.h>
 
+#include "Core/AssetImporter.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Graphics/Model.h"
@@ -25,43 +26,16 @@
 namespace Real {
 
     AssetManager::AssetManager() {
-        m_AssetDB = serialization::json::Load(ASSET_DB_PATH);
-        s_LoadedAssetDB = true;
-
-        if (!m_AssetDB.contains("textures") || !m_AssetDB["textures"].is_object())
-            m_AssetDB["textures"] = nlohmann::json::object();
-
-        if (!m_AssetDB.contains("materials") || !m_AssetDB["materials"].is_object())
-            m_AssetDB["materials"] = nlohmann::json::object();
+        LoadDefaultTextures();
     }
 
-    void AssetManager::SaveCPUTexture(const Ref<OpenGLTexture> &tex) {
+    void AssetManager::SaveTextureCPU(const Ref<OpenGLTexture> &tex) {
         if (!m_Textures.contains(tex->GetUUID())) {
-            m_Textures[tex->GetUUID()] = tex;
+            m_Textures.emplace(tex->GetUUID(), tex);
         }
     }
 
     void AssetManager::Update() {
-        UpdateAssetDB();
-    }
-
-    void AssetManager::LoadNewAssetsToDataBase() {
-        // If not already added, save the materials to the database
-        for (const auto& mat : std::views::values(m_Materials)) {
-            for (const auto& tex : GetMaterialTextures(mat.get())) {
-                SaveTextureToAssetDB(GetTexture( tex->GetUUID(), tex->GetType() ).get());
-                m_LoadedTexturesPath.insert(tex->GetPath());
-            }
-            SaveMaterialToAssetDB(mat);
-        }
-    }
-
-    nlohmann::json& AssetManager::GetAssetDB() {
-        if (!s_LoadedAssetDB) {
-            m_AssetDB = serialization::json::Load(ASSET_DB_PATH);
-            s_LoadedAssetDB = true;
-        }
-        return m_AssetDB;
     }
 
     void AssetManager::LoadShader(const std::string &vertexPath, const std::string &fragmentPath,
@@ -247,83 +221,6 @@ namespace Real {
         return data;
     }
 
-    void AssetManager::LoadAssetsFromDataBase() {
-        LoadDefaultTextures();
-        LoadTexturesFromAssetDB();
-        LoadMaterialsFromAssetDB();
-        LoadMeshesFromAssetDB();
-        LoadModelsFromAssetDB();
-
-        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
-
-        const auto SaveTexture = [this, &m_ormPack](const FileInfo& file, ImageFormatState image_state) {
-            if (m_LoadedTexturesPath.contains(file.path)) return; // If already loaded skip it
-
-            auto& stem = file.stem;
-            const auto dashPos = stem.find('_');
-            const auto matName = stem.substr(0, dashPos);
-            const TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
-
-            const auto texData = LoadTextureFromFile(file.path, type);
-            const auto texture = CreateRef<OpenGLTexture>(texData, true, type, image_state, file);
-
-            if (type == TextureType::AMBIENT_OCCLUSION) {
-                m_ormPack[matName][0] = texture;
-                return;
-            }
-            if (type == TextureType::ROUGHNESS) {
-                m_ormPack[matName][1] = texture;
-                return;
-            }
-            if (type == TextureType::METALLIC) {
-                m_ormPack[matName][2] = texture;
-                return;
-            }
-
-            if (image_state == ImageFormatState::COMPRESS_ME) {
-                tools::CompressTextureAndReadFromFile(texture.get());
-            }
-            m_Textures[texture->GetUUID()] = texture;
-
-            const auto& mat = GetOrCreateMaterialBase(matName);
-            switch (type) {
-                case TextureType::ALBEDO:   mat->m_Albedo   = texture->GetUUID(); break;
-                case TextureType::NORMAL:   mat->m_Normal   = texture->GetUUID(); break;
-                case TextureType::ORM:      mat->m_ORM      = texture->GetUUID(); break;
-                case TextureType::HEIGHT:   mat->m_Height   = texture->GetUUID(); break;
-                case TextureType::EMISSIVE: mat->m_Emissive = texture->GetUUID(); break;
-                default: ;
-            }
-        };
-
-        // Uncompressed State (Load from file)
-        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
-            SaveTexture(file, ImageFormatState::UNCOMPRESSED);
-        }
-
-        // Compress_me State (Load from file)
-        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
-            SaveTexture(file, ImageFormatState::COMPRESS_ME);
-        }
-
-        // Process ORM textures
-        for (const auto& [matName, pack] : m_ormPack) {
-            const auto& ao  = pack[0] ? pack[0] : GetOrCreateDefaultTexture(TextureType::AMBIENT_OCCLUSION);
-            const auto& rgh = pack[1] ? pack[1] : GetOrCreateDefaultTexture(TextureType::ROUGHNESS);
-            const auto& mtl = pack[2] ? pack[2] : GetOrCreateDefaultTexture(TextureType::METALLIC);
-            const auto& orm = tools::PackTexturesToRGBChannels(ao, rgh, mtl, matName);
-            if (!orm || orm->GetImageFormatState() == ImageFormatState::DEFAULT) {
-                continue;
-            }
-            m_LoadedTexturesPath.insert(orm->GetPath());
-            GetOrCreateMaterialBase(matName)->m_ORM = orm->GetUUID();
-            tools::CompressTextureAndReadFromFile(orm.get());
-        }
-
-        // Bulk upload
-        UpdateAssetDB();
-    }
-
     void AssetManager::DeleteCPUTexture(const UUID &uuid) {
         if (m_Textures.contains(uuid)) {
             m_Textures.erase(uuid);
@@ -361,6 +258,29 @@ namespace Real {
         return m_MaterialInstances[uuid] = CreateRef<MaterialInstance>(uuid);
     }
 
+    std::string AssetManager::GenerateUniqueMaterialName(const std::string &desiredName) {
+        std::string base = NormalizeMaterialName(desiredName);
+
+        // Fast path
+        if (!m_MaterialNameToUUID.contains(base))
+            return base;
+
+        uint32_t index = 1;
+        std::string candidate;
+
+        do {
+            candidate = base + "_" + std::to_string(index++);
+        } while (m_MaterialNameToUUID.contains(candidate));
+
+        return candidate;
+    }
+
+    std::string AssetManager::NormalizeMaterialName(std::string name) {
+        Trim(name);
+        if (name.empty()) name = "New_Material";
+        return name;
+    }
+
     std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
         std::vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
@@ -371,9 +291,6 @@ namespace Real {
             }
             tex->SetIndex(bindlessIDs.size());
             bindlessIDs.push_back(tex->GetBindlessHandle());
-
-            // Clean the texture data after uploading it to the GPU
-            tex->CleanUpCPUData();
         }
         return bindlessIDs;
     }
@@ -410,171 +327,30 @@ namespace Real {
         return false;
     }
 
-    void AssetManager::SaveModelToAssetDB(const Ref<Model>& model) {
-        if (m_Models.contains(model->m_UUID)) return;
-
-        const std::string uuidStr = std::to_string(model->m_UUID);
-        nlohmann::json& m = m_AssetDB["models"][uuidStr];
-
-        // Binary file path
-        m["binary"] = std::string(ASSETS_RUNTIME_DIR) + "models/" + model->m_Name + ".model";
-        m["name"]   = model->m_Name; // Engine asset name
-
-        // File info
-        m["file_name"]      = model->m_FileInfo.name;
-        m["file_stem"]      = model->m_FileInfo.stem;
-        m["file_path"]      = model->m_FileInfo.path;
-        m["file_extension"] = model->m_FileInfo.ext;
-
-        MarkDirtyAssetDB();
-        SaveModelCPU(model);
-    }
-
     void AssetManager::SaveModelCPU(const Ref<Model> &model) {
-        if (m_Models.contains(model->m_UUID)) return;
-        m_Models[model->m_UUID] = model;
-    }
-
-    void AssetManager::LoadModelsFromAssetDB() {
-        for (const auto& [uuidStr, modeldata] : m_AssetDB["models"].items()) {
-            UUID uuid;
-            if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalid UUID in material DB");
-                continue;
-            }
-
-            FileInfo info;
-            info.name = modeldata["file_name"];
-            info.stem = modeldata["file_stem"];
-            info.path = modeldata["file_path"];
-            info.ext  = modeldata["file_extension"];
-
-            const auto& b_path = modeldata["binary"];
-            const auto& b_header = serialization::binary::LoadModel(b_path);
-
-            const auto& model = CreateRef<Model>(b_header, info);
-            model->m_Name = modeldata["name"];
-
-            m_Models[uuid] = model;
-            m_ModelNameToUUID[model->m_Name] = uuid;
+        if (!m_Models.contains(model->m_UUID)) {
+            m_Models.emplace(model->m_UUID, model);
         }
     }
 
-    void AssetManager::LoadMaterialsFromAssetDB() {
-        for (const auto& [uuidStr, mat_data] : m_AssetDB["materials"].items()) {
-            UUID uuid;
-            if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalid UUID in Material DB");
-                continue;
-            }
-            const std::string name = mat_data.value("name", "Material");
-            if (m_MaterialNameToUUID.contains(name)) continue; // if material already added skip it
-
-            const Ref<Material> mat = CreateRef<Material>(uuid);
-            mat->m_Name = name;
-
-            if (mat_data.contains("textures")) {
-                const nlohmann::json& t = mat_data["textures"];
-
-                mat->m_Albedo   = UUID(t.value("albedo",   0ULL));
-                mat->m_Normal   = UUID(t.value("normal",   0ULL));
-                mat->m_ORM      = UUID(t.value("orm",      0ULL));
-                mat->m_Height   = UUID(t.value("height",   0ULL));
-                mat->m_Emissive = UUID(t.value("emissive", 0ULL));
-            }
-
-            m_Materials[uuid] = mat; // Material registry
-            m_MaterialNameToUUID[name] = uuid; // Cache material
+    void AssetManager::SaveMaterialCPU(const Ref<Material> &material) {
+        if (!m_Materials.contains(material->m_UUID)) {
+            m_Materials.emplace(material->m_UUID, material);
         }
     }
 
-    void AssetManager::SaveMaterialToAssetDB(const Ref<Material>& mat) {
-        const std::string uuidStr = std::to_string(mat->m_UUID);
-        if (m_AssetDB["materials"].contains(uuidStr)) return; // If it already exists
-
-        nlohmann::json& material = m_AssetDB["materials"][uuidStr];
-
-        material["name"] = mat->m_Name;
-
-        material["textures"] = {
-            { "albedo",   static_cast<uint64_t>(mat->m_Albedo)   },
-            { "normal",   static_cast<uint64_t>(mat->m_Normal)   },
-            { "orm",      static_cast<uint64_t>(mat->m_ORM)      },
-            { "height",   static_cast<uint64_t>(mat->m_Height)   },
-            { "emissive", static_cast<uint64_t>(mat->m_Emissive) }
-        };
-        MarkDirtyAssetDB();
-    }
-
-    void AssetManager::SaveTextureToAssetDB(const OpenGLTexture *texture) {
-        const std::string uuidStr = std::to_string(texture->GetUUID());
-        if (m_AssetDB["textures"].contains(uuidStr)) return; // If it already exists
-
-        nlohmann::json& tex = m_AssetDB["textures"][uuidStr];
-
-        tex["name"]      = texture->GetName();
-        tex["stem"]      = texture->GetStem();
-        tex["path"]      = texture->GetPath();
-        tex["extension"] = texture->GetExtension();
-        tex["type"]      = util::TextureType_EnumToString(texture->GetType());
-        tex["image_format_state"] = util::ImageFormatState_EnumToString(texture->GetImageFormatState());
-
-        MarkDirtyAssetDB();
-    }
-
-    void AssetManager::LoadTexturesFromAssetDB() {
-        for (const auto& [uuidStr, tex_data] : m_AssetDB["textures"].items()) {
-            FileInfo fi;
-            fi.name = tex_data.value("name", "null");
-            fi.stem = tex_data.value("stem", "null");
-            fi.path = tex_data.value("path", "null");
-            fi.ext  = tex_data.value("extension", "null");
-
-            UUID uuid;
-            if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalid UUID in Material DB");
-                continue;
-            }
-            const auto type = util::TextureType_StringToEnum(tex_data["type"]);
-            const auto td   = LoadTextureFromFile(fi.path, type);
-            const auto ifs  = util::ImageFormatState_StringToEnum(tex_data["image_format_state"]);
-
-            const auto texture = CreateRef<OpenGLTexture>(td, true, type, ifs, fi, uuid);
-
-            m_Textures[uuid] = texture;
-            m_LoadedTexturesPath.insert(fi.path); // Cache texture
-        }
-    }
-
-    void AssetManager::SaveMeshToAssetDB(const MeshBinaryHeader &header, const std::string& name) {
-        const std::string uuidStr = std::to_string(header.m_MeshUUID);
-        if (m_AssetDB["meshes"].contains(uuidStr)) return;
-
-        nlohmann::json& m = m_AssetDB["meshes"][uuidStr];
-
-        // Binary file path
-        m["binary"] = std::string(ASSETS_RUNTIME_DIR) + "models/" + name + ".mesh";
-        m["name"]   = name; // Engine asset name
-
-        MarkDirtyAssetDB();
-    }
-
-    void AssetManager::LoadMeshesFromAssetDB() {
-        for (const auto& [uuidStr, mesh_data] : m_AssetDB["meshes"].items()) {
-            const auto& path = mesh_data["binary"];
-            // Save meshes to mesh manager
-            serialization::binary::LoadMesh(path);
-        }
+    const std::unordered_map<UUID, Ref<Material>>& AssetManager::GetBaseMaterials() {
+        return m_Materials;
     }
 
     void AssetManager::RenameMaterial(const std::string &newName, const UUID &uuid) {
         const std::string uuidStr = std::to_string(uuid);
 
-        if (!m_AssetDB["materials"].contains(uuidStr))
-            return;
+        const auto& ai = Services::GetAssetImporter();
+        auto& db = ai->GetAssetDB();
 
         // Update JSON
-        m_AssetDB["materials"][uuidStr]["name"] = newName;
+        db["materials"][uuidStr]["name"] = newName;
 
         // TODO: Should i change the texture names as well???
 
@@ -584,17 +360,7 @@ namespace Real {
         mat->m_Name = newName;
         m_MaterialNameToUUID[newName] = uuid;
 
-        MarkDirtyAssetDB();
-    }
-
-    void AssetManager::MarkDirtyAssetDB() {
-        m_AssetDBDirty = true;
-    }
-
-    void AssetManager::UpdateAssetDB() {
-        if (!m_AssetDBDirty) return;
-        serialization::json::Save(ASSET_DB_PATH, m_AssetDB);
-        m_AssetDBDirty = false;
+        ai->MarkDirtyAssetDB();
     }
 
     void AssetManager::LoadDefaultTextures() {
@@ -612,19 +378,56 @@ namespace Real {
     std::vector<Ref<OpenGLTexture>> AssetManager::GetMaterialTextures(const Material *mat) {
         std::vector<Ref<OpenGLTexture>> textures;
 
-        auto tryAddTexture = [&](const UUID textureId) {
-            if (const auto it = m_Textures.find(textureId); it != m_Textures.end()) {
-                if (it->second->GetImageFormatState() == ImageFormatState::DEFAULT) return;
-                textures.push_back(it->second);
+        auto tryAddTexture = [this](const UUID textureId, std::vector<Ref<OpenGLTexture>>& outTextures) {
+            if (textureId == 0) return; // Skip invalid UUID
+            const auto it = m_Textures.find(textureId);
+            if (it != m_Textures.end() && it->second && it->second->GetImageFormatState() != ImageFormatState::DEFAULT) {
+                outTextures.push_back(it->second);
             }
         };
 
-        tryAddTexture(mat->m_Albedo);
-        tryAddTexture(mat->m_Normal);
-        tryAddTexture(mat->m_ORM);
-        tryAddTexture(mat->m_Height);
-        tryAddTexture(mat->m_Emissive);
+        tryAddTexture(mat->m_Albedo, textures);
+        tryAddTexture(mat->m_Normal, textures);
+        tryAddTexture(mat->m_ORM, textures);
+        tryAddTexture(mat->m_Height, textures);
+        tryAddTexture(mat->m_Emissive, textures);
 
         return textures;
+    }
+
+    Ref<Material> AssetManager::GetMaterialBase(const std::string& name) {
+        const auto it = m_MaterialNameToUUID.find(name);
+        if (it == m_MaterialNameToUUID.end()) {
+            Warn("Material not found: " + name);
+            return nullptr;
+        }
+        const auto mit = m_Materials.find(it->second);
+        return (mit != m_Materials.end()) ? mit->second : nullptr;
+    }
+
+    Ref<Material> AssetManager::LoadMaterialBase(const UUID &uuid, const std::string &name) {
+        if (m_Materials.contains(uuid))
+            return m_Materials.at(uuid);
+
+        auto mat = CreateRef<Material>(uuid);
+        mat->m_Name = name;
+
+        m_Materials.emplace(uuid, mat);
+        m_MaterialNameToUUID.emplace(name, uuid);
+
+        return mat;
+    }
+
+    Ref<Material> AssetManager::CreateMaterialBase(const std::string& name) {
+        const std::string uniqueName = GenerateUniqueMaterialName(name);
+        UUID uuid{};
+
+        auto mat = CreateRef<Material>(uuid);
+        mat->m_Name = uniqueName;
+
+        m_Materials.emplace(uuid, mat);
+        m_MaterialNameToUUID.emplace(uniqueName, uuid);
+
+        return mat;
     }
 }

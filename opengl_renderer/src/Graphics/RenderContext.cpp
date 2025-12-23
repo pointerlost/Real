@@ -26,7 +26,6 @@ namespace Real {
             MAX_ENTITIES * sizeof(TransformSSBO), BufferType::SSBO
         );
 
-        m_GPUDatas.textures = Services::GetAssetManager()->UploadTexturesToGPU();
         m_Buffers.texture.Create(m_GPUDatas.textures,
             MAX_ENTITIES * sizeof(GLuint64), BufferType::SSBO
         );

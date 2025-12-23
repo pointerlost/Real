@@ -9,15 +9,12 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "Core/Callback.h"
-#include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
-#include "Graphics/Material.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Scene/Components.h"
-#include "Serialization/Binary.h"
 
 namespace Real {
 
@@ -30,13 +27,16 @@ namespace Real {
         m_EditorTimer.reset();
         m_Window.reset();
         m_EditorState.reset();
+        m_AssetImporter.reset();
         ShutDown();
     }
 
     void Engine::InitResources() {
+        // The order is matter!
         InitWindow();
         InitCallbacks(m_Window->GetGLFWWindow());
         InitSystems();
+        InitAssetImporter();
         InitAssetManager();
         InitMeshManager();
 
@@ -91,6 +91,7 @@ namespace Real {
     void Engine::UpdatePhase() const {
         m_EditorTimer->Update();
         Input::Update(m_CameraInput.get());
+        m_AssetImporter->Update();
         m_AssetManager->Update();
         m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
@@ -101,6 +102,9 @@ namespace Real {
         Services::SetMeshManager(m_MeshManager.get());
         Services::SetEditorTimer(m_EditorTimer.get());
         Services::SetEditorState(m_EditorState.get());
+        Services::SetAssetImporter(m_AssetImporter.get());
+        // TODO: Need Shader manager?
+
         Info("Services initialized successfully!");
     }
 
@@ -109,6 +113,11 @@ namespace Real {
         // Init sub-systems
         m_Systems->Init();
         Info("Systems initialized successfully!");
+    }
+
+    void Engine::InitAssetImporter() {
+        m_AssetImporter = CreateScope<AssetImporter>();
+        Info("Asset Importer initialized successfully!");
     }
 
     void Engine::InitEditorState() {

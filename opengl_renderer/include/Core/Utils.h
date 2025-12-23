@@ -2,6 +2,7 @@
 // Created by pointerlost on 10/3/25.
 //
 #pragma once
+#include <algorithm>
 #include <iostream>
 #include <format>
 #include <memory>
@@ -31,5 +32,23 @@ namespace Real {
     template <typename... Args>
     void ToStringAndRead(Args... args) {
         std::cout << (std::to_string(args) + ...) << "\n";
+    }
+
+    inline void TrimLeft(std::string& s) {
+        s.erase(
+            s.begin(),
+            std::ranges::find_if(s, [](unsigned char ch) { return !std::isspace(ch); })
+        );
+    }
+
+    inline void TrimRight(std::string& s) {
+        s.erase(
+            std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end()
+        );
+    }
+
+    inline void Trim(std::string& s) {
+        TrimLeft(s);
+        TrimRight(s);
     }
 }

@@ -16,6 +16,7 @@ namespace Real {
             ImageFormatState image_state = ImageFormatState::UNCOMPRESSED,
             FileInfo info = FileInfo(), UUID uuid = UUID()
         );
+        explicit OpenGLTexture(const std::vector<TextureData>& data); // Compressed textures
         explicit OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
         explicit OpenGLTexture(bool isSTBAllocated = false, TextureType type = TextureType::UNDEFINED);
         OpenGLTexture(const OpenGLTexture&) = default;

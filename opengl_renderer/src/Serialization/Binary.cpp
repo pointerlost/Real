@@ -22,7 +22,7 @@ namespace Real::serialization::binary {
             return;
         }
 
-        // Update the mesh count to be sure
+        // Update the mesh count to ensure the size is correct
         binaryHeader.m_MeshCount = static_cast<uint32_t>(meshUUIDs.size());
 
         // Write entire header once
@@ -37,15 +37,14 @@ namespace Real::serialization::binary {
         file.write(reinterpret_cast<const char*>(raw_ids.data()), raw_ids.size() * sizeof(uint64_t));
 
         if (!file) {
-            Warn("Failed to write data!");
+            Warn("[WriteModel] Failed to write data!");
             return;
         }
 
         file.close();
     }
 
-    UUID LoadModel(const std::string &path) {
-        const auto& am = Services::GetAssetManager();
+    std::pair<ModelBinaryHeader, std::vector<UUID>> LoadModel(const std::string &path) {
         std::vector<Graphics::Vertex> vertices;
         std::vector<uint64_t> indices;
 
@@ -57,7 +56,7 @@ namespace Real::serialization::binary {
 
         ModelBinaryHeader header;
 
-        // Read ENTIRE header
+        // Read entire header
         file.read(reinterpret_cast<char*>(&header), sizeof(header));
 
         // Validate REAL magic numbers
@@ -66,29 +65,28 @@ namespace Real::serialization::binary {
             return{};
         }
 
-        const auto& fi = fs::CreateFileInfoFromPath(path);
-        const auto& m  = CreateRef<Model>(header, fi);
-        am->SaveModelCPU(m);
+        std::vector<uint64_t> raw_ids(header.m_MeshCount);
+        std::vector<UUID> meshUUIDs;
+        meshUUIDs.reserve(header.m_MeshCount);
 
         if (header.m_MeshCount > 0) {
-            std::vector<uint64_t> raw_ids(header.m_MeshCount);
-            file.read(reinterpret_cast<char*>(raw_ids.data()), header.m_MeshCount * sizeof(uint64_t));
+            file.read(reinterpret_cast<char*>(raw_ids.data()),
+                      header.m_MeshCount * sizeof(uint64_t));
+        }
 
-            m->m_MeshUUIDs.reserve(header.m_MeshCount);
-            for (uint64_t raw_id : raw_ids) {
-                m->m_MeshUUIDs.emplace_back(raw_id);
-            }
+        for (uint64_t raw_id : raw_ids) {
+            meshUUIDs.emplace_back(raw_id);
         }
 
         if (!file) {
-            Warn("Failed to read data!");
+            Warn("[LoadModel] Failed to read data!");
             return{};
         }
+        if (raw_ids.empty()) {
+            Warn("There is no mesh inside model path: " + path);
+        }
 
-        // Close Binary file
-        file.close();
-
-        return m->m_UUID;
+        return {header, meshUUIDs};
     }
 
     void WriteMesh(const std::string &path, const MeshBinaryHeader &binaryHeader,
@@ -115,51 +113,46 @@ namespace Real::serialization::binary {
         }
 
         if (!file) {
-            Warn("Failed to write data!");
-            return;
+            Warn("[WriteMesh] Failed to write data!");
         }
-
-        file.close();
     }
 
-    UUID LoadMesh(const std::string &path) {
+    MeshLoadResult LoadMesh(const std::string &path) {
         std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
             Warn("[Load] Mesh binary file can't opening: " + path);
-            return{};
+            return {};
         }
 
-        MeshBinaryHeader header;
-        file.read(reinterpret_cast<char*>(&header), sizeof(header));
+        MeshLoadResult result{};
+        file.read(reinterpret_cast<char*>(&result.header), sizeof(MeshBinaryHeader));
 
         // Validate REAL magic numbers
-        if (header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
+        if (result.header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) {
             Warn("Real Magic number mismatch!");
-            return{};
+            return {};
         }
 
-        std::vector<Graphics::Vertex> vertices(header.m_VertexCount);
-        if (header.m_VertexCount > 0) {
-            file.read(reinterpret_cast<char*>(vertices.data()), header.m_VertexCount * sizeof(Graphics::Vertex));
+        if (result.header.m_VertexCount > 0) {
+            result.vertices.resize(result.header.m_VertexCount);
+            file.read(reinterpret_cast<char*>(result.vertices.data()),
+                        result.header.m_VertexCount * sizeof(Graphics::Vertex)
+            );
         }
 
-        std::vector<uint64_t> indices(header.m_IndexCount);
-        if (header.m_IndexCount > 0) {
-            file.read(reinterpret_cast<char*>(indices.data()), header.m_IndexCount * sizeof(uint64_t));
+        if (result.header.m_IndexCount > 0) {
+            result.indices.resize(result.header.m_IndexCount);
+            file.read(reinterpret_cast<char*>(result.indices.data()),
+                        result.header.m_IndexCount * sizeof(uint64_t)
+            );
         }
 
         if (!file) {
-            Warn("Failed to read data!");
-            return{};
+            Warn("[LoadMesh] Failed to read data!");
+            return {};
         }
 
-        // Call the UUID constructor before sending UUIDs
-        const auto meshUUID = UUID(header.m_MeshUUID);
-        const auto matUUID  = UUID(header.m_MaterialUUID);
-        Services::GetMeshManager()->CreateSingleMesh(vertices, indices, matUUID, meshUUID);
-
-        file.close();
-        return meshUUID;
+        return result;
     }
 
 }

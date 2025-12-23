@@ -107,6 +107,8 @@ add_executable(${PROJECT_NAME}
         src/Serialization/Json.cpp
         include/Serialization/Binary.h
         src/Serialization/Binary.cpp
+        include/Core/AssetImporter.h
+        src/Core/AssetImporter.cpp
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)

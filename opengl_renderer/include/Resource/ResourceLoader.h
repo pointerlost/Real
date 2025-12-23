@@ -7,6 +7,7 @@
 
 
 namespace Real {
+    class AssetImporter;
     class RenderContext;
 }
 

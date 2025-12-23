@@ -16,7 +16,6 @@ namespace Real { struct MaterialInstance; }
 namespace Real {
 
     struct Model {
-        uint32_t m_MeshCount = 0;
         UUID m_UUID{};
         std::vector<UUID> m_MeshUUIDs{};
         FileInfo m_FileInfo{};
@@ -29,7 +28,5 @@ namespace Real {
         Model() = default;
         Model(const Model&) = default;
         Model(const UUID& uuid, FileInfo info) : m_UUID(uuid), m_FileInfo(std::move(info)) {}
-        Model(const ModelBinaryHeader& header, FileInfo info)
-            : m_MeshCount(header.m_MeshCount), m_UUID(UUID(header.m_UUID)), m_FileInfo(std::move(info)) {}
     };
 }

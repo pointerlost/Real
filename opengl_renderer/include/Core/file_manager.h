@@ -14,5 +14,6 @@ namespace Real::fs {
     };
 
     [[nodiscard]] std::vector<FileInfo> IterateDirectory(const std::string& folderPath);
-    FileInfo CreateFileInfoFromPath(const std::string& path);
+    FileInfo CreateFileInfoFromPath(const std::string& rawPath);
+    std::string NormalizePath(const std::string& path);
 }

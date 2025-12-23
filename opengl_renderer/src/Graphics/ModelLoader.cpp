@@ -7,6 +7,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Common/Macros.h"
+#include "Core/AssetImporter.h"
 #include "Core/AssetManager.h"
 #include "Core/CmakeConfig.h"
 #include "Core/file_manager.h"
@@ -83,8 +84,6 @@ namespace Real {
             Warn("Model file not found: " + filePath);
             return nullptr;
         }
-        const auto& mm = Services::GetMeshManager();
-
         // Reset state
         m_CurrentModel = CreateRef<Model>();
         m_CurrentModel->m_Name = name;
@@ -94,7 +93,7 @@ namespace Real {
         // Create assimp importer
         Assimp::Importer importer;
 
-        // flags for complex models
+        // Flags for complex models
         unsigned int importFlags =
             aiProcess_Triangulate |
             aiProcess_GenSmoothNormals |
@@ -106,7 +105,7 @@ namespace Real {
         // TODO: I'll add this flag when I add tangents and bitangents!
         // aiProcess_CalcTangentSpace |      /* For normal mapping */
 
-        if (m_IsFBX) { // Do some optimization because .fbx models are slower than gltf or something.
+        if (m_IsFBX) { // Need some optimization because .fbx models are slower than gltf or something
             importFlags &= ~aiProcess_OptimizeMeshes;
             importFlags &= ~aiProcess_ImproveCacheLocality;
         }
@@ -137,7 +136,8 @@ namespace Real {
             binary_file,
             m_CurrentModel->m_MeshUUIDs
         );
-        Services::GetAssetManager()->SaveModelToAssetDB(m_CurrentModel);
+        Services::GetAssetManager()->SaveModelCPU(m_CurrentModel);
+        Services::GetAssetImporter()->SaveModelToAssetDB(m_CurrentModel);
 
         return m_CurrentModel;
     }
@@ -212,20 +212,21 @@ namespace Real {
         }
 
         const auto meshID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, materialUUID);
+        m_CurrentModel->m_MeshUUIDs.push_back(meshID);
 
         MeshBinaryHeader header;
         header.m_Magic        = REAL_MAGIC;
         header.m_Version      = 1;
-        header.m_MeshUUID     = meshID;
+        header.m_UUID     = meshID;
         header.m_MaterialUUID = materialUUID;
         header.m_VertexCount  = vertices.size();
         header.m_IndexCount   = indices.size();
         header.m_VertexOffset = mm->GetVerticesCount();
         header.m_IndexOffset  = mm->GetIndicesCount();
 
-        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "models/" + mesh->mName.C_Str() + ".mesh";
+        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + mesh->mName.C_Str() + ".mesh";
         serialization::binary::WriteMesh(mBinaryPath, header, vertices, indices);
-        Services::GetAssetManager()->SaveMeshToAssetDB(header, mesh->mName.C_Str());
+        Services::GetAssetImporter()->SaveMeshToAssetDB(header, mesh->mName.C_Str());
 
         return header;
     }
@@ -241,10 +242,7 @@ namespace Real {
         mat->Get(AI_MATKEY_NAME, matName);
         const auto baseName = matName.length > 0 ? matName.C_Str() : "Material_" + std::to_string(materialIndex);
 
-        const auto matUUID = UUID();
-        const auto& material = am->GetOrCreateMaterialBase(matUUID);
-        material->m_Name = m_CurrentModel->m_Name + "_" + baseName;
-        material->m_UUID = matUUID;
+        const auto& material = am->CreateMaterialBase(m_CurrentModel->m_Name + "_" + baseName);
 
         std::string destPath = std::string(ASSETS_DIR) + "textures/";
         m_CurrImageFormatState == ImageFormatState::UNCOMPRESSED ? destPath += "uncompressed/" : destPath += "compress_me/";
@@ -277,12 +275,11 @@ namespace Real {
         };
 
         auto Save = [&](const Ref<OpenGLTexture>& tex) {
-            if (tex->GetImageFormatState() == ImageFormatState::DEFAULT || !tools::SaveTextureAsFile(tex.get(), tex->GetFileInfo().path)) {
-                Warn("Can't saved to destination path: " + tex->GetFileInfo().path);
-            } else {
+            if (tex->GetImageFormatState() != ImageFormatState::DEFAULT) {
+                tools::SaveTextureAsFile(tex.get());
                 tools::CompressTextureAndReadFromFile(tex.get());
                 // Save after compression to use compressed data
-                am->SaveCPUTexture(tex);
+                am->SaveTextureCPU(tex);
             }
             return tex->GetUUID();
         };

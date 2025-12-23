@@ -48,6 +48,7 @@ namespace Real {
         void BindGPUBuffers() const;
         void CollectRenderables();
 
+        GPUData& GetGPURenderData() { return m_GPUDatas; }
         [[nodiscard]] const GPUData& GetGPURenderData() const { return m_GPUDatas; }
         [[nodiscard]] const GPUBuffers& GetBuffers() const { return m_Buffers; }
 

@@ -16,7 +16,7 @@
 #include "Graphics/Renderer.h"
 #include "Input/CameraInput.h"
 #include "Resource/ResourceLoader.h"
-#include "Scene/Entity.h"
+#include "Core/AssetImporter.h"
 #include "Scene/Scene.h"
 #include "Scene/Systems.h"
 
@@ -46,6 +46,7 @@ namespace Real {
         Scope<UI::InspectorPanel> m_InspectorPanel;
         Scope<Systems> m_Systems;
         Scope<ResourceLoader> m_ResourceLoader;
+        Scope<AssetImporter> m_AssetImporter;
 
         // Scope<Timer> m_GameTimer;
     private:
@@ -59,6 +60,7 @@ namespace Real {
         void InitWindow();
         void InitServices() const;
         void InitSystems();
+        void InitAssetImporter();
         void InitEditorState();
         void InitEditorScene();
         void InitEditorRenderer();

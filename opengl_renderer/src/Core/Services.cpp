@@ -8,6 +8,7 @@ namespace {
     Real::MeshData *s_MeshManager;
     Real::Timer *s_EditorTimer;
     Real::EditorState* s_EditorState;
+    Real::AssetImporter* s_AssetImporter;
 }
 
 namespace Real::Services {
@@ -26,22 +27,30 @@ namespace Real::Services {
     void SetEditorState(EditorState *state) {
         s_EditorState = state;
     }
+
+    void SetAssetImporter(AssetImporter *importer) {
+        s_AssetImporter = importer;
+    }
 }
 
 namespace Real::Services {
-    AssetManager *GetAssetManager() {
+    AssetManager* GetAssetManager() {
         return s_AssetManager;
     }
 
-    MeshData *GetMeshManager() {
+    MeshData* GetMeshManager() {
         return s_MeshManager;
     }
 
-    Timer *GetEditorTimer() {
+    Timer* GetEditorTimer() {
         return s_EditorTimer;
     }
 
-    EditorState *GetEditorState() {
+    EditorState* GetEditorState() {
         return s_EditorState;
+    }
+
+    AssetImporter* GetAssetImporter() {
+        return s_AssetImporter;
     }
 }

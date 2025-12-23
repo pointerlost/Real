@@ -16,7 +16,7 @@ namespace Real::Graphics {
     struct MeshInfo {
         UUID m_MaterialUUID;
         UUID m_MeshUUID;
-        // TODO: I can store transforms later for specific movement
+        // TODO: Need transform for per mesh!
 
         uint64_t m_VertexCount;
         uint64_t m_IndexCount;

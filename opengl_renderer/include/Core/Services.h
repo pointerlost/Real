@@ -8,6 +8,7 @@ namespace Real {
     class AssetManager;
     class Timer;
     struct EditorState;
+    class AssetImporter;
 }
 
 namespace Real::Services {
@@ -15,6 +16,7 @@ namespace Real::Services {
     void SetMeshManager(MeshData* manager);
     void SetEditorTimer(Timer* timer);
     void SetEditorState(EditorState* state);
+    void SetAssetImporter(AssetImporter* importer);
 }
 
 namespace Real::Services {
@@ -22,4 +24,5 @@ namespace Real::Services {
     MeshData *GetMeshManager();
     Timer *GetEditorTimer();
     EditorState* GetEditorState();
+    AssetImporter* GetAssetImporter();
 }

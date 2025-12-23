@@ -70,17 +70,27 @@ namespace Real::fs {
         return files;
     }
 
-    FileInfo CreateFileInfoFromPath(const std::string &path) {
-        std::string pathStr = path;
-        std::ranges::replace(pathStr, '\\', '/');
-        const std::filesystem::path p(pathStr);
+    FileInfo CreateFileInfoFromPath(const std::string &rawPath) {
+        const std::string path = NormalizePath(rawPath);
+        const std::filesystem::path p(path);
 
         FileInfo info;
+        info.path = path; // canonical, normalized
         info.name = p.filename().string();
         info.stem = p.stem().string();
-        info.path = p.string();
         info.ext  = p.extension().string();
 
         return info;
+    }
+
+    std::string NormalizePath(const std::string &path) {
+        const std::filesystem::path p = std::filesystem::weakly_canonical(path); // resolves '.', '..' etc.
+
+        std::string result = p.generic_string(); // Use always '/' for platform consistency
+
+#ifdef _WIN32
+        std::ranges::transform(result, result.begin(), ::tolower);
+#endif
+        return result;
     }
 }

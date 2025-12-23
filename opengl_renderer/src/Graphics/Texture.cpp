@@ -23,6 +23,10 @@ namespace Real {
         CreateFromData(data, type);
     }
 
+    OpenGLTexture::OpenGLTexture(const std::vector<TextureData> &data) {
+        CreateMipmapsFromDDS(data);
+    }
+
     OpenGLTexture::OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate)
         : m_IsSTBAllocated(isSTBAllocated), m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo)) {}
 
@@ -201,6 +205,8 @@ namespace Real {
         SetTextureParameters();
         CreateBindless();
         MakeResident();
+        // Clean the texture data after uploading it to the GPU
+        CleanUpCPUData();
     }
 
     void OpenGLTexture::CreateHandle() {

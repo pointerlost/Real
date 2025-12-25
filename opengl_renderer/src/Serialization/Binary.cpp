@@ -4,18 +4,15 @@
 #include <Serialization/Binary.h>
 #include <fstream>
 #include "Common/RealTypes.h"
-#include "Core/Services.h"
-#include "Graphics/Mesh.h"
 #include "Core/AssetManager.h"
-#include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Utils.h"
-#include "Graphics/MeshManager.h"
-#include "Graphics/Model.h"
 
 namespace Real::serialization::binary {
 
-    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader, const std::vector<UUID>& meshUUIDs) {
+    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader,
+        const std::vector<UUID>& meshUUIDs, const std::vector<UUID>& materialUUIDs)
+    {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
             Warn("[Write] Model binary file can't opening: " + path);
@@ -28,13 +25,21 @@ namespace Real::serialization::binary {
         // Write entire header once
         file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
 
-        std::vector<uint64_t> raw_ids;
-        raw_ids.reserve(meshUUIDs.size());
+        std::vector<uint64_t> raw_meshUUIDs;
+        raw_meshUUIDs.reserve(meshUUIDs.size());
         for (const auto& uuid : meshUUIDs) {
-            raw_ids.push_back(static_cast<uint64_t>(uuid));
+            raw_meshUUIDs.push_back(static_cast<uint64_t>(uuid));
         }
         // Bulk upload Mesh UUIDs
-        file.write(reinterpret_cast<const char*>(raw_ids.data()), raw_ids.size() * sizeof(uint64_t));
+        file.write(reinterpret_cast<const char*>(raw_meshUUIDs.data()), raw_meshUUIDs.size() * sizeof(uint64_t));
+
+        std::vector<uint64_t> raw_matUUIDs;
+        raw_matUUIDs.reserve(materialUUIDs.size());
+        for (const auto& uuid : materialUUIDs) {
+            raw_matUUIDs.push_back(static_cast<uint64_t>(uuid));
+        }
+        // Bulk upload Mesh UUIDs
+        file.write(reinterpret_cast<const char*>(raw_matUUIDs.data()), raw_matUUIDs.size() * sizeof(uint64_t));
 
         if (!file) {
             Warn("[WriteModel] Failed to write data!");
@@ -44,8 +49,9 @@ namespace Real::serialization::binary {
         file.close();
     }
 
-    std::pair<ModelBinaryHeader, std::vector<UUID>> LoadModel(const std::string &path) {
-        std::vector<Graphics::Vertex> vertices;
+    std::tuple<ModelBinaryHeader, std::vector<UUID>, std::vector<UUID>> LoadModel(const std::string &path)
+    {
+        std::vector<Vertex> vertices;
         std::vector<uint64_t> indices;
 
         std::ifstream file(path, std::ios::binary | std::ios::in);
@@ -65,32 +71,42 @@ namespace Real::serialization::binary {
             return{};
         }
 
-        std::vector<uint64_t> raw_ids(header.m_MeshCount);
+        std::vector<uint64_t> raw_MeshUUIDs(header.m_MeshCount);
+        std::vector<uint64_t> raw_MatUUIDs(header.m_MeshCount);
+
         std::vector<UUID> meshUUIDs;
         meshUUIDs.reserve(header.m_MeshCount);
 
+        // per-mesh material so reserve with mesh count
+        std::vector<UUID> materialUUIDs;
+        materialUUIDs.reserve(header.m_MeshCount);
+
         if (header.m_MeshCount > 0) {
-            file.read(reinterpret_cast<char*>(raw_ids.data()),
-                      header.m_MeshCount * sizeof(uint64_t));
+            file.read(reinterpret_cast<char*>(raw_MeshUUIDs.data()), header.m_MeshCount * sizeof(uint64_t));
+            file.read(reinterpret_cast<char*>(raw_MatUUIDs.data()),  header.m_MeshCount * sizeof(uint64_t));
         }
 
-        for (uint64_t raw_id : raw_ids) {
+        for (uint64_t raw_id : raw_MeshUUIDs) {
             meshUUIDs.emplace_back(raw_id);
+        }
+
+        for (uint64_t raw_id : raw_MatUUIDs) {
+            materialUUIDs.emplace_back(raw_id);
         }
 
         if (!file) {
             Warn("[LoadModel] Failed to read data!");
             return{};
         }
-        if (raw_ids.empty()) {
+        if (raw_MeshUUIDs.empty()) {
             Warn("There is no mesh inside model path: " + path);
         }
 
-        return {header, meshUUIDs};
+        return std::make_tuple(header, meshUUIDs, materialUUIDs);
     }
 
     void WriteMesh(const std::string &path, const MeshBinaryHeader &binaryHeader,
-        const std::vector<Graphics::Vertex>& vertices, const std::vector<uint64_t>& indices)
+        const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
@@ -101,13 +117,13 @@ namespace Real::serialization::binary {
         file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
 
         if (!vertices.empty()) {
-            file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(Graphics::Vertex));
+            file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(Vertex));
         } else {
             Warn("[WriteMesh] Vertices are empty!");
         }
 
         if (!indices.empty()) {
-            file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(uint64_t));
+            file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(uint32_t));
         } else {
             Warn("[WriteMesh] Indices are empty!");
         }
@@ -136,14 +152,14 @@ namespace Real::serialization::binary {
         if (result.header.m_VertexCount > 0) {
             result.vertices.resize(result.header.m_VertexCount);
             file.read(reinterpret_cast<char*>(result.vertices.data()),
-                        result.header.m_VertexCount * sizeof(Graphics::Vertex)
+                        result.header.m_VertexCount * sizeof(Vertex)
             );
         }
 
         if (result.header.m_IndexCount > 0) {
             result.indices.resize(result.header.m_IndexCount);
             file.read(reinterpret_cast<char*>(result.indices.data()),
-                        result.header.m_IndexCount * sizeof(uint64_t)
+                        result.header.m_IndexCount * sizeof(uint32_t)
             );
         }
 

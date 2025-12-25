@@ -2,8 +2,8 @@
 // Created by pointerlost on 10/8/25.
 //
 #pragma once
-#include <vector>
 #include <utility>
+#include <vector>
 #include "Core/Utils.h"
 #include "Core/UUID.h"
 #include "Graphics/Camera.h"
@@ -19,7 +19,7 @@ namespace Real {
     // TODO: Add dirty flags to manage components and avoid to unnecessary updates
 
     struct TagComponent {
-        std::string m_Tag;
+        std::string m_Tag{};
 
         TagComponent() = default;
         explicit TagComponent(std::string tag) : m_Tag(std::move(tag)) {}
@@ -49,25 +49,18 @@ namespace Real {
     };
 
     struct MeshRendererComponent {
-        UUID m_MeshID = {};
-        std::vector<UUID> m_MaterialUUIDs;
-        MeshRendererComponent(const UUID& meshUUID, const std::vector<UUID>& matUUIDs)
-            : m_MeshID(meshUUID), m_MaterialUUIDs(matUUIDs) {}
-        MeshRendererComponent(const UUID& meshUUID, const UUID& matUUID)
-            : m_MeshID(meshUUID), m_MaterialUUIDs(matUUID) {}
+        std::vector<UUID> m_MeshUUIDs = {};
+        std::vector<UUID> m_MaterialInstanceUUIDs = {};
+        MeshRendererComponent(const std::vector<UUID>& meshUUIDs, const std::vector<UUID>& matInstanceUUIDs)
+            : m_MeshUUIDs(meshUUIDs), m_MaterialInstanceUUIDs(matInstanceUUIDs) {}
+        MeshRendererComponent(const UUID& meshUUID, const UUID& matInstanceUUID)
+            : m_MeshUUIDs{meshUUID}, m_MaterialInstanceUUIDs{matInstanceUUID} {}
         MeshRendererComponent() = default;
         MeshRendererComponent(MeshRendererComponent&) = default;
     };
 
-    struct MaterialOverrideComponent {
-        UUID m_UUID;
-        explicit MaterialOverrideComponent(const UUID& uuid) : m_UUID(uuid) {}
-        MaterialOverrideComponent() = default;
-        MaterialOverrideComponent(const MaterialOverrideComponent&) = default;
-    };
-
     struct ModelComponent {
-        Ref<Model> m_Model;
+        Ref<Model> m_Model{};
         explicit ModelComponent(Ref<Model> model) : m_Model(std::move(model)) {}
         ModelComponent() = default;
         ModelComponent(const ModelComponent&) = default;

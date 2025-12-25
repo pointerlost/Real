@@ -72,14 +72,13 @@ namespace Real {
         m_EditorPanel->BeginFrame();
     }
 
-    void Engine::EndPhase(GLFWwindow* window) {
-        glfwSwapBuffers(window);
-    }
-
-    void Engine::InitWindow() {
-        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
-        m_Window->Init();
-        Info("Window initialized successfully!");
+    void Engine::UpdatePhase() const {
+        m_EditorTimer->Update();
+        Input::Update(m_CameraInput.get());
+        m_AssetImporter->Update();
+        m_AssetManager->Update();
+        m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
+        m_Scene->Update(m_Renderer.get());
     }
 
     void Engine::RenderPhase() const {
@@ -88,13 +87,14 @@ namespace Real {
         // TODO: Requires double buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
-    void Engine::UpdatePhase() const {
-        m_EditorTimer->Update();
-        Input::Update(m_CameraInput.get());
-        m_AssetImporter->Update();
-        m_AssetManager->Update();
-        m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
-        m_Scene->Update(m_Renderer.get());
+    void Engine::EndPhase(GLFWwindow* window) {
+        glfwSwapBuffers(window);
+    }
+
+    void Engine::InitWindow() {
+        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
+        m_Window->Init();
+        Info("Window initialized successfully!");
     }
 
     void Engine::InitServices() const {
@@ -150,7 +150,7 @@ namespace Real {
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();
         (void)m_EditorState->camera->AddComponent<VelocityComponent>();
-        m_EditorState->camera->GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
+        m_EditorState->camera->GetComponentUnchecked<TransformComponent>().m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
 
         if (m_EditorState->camera) {
             m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
@@ -173,7 +173,6 @@ namespace Real {
 
     void Engine::InitMeshManager() {
         m_MeshManager = CreateScope<MeshData>();
-        m_MeshManager->InitResources();
         Info("MeshManager initialized successfully!");
     }
 
@@ -197,33 +196,53 @@ namespace Real {
     }
 
     void Engine::InitGameResources() {
-        const auto& cube = m_Scene->CreateEntity("RightWall");
-        cube.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
-        cube.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
-        cube.GetComponent<MeshRendererComponent>()->m_MeshID = Services::GetMeshManager()->GetPrimitiveUUID("cube");
+        auto& cube = m_Scene->CreateEntity("RightWall");
+        cube.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
+        cube.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
+        (void)cube.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
 
-        const auto& cube2 = m_Scene->CreateEntity("LeftWall");
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-26.0, 1.5, 0.0));
-        cube2.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
-        cube2.GetComponent<MeshRendererComponent>()->m_MeshID = Services::GetMeshManager()->GetPrimitiveUUID("cube");
+        auto& cube2 = m_Scene->CreateEntity("LeftWall");
+        cube2.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-26.0, 1.5, 0.0));
+        cube2.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
+        (void)cube2.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
 
-        const auto& cube3 = m_Scene->CreateEntity("Floor");
-        cube3.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 0.5, 98.0));
-        cube3.GetComponent<MeshRendererComponent>()->m_MeshID = Services::GetMeshManager()->GetPrimitiveUUID("cube");
+        auto& cube3 = m_Scene->CreateEntity("Floor");
+        cube3.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 0.5, 98.0));
+        (void)cube3.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
 
-        const auto& cube4 = m_Scene->CreateEntity("Roof");
-        cube4.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 13.5, 0.0));
-        cube4.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 4.0, 1.0));
-        cube4.GetComponent<MeshRendererComponent>()->m_MeshID = Services::GetMeshManager()->GetPrimitiveUUID("cube");
+        auto& cube4 = m_Scene->CreateEntity("Roof");
+        cube4.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 13.5, 0.0));
+        cube4.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 4.0, 1.0));
+        (void)cube4.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
 
-        const auto& cube5 = m_Scene->CreateEntity("Container");
-        cube5.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 12.0));
-        cube5.GetComponent<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0, 8.0, 8.0));
-        cube5.GetComponent<MeshRendererComponent>()->m_MeshID = Services::GetMeshManager()->GetPrimitiveUUID("cube");
+        auto& cube5 = m_Scene->CreateEntity("Container");
+        cube5.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 12.0));
+        cube5.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0, 8.0, 8.0));
+        (void)cube5.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
+
+        auto& fordCar = m_Scene->CreateEntity("FordCar");
+        fordCar.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
+        fordCar.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        (void)fordCar.AddComponent<ModelComponent>(m_AssetManager->GetModel("Ford_raptor"));
 
         auto& light = m_Scene->CreateEntity("Light");
-        light.GetComponent<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
-        light.AddComponent<LightComponent>().m_Light = Light{LightType::POINT};
+        light.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
+        (void)light.AddComponent<LightComponent>();
+        (void)light.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
+            Services::GetAssetManager()->CreateMaterialInstance("Marble009")
+        );
+
+        Info("Game resources loaded successfully!");
     }
 
     void Engine::Running() {

@@ -6,17 +6,12 @@
 #include <assimp/scene.h>
 #include <string>
 #include "MeshManager.h"
-#include "Model.h"
 #include "Texture.h"
 #include "Common/RealTypes.h"
 
 namespace Real {
-    struct ModelBinaryHeader;
-}
-
-namespace Real {
-    struct Material;
     struct Model;
+    struct Material;
 }
 
 namespace Real {
@@ -31,7 +26,6 @@ namespace Real {
         MeshBinaryHeader ProcessMesh(const aiMesh* mesh, const aiScene* scene);
         Ref<Material> ProcessMaterial(const aiMaterial* mat, int materialIndex);
         std::filesystem::path ChooseBest(const std::vector<std::filesystem::path>& paths);
-
         TextureType GetRealTypeFromAssimpTexType(aiTextureType type);
 
     private:

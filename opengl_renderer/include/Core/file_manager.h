@@ -2,6 +2,7 @@
 // Created by pointerlost on 9/7/25.
 //
 #pragma once
+#include <iostream>
 #include <Common/RealTypes.h>
 
 namespace Real::fs {

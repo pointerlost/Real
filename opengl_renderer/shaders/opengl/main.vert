@@ -17,7 +17,7 @@ out VS_OUT {
 } vs_out;
 
 void main() {
-    int entityIdx = gl_BaseInstance;
+    int entityIdx = gl_DrawID;
     EntityData entityProps = entityData[entityIdx];
 
     int transformIdx = entityProps.transformIndex;

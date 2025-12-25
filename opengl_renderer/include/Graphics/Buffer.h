@@ -17,7 +17,7 @@ namespace Real::opengl {
         Buffer(const Buffer&) = default;
         ~Buffer();
 
-        [[nodiscard]] GLuint GetHandle() const {
+        [[nodiscard]] const GLuint& GetHandle() const {
             if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + std::string(__FILE__)); }
             return m_Buffer;
         }

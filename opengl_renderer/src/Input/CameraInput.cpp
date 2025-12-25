@@ -21,25 +21,25 @@ namespace Real {
         if (!Services::GetEditorState()->FpsMode) return;
 
         // TODO: add GetAllComponentsWithEntity function to manage easily
-        auto& camera = m_Camera->GetComponent<CameraComponent>()->m_Camera;
-        auto velocity = m_Camera->GetComponent<VelocityComponent>();
+        auto& camera = m_Camera->GetComponent<CameraComponent>().m_Camera;
+        auto& velocity = m_Camera->GetComponent<VelocityComponent>();
         const auto& deltaTime = Services::GetEditorTimer()->GetDelta();
 
         // Reset velocity speed
-        *velocity = VelocityComponent{};
+        velocity = VelocityComponent{};
 
         // Input: Keyboard State
         if (Input::IsKeyHeld(REAL_KEY_W)) {
-            velocity->m_Speed.z += static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.z += static_cast<float>(35.0 * deltaTime);
         }
         if (Input::IsKeyHeld(REAL_KEY_A)) {
-            velocity->m_Speed.x -= static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.x -= static_cast<float>(35.0 * deltaTime);
         }
         if (Input::IsKeyHeld(REAL_KEY_S)) {
-            velocity->m_Speed.z -= static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.z -= static_cast<float>(35.0 * deltaTime);
         }
         if (Input::IsKeyHeld(REAL_KEY_D)) {
-            velocity->m_Speed.x += static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.x += static_cast<float>(35.0 * deltaTime);
         }
 
         // Input: Mouse Button State

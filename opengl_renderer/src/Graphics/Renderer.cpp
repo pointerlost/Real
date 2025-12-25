@@ -27,7 +27,7 @@ namespace Real::opengl {
         const auto shader = assetManager->GetShader("main");
 
         // Bind gpu buffer to binding points
-        m_SceneRenderContext->BindGPUBuffers();
+        BindGPUBuffers();
 
         // Bind Shader and VAO
         shader.Bind();
@@ -35,6 +35,7 @@ namespace Real::opengl {
 
         // Set uniforms
 
+        // Draw indirect
         const auto& gpuData = m_SceneRenderContext->GetGPURenderData();
         if (!gpuData.drawCommands.empty()) {
             glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetRenderContext()->GetBuffers().drawCommand.GetHandle());

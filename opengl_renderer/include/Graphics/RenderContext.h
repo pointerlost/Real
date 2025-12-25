@@ -2,19 +2,20 @@
 // Created by pointerlost on 10/13/25.
 //
 #pragma once
+#include <unordered_map>
+
 #include "GPUBuffers.h"
 #include "RenderCommand.h"
 #include <vector>
 #include "Buffer.h"
+#include "Core/UUID.h"
 
 namespace Real {
+    struct RenderableData;
+    struct MeshAsset;
+    struct TransformComponent;
     class Entity;
     class Scene;
-    struct OpenGLTexture;
-
-    namespace Graphics {
-        struct MeshInfo;
-    }
 }
 
 namespace Real {
@@ -56,11 +57,15 @@ namespace Real {
         GPUData m_GPUDatas{};
         GPUBuffers m_Buffers{};
         Scene* m_Scene;
+        std::unordered_map<UUID, int> m_MaterialIdxCache;
 
     private:
         void CollectLight(const Entity* entity);
         void CollectCamera(const Entity* entity);
-        std::vector<Graphics::MeshInfo> CollectMeshes(const Entity* entity);
+        int PushTransform(TransformComponent& tc);
+        int PushMaterial(const UUID& materialUUID);
+        void PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex, uint baseInstance);
+        std::vector<RenderableData> CollectRenderables(const Entity* entity);
         void CollectGlobalData();
         void CleanPrevFrame();
         void UploadToGPU();

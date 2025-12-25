@@ -2,11 +2,18 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include <Graphics/Mesh.h>
+#include <glm/ext.hpp>
 #include "Macros.h"
 #include <vector>
+#include <Core/UUID.h>
 
 namespace Real {
+
+    struct Vertex {
+        glm::vec3 m_Position;
+        glm::vec3 m_Normal;
+        glm::vec2 m_UV;
+    };
 
     struct TextureData {
         void* m_Data = nullptr;
@@ -49,8 +56,24 @@ namespace Real {
 
     struct MeshLoadResult {
         MeshBinaryHeader header;
-        std::vector<Graphics::Vertex> vertices;
-        std::vector<uint64_t> indices;
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
+    };
+
+    struct MeshAsset {
+        UUID m_MeshUUID;
+        // TODO: Need transform for per mesh!
+
+        uint64_t m_VertexCount;
+        uint64_t m_IndexCount;
+        uint64_t m_VertexOffset;
+        uint64_t m_IndexOffset;
+    };
+
+    struct RenderableData {
+        const MeshAsset* m_Mesh;
+        UUID m_MaterialUUID{};
+        // TODO: Need transform for per mesh!
     };
 
 }

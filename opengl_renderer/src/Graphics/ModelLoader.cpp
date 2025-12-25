@@ -14,6 +14,7 @@
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
+#include "Graphics/Model.h"
 #include "Serialization/Binary.h"
 #include "Tools/ImageTools.h"
 #include "Util/Util.h"
@@ -134,7 +135,8 @@ namespace Real {
         serialization::binary::WriteModel(
             binary_path,
             binary_file,
-            m_CurrentModel->m_MeshUUIDs
+            m_CurrentModel->m_MeshUUIDs,
+            m_CurrentModel->m_MaterialAssetUUIDs
         );
         Services::GetAssetManager()->SaveModelCPU(m_CurrentModel);
         Services::GetAssetImporter()->SaveModelToAssetDB(m_CurrentModel);
@@ -158,13 +160,13 @@ namespace Real {
     MeshBinaryHeader ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene) {
         const auto& mm = Services::GetMeshManager();
         // Create containers for vertex data
-        std::vector<Graphics::Vertex> vertices;
-        std::vector<uint64_t> indices;
+        std::vector<Vertex> vertices;
+        std::vector<uint32_t> indices;
 
         // Process vertices
         vertices.reserve(mesh->mNumVertices);
         for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
-            Graphics::Vertex vertex{};
+            Vertex vertex{};
 
             // Position
             vertex.m_Position.x = mesh->mVertices[i].x;
@@ -204,20 +206,22 @@ namespace Real {
             }
         }
 
-        auto materialUUID = UUID();
+        auto materialUUID = UUID(0); // TODO: i need to create default material fallback
         if (mesh->mMaterialIndex >= 0) {
             const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
             const Ref<Material> real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
             materialUUID = real_material ? real_material->m_UUID : materialUUID;
+            m_CurrentModel->m_MaterialAssetUUIDs.push_back(real_material->m_UUID);
         }
 
-        const auto meshID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, materialUUID);
-        m_CurrentModel->m_MeshUUIDs.push_back(meshID);
+        const UUID meshUUID{};
+        Services::GetMeshManager()->CreateSingleMesh(vertices, indices, meshUUID);
+        m_CurrentModel->m_MeshUUIDs.push_back(meshUUID);
 
         MeshBinaryHeader header;
         header.m_Magic        = REAL_MAGIC;
         header.m_Version      = 1;
-        header.m_UUID     = meshID;
+        header.m_UUID         = meshUUID;
         header.m_MaterialUUID = materialUUID;
         header.m_VertexCount  = vertices.size();
         header.m_IndexCount   = indices.size();

@@ -7,16 +7,11 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 #include "UUID.h"
-#include "Graphics/Material.h"
 #include "Graphics/Shader.h"
 #include "Graphics/Texture.h"
 
 namespace Real {
     struct Model;
-}
-
-namespace Real {
-    enum class TextureResolution;
     struct Material;
     struct MaterialInstance;
 }
@@ -39,18 +34,20 @@ namespace Real {
         std::vector<Ref<OpenGLTexture>> GetMaterialTextures(const Material* mat);
 
         /* *********************************** MATERIAL STATE ************************************ */
-        Ref<Material> GetMaterialBase(const std::string& name);
-        Ref<Material> LoadMaterialBase(const UUID& uuid, const std::string& name);
         Ref<Material> CreateMaterialBase(const std::string& name);
-        [[maybe_unused]] Ref<Material>& GetOrCreateMaterialBase(const UUID& uuid);
-        [[maybe_unused]] Ref<Material>& GetOrCreateMaterialBase(const std::string &name);
-        [[maybe_unused]] Ref<MaterialInstance>& GetOrCreateMaterialInstance(const UUID& uuid);
-        std::string GenerateUniqueMaterialName(const std::string& desiredName);
-        std::string NormalizeMaterialName(std::string name);
+        Ref<Material> GetMaterialBase(const std::string& assetName);
+        Ref<Material> GetMaterialBase(const UUID& assetUUID);
+        Ref<Material> LoadMaterialBaseAsset(const UUID& uuid, const std::string& name);
+        Ref<Material> GetOrCreateMaterialBase(const std::string& name);
+        [[nodiscard]] UUID CreateMaterialInstance(const UUID& assetUUID);
+        [[nodiscard]] UUID CreateMaterialInstance(const std::string& assetName);
+        [[nodiscard]] UUID GetMaterialAssetUUIDByName(const std::string& assetName);
+        [[nodiscard]] Ref<MaterialInstance> GetMaterialInstance(const UUID& instanceUUID);
 
         /* *********************************** GENERAL STATE ************************************ */
         [[nodiscard]] const Shader &GetShader(const std::string& name);
         bool IsModelExist(const std::string& name);
+        Ref<Model> GetModel(const std::string& name);
         bool IsMaterialExist(const std::string& name);
         void RenameMaterial(const std::string& newName, const UUID& uuid); // Persistent renaming should inside AssetImporter
         void SaveModelCPU(const Ref<Model>& model);
@@ -82,5 +79,7 @@ namespace Real {
     private:
         void LoadDefaultTextures();
         std::string PreprocessorForShaders(const std::string& filePath);
+        std::string GenerateUniqueMaterialName(const std::string& desiredName);
+        std::string NormalizeMaterialName(std::string name);
     };
 }

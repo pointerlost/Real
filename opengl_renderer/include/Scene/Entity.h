@@ -31,37 +31,68 @@ namespace Real {
         template <typename T>
         [[nodiscard]] T& AddComponent() {
             assert(!HasComponent<T>() && "Component already exists!");
-            return m_Scene->GetRegistry().emplace<T>(m_Handle);
+
+            T& component = m_Scene->GetRegistry().emplace<T>(m_Handle);
+            m_Scene->OnComponentAdded<T>(*this, component);
+            return component;
         }
 
-        /* Callable for known component types */
+        template <typename T, typename... Args>
+        [[nodiscard]] T& AddComponent(Args&&... args) {
+            assert(!HasComponent<T>() && "Component already exists!");
+
+            T& component = m_Scene->GetRegistry().emplace<T>(m_Handle, std::forward<Args>(args)...);
+            m_Scene->OnComponentAdded<T>(*this, component);
+            return component;
+        }
+
+        // Add multiple components at once
         template <typename... Args>
         void AddComponents() {
-            // TODO: Need test check if exists already before added because will cause crash!!
-            (m_Scene->GetRegistry().emplace<Args>(m_Handle), ...);
+            (AddComponent<Args>(), ...);  // Will assert if any already exists
         }
 
-        template <typename Type>
+        template <typename T>
         void RemoveComponent() {
-            m_Scene->GetRegistry().erase<Type>(m_Handle);
-        }
-
-        template<typename Type>
-        [[nodiscard]] Type* GetComponent() const {
-            if (!HasComponent<Type>()) {
-                Warn(ConcatStr(typeid(Type).name(), "doesn't exists!"));
-                return nullptr;
+            if (HasComponent<T>()) {
+                m_Scene->GetRegistry().erase<T>(m_Handle);
             }
-            return &m_Scene->GetRegistry().get<Type>(m_Handle);
         }
 
-        template <typename Type>
-        [[nodiscard]] bool HasComponent() const {
-            return m_Scene->GetRegistry().any_of<Type>(m_Handle);
+        // TWO VERSIONS: One safe, one unsafe
+        template<typename T>
+        [[nodiscard]] T* TryGetComponent() const noexcept {
+            return m_Scene->GetRegistry().try_get<T>(m_Handle);
+        }
+
+        template<typename T>
+        [[nodiscard]] T& GetComponent() {
+            auto* component = TryGetComponent<T>();
+            if (!component) {
+                throw std::runtime_error("Component doesn't exist: " + std::string(typeid(T).name()));
+            }
+            return *component;
+        }
+
+        // For when we know the component exists and want maximum performance
+        template<typename T>
+        [[nodiscard]] T& GetComponentUnchecked() const noexcept {
+            return m_Scene->GetRegistry().get<T>(m_Handle);
+        }
+
+        // Non-const version for modification
+        template<typename T>
+        [[nodiscard]] T* GetComponentForModification() {
+            return TryGetComponent<T>();
+        }
+
+        template <typename T>
+        [[nodiscard]] bool HasComponent() const noexcept {
+            return m_Scene->GetRegistry().any_of<T>(m_Handle);
         }
 
         template <typename... Args>
-        [[nodiscard]] bool HasComponents() const {
+        [[nodiscard]] bool HasComponents() const noexcept {
             return m_Scene->GetRegistry().all_of<Args...>(m_Handle);
         }
 

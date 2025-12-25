@@ -99,48 +99,24 @@ namespace Real {
     }
 
     void RenderContext::CollectRenderables() {
-        const auto& am = Services::GetAssetManager();
-        // Clean the data from previous frame
         CleanPrevFrame();
 
-        const auto view = m_Scene->GetAllEntitiesWith<TransformComponent, UUID>();
+        const auto view = m_Scene->GetAllEntitiesWith<TransformComponent, IDComponent>();
+        uint baseInstance = 0;
 
-        // Collect GPU-side data for EntityMetaData, Transform, MeshData, Material
-        size_t i = 0;
-        for (auto [entity, transform, uuid] : view.each()) {
-            const auto& e = m_Scene->GetEntityWithUUID(uuid);
-            if (!e) Warn("Holy shit entity doesn't have a wrapper(Entity instance)");
+        for (auto [entity, transform, id] : view.each()) {
+            const auto e = m_Scene->GetEntityWithUUID(id.m_UUID);
+            if (!e) continue;
 
-            // Transform GPU data
-            TransformSSBO gpuTransform = transform.m_Transform.ConvertToGPUFormat();
-            const int ti = static_cast<int>(m_GPUDatas.transforms.size());
-            m_GPUDatas.transforms.push_back(gpuTransform);
-
+            const int transformIndex = PushTransform(transform);
             CollectCamera(e);
             CollectLight(e);
 
-            int materialIndex = 0;
-
-            const auto& meshData = CollectMeshes(e);
-            for (const auto& subMesh : meshData) {
-                DrawElementsIndirectCommand cmd;
-                cmd.count         = subMesh.m_IndexCount;
-                cmd.instanceCount = 1;
-                cmd.baseVertex    = 0; // Use 0 because we've already baked the offset (idx + vertexOffset)
-                cmd.firstIndex    = subMesh.m_IndexOffset;
-                cmd.baseInstance  = static_cast<uint>(i++);
-
-                m_GPUDatas.drawCommands.push_back(cmd);
-                materialIndex = m_GPUDatas.materials.size();
-                m_GPUDatas.materials.push_back(am->GetOrCreateMaterialInstance(subMesh.m_MaterialUUID)->ConvertToGPUFormat());
-
-                // Entity GPU data
-                EntityMetadata em;
-                em.transformIndex = ti;
-                em.materialIndex  = materialIndex;
-                em.indexCount     = static_cast<int>(subMesh.m_IndexCount);
-                em.indexOffset    = static_cast<int>(subMesh.m_IndexOffset);
-                m_GPUDatas.entityData.push_back(em);
+            const auto renderableData = CollectRenderables(e);
+            for (const auto& data : renderableData) {
+                const int materialIndex = data.m_MaterialUUID != 0 ? PushMaterial(data.m_MaterialUUID) : 0;
+                PushDrawCommand(data.m_Mesh, transformIndex, materialIndex, baseInstance);
+                ++baseInstance;
             }
         }
 
@@ -148,7 +124,6 @@ namespace Real {
         CollectGlobalData();
 
         UploadToGPU();
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
 
     void RenderContext::CollectCamera(const Entity* entity) {
@@ -158,35 +133,82 @@ namespace Real {
          */
         // const auto cam = Services::GetEditorState()->camera; // TODO: if it doesn't work REMEMBER THIS SHIT!
         if (entity->HasComponent<CameraComponent>()) {
-            const auto& cc = entity->GetComponent<CameraComponent>();
-            const auto& tc = entity->GetComponent<TransformComponent>();
-            m_GPUDatas.camera = cc->m_Camera.ConvertToGPUFormat(tc->m_Transform);
+            auto& cc = entity->GetComponentUnchecked<CameraComponent>();
+            auto& tc = entity->GetComponentUnchecked<TransformComponent>();
+            m_GPUDatas.camera = cc.m_Camera.ConvertToGPUFormat(tc.m_Transform);
         }
     }
 
-    std::vector<Graphics::MeshInfo> RenderContext::CollectMeshes(const Entity *entity) {
-        std::vector<Graphics::MeshInfo> m_Result;
+    int RenderContext::PushTransform(TransformComponent& tc) {
+        const TransformSSBO gpuTransform = tc.m_Transform.ConvertToGPUFormat();
+        const int index = static_cast<int>(m_GPUDatas.transforms.size());
+        m_GPUDatas.transforms.push_back(gpuTransform);
+        return index;
+    }
+
+    int RenderContext::PushMaterial(const UUID& materialUUID) {
+        const auto it = m_MaterialIdxCache.find(materialUUID);
+        if (it != m_MaterialIdxCache.end())
+            return it->second;
+
+        const auto& am = Services::GetAssetManager();
+        const auto mat = am->GetMaterialInstance(materialUUID);
+
+        const int index = m_GPUDatas.materials.size();
+        m_GPUDatas.materials.push_back(mat->ConvertToGPUFormat());
+        m_MaterialIdxCache[materialUUID] = index;
+
+        return index;
+    }
+
+    void RenderContext::PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex,uint baseInstance)
+    {
+        DrawElementsIndirectCommand cmd{};
+        cmd.count         = mesh->m_IndexCount;
+        cmd.instanceCount = 1;
+        cmd.firstIndex    = mesh->m_IndexOffset;
+        cmd.baseVertex    = 0;
+        cmd.baseInstance  = baseInstance;
+
+        m_GPUDatas.drawCommands.push_back(cmd);
+
+        EntityMetadata em{};
+        em.transformIndex = transformIndex;
+        em.materialIndex  = materialIndex;
+        em.indexCount     = static_cast<int>(mesh->m_IndexCount);
+        em.indexOffset    = static_cast<int>(mesh->m_IndexOffset);
+
+        m_GPUDatas.entityData.push_back(em);
+    }
+
+    std::vector<RenderableData> RenderContext::CollectRenderables(const Entity* entity) {
+        std::vector<RenderableData> result;
 
         if (entity->HasComponent<MeshRendererComponent>()) {
-            const auto& mc = entity->GetComponent<MeshRendererComponent>();
-            return { Services::GetMeshManager()->GetMeshData(mc->m_MeshID) };
-        }
+            const auto& mrc = entity->GetComponentUnchecked<MeshRendererComponent>();
 
-        if (entity->HasComponent<ModelComponent>()) {
-            const auto& meshes = entity->GetComponent<ModelComponent>()->m_Model->m_MeshUUIDs;
-            for (const auto& uuid : meshes) {
-                m_Result.push_back(Services::GetMeshManager()->GetMeshData(uuid));
+            // Using same count for meshes and materials since each mes has one material
+            if (mrc.m_MeshUUIDs.size() != mrc.m_MaterialInstanceUUIDs.size()) {
+                Warn("[RenderContext::CollectMeshes] MeshUUID count does not match MaterialInstanceUUIDs, Fix it!!");
+                return result;
+            }
+            const size_t size = mrc.m_MeshUUIDs.size();
+            for (size_t i = 0; i < size; i++) {
+                RenderableData data;
+                data.m_Mesh = Services::GetMeshManager()->GetMeshData(mrc.m_MeshUUIDs[i]);
+                data.m_MaterialUUID = mrc.m_MaterialInstanceUUIDs[i];
+                result.push_back(data);
             }
         }
 
-        return m_Result;
+        return result;
     }
 
     void RenderContext::CollectLight(const Entity* entity) {
         if (entity->HasComponent<LightComponent>()) {
-            const auto& lc = entity->GetComponent<LightComponent>();
-            const auto& tc = entity->GetComponent<TransformComponent>();
-            m_GPUDatas.lights.push_back(lc->m_Light.ConvertToGPUFormat(tc->m_Transform));
+            auto& lc = entity->GetComponentUnchecked<LightComponent>();
+            auto& tc = entity->GetComponentUnchecked<TransformComponent>();
+            m_GPUDatas.lights.push_back(lc.m_Light.ConvertToGPUFormat(tc.m_Transform));
         }
     }
 
@@ -200,7 +222,6 @@ namespace Real {
         m_GPUDatas.drawCommands.clear();
         m_GPUDatas.entityData.clear();
         m_GPUDatas.lights.clear();
-        m_GPUDatas.materials.clear();
         m_GPUDatas.transforms.clear();
     }
 }

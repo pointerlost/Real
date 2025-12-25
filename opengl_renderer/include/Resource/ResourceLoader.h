@@ -5,9 +5,7 @@
 #include "Core/Utils.h"
 #include "Graphics/ModelLoader.h"
 
-
 namespace Real {
-    class AssetImporter;
     class RenderContext;
 }
 

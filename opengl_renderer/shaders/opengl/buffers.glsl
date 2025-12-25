@@ -41,10 +41,26 @@ struct Material {
     int m_BindlessORMIdx;
     int m_BindlessHeightIdx;
     int m_BindlessEmissiveIdx;
+    int pad1_, pad2_, pad3_;
 };
 layout(std430, binding = 4) buffer MaterialSSBO {
     Material materials[];
 };
+
+// Default values
+const vec3  DEFAULT_ALBEDO = vec3(0.8, 0.8, 0.8);
+const vec3  DEFAULT_NORMAL = vec3(0.5, 0.5, 1.0); // Flat normal (Z-up)
+const float DEFAULT_ROUGHNESS = 0.5;
+const float DEFAULT_METALLIC = 0.0;
+const float DEFAULT_AO = 1.0;
+const float DEFAULT_HEIGHT = 0.0;
+
+// Helper function to check if texture index is valid
+bool IsValidTextureIdx(int idx) {
+    return idx >= 0;
+}
+
+// Material property getters
 vec4 GetMatBaseColor(int idx) { return materials[idx].m_BaseColor; }
 float GetMatNormalColor(int idx) { return materials[idx].m_NormalORM[0]; }
 float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalORM[1]; }
@@ -59,34 +75,74 @@ layout (std430, binding = 5) buffer TextureBuffer {
     uint64_t bindlessTextures[];
 };
 
+// Albedo sampling with fallback
 vec3 GetAlbedoSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetAlbedoTexIdx(matIdx)];
-    return pow(texture(sampler2D(handle), UV).rgb, vec3(2.2));
+    int texIdx = GetAlbedoTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return pow(texture(sampler2D(handle), UV).rgb, vec3(2.2));
+    }
+    // Fallback to material's base color or default
+    vec4 baseColor = GetMatBaseColor(matIdx);
+    return (baseColor.a > 0.0) ? baseColor.rgb : DEFAULT_ALBEDO;
 }
 
+// Normal sampling with fallback
 vec3 GetNormalSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetNormalTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).rgb;
+    int texIdx = GetNormalTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return texture(sampler2D(handle), UV).rgb * 2.0 - 1.0;
+    }
+    // Fallback to flat normal (Z-up)
+    return DEFAULT_NORMAL;
 }
 
+// Roughness sampling with fallback
 float GetRoughnessSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).r;
+    int texIdx = GetORMTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return texture(sampler2D(handle), UV).r;
+    }
+    // Fallback to material's roughness value or default
+    float matRoughness = GetMatRoughnessColor(matIdx);
+    return (matRoughness > 0.0) ? matRoughness : DEFAULT_ROUGHNESS;
 }
 
+// Metallic sampling with fallback
 float GetMetallicSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).g;
+    int texIdx = GetORMTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return texture(sampler2D(handle), UV).g;
+    }
+    // Fallback to material's metallic value or default
+    float matMetallic = GetMatMetallicColor(matIdx);
+    return (matMetallic > 0.0) ? matMetallic : DEFAULT_METALLIC;
 }
 
+// AO sampling with fallback
 float GetAOSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetORMTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).b;
+    int texIdx = GetORMTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return texture(sampler2D(handle), UV).b;
+    }
+    // Fallback to material's AO value or default
+    float matAO = GetMatAOColor(matIdx);
+    return (matAO > 0.0) ? matAO : DEFAULT_AO;
 }
 
+// Height sampling with fallback
 float GetHeightSampler2D(int matIdx, vec2 UV) {
-    uint64_t handle = bindlessTextures[GetHeightTexIdx(matIdx)];
-    return texture(sampler2D(handle), UV).r;
+    int texIdx = GetHeightTexIdx(matIdx);
+    if (IsValidTextureIdx(texIdx)) {
+        uint64_t handle = bindlessTextures[texIdx];
+        return texture(sampler2D(handle), UV).r;
+    }
+    // Default height (no displacement)
+    return DEFAULT_HEIGHT;
 }
 
 TexturePack GetTexturePack(int materialIndex, vec2 UV) {

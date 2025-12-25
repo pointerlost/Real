@@ -73,6 +73,7 @@ namespace Real {
         void MakeResident() const;
         void MakeNonResident() const;
         [[nodiscard]] bool IsCPUGenerated() const;
+        [[nodiscard]] bool IsHandleExist() const;
 
     private:
         GLuint m_Handle = 0;

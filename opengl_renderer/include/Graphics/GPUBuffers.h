@@ -32,6 +32,7 @@ namespace Real {
         int m_BindlessORMIdx;
         int m_BindlessHeightIdx;
         int m_BindlessEmissiveIdx;
+        int pad1_, pad2_, pad3_;
     };
 
     struct CameraUBO {

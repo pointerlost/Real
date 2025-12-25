@@ -137,8 +137,13 @@ namespace Real::tools {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
-        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem()))
+        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
+            const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
+            const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
+            texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
+            texture->SetImageFormatState(ImageFormatState::COMPRESSED);
             return true;
+        }
 
         const auto [width, height] = texture->GetResolution(0);
         const auto channelCount    = texture->GetLevelData(0).m_ChannelCount;
@@ -241,8 +246,13 @@ namespace Real::tools {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
-        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem()))
+        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
+            const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
+            const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
+            texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
+            texture->SetImageFormatState(ImageFormatState::COMPRESSED);
             return true;
+        }
 
         const auto [width, height] = texture->GetResolution(0);
         const auto channelCount = texture->GetLevelData(0).m_ChannelCount;

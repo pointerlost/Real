@@ -233,6 +233,9 @@ namespace Real {
     }
 
     void OpenGLTexture::UploadMipLevels() {
+        if (!IsHandleExist()) {
+            CreateHandle();
+        }
         if (m_MipLevelCount > m_MipLevelsData.size() || m_MipLevelCount < 0) {
             Warn("Mipmap level mismatch!!! name: " + m_FileInfo.name);
             return;
@@ -377,5 +380,9 @@ namespace Real {
 
     bool OpenGLTexture::IsCPUGenerated() const {
         return !m_IsSTBAllocated;
+    }
+
+    bool OpenGLTexture::IsHandleExist() const {
+        return m_Handle != 0;
     }
 }

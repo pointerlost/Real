@@ -169,8 +169,8 @@ namespace Real::UI {
             // Draw gizmos rect
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 
-            auto& transform = Services::GetEditorState()->selectedEntity->GetComponent<TransformComponent>()->m_Transform;
-            auto& camera = Services::GetEditorState()->camera->GetComponent<CameraComponent>()->m_Camera;
+            auto& transform = Services::GetEditorState()->selectedEntity->GetComponentUnchecked<TransformComponent>().m_Transform;
+            auto& camera = Services::GetEditorState()->camera->GetComponent<CameraComponent>().m_Camera;
             auto model = transform.GetModelMatrix();
 
             ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()),

@@ -117,10 +117,14 @@ namespace Real {
     }
 
     void AssetImporter::ImportFromDatabase() {
+        // Import from DB
         ImportTextures();
         ImportMaterials();
         ImportMeshes();
         ImportModels();
+
+        // Iterate folder if there is missing new textures
+        LoadTexturesFromFolder();
         // TODO: is a safety check required??
     }
 
@@ -164,8 +168,6 @@ namespace Real {
 
             am->SaveTextureCPU(texture);
         }
-
-        LoadTexturesFromFolder();
     }
 
     void AssetImporter::ImportMeshes() {
@@ -179,8 +181,7 @@ namespace Real {
             // Save meshes to mesh manager
             const auto& [header, vertices, indices] = serialization::binary::LoadMesh(bPath);
             UUID meshUUID{header.m_UUID};
-            UUID matUUID{header.m_MaterialUUID};
-            Services::GetMeshManager()->CreateSingleMesh(vertices, indices, matUUID, meshUUID);
+            Services::GetMeshManager()->CreateSingleMesh(vertices, indices, meshUUID);
         }
     }
 
@@ -200,10 +201,11 @@ namespace Real {
             info.ext  = modeldata["file_extension"];
 
             const auto& bPath = modeldata["binary"];
-            const auto& [header, meshUUIDs] = serialization::binary::LoadModel(bPath);
+            const auto& [header, meshUUIDs, matUUIDs] = serialization::binary::LoadModel(bPath);
 
             const Ref<Model> model = CreateRef<Model>(uuid, info);
             model->m_MeshUUIDs = meshUUIDs;
+            model->m_MaterialAssetUUIDs = matUUIDs;
             model->m_Name = modeldata["name"];
 
             if (header.m_UUID != 0 && header.m_UUID != uuid) {
@@ -224,7 +226,7 @@ namespace Real {
             }
             const std::string name = mat_data.value("name", "Material");
 
-            const auto& mat = am->LoadMaterialBase(uuid, name);
+            const auto& mat = am->LoadMaterialBaseAsset(uuid, name);
 
             if (mat_data.contains("textures")) {
                 const nlohmann::json& t = mat_data["textures"];
@@ -277,8 +279,6 @@ namespace Real {
             }
             CacheAssetWithPath(model["file_path"], uuid);
         }
-
-        UpdateAssetDB();
     }
 
     void AssetImporter::CacheAssetWithName(const std::string &name, const UUID &uuid) {
@@ -288,8 +288,9 @@ namespace Real {
     }
 
     void AssetImporter::CacheAssetWithPath(const std::string &path, const UUID &uuid) {
-        if (!m_PathToUUID.contains(path)) {
-            m_PathToUUID.emplace(path, uuid);
+        const std::string normalized = fs::NormalizePath(path);
+        if (!m_PathToUUID.contains(normalized)) {
+            m_PathToUUID.emplace(normalized, uuid);
         }
     }
 
@@ -321,11 +322,10 @@ namespace Real {
         // Update DB first if there is new assets
         UpdateAssetDB();
 
-        const auto& am = Services::GetAssetManager();
-        for (const auto& mat : std::views::values(am->GetBaseMaterials())) {
+        for (const auto& mat : std::views::values(Services::GetAssetManager()->GetBaseMaterials())) {
             if (HasAssetWithName(mat->m_Name)) continue;
 
-            for (const auto& tex : am->GetMaterialTextures(mat.get())) {
+            for (const auto& tex : Services::GetAssetManager()->GetMaterialTextures(mat.get())) {
                 if (HasAssetWithPath(tex->GetPath())) continue;
 
                 if (tex->GetImageFormatState() == ImageFormatState::COMPRESS_ME) {
@@ -343,14 +343,17 @@ namespace Real {
         const auto& am = Services::GetAssetManager();
         std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
 
-        const auto SaveTexture = [this, &m_ormPack, am](const FileInfo& file, ImageFormatState image_state) {
+        const auto SaveTexture = [this, &m_ormPack, am](const FileInfo& file, ImageFormatState imageFormatState) {
             auto& stem = file.stem;
+            if (HasAssetWithPath(file.path) || am->IsTextureCompressed(stem))
+                return;
+
             const auto dashPos = stem.find('_');
             const auto matName = stem.substr(0, dashPos);
             const TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
 
             const auto texData = am->LoadTextureFromFile(file.path, type);
-            const auto texture = CreateRef<OpenGLTexture>(texData, true, type, image_state, file);
+            const auto texture = CreateRef<OpenGLTexture>(texData, true, type, imageFormatState, file);
 
             if (type == TextureType::AMBIENT_OCCLUSION) {
                 m_ormPack[matName][0] = texture;
@@ -365,11 +368,10 @@ namespace Real {
                 return;
             }
 
-            if (image_state == ImageFormatState::COMPRESS_ME) {
+            if (imageFormatState == ImageFormatState::COMPRESS_ME) {
                 tools::CompressTextureAndReadFromFile(texture.get());
             }
 
-            m_PathToUUID[texture->GetPath()] = texture->GetUUID();
             am->SaveTextureCPU(texture);
 
             const auto& mat = am->GetOrCreateMaterialBase(matName);
@@ -381,6 +383,7 @@ namespace Real {
                 case TextureType::EMISSIVE: mat->m_Emissive = texture->GetUUID(); break;
                 default: ;
             }
+            am->SaveMaterialCPU(mat);
         };
 
         // Uncompressed State (Load from file)
@@ -404,10 +407,8 @@ namespace Real {
             }
             am->GetOrCreateMaterialBase(matName)->m_ORM = orm->GetUUID();
             tools::CompressTextureAndReadFromFile(orm.get());
+            am->SaveTextureCPU(orm);
         }
-
-        // Bulk upload
-        UpdateAssetDB();
     }
 
     void AssetImporter::Update() {

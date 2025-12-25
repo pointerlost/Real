@@ -45,22 +45,22 @@ namespace Real::UI {
 
         ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Bold"));
         if (entity->HasComponent<TagComponent>()) {
-            DrawComponent(entity->GetComponent<TagComponent>(), scene);
+            DrawComponent(&entity->GetComponentUnchecked<TagComponent>(), scene);
         }
         if (entity->HasComponent<TransformComponent>()) {
-            DrawComponent(entity->GetComponent<TransformComponent>(), scene);
+            DrawComponent(&entity->GetComponentUnchecked<TransformComponent>(), scene);
         }
         // if (entity->HasComponent<MaterialComponent>()) {
             // DrawComponent(entity->GetComponent<MaterialComponent>(), scene);
         // }
         if (entity->HasComponent<MeshRendererComponent>()) {
-            DrawComponent(entity->GetComponent<MeshRendererComponent>(), scene);
+            DrawComponent(&entity->GetComponent<MeshRendererComponent>(), scene);
         }
         if (entity->HasComponent<LightComponent>()) {
-            DrawComponent(entity->GetComponent<LightComponent>(), entity->GetComponent<TransformComponent>(), scene);
+            DrawComponent(&entity->GetComponent<LightComponent>(), &entity->GetComponent<TransformComponent>(), scene);
         }
         if (entity->HasComponent<CameraComponent>()) {
-            DrawComponent(entity->GetComponent<CameraComponent>(), scene);
+            DrawComponent(&entity->GetComponent<CameraComponent>(), scene);
         }
         ImGui::PopFont();
 

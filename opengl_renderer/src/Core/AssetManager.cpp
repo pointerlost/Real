@@ -236,26 +236,64 @@ namespace Real {
         return m_Textures[uuid];
     }
 
-    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const UUID& uuid) {
-        auto [it, inserted] = m_Materials.try_emplace(uuid);
-        if (inserted) {
-            it->second = CreateRef<Material>(uuid);
+    UUID AssetManager::CreateMaterialInstance(const UUID& assetUUID) {
+        const auto base = GetMaterialBase(assetUUID);
+        if (!base) {
+            Warn("Material asset not found!");
+            return UUID(0);
+        }
+
+        const auto instance = CreateRef<MaterialInstance>(base);
+        const UUID instanceUUID = instance->m_UUID;
+
+        m_MaterialInstances.emplace(instanceUUID, instance);
+        return instanceUUID;
+    }
+
+    UUID AssetManager::CreateMaterialInstance(const std::string &assetName) {
+        const auto assetUUID = m_MaterialNameToUUID.at(assetName);
+        if (assetUUID.IsNull()) {
+            Warn("Material not found: " + assetName); // TODO: i need to add material asset fallback
+            return UUID(0);
+        }
+        return CreateMaterialInstance(assetUUID);
+    }
+
+    UUID AssetManager::GetMaterialAssetUUIDByName(const std::string& assetName) {
+        const auto it = m_MaterialNameToUUID.find(assetName);
+        if (it == m_MaterialNameToUUID.end()) {
+            Warn("There is no material asset with this name: " + assetName);
+            return UUID(0);
         }
         return it->second;
     }
 
-    Ref<Material>& AssetManager::GetOrCreateMaterialBase(const std::string& name) {
-        if (m_MaterialNameToUUID.contains(name)) {
-            if (m_Materials.contains(m_MaterialNameToUUID[name]))
-                return m_Materials[m_MaterialNameToUUID[name]];
+    Ref<MaterialInstance> AssetManager::GetMaterialInstance(const UUID &instanceUUID) {
+        const auto it = m_MaterialInstances.find(instanceUUID);
+        if (it == m_MaterialInstances.end()) {
+            Warn("There is no material instance with this UUID: " + std::to_string(instanceUUID));
+            return nullptr;
+            // TODO: i need to add material asset fallback
         }
-        return m_Materials[m_MaterialNameToUUID[name]] = CreateRef<Material>();
+        return it->second;
     }
 
-    Ref<MaterialInstance>& AssetManager::GetOrCreateMaterialInstance(const UUID& uuid) {
-        if (m_MaterialInstances.contains(uuid))
-            return m_MaterialInstances[uuid];
-        return m_MaterialInstances[uuid] = CreateRef<MaterialInstance>(uuid);
+    Ref<Material> AssetManager::GetOrCreateMaterialBase(const std::string& name) {
+        const std::string normalized = NormalizeMaterialName(name);
+
+        if (m_MaterialNameToUUID.contains(normalized))
+            return m_Materials[m_MaterialNameToUUID[normalized]];
+
+        const std::string uniqueName = GenerateUniqueMaterialName(normalized);
+        UUID uuid{};
+
+        auto mat = CreateRef<Material>(uuid);
+        mat->m_Name = uniqueName;
+
+        m_Materials.emplace(uuid, mat);
+        m_MaterialNameToUUID.emplace(uniqueName, uuid);
+
+        return mat;
     }
 
     std::string AssetManager::GenerateUniqueMaterialName(const std::string &desiredName) {
@@ -284,11 +322,8 @@ namespace Real {
     std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
         std::vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
+            if (tex->GetImageFormatState() == ImageFormatState::DEFAULT) continue;
             tex->PrepareOptionsAndUploadToGPU();
-            if (!tex->HasBindlessHandle()) {
-                Warn("There is no bindless handle for this texture!");
-                continue;
-            }
             tex->SetIndex(bindlessIDs.size());
             bindlessIDs.push_back(tex->GetBindlessHandle());
         }
@@ -321,6 +356,16 @@ namespace Real {
         return false;
     }
 
+    Ref<Model> AssetManager::GetModel(const std::string &name) {
+        const auto it = m_ModelNameToUUID.find(name);
+        if (it == m_ModelNameToUUID.end()) {
+            Warn("Model not found: " + name);
+            return nullptr;
+        }
+        const auto m = m_Models.find(it->second);
+        return (m != m_Models.end()) ? m->second : nullptr;
+    }
+
     bool AssetManager::IsMaterialExist(const std::string &name) {
         if (m_MaterialNameToUUID.contains(name) && m_Materials.contains(m_MaterialNameToUUID[name]))
             return true;
@@ -330,6 +375,9 @@ namespace Real {
     void AssetManager::SaveModelCPU(const Ref<Model> &model) {
         if (!m_Models.contains(model->m_UUID)) {
             m_Models.emplace(model->m_UUID, model);
+            if (!m_ModelNameToUUID.contains(model->m_Name)) {
+                m_ModelNameToUUID.emplace(model->m_Name, model->m_UUID);
+            }
         }
     }
 
@@ -364,6 +412,7 @@ namespace Real {
     }
 
     void AssetManager::LoadDefaultTextures() {
+        // TODO: i need to add asset material fallback for default textures
         auto LoadDefaultTex = [this](TextureType type) {
             if (!m_DefaultTextures.contains(type)) {
                 GetOrCreateDefaultTexture(type);
@@ -395,38 +444,48 @@ namespace Real {
         return textures;
     }
 
-    Ref<Material> AssetManager::GetMaterialBase(const std::string& name) {
-        const auto it = m_MaterialNameToUUID.find(name);
+    Ref<Material> AssetManager::CreateMaterialBase(const std::string &name) {
+        const auto uniqueName = GenerateUniqueMaterialName(name);
+        const auto base = CreateRef<Material>();
+        // Material UUID is null at init-time and is initialized here with a new UUID
+        base->m_UUID = UUID{};
+        base->m_Name = uniqueName;
+
+        m_Materials.emplace(base->m_UUID, base);
+        m_MaterialNameToUUID.emplace(base->m_Name, base->m_UUID);
+
+        return m_Materials.at(base->m_UUID);
+    }
+
+    Ref<Material> AssetManager::GetMaterialBase(const std::string& assetName) {
+        const auto it = m_MaterialNameToUUID.find(assetName);
         if (it == m_MaterialNameToUUID.end()) {
-            Warn("Material not found: " + name);
+            Warn("Material not found: " + assetName); // TODO: i need to add material asset fallback
             return nullptr;
         }
         const auto mit = m_Materials.find(it->second);
         return (mit != m_Materials.end()) ? mit->second : nullptr;
     }
 
-    Ref<Material> AssetManager::LoadMaterialBase(const UUID &uuid, const std::string &name) {
+    Ref<Material> AssetManager::GetMaterialBase(const UUID& assetUUID) {
+        const auto it = m_Materials.find(assetUUID);
+        if (it == m_Materials.end()) {
+            Warn("[GetMaterialBase] Material not found!");
+            return nullptr; // TODO: i need to add material asset fallback
+        }
+        return it->second;
+    }
+
+    Ref<Material> AssetManager::LoadMaterialBaseAsset(const UUID &uuid, const std::string &name) {
         if (m_Materials.contains(uuid))
             return m_Materials.at(uuid);
 
+        const auto uniqueName = GenerateUniqueMaterialName(name);
         auto mat = CreateRef<Material>(uuid);
         mat->m_Name = name;
 
         m_Materials.emplace(uuid, mat);
         m_MaterialNameToUUID.emplace(name, uuid);
-
-        return mat;
-    }
-
-    Ref<Material> AssetManager::CreateMaterialBase(const std::string& name) {
-        const std::string uniqueName = GenerateUniqueMaterialName(name);
-        UUID uuid{};
-
-        auto mat = CreateRef<Material>(uuid);
-        mat->m_Name = uniqueName;
-
-        m_Materials.emplace(uuid, mat);
-        m_MaterialNameToUUID.emplace(uniqueName, uuid);
 
         return mat;
     }

@@ -24,7 +24,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update(opengl::Renderer* renderer);
+        void Update(const opengl::Renderer* renderer);
 
         Entity& CreateEntity(const std::string& tag = std::string());
         void DestroyEntity(entt::entity entity);
@@ -42,11 +42,10 @@ namespace Real {
         Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
 
         Entity* GetEntityWithUUID(UUID uuid);
-        void OnModelAssigned(Entity parent, Ref<Model> model);
+        void OnModelAssigned(Entity& parent, const Ref<Model>& model);
 
-    private:
         template <typename T>
-        void OnComponentAdded(Entity entity, T& component);
+        void OnComponentAdded(Entity& entity, T& component);
 
     private:
         entt::registry m_Registry;

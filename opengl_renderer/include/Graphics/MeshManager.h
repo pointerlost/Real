@@ -19,7 +19,7 @@ namespace Real {
         void InitResources();
 
         const MeshAsset& CreateSingleMesh(std::vector<Vertex> vertices,
-            std::vector<uint32_t> indices, const UUID& matUUID
+            const std::vector<uint32_t>& indices, const UUID& meshUUID
         );
 
         std::span<const Vertex> ViewVertices(const UUID& uuid) const;

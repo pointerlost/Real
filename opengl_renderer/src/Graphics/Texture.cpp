@@ -23,15 +23,20 @@ namespace Real {
         CreateFromData(data, type);
     }
 
-    OpenGLTexture::OpenGLTexture(const std::vector<TextureData> &data) {
+    OpenGLTexture::OpenGLTexture(const std::vector<TextureData> &data, FileInfo info) : m_FileInfo(std::move(info)) {
         CreateMipmapsFromDDS(data);
     }
 
     OpenGLTexture::OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate)
-        : m_IsSTBAllocated(isSTBAllocated), m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo)) {}
+        : m_IsSTBAllocated(isSTBAllocated), m_ImageFormatState(imagestate), m_FileInfo(std::move(fileinfo))
+    {
+    }
 
     OpenGLTexture::OpenGLTexture(bool isSTBAllocated, TextureType type)
-        : m_IsSTBAllocated(isSTBAllocated), m_Type(type) {}
+        : m_IsSTBAllocated(isSTBAllocated), m_Type(type)
+    {
+        // Don't create handle for default textures!!!!
+    }
 
     OpenGLTexture::~OpenGLTexture() {
         CleanUpCPUData(); // Clean if it has not already been cleaned
@@ -65,7 +70,7 @@ namespace Real {
         m_Type = type;
     }
 
-    void OpenGLTexture::SetIndex(int idx) {
+    void OpenGLTexture::SetIndex(uint32_t idx) {
         m_GPUIndex = idx;
     }
 
@@ -165,17 +170,11 @@ namespace Real {
     }
 
     void OpenGLTexture::Create() {
-        if (m_Handle == 0) {
-            CreateHandle();
-        }
         const auto data = LoadFromFile(m_FileInfo.path);
         CreateFromData(data, m_Type);
     }
 
     void OpenGLTexture::CreateFromData(const TextureData &data, TextureType type) {
-        if (m_Handle == 0) {
-            CreateHandle();
-        }
         m_Type = type;
         // One mip level is enough for CPU-generated textures
         m_MipLevelsData.push_back(data);
@@ -201,6 +200,7 @@ namespace Real {
     }
 
     void OpenGLTexture::PrepareOptionsAndUploadToGPU() {
+        CreateHandle();
         UploadMipLevels();
         SetTextureParameters();
         CreateBindless();
@@ -210,9 +210,11 @@ namespace Real {
     }
 
     void OpenGLTexture::CreateHandle() {
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
         if (m_Handle == 0) {
-            Warn("Texture can't created! :" + m_FileInfo.name);
+            glCreateTextures(GL_TEXTURE_2D, 1, &m_Handle);
+        }
+        if (m_Handle == 0) {
+            Warn("Texture handle can't created! name: " + GetName());
         }
     }
 
@@ -233,9 +235,6 @@ namespace Real {
     }
 
     void OpenGLTexture::UploadMipLevels() {
-        if (!IsHandleExist()) {
-            CreateHandle();
-        }
         if (m_MipLevelCount > m_MipLevelsData.size() || m_MipLevelCount < 0) {
             Warn("Mipmap level mismatch!!! name: " + m_FileInfo.name);
             return;

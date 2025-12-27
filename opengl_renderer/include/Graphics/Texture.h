@@ -14,11 +14,13 @@ namespace Real {
     struct OpenGLTexture {
         explicit OpenGLTexture(const TextureData &data, bool isSTBAllocated, TextureType type,
             ImageFormatState image_state = ImageFormatState::UNCOMPRESSED,
-            FileInfo info = FileInfo(), UUID uuid = UUID()
+            FileInfo info = FileInfo(), UUID uuid = UUID{}
         );
-        explicit OpenGLTexture(const std::vector<TextureData>& data); // Compressed textures
+        explicit OpenGLTexture(const std::vector<TextureData>& data, FileInfo info); // Compressed textures
         explicit OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
+        // Don't create handle for default textures!!!!
         explicit OpenGLTexture(bool isSTBAllocated = false, TextureType type = TextureType::UNDEFINED);
+
         OpenGLTexture(const OpenGLTexture&) = default;
         ~OpenGLTexture();
 
@@ -26,7 +28,7 @@ namespace Real {
         void SetLevelData(void* data, int mipLevel);
         void SetFileInfo(FileInfo info);
         void SetType(TextureType type);
-        void SetIndex(int idx);
+        void SetIndex(uint32_t idx);
         void SetFormat(int format, int mipLevel);
         void SetInternalFormat(int format, int mipLevel);
         void SetImageFormatState(ImageFormatState format);
@@ -50,7 +52,7 @@ namespace Real {
         [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].m_Data != nullptr; }
         [[nodiscard]] bool HasBindlessHandle() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] std::pair<int, int> GetResolution(int mipLevel);
-        [[nodiscard]] int GetIndex() const { return m_GPUIndex; }
+        [[nodiscard]] uint32_t GetIndex() const { return m_GPUIndex; }
         [[nodiscard]] bool HasBindlessID() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
@@ -61,6 +63,7 @@ namespace Real {
         [[nodiscard]] int GetChannelCount(int mipLevel) const { return m_MipLevelsData[mipLevel].m_ChannelCount; }
         int& GetChannelCount(int mipLevel) { return m_MipLevelsData[mipLevel].m_ChannelCount; }
         [[nodiscard]] UUID GetUUID() const { return m_UUID; }
+        [[nodiscard]] GLuint GetHandle() const { return m_Handle; }
 
         [[maybe_unused]] TextureData LoadFromFile(const std::string& path);
         void Create();
@@ -81,9 +84,9 @@ namespace Real {
         UUID m_UUID{};
 
         bool m_IsSTBAllocated = false;
-        int m_GPUIndex = 0;
         int m_BlockSize = 0;
         int m_MipLevelCount = 0;
+        uint32_t m_GPUIndex = 0;
         std::vector<TextureData> m_MipLevelsData;
 
         ImageFormatState m_ImageFormatState = ImageFormatState::UNDEFINED;

@@ -16,7 +16,7 @@ namespace Real {
         const auto& am = Services::GetAssetManager();
         MaterialSSBO gpuData{};
 
-        const auto& GetIndex = [&](const UUID& uuid, TextureType type) {
+        const auto& GetIndex = [&](const UUID& uuid, const TextureType type) {
             return am->GetTexture(uuid, type)->GetIndex();
         };
 
@@ -26,11 +26,11 @@ namespace Real {
         const UUID heightUUID   = m_HeightOverride.value_or(m_Base->m_Height);
         const UUID emissiveUUID = m_EmissiveOverride.value_or(m_Base->m_Emissive);
 
-        gpuData.m_BindlessAlbedoIdx   = GetIndex(albedoUUID,   TextureType::ALBEDO);
-        gpuData.m_BindlessNormalIdx   = GetIndex(normalUUID,   TextureType::NORMAL);
-        gpuData.m_BindlessORMIdx      = GetIndex(ormUUID,      TextureType::ORM);
-        gpuData.m_BindlessHeightIdx   = GetIndex(heightUUID,   TextureType::HEIGHT);
-        gpuData.m_BindlessEmissiveIdx = GetIndex(emissiveUUID, TextureType::EMISSIVE);
+        gpuData.m_BindlessAlbedoIdx   = static_cast<uint>(GetIndex(albedoUUID,   TextureType::ALBEDO));
+        gpuData.m_BindlessNormalIdx   = static_cast<uint>(GetIndex(normalUUID,   TextureType::NORMAL));
+        gpuData.m_BindlessORMIdx      = static_cast<uint>(GetIndex(ormUUID,      TextureType::ORM));
+        gpuData.m_BindlessHeightIdx   = static_cast<uint>(GetIndex(heightUUID,   TextureType::HEIGHT));
+        gpuData.m_BindlessEmissiveIdx = static_cast<uint>(GetIndex(emissiveUUID, TextureType::EMISSIVE));
 
         // Override colors
         gpuData.m_BaseColor = m_BaseColor;

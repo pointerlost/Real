@@ -71,6 +71,26 @@ namespace Real {
 
             for (const auto& modelPath : modelsPath) {
                 if (IsModelFile(modelPath)) {
+                    // Clear and rebuild texture index for this model file
+                    m_TextureIndex.clear();
+
+                    // Build texture index from this model's directory
+                    std::filesystem::path modelDir = std::filesystem::path(modelPath).parent_path();
+                    for (const auto& entry : std_fs::directory_iterator(modelDir)) {
+                        if (entry.is_regular_file() && extensions.contains(entry.path().extension())) {
+                            m_TextureIndex[entry.path().stem().string()].push_back(entry.path());
+                        }
+                    }
+
+                    // Check subdirectories
+                    for (const auto& entry : std_fs::recursive_directory_iterator(modelDir)) {
+                        if (entry.is_regular_file() && extensions.contains(entry.path().extension())) {
+                            m_TextureIndex[entry.path().stem().string()].push_back(entry.path());
+                        }
+                    }
+
+                    m_CurrentDirectory = modelDir.string();
+
                     if (modelPath.substr(modelPath.size() - 4) == ".fbx")
                         m_IsFBX = true;
                     Load(modelPath, modelName, ImageFormatState::COMPRESS_ME);
@@ -80,7 +100,7 @@ namespace Real {
         }
     }
 
-    Ref<Model> ModelLoader::Load(const std::string &filePath, const std::string& name, ImageFormatState state) {
+    Ref<Model> ModelLoader::Load(const std::string &filePath, const std::string& name, const ImageFormatState state) {
         if (!fs::File::Exists(filePath)) {
             Warn("Model file not found: " + filePath);
             return nullptr;
@@ -157,11 +177,35 @@ namespace Real {
          }
      }
 
-    MeshBinaryHeader ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene) {
+    void ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene) {
         const auto& mm = Services::GetMeshManager();
         // Create containers for vertex data
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
+
+        auto materialUUID = UUID(0); // TODO: i need to create default material fallback
+        if (mesh->mMaterialIndex >= 0) {
+            const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+            Ref<Material> real_material;
+
+            const auto it = m_CacheProcessedMaterials.find(material);
+            if (it != m_CacheProcessedMaterials.end()) {
+                real_material = it->second;
+            } else {
+                real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
+                m_CacheProcessedMaterials.emplace(material, real_material);
+            }
+
+            materialUUID = real_material ? real_material->m_UUID : materialUUID;
+
+            m_CurrentModel->m_MaterialAssetUUIDs.push_back(materialUUID);
+        }
+
+        // If meshes loaded before, just get UUIDs
+        if (const auto it = m_CacheProcessedMeshes.find(mesh); it != m_CacheProcessedMeshes.end()) {
+            m_CurrentModel->m_MeshUUIDs.push_back(it->second);
+            return;
+        }
 
         // Process vertices
         vertices.reserve(mesh->mNumVertices);
@@ -206,17 +250,9 @@ namespace Real {
             }
         }
 
-        auto materialUUID = UUID(0); // TODO: i need to create default material fallback
-        if (mesh->mMaterialIndex >= 0) {
-            const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-            const Ref<Material> real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
-            materialUUID = real_material ? real_material->m_UUID : materialUUID;
-            m_CurrentModel->m_MaterialAssetUUIDs.push_back(real_material->m_UUID);
-        }
-
-        const UUID meshUUID{};
-        Services::GetMeshManager()->CreateSingleMesh(vertices, indices, meshUUID);
+        const UUID meshUUID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, UUID{}).m_MeshUUID;
         m_CurrentModel->m_MeshUUIDs.push_back(meshUUID);
+        m_CacheProcessedMeshes.emplace(mesh, meshUUID);
 
         MeshBinaryHeader header;
         header.m_Magic        = REAL_MAGIC;
@@ -231,8 +267,6 @@ namespace Real {
         const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + mesh->mName.C_Str() + ".mesh";
         serialization::binary::WriteMesh(mBinaryPath, header, vertices, indices);
         Services::GetAssetImporter()->SaveMeshToAssetDB(header, mesh->mName.C_Str());
-
-        return header;
     }
 
     Ref<Material> ModelLoader::ProcessMaterial(const aiMaterial *mat, int materialIndex) {
@@ -278,26 +312,18 @@ namespace Real {
             return tex;
         };
 
-        auto Save = [&](const Ref<OpenGLTexture>& tex) {
-            if (tex->GetImageFormatState() != ImageFormatState::DEFAULT) {
-                tools::SaveTextureAsFile(tex.get());
-                tools::CompressTextureAndReadFromFile(tex.get());
-                // Save after compression to use compressed data
-                am->SaveTextureCPU(tex);
-            }
-            return tex->GetUUID();
+
+        auto CacheProcessedTextures = [this](const std::string& path1, const std::string& path2, const Ref<OpenGLTexture>& tex) {
+            m_CacheProcessedTextures.emplace(path1, tex->GetUUID());
+            m_CacheProcessedTextures.emplace(path2, tex->GetUUID());
         };
 
-        auto CreateAndSave = [&](TextureData& td, const std::string& path, const TextureType type) {
+        auto CreateAndSave = [&](TextureData& td, const std::string& path, const TextureType type) -> Ref<OpenGLTexture>
+        {
             const auto tex = Create(td, path, type);
-            switch (type) {
-                case TextureType::ALBEDO:   material->m_Albedo   = tex->GetUUID(); break;
-                case TextureType::NORMAL:   material->m_Normal   = tex->GetUUID(); break;
-                case TextureType::HEIGHT:   material->m_Height   = tex->GetUUID(); break;
-                case TextureType::EMISSIVE: material->m_Emissive = tex->GetUUID(); break;
-                default: ;
-            }
-            return Save(tex);
+            AddTextureToMaterial(tex, material);
+            SaveModelTextureAsFile(tex);
+            return tex;
         };
 
         auto LoadTexture = [&](aiTextureType aiType) {
@@ -310,7 +336,7 @@ namespace Real {
             if (mat->GetTexture(aiType, 0, &texPath) != AI_SUCCESS) return;
 
             std::string pathStr = texPath.C_Str();
-            std::ranges::replace(pathStr, '\\', '/');
+            pathStr = fs::NormalizePath(pathStr);
             const std::filesystem::path p(pathStr);
 
             std::string path;
@@ -325,17 +351,29 @@ namespace Real {
                 return; // Skip if texture does not exist
             }
 
+            // Check if already exists
+            if (m_CacheProcessedTextures.contains(path)) {
+                AddTextureToMaterial(am->GetTexture(m_CacheProcessedTextures[path], realType), material);
+                return;
+            }
+            if (m_CacheProcessedTextures.contains(pathStr)) {
+                AddTextureToMaterial(am->GetTexture(m_CacheProcessedTextures[pathStr], realType), material);
+                return;
+            }
+
             if (path.empty()) return;
+
             TextureData texData = am->LoadTextureFromFile(path, realType);
             if (!texData.m_Data) return;
-            processedTypes.insert(realType);
 
             if (realType == TextureType::ALBEDO_ROUGHNESS && texData.m_ChannelCount > 3) {
                 auto alb = util::ExtractChannels(texData, {0,1,2});
-                material->m_Albedo = CreateAndSave(alb,
+                const auto albTex = CreateAndSave(alb,
                     destPath + material->m_Name + "_ALB" + ext,
                     TextureType::ALBEDO
                 );
+                AddTextureToMaterial(albTex, material);
+                CacheProcessedTextures(path, pathStr, albTex);
 
                 auto rghData = util::ExtractChannel(texData, 3);
                 const auto rgh = Create(rghData,
@@ -345,7 +383,9 @@ namespace Real {
                 return;
             }
             if (realType == TextureType::ALBEDO_ROUGHNESS) {
-                CreateAndSave(texData, destPath + material->m_Name + "_ALB" + ext, TextureType::ALBEDO);
+                const auto tex = CreateAndSave(texData, destPath + material->m_Name + "_ALB" + ext, TextureType::ALBEDO);
+                AddTextureToMaterial(tex, material);
+                CacheProcessedTextures(path, pathStr, tex);
                 return;
             }
 
@@ -358,9 +398,14 @@ namespace Real {
                     Create(texData, outPath, it->first);
                 }
                 else {
-                    CreateAndSave(texData, outPath, it->first);
+                    const auto tex = CreateAndSave(texData, outPath, it->first);
+                    AddTextureToMaterial(tex, material);
+                    CacheProcessedTextures(path, pathStr, tex);
                 }
             }
+
+            // Cache textures
+            processedTypes.insert(realType);
         };
 
         LoadTexture(aiTextureType_BASE_COLOR);
@@ -390,6 +435,25 @@ namespace Real {
         }
 
         return material;
+    }
+
+    void ModelLoader::AddTextureToMaterial(const Ref<OpenGLTexture> &tex, const Ref<Material>& material) {
+        switch (tex->GetType()) {
+            case TextureType::ALBEDO:   material->m_Albedo   = tex->GetUUID(); break;
+            case TextureType::NORMAL:   material->m_Normal   = tex->GetUUID(); break;
+            case TextureType::HEIGHT:   material->m_Height   = tex->GetUUID(); break;
+            case TextureType::EMISSIVE: material->m_Emissive = tex->GetUUID(); break;
+            default: ;
+        }
+    }
+
+    void ModelLoader::SaveModelTextureAsFile(const Ref<OpenGLTexture>& tex) {
+        if (tex->GetImageFormatState() != ImageFormatState::DEFAULT) {
+            tools::SaveTextureAsFile(tex.get());
+            tools::CompressTextureAndReadFromFile(tex.get());
+            // Save after compression to use compressed data
+            Services::GetAssetManager()->SaveTextureCPU(tex);
+        }
     }
 
     std::filesystem::path ModelLoader::ChooseBest(const std::vector<std::filesystem::path> &paths) {

@@ -62,6 +62,9 @@ namespace Real {
         if (HasAssetWithName(mat->m_Name))
             return;
 
+        if (mat->m_UUID.IsNull()) {
+            mat->m_UUID = UUID{};
+        }
         const std::string uuidStr = std::to_string(mat->m_UUID);
         nlohmann::json& material = m_AssetDB["materials"][uuidStr];
         material["name"] = mat->m_Name;
@@ -161,9 +164,10 @@ namespace Real {
                 texture = tools::ReadCompressedDataFromDDSFile(fi.path);
                 texture->SetType(type);
                 texture->SetImageFormatState(ifs);
+                texture->SetUUID(uuid);
             } else {
                 Warn("[LoadTexturesFromAssetDB] Image format state is UNDEFINED: " + fi.path);
-                return;
+                continue;
             }
 
             am->SaveTextureCPU(texture);
@@ -282,15 +286,14 @@ namespace Real {
     }
 
     void AssetImporter::CacheAssetWithName(const std::string &name, const UUID &uuid) {
-        if (!m_NameToUUID.contains(name)) {
+        if (!HasAssetWithName(name)) {
             m_NameToUUID.emplace(name, uuid);
         }
     }
 
     void AssetImporter::CacheAssetWithPath(const std::string &path, const UUID &uuid) {
-        const std::string normalized = fs::NormalizePath(path);
-        if (!m_PathToUUID.contains(normalized)) {
-            m_PathToUUID.emplace(normalized, uuid);
+        if (!HasAssetWithPath(path)) {
+            m_PathToUUID.emplace(path, uuid);
         }
     }
 
@@ -319,7 +322,7 @@ namespace Real {
     }
 
     void AssetImporter::LoadNewAssetsToDataBase() {
-        // Update DB first if there is new assets
+        // Update DB firstly if there is new assets
         UpdateAssetDB();
 
         for (const auto& mat : std::views::values(Services::GetAssetManager()->GetBaseMaterials())) {

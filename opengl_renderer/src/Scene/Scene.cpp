@@ -101,7 +101,7 @@ namespace Real {
         }
 
         if (!parent.HasComponent<MeshRendererComponent>()) {
-            (void)parent.AddComponent<MeshRendererComponent>(model->m_MeshUUIDs, matInstanceUUIDs);
+            (void)parent.AddComponent<MeshRendererComponent>(model->m_MeshUUIDs, std::move(matInstanceUUIDs));
         }
     }
 }

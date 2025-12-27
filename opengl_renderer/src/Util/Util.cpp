@@ -268,7 +268,7 @@ namespace Real::util {
         }
     }
 
-    TextureType AssimpTextureTypeToRealType(aiTextureType type) {
+    TextureType AssimpTextureTypeToRealType(const aiTextureType type) {
         switch (type) {
             case aiTextureType_BASE_COLOR:
             case aiTextureType_DIFFUSE:
@@ -292,7 +292,7 @@ namespace Real::util {
         }
     }
 
-    bool TryParseUUID(const std::string &strUUID, UUID &uuid) {
+    bool TryParseUUID(const std::string& strUUID, UUID &uuid) {
         try {
             uuid = UUID(std::stoul(strUUID));
             return true;
@@ -316,8 +316,8 @@ namespace Real::util {
 
         d.m_Data = new uint8_t[d.m_DataSize];
 
-        const uint8_t* src = static_cast<const uint8_t*>(data.m_Data);
-        uint8_t* dst = static_cast<uint8_t*>(d.m_Data);
+        const auto* src = static_cast<const uint8_t*>(data.m_Data);
+        auto* dst = static_cast<uint8_t*>(d.m_Data);
 
         for (int i = 0; i < data.m_Width * data.m_Height; i++)
             dst[i] = src[i * data.m_ChannelCount + channelIndex];
@@ -338,8 +338,8 @@ namespace Real::util {
 
         d.m_Data = new uint8_t[d.m_DataSize];
 
-        const uint8_t* src = static_cast<const uint8_t*>(data.m_Data);
-        uint8_t* dst = static_cast<uint8_t*>(d.m_Data);
+        const auto* src = static_cast<const uint8_t*>(data.m_Data);
+        auto* dst = static_cast<uint8_t*>(d.m_Data);
 
         for (int i = 0; i < data.m_Width * data.m_Height; i++)
             for (int j = 0; j < outC; j++)

@@ -11,7 +11,6 @@
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
 #include "Core/AssetManager.h"
-#include "Math/Math.h"
 #include "Util/Util.h"
 #include <Tools/DDS.h>
 #include <algorithm>
@@ -434,7 +433,7 @@ namespace Real::tools {
             return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
         }
 
-        return CreateRef<OpenGLTexture>(mipLevelsData);
+        return CreateRef<OpenGLTexture>(mipLevelsData, fs::CreateFileInfoFromPath(path));
     }
 
     void ReadCompressedDataFromDDSFile(OpenGLTexture *texture) {

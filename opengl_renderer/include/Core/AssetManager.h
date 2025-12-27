@@ -62,12 +62,11 @@ namespace Real {
         /* ********************************** LOADING STATE ************************************ */
         void Update();
         void LoadShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& name);
-        [[nodiscard]] std::vector<GLuint64> UploadTexturesToGPU() const;
+        [[nodiscard]] std::vector<GLuint64> UploadTexturesToGPU();
 
     private:
         std::unordered_map<std::string, Shader> m_Shaders; // TODO: Use UUIDs to store shaders??
         std::unordered_map<UUID, Ref<OpenGLTexture>> m_Textures;
-        std::unordered_set<std::string> m_LoadedTexturesPath;
         std::unordered_map<UUID, Ref<Material>> m_Materials;
         std::unordered_map<std::string, UUID> m_MaterialNameToUUID;
         std::unordered_map<UUID, Ref<MaterialInstance>> m_MaterialInstances;

@@ -112,10 +112,9 @@ namespace Real {
             CollectCamera(e);
             CollectLight(e);
 
-            const auto renderableData = CollectRenderables(e);
-            for (const auto& data : renderableData) {
-                const int materialIndex = data.m_MaterialUUID != 0 ? PushMaterial(data.m_MaterialUUID) : 0;
-                PushDrawCommand(data.m_Mesh, transformIndex, materialIndex, baseInstance);
+            for (const auto& [meshData, matUUID] : CollectRenderables(e)) {
+                const int materialIndex = matUUID != 0 ? PushMaterial(matUUID) : 0;
+                PushDrawCommand(meshData, transformIndex, materialIndex, baseInstance);
                 ++baseInstance;
             }
         }
@@ -187,7 +186,7 @@ namespace Real {
         if (entity->HasComponent<MeshRendererComponent>()) {
             const auto& mrc = entity->GetComponentUnchecked<MeshRendererComponent>();
 
-            // Using same count for meshes and materials since each mes has one material
+            // Using same count for meshes and materials since each mesh has one material
             if (mrc.m_MeshUUIDs.size() != mrc.m_MaterialInstanceUUIDs.size()) {
                 Warn("[RenderContext::CollectMeshes] MeshUUID count does not match MaterialInstanceUUIDs, Fix it!!");
                 return result;
@@ -223,5 +222,6 @@ namespace Real {
         m_GPUDatas.entityData.clear();
         m_GPUDatas.lights.clear();
         m_GPUDatas.transforms.clear();
+        // TODO: add material dirty tracker or you can't update the buffer with 'additional data'?
     }
 }

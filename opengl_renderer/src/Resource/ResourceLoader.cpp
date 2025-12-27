@@ -33,11 +33,11 @@ namespace Real {
         m_ModelLoader->LoadAll(std::string(ASSETS_SOURCE_DIR) + "models/");
 
         // If there are new assets from the ModelLoader, upload them to the database!
-        // We can also add new loading states here...
         ai->LoadNewAssetsToDataBase();
 
         // Load meshes after all the data processed
         mm->InitResources();
+
         m_RenderContext->GetGPURenderData().textures = Services::GetAssetManager()->UploadTexturesToGPU();
 
         Info("[ResourceLoader] Assets loaded successfully!");

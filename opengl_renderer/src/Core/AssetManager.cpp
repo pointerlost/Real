@@ -15,13 +15,10 @@
 #include "Tools/ImageTools.h"
 #include "Util/Util.h"
 #include <stb/stb_image.h>
-
 #include "Core/AssetImporter.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Graphics/Model.h"
-#include "Serialization/Binary.h"
-#include "Serialization/Json.h"
 
 namespace Real {
 
@@ -244,10 +241,10 @@ namespace Real {
         }
 
         const auto instance = CreateRef<MaterialInstance>(base);
-        const UUID instanceUUID = instance->m_UUID;
+        instance->m_UUID = UUID{};
 
-        m_MaterialInstances.emplace(instanceUUID, instance);
-        return instanceUUID;
+        m_MaterialInstances.emplace(instance->m_UUID, instance);
+        return instance->m_UUID;
     }
 
     UUID AssetManager::CreateMaterialInstance(const std::string &assetName) {
@@ -287,8 +284,7 @@ namespace Real {
         const std::string uniqueName = GenerateUniqueMaterialName(normalized);
         UUID uuid{};
 
-        auto mat = CreateRef<Material>(uuid);
-        mat->m_Name = uniqueName;
+        auto mat = CreateRef<Material>(uuid, uniqueName);
 
         m_Materials.emplace(uuid, mat);
         m_MaterialNameToUUID.emplace(uniqueName, uuid);
@@ -319,7 +315,7 @@ namespace Real {
         return name;
     }
 
-    std::vector<GLuint64> AssetManager::UploadTexturesToGPU() const {
+    std::vector<GLuint64> AssetManager::UploadTexturesToGPU() {
         std::vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
             if (tex->GetImageFormatState() == ImageFormatState::DEFAULT) continue;
@@ -430,15 +426,15 @@ namespace Real {
         auto tryAddTexture = [this](const UUID textureId, std::vector<Ref<OpenGLTexture>>& outTextures) {
             if (textureId == 0) return; // Skip invalid UUID
             const auto it = m_Textures.find(textureId);
-            if (it != m_Textures.end() && it->second && it->second->GetImageFormatState() != ImageFormatState::DEFAULT) {
+            if (it != m_Textures.end() && it->second) {
                 outTextures.push_back(it->second);
             }
         };
 
-        tryAddTexture(mat->m_Albedo, textures);
-        tryAddTexture(mat->m_Normal, textures);
-        tryAddTexture(mat->m_ORM, textures);
-        tryAddTexture(mat->m_Height, textures);
+        tryAddTexture(mat->m_Albedo,   textures);
+        tryAddTexture(mat->m_Normal,   textures);
+        tryAddTexture(mat->m_ORM,      textures);
+        tryAddTexture(mat->m_Height,   textures);
         tryAddTexture(mat->m_Emissive, textures);
 
         return textures;
@@ -446,10 +442,8 @@ namespace Real {
 
     Ref<Material> AssetManager::CreateMaterialBase(const std::string &name) {
         const auto uniqueName = GenerateUniqueMaterialName(name);
-        const auto base = CreateRef<Material>();
         // Material UUID is null at init-time and is initialized here with a new UUID
-        base->m_UUID = UUID{};
-        base->m_Name = uniqueName;
+        const auto base = CreateRef<Material>(UUID{}, uniqueName);
 
         m_Materials.emplace(base->m_UUID, base);
         m_MaterialNameToUUID.emplace(base->m_Name, base->m_UUID);
@@ -480,9 +474,8 @@ namespace Real {
         if (m_Materials.contains(uuid))
             return m_Materials.at(uuid);
 
-        const auto uniqueName = GenerateUniqueMaterialName(name);
-        auto mat = CreateRef<Material>(uuid);
-        mat->m_Name = name;
+        // const auto uniqueName = GenerateUniqueMaterialName(name);
+        auto mat = CreateRef<Material>(uuid, name);
 
         m_Materials.emplace(uuid, mat);
         m_MaterialNameToUUID.emplace(name, uuid);

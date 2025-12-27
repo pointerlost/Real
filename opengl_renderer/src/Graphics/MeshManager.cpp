@@ -22,7 +22,7 @@ namespace Real {
     }
 
     const MeshAsset& MeshData::CreateSingleMesh(std::vector<Vertex> vertices,
-        std::vector<uint32_t> indices, const UUID& meshUUID)
+        const std::vector<uint32_t>& indices, const UUID& meshUUID)
     {
         if (m_MeshAssets.contains(meshUUID))
             return m_MeshAssets[meshUUID]; // Skip if mesh already exists

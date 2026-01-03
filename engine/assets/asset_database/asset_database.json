@@ -1,0 +1,1418 @@
+{
+    "materials": {
+        "10169649502973007969": {
+            "name": "Ford_raptor_Int_T",
+            "textures": {
+                "albedo": 4695019247674624853,
+                "emissive": 15291688820658951550,
+                "height": 0,
+                "normal": 10636788157360877705,
+                "orm": 0
+            }
+        },
+        "10529583118329814689": {
+            "name": "Marble009",
+            "textures": {
+                "albedo": 1291916211953029488,
+                "emissive": 0,
+                "height": 15579179197973772020,
+                "normal": 11241771524996496743,
+                "orm": 11346392614431110567
+            }
+        },
+        "10651946942187091418": {
+            "name": "Ford_raptor_Raptordummy_material_3_024",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "10969792618799947864": {
+            "name": "Ford_raptor_Leather_Int",
+            "textures": {
+                "albedo": 13034568311132737717,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10636788157360877705,
+                "orm": 0
+            }
+        },
+        "110017505918919883": {
+            "name": "Ford_raptor_Raptorgrid_a",
+            "textures": {
+                "albedo": 4348482416867553645,
+                "emissive": 0,
+                "height": 0,
+                "normal": 7312716853365202397,
+                "orm": 0
+            }
+        },
+        "11949457919667755268": {
+            "name": "Ford_raptor_Dashb",
+            "textures": {
+                "albedo": 5681017893337618511,
+                "emissive": 16504437306558557112,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "13275203284637294812": {
+            "name": "Ford_raptor_Light_glass",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "13641021054004903230": {
+            "name": "Ford_raptor_Logo",
+            "textures": {
+                "albedo": 2882550235281152406,
+                "emissive": 0,
+                "height": 0,
+                "normal": 3475320727948857181,
+                "orm": 0
+            }
+        },
+        "13815814426573473995": {
+            "name": "Ford_raptor_RaptorMETAL_ENG",
+            "textures": {
+                "albedo": 8479326463997519199,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6920625800915415214,
+                "orm": 0
+            }
+        },
+        "15139367896722273551": {
+            "name": "Ford_raptor_Raptorcaalb",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "15335021974238607226": {
+            "name": "Ford_raptor_mirror",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "16018134928017644578": {
+            "name": "Ford_raptor_Logo_D",
+            "textures": {
+                "albedo": 6055338919297611253,
+                "emissive": 0,
+                "height": 0,
+                "normal": 5459755461277028965,
+                "orm": 0
+            }
+        },
+        "16468101009655919594": {
+            "name": "Ford_raptor_material",
+            "textures": {
+                "albedo": 446815523227603457,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10344093475431481136,
+                "orm": 0
+            }
+        },
+        "16724179317045479730": {
+            "name": "Ford_raptor_tire",
+            "textures": {
+                "albedo": 6452976244718012119,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10366156307941197351,
+                "orm": 0
+            }
+        },
+        "16927019161554319363": {
+            "name": "Ford_raptor_Caarbon",
+            "textures": {
+                "albedo": 7330729871765177756,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6119204777899689777,
+                "orm": 0
+            }
+        },
+        "16927074912601351666": {
+            "name": "Ford_raptor_RaptorENG_Plastic",
+            "textures": {
+                "albedo": 8479326463997519199,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6920625800915415214,
+                "orm": 0
+            }
+        },
+        "17122940995064750288": {
+            "name": "Ford_raptor_Raptorgrid_B",
+            "textures": {
+                "albedo": 3086366232975698441,
+                "emissive": 0,
+                "height": 0,
+                "normal": 12816621196864721809,
+                "orm": 0
+            }
+        },
+        "2067414081178384134": {
+            "name": "Ford_raptor_RaptorGrille_F",
+            "textures": {
+                "albedo": 18433603184375757980,
+                "emissive": 0,
+                "height": 0,
+                "normal": 13419632122849659874,
+                "orm": 0
+            }
+        },
+        "2288286461862425637": {
+            "name": "Ford_raptor_Suspension",
+            "textures": {
+                "albedo": 16495283992170283939,
+                "emissive": 0,
+                "height": 0,
+                "normal": 5125443660071150466,
+                "orm": 0
+            }
+        },
+        "3560039377622106448": {
+            "name": "Ford_raptor_Window",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "3701746729671465824": {
+            "name": "Ford_raptor_Metal_Int",
+            "textures": {
+                "albedo": 13034568311132737717,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10636788157360877705,
+                "orm": 0
+            }
+        },
+        "3848402536259681684": {
+            "name": "Ford_raptor_Exhaust",
+            "textures": {
+                "albedo": 7817219955603090487,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "4565371951938655223": {
+            "name": "Ford_raptor_Breaks",
+            "textures": {
+                "albedo": 4382821198111525578,
+                "emissive": 0,
+                "height": 0,
+                "normal": 4407826975559680906,
+                "orm": 0
+            }
+        },
+        "5422841031815773374": {
+            "name": "Ford_raptor_Rim_T",
+            "textures": {
+                "albedo": 7789495271883542821,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10344093475431481136,
+                "orm": 0
+            }
+        },
+        "5670319061442637780": {
+            "name": "Ford_raptor_RaptorMAT",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "6531506969117466067": {
+            "name": "Ford_raptor_Light",
+            "textures": {
+                "albedo": 12643024463363434193,
+                "emissive": 11442088982899163565,
+                "height": 0,
+                "normal": 5037647854836305455,
+                "orm": 0
+            }
+        },
+        "7965898975733638453": {
+            "name": "Ford_raptor_INT_Plastic",
+            "textures": {
+                "albedo": 13034568311132737717,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10636788157360877705,
+                "orm": 0
+            }
+        },
+        "8978370770245261989": {
+            "name": "Ford_raptor_RaptorENG_T",
+            "textures": {
+                "albedo": 1621354866171320566,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6920625800915415214,
+                "orm": 0
+            }
+        },
+        "9362900957041619923": {
+            "name": "Ford_raptor_costuras",
+            "textures": {
+                "albedo": 389623283302202490,
+                "emissive": 0,
+                "height": 0,
+                "normal": 4470552121332106027,
+                "orm": 0
+            }
+        },
+        "9379548535174270628": {
+            "name": "Ford_raptor_Cabin_C",
+            "textures": {
+                "albedo": 16144363740587826342,
+                "emissive": 0,
+                "height": 0,
+                "normal": 9101345887380602914,
+                "orm": 0
+            }
+        },
+        "9453355454565904564": {
+            "name": "Ford_raptor_RaptorINT_cloth",
+            "textures": {
+                "albedo": 13034568311132737717,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10636788157360877705,
+                "orm": 0
+            }
+        },
+        "9476003448144594206": {
+            "name": "Ford_raptor_RaptorPaaint",
+            "textures": {
+                "albedo": 14803952982291419441,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        }
+    },
+    "meshes": {
+        "10015342787600760088": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_014_Cabin_C_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_014_Cabin_C_0"
+        },
+        "10083489139588625448": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_BR82_Breaks_0"
+        },
+        "1008940240196632554": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_032_mirror_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_032_mirror_0"
+        },
+        "1023825638996394522": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_022_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_022_Exhaust_0"
+        },
+        "10445523958523563820": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_025_Light_glass_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_025_Light_glass_0"
+        },
+        "10445613693405610699": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_017_Exhaust_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_017_Exhaust_0"
+        },
+        "10445657337164814871": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_027_mirror_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_027_mirror_0"
+        },
+        "1046761193737250694": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_Leather_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_Leather_Int_0"
+        },
+        "10490698655518192222": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_022_Light_glass_0.mesh",
+            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_022_Light_glass_0"
+        },
+        "10504135764901624014": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_012_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_012_Raptor:INT_cloth_0"
+        },
+        "10522046808025764257": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_023_Light_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_023_Light_0"
+        },
+        "10619668067669091925": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_010_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_010_Raptor:Paaint_0"
+        },
+        "10700363501997505319": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_033_Cabin_C_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_033_Cabin_C_0"
+        },
+        "10713085416783995979": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_Raptor:MAT_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_Raptor:MAT_0"
+        },
+        "10763242574209574388": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_011_Exhaust_0.mesh",
+            "name": "Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_011_Exhaust_0"
+        },
+        "10897184011098339517": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_016_Exhaust_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_016_Exhaust_0"
+        },
+        "11011065737211343252": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_015_Exhaust_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_015_Exhaust_0"
+        },
+        "11227629843289889981": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_017_Window_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_017_Window_0"
+        },
+        "11244165253605027778": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_034_Metal_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_034_Metal_Int_0"
+        },
+        "11296818192521179595": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_006_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_006_Raptor:Paaint_0"
+        },
+        "11442842533106864928": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_016_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_016_Raptor:ENG_Plastic_0"
+        },
+        "11519228721244768270": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_021_Logo_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_021_Logo_0"
+        },
+        "11611317347110067798": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_015_Light_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_015_Light_0"
+        },
+        "11683908574434227990": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_010_INT_Plastic_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_010_INT_Plastic_0"
+        },
+        "11732676833910442775": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_014_Cabin_C_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_014_Cabin_C_0"
+        },
+        "11814120591734736244": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_Leather_Int_0"
+        },
+        "11869592893329709042": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_008_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_008_Metal_Int_0"
+        },
+        "11893453952619435559": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_015_Raptor:ENG_T_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_015_Raptor:ENG_T_0"
+        },
+        "11895645259107837274": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_005_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_005_Raptor:Paaint_0"
+        },
+        "12014112446436086755": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_018_Logo_D_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_018_Logo_D_0"
+        },
+        "12047853203542662081": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_024_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_024_Exhaust_0"
+        },
+        "12133315163168619475": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Door_BR7_Raptor:grid_a_0.mesh",
+            "name": "Raptor:Ani_Door_BR7_Raptor:grid_a_0"
+        },
+        "12428330233545400547": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_017_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_017_Raptor:Paaint_0"
+        },
+        "12542075899455612733": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_BL82_Breaks_0"
+        },
+        "1284049415173970048": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_019_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_019_Raptor:ENG_Plastic_0"
+        },
+        "13082277415843812043": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_011_Caarbon_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_011_Caarbon_0"
+        },
+        "13255527193680218389": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_021_Raptor:caalb_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_021_Raptor:caalb_0"
+        },
+        "13366752518975869329": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_023_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_023_Exhaust_0"
+        },
+        "13523360975023093263": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_016_Raptor:grid_a_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_016_Raptor:grid_a_0"
+        },
+        "13525803573020805820": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_7_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_7_Metal_Int_0"
+        },
+        "13550445491718086981": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_016_Exhaust_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_016_Exhaust_0"
+        },
+        "13734031716114711513": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_011_Cabin_C_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_011_Cabin_C_0"
+        },
+        "13829779300728021340": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_Rim_T_0.mesh",
+            "name": "Raptor:Ani_Disc_Scale_FR7_Rim_T_0"
+        },
+        "13846443364000110617": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_019_Suspension_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_019_Suspension_0"
+        },
+        "13974041729958152676": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_hub_0.mesh",
+            "name": "Raptor:Ani_Disc_Scale_FR7_hub_0"
+        },
+        "14002896920278474927": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_021_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_021_Exhaust_0"
+        },
+        "14059981141565226669": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_009_INT_Plastic_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_009_INT_Plastic_0"
+        },
+        "14153003012425425998": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_009_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_009_Metal_Int_0"
+        },
+        "14221791084375429981": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_013_Cabin_C_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_013_Cabin_C_0"
+        },
+        "14346397085418038691": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_017_Logo_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_017_Logo_0"
+        },
+        "14416393143598654079": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_FL82_Breaks_0"
+        },
+        "14523984835708186448": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_014_Exhaust_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_014_Exhaust_0"
+        },
+        "14618961956282413575": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_023_Metal_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_023_Metal_Int_0"
+        },
+        "14709924437739932970": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_012_Suspension_0.mesh",
+            "name": "Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_012_Suspension_0"
+        },
+        "14771481675246878018": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_025_Caarbon_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_025_Caarbon_0"
+        },
+        "14903012706286698005": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_tire_0.mesh",
+            "name": "Raptor:Ani_Wheel_BL82_tire_0"
+        },
+        "14957360404343262458": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_costuras_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_costuras_0"
+        },
+        "14987512897598288107": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_5_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_5_Metal_Int_0"
+        },
+        "1511512094999032461": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_016_Raptor:Grille_F_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_016_Raptor:Grille_F_0"
+        },
+        "15150938622455406421": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_014_Window_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_014_Window_0"
+        },
+        "15166615785356105761": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_016_Raptor:grid_B_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_016_Raptor:grid_B_0"
+        },
+        "1543057953284283886": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_tire_0.mesh",
+            "name": "Raptor:Ani_Wheel_FL82_tire_0"
+        },
+        "15430666084423509127": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_023_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_023_Exhaust_0"
+        },
+        "15464676144236313986": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_019_Light_0.mesh",
+            "name": "Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_019_Light_0"
+        },
+        "15646048585064855171": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_009_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_009_Metal_Int_0"
+        },
+        "15849190722220370047": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_Leather_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_Leather_Int_0"
+        },
+        "15884965126488854736": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Leather_Int_0"
+        },
+        "16208707262055963415": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_009_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_009_Raptor:INT_cloth_0"
+        },
+        "16375225427413747035": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_015_Raptor:ENG_T_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_015_Raptor:ENG_T_0"
+        },
+        "16454991774025816612": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_022_Light_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_022_Light_0"
+        },
+        "16477763962179330302": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_022_Exhaust_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_022_Exhaust_0"
+        },
+        "16546142855186886704": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_hub_0.mesh",
+            "name": "Raptor:Ani_Wheel_FL82_hub_0"
+        },
+        "16702166511839113738": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_016_Exhaust_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_016_Exhaust_0"
+        },
+        "16835890390691893299": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_026_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_026_Raptor:INT_cloth_0"
+        },
+        "17115526464255808762": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_020_Light_glass_0.mesh",
+            "name": "Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_020_Light_glass_0"
+        },
+        "17120217414876158258": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_Rim_T_0.mesh",
+            "name": "Raptor:Ani_Wheel_BL82_Rim_T_0"
+        },
+        "17325258575449783031": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_014_Light_0.mesh",
+            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_014_Light_0"
+        },
+        "17465311682087993537": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_018_Exhaust_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_018_Exhaust_0"
+        },
+        "17744083321773468067": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_013_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_013_Raptor:INT_cloth_0"
+        },
+        "17768892370843844602": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_011_Int_T_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_011_Int_T_0"
+        },
+        "17796835610036677897": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_018_Light_0.mesh",
+            "name": "Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_018_Light_0"
+        },
+        "17841653566148759488": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_costuras_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_costuras_0"
+        },
+        "17854860210933188369": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_019_Exhaust_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_019_Exhaust_0"
+        },
+        "17918897839450890832": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_4_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_4_Metal_Int_0"
+        },
+        "17975713660473113120": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_008_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_008_Raptor:ENG_Plastic_0"
+        },
+        "18064079940220200771": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_016_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_016_Raptor:Paaint_0"
+        },
+        "18088124183962154325": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_FR11_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_Caliper_FR11_Breaks_0"
+        },
+        "18148210882345291869": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_025_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_025_Raptor:Paaint_0"
+        },
+        "18200155796585278765": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_costuras_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_costuras_0"
+        },
+        "18246341073899964001": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Exhaust_101_001_SK_Exhaust_101_dummy_material_0_007_Exhaust_0.mesh",
+            "name": "Raptor:SK_Exhaust_101_001_SK_Exhaust_101_dummy_material_0_007_Exhaust_0"
+        },
+        "1957580641992437425": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0"
+        },
+        "2058714763006610064": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_018_Raptor:MAT_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_018_Raptor:MAT_0"
+        },
+        "2079020350373524978": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_016_Raptor:MAT_0.mesh",
+            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_016_Raptor:MAT_0"
+        },
+        "2168881135683087611": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_020_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_020_Raptor:Paaint_0"
+        },
+        "2194636497956057921": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_FL12_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_Caliper_FL12_Breaks_0"
+        },
+        "2201075515934950126": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_012_Int_T_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_012_Int_T_0"
+        },
+        "2261154661171171003": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_Leather_Int_0"
+        },
+        "2296141254118341091": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_012_Caarbon_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_012_Caarbon_0"
+        },
+        "2380493852816707640": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_013_Caarbon_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_013_Caarbon_0"
+        },
+        "2521085103292990911": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_014_Int_T_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_014_Int_T_0"
+        },
+        "2524310920676161875": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_020_Exhaust_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_020_Exhaust_0"
+        },
+        "2612458519140352915": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_costuras_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_costuras_0"
+        },
+        "2741706454927224399": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_011_Raptor:METAL_ENG_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_011_Raptor:METAL_ENG_0"
+        },
+        "2760981715414022999": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_026_Light_glass_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_026_Light_glass_0"
+        },
+        "2801793840973533084": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_023_Light_0.mesh",
+            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_023_Light_0"
+        },
+        "2841052296249139111": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_costuras_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_costuras_0"
+        },
+        "2915419113422319212": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_Raptor:MAT_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_Raptor:MAT_0"
+        },
+        "2961307031051257374": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_008_INT_Plastic_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_008_INT_Plastic_0"
+        },
+        "2971643332426098592": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_023_Light_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_023_Light_0"
+        },
+        "3051219355848626620": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_013_Light_glass_0.mesh",
+            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_013_Light_glass_0"
+        },
+        "3258204525007523221": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_024_Exhaust_0.mesh",
+            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_024_Exhaust_0"
+        },
+        "343300196264063273": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_024_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_024_Raptor:Paaint_0"
+        },
+        "3616412923220163098": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_INT_Plastic_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_INT_Plastic_0"
+        },
+        "3783064894938214438": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_1_Int_T_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_1_Int_T_0"
+        },
+        "3784696979538287231": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_014_Exhaust_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_014_Exhaust_0"
+        },
+        "3903254021310058143": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_015_Int_T_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_015_Int_T_0"
+        },
+        "3931948365207201801": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_013_Exhaust_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_013_Exhaust_0"
+        },
+        "4107595407263638834": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_015_Exhaust_0.mesh",
+            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_015_Exhaust_0"
+        },
+        "4125962100025059874": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_014_Exhaust_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_014_Exhaust_0"
+        },
+        "4155590492177569545": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_017_Logo_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_017_Logo_0"
+        },
+        "4316316369799430529": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_019_Raptor:Grille_F_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_019_Raptor:Grille_F_0"
+        },
+        "4545558683983517556": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_017_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_017_Raptor:ENG_Plastic_0"
+        },
+        "4775639390752531608": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_8_Exhaust_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_8_Exhaust_0"
+        },
+        "4784576915101839451": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_018_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_018_Raptor:ENG_Plastic_0"
+        },
+        "4787184497314520641": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_Leather_Int_0"
+        },
+        "5053389394986237352": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_035_Metal_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_035_Metal_Int_0"
+        },
+        "515781477308406673": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_tire_0.mesh",
+            "name": "Raptor:Ani_Wheel_BR82_tire_0"
+        },
+        "5159433393475751606": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_008_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_008_Metal_Int_0"
+        },
+        "5382773662713741628": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_Leather_Int_0"
+        },
+        "5425490498204524027": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_017_Logo_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_017_Logo_0"
+        },
+        "5545268944475917866": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_031_Dashb_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_031_Dashb_0"
+        },
+        "5639044249056429722": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_hub_0.mesh",
+            "name": "Raptor:Ani_Wheel_BL82_hub_0"
+        },
+        "565631341269903784": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_022_Raptor:METAL_ENG_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_022_Raptor:METAL_ENG_0"
+        },
+        "5839653974268584170": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_Rim_T_0.mesh",
+            "name": "Raptor:Ani_Wheel_FL82_Rim_T_0"
+        },
+        "5933059390029136347": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_016_Window_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_016_Window_0"
+        },
+        "616778361976607514": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_007_Raptor:METAL_ENG_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_007_Raptor:METAL_ENG_0"
+        },
+        "6383902788792822392": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_BL11_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_Caliper_BL11_Breaks_0"
+        },
+        "639516860891308015": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_030_Raptor:grid_a_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_030_Raptor:grid_a_0"
+        },
+        "6519320403745323813": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_INT_Plastic_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_INT_Plastic_0"
+        },
+        "6645878390672340348": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_012_Logo_D_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_012_Logo_D_0"
+        },
+        "694649259086657945": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_022_Light_glass_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_022_Light_glass_0"
+        },
+        "721251438875515841": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_018_Exhaust_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_018_Exhaust_0"
+        },
+        "7235599015489682266": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_Leather_Int_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_Leather_Int_0"
+        },
+        "7267064980059393232": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0"
+        },
+        "7282612930554477624": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_Breaks_0.mesh",
+            "name": "Raptor:Ani_Disc_Scale_FR7_Breaks_0"
+        },
+        "7377395590045783343": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_010_Cabin_C_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_010_Cabin_C_0"
+        },
+        "7399382159996179106": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_019_Raptor:grid_a_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_019_Raptor:grid_a_0"
+        },
+        "742034942500415248": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_018_Raptor:grid_a_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_018_Raptor:grid_a_0"
+        },
+        "7429254223750746993": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_021_Light_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_021_Light_0"
+        },
+        "7506173953907525844": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_015_Exhaust_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_015_Exhaust_0"
+        },
+        "7588911804623129693": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_012_Int_T_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_012_Int_T_0"
+        },
+        "7713527967574732550": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_021_Exhaust_0.mesh",
+            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_021_Exhaust_0"
+        },
+        "7889503776241665870": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_018_Raptor:MAT_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_018_Raptor:MAT_0"
+        },
+        "8027405910157603211": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_costuras_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_costuras_0"
+        },
+        "8078518181207452624": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_tire_0.mesh",
+            "name": "Raptor:Ani_Disc_Scale_FR7_tire_0"
+        },
+        "8132468423350465380": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_017_Exhaust_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_017_Exhaust_0"
+        },
+        "8207071845739493267": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_013_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_013_Raptor:Paaint_0"
+        },
+        "8272503998213436602": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_Rim_T_0.mesh",
+            "name": "Raptor:Ani_Wheel_BR82_Rim_T_0"
+        },
+        "8273370484633372741": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_012_Logo_0.mesh",
+            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_012_Logo_0"
+        },
+        "8474605407811348331": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_017_Logo_D_0.mesh",
+            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_017_Logo_D_0"
+        },
+        "8627590574574978072": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_012_Caarbon_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_012_Caarbon_0"
+        },
+        "8629856623746630759": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_019_Light_glass_0.mesh",
+            "name": "Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_019_Light_glass_0"
+        },
+        "873565141454587478": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_018_Exhaust_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_018_Exhaust_0"
+        },
+        "9042412634559483959": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_costuras_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_costuras_0"
+        },
+        "9066358844652725845": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_015_Window_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_015_Window_0"
+        },
+        "9072153661894743250": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Int_T_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Int_T_0"
+        },
+        "9199340590635816242": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_015_Light_glass_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_015_Light_glass_0"
+        },
+        "921248179471660641": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_019_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_019_Raptor:Paaint_0"
+        },
+        "9240218239084937702": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_026_mirror_0.mesh",
+            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_026_mirror_0"
+        },
+        "9318491121746364198": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_020_Window_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_020_Window_0"
+        },
+        "932211203976455266": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_027_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_027_Raptor:INT_cloth_0"
+        },
+        "9406594175151173585": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_019_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_019_Raptor:Paaint_0"
+        },
+        "940985461023961882": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_007_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_007_Raptor:Paaint_0"
+        },
+        "9461914303309107132": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_costuras_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_costuras_0"
+        },
+        "9553443513329764915": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_007_Raptor:Paaint_0.mesh",
+            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_007_Raptor:Paaint_0"
+        },
+        "9644894447773455715": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_hub_0.mesh",
+            "name": "Raptor:Ani_Wheel_BR82_hub_0"
+        },
+        "9726753179490945549": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_6_Metal_Int_0.mesh",
+            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_6_Metal_Int_0"
+        },
+        "9733362953492105605": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_BR12_Breaks_0.mesh",
+            "name": "Raptor:Ani_Wheel_Caliper_BR12_Breaks_0"
+        },
+        "9817182968327923906": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_010_Exhaust_0.mesh",
+            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_010_Exhaust_0"
+        },
+        "9837121423845629657": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_021_Window_0.mesh",
+            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_021_Window_0"
+        },
+        "9848280341312341593": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_010_Raptor:INT_cloth_0.mesh",
+            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_010_Raptor:INT_cloth_0"
+        },
+        "9855372428611423594": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_Leather_Int_0.mesh",
+            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_Leather_Int_0"
+        },
+        "987987683994723499": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_007_INT_Plastic_0.mesh",
+            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_007_INT_Plastic_0"
+        },
+        "9954699132988973644": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_020_Raptor:ENG_Plastic_0.mesh",
+            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_020_Raptor:ENG_Plastic_0"
+        }
+    },
+    "models": {
+        "11780203041795877009": {
+            "binary": "/home/pointerlost/OpenGLRenderer/engineer/assets/runtime/models/Ford_raptor.model",
+            "file_extension": ".gltf",
+            "file_name": "scene.gltf",
+            "file_path": "/home/pointerlost/OpenGLRenderer/engineer/assets/sources/models/Ford_raptor/scene.gltf",
+            "file_stem": "scene",
+            "name": "Ford_raptor"
+        }
+    },
+    "textures": {
+        "10344093475431481136": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_material_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_material_NRM.dds",
+            "stem": "Ford_raptor_material_NRM",
+            "type": "NRM"
+        },
+        "10366156307941197351": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_tire_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_tire_NRM.dds",
+            "stem": "Ford_raptor_tire_NRM",
+            "type": "NRM"
+        },
+        "10636788157360877705": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Int_T_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Int_T_NRM.dds",
+            "stem": "Ford_raptor_Int_T_NRM",
+            "type": "NRM"
+        },
+        "11241771524996496743": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Marble009_NRM.dds",
+            "stem": "Marble009_NRM",
+            "type": "NRM"
+        },
+        "11346392614431110567": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_ORM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Marble009_ORM.dds",
+            "stem": "Marble009_ORM",
+            "type": "ORM"
+        },
+        "11442088982899163565": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_EMISSIVE.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Light_EMISSIVE.dds",
+            "stem": "Ford_raptor_Light_EMISSIVE",
+            "type": "EMISSIVE"
+        },
+        "12643024463363434193": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Light_ALB.dds",
+            "stem": "Ford_raptor_Light_ALB",
+            "type": "ALB"
+        },
+        "12816621196864721809": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_B_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Raptorgrid_B_NRM.dds",
+            "stem": "Ford_raptor_Raptorgrid_B_NRM",
+            "type": "NRM"
+        },
+        "1291916211953029488": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Marble009_ALB.dds",
+            "stem": "Marble009_ALB",
+            "type": "ALB"
+        },
+        "13034568311132737717": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Leather_Int_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Leather_Int_ALB.dds",
+            "stem": "Ford_raptor_Leather_Int_ALB",
+            "type": "ALB"
+        },
+        "13419632122849659874": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorGrille_F_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorGrille_F_NRM.dds",
+            "stem": "Ford_raptor_RaptorGrille_F_NRM",
+            "type": "NRM"
+        },
+        "14803952982291419441": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorPaaint_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorPaaint_ALB.dds",
+            "stem": "Ford_raptor_RaptorPaaint_ALB",
+            "type": "ALB"
+        },
+        "15291688820658951550": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Int_T_EMISSIVE.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Int_T_EMISSIVE.dds",
+            "stem": "Ford_raptor_Int_T_EMISSIVE",
+            "type": "EMISSIVE"
+        },
+        "15579179197973772020": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_HEIGHT.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Marble009_HEIGHT.dds",
+            "stem": "Marble009_HEIGHT",
+            "type": "HEIGHT"
+        },
+        "16144363740587826342": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Cabin_C_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Cabin_C_ALB.dds",
+            "stem": "Ford_raptor_Cabin_C_ALB",
+            "type": "ALB"
+        },
+        "1621354866171320566": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorENG_T_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorENG_T_ALB.dds",
+            "stem": "Ford_raptor_RaptorENG_T_ALB",
+            "type": "ALB"
+        },
+        "16495283992170283939": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Suspension_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Suspension_ALB.dds",
+            "stem": "Ford_raptor_Suspension_ALB",
+            "type": "ALB"
+        },
+        "16504437306558557112": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Dashb_EMISSIVE.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Dashb_EMISSIVE.dds",
+            "stem": "Ford_raptor_Dashb_EMISSIVE",
+            "type": "EMISSIVE"
+        },
+        "18433603184375757980": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorGrille_F_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorGrille_F_ALB.dds",
+            "stem": "Ford_raptor_RaptorGrille_F_ALB",
+            "type": "ALB"
+        },
+        "2882550235281152406": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Logo_ALB.dds",
+            "stem": "Ford_raptor_Logo_ALB",
+            "type": "ALB"
+        },
+        "3086366232975698441": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_B_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Raptorgrid_B_ALB.dds",
+            "stem": "Ford_raptor_Raptorgrid_B_ALB",
+            "type": "ALB"
+        },
+        "3475320727948857181": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Logo_NRM.dds",
+            "stem": "Ford_raptor_Logo_NRM",
+            "type": "NRM"
+        },
+        "389623283302202490": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_costuras_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_costuras_ALB.dds",
+            "stem": "Ford_raptor_costuras_ALB",
+            "type": "ALB"
+        },
+        "4348482416867553645": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_a_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Raptorgrid_a_ALB.dds",
+            "stem": "Ford_raptor_Raptorgrid_a_ALB",
+            "type": "ALB"
+        },
+        "4382821198111525578": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Breaks_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Breaks_ALB.dds",
+            "stem": "Ford_raptor_Breaks_ALB",
+            "type": "ALB"
+        },
+        "4407826975559680906": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Breaks_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Breaks_NRM.dds",
+            "stem": "Ford_raptor_Breaks_NRM",
+            "type": "NRM"
+        },
+        "446815523227603457": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_material_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_material_ALB.dds",
+            "stem": "Ford_raptor_material_ALB",
+            "type": "ALB"
+        },
+        "4470552121332106027": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_costuras_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_costuras_NRM.dds",
+            "stem": "Ford_raptor_costuras_NRM",
+            "type": "NRM"
+        },
+        "4695019247674624853": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Int_T_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Int_T_ALB.dds",
+            "stem": "Ford_raptor_Int_T_ALB",
+            "type": "ALB"
+        },
+        "5037647854836305455": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Light_NRM.dds",
+            "stem": "Ford_raptor_Light_NRM",
+            "type": "NRM"
+        },
+        "5125443660071150466": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Suspension_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Suspension_NRM.dds",
+            "stem": "Ford_raptor_Suspension_NRM",
+            "type": "NRM"
+        },
+        "5459755461277028965": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_D_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Logo_D_NRM.dds",
+            "stem": "Ford_raptor_Logo_D_NRM",
+            "type": "NRM"
+        },
+        "5681017893337618511": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Dashb_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Dashb_ALB.dds",
+            "stem": "Ford_raptor_Dashb_ALB",
+            "type": "ALB"
+        },
+        "6055338919297611253": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_D_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Logo_D_ALB.dds",
+            "stem": "Ford_raptor_Logo_D_ALB",
+            "type": "ALB"
+        },
+        "6119204777899689777": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Caarbon_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Caarbon_NRM.dds",
+            "stem": "Ford_raptor_Caarbon_NRM",
+            "type": "NRM"
+        },
+        "6452976244718012119": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_tire_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_tire_ALB.dds",
+            "stem": "Ford_raptor_tire_ALB",
+            "type": "ALB"
+        },
+        "6920625800915415214": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorMETAL_ENG_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorMETAL_ENG_NRM.dds",
+            "stem": "Ford_raptor_RaptorMETAL_ENG_NRM",
+            "type": "NRM"
+        },
+        "7312716853365202397": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_a_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Raptorgrid_a_NRM.dds",
+            "stem": "Ford_raptor_Raptorgrid_a_NRM",
+            "type": "NRM"
+        },
+        "7330729871765177756": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Caarbon_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Caarbon_ALB.dds",
+            "stem": "Ford_raptor_Caarbon_ALB",
+            "type": "ALB"
+        },
+        "7789495271883542821": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Rim_T_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Rim_T_ALB.dds",
+            "stem": "Ford_raptor_Rim_T_ALB",
+            "type": "ALB"
+        },
+        "7817219955603090487": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Exhaust_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Exhaust_ALB.dds",
+            "stem": "Ford_raptor_Exhaust_ALB",
+            "type": "ALB"
+        },
+        "8479326463997519199": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorMETAL_ENG_ALB.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_RaptorMETAL_ENG_ALB.dds",
+            "stem": "Ford_raptor_RaptorMETAL_ENG_ALB",
+            "type": "ALB"
+        },
+        "9101345887380602914": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Cabin_C_NRM.dds",
+            "path": "/home/pointerlost/OpenGLRenderer/engineer/assets/textures/compressed/Ford_raptor_Cabin_C_NRM.dds",
+            "stem": "Ford_raptor_Cabin_C_NRM",
+            "type": "NRM"
+        }
+    }
+}

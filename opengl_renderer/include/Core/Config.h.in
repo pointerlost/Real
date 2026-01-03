@@ -1,3 +1,0 @@
-#pragma once
-#define SHADERS_DIR "@SHADERS_DIR@"
-#define ASSETS_DIR "@ASSETS_DIR@"

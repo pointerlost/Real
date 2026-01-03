@@ -1,34 +1,34 @@
-/opengl_renderer/build/
-/opengl_renderer/cmake-build-*/
-/opengl_renderer/out/
-/opengl_renderer/bin/
-/opengl_renderer/lib/
+/engine/build/
+/engine/cmake-build-*/
+/engine/out/
+/engine/bin/
+/engine/lib/
 
-/opengl_renderer/vcpkg_installed/
-/opengl_renderer/vcpkg/
-/opengl_renderer/vcpkg-downloads/
-/opengl_renderer/vcpkg-buildtrees/
+/engine/vcpkg_installed/
+/engine/vcpkg/
+/engine/vcpkg-downloads/
+/engine/vcpkg-buildtrees/
 
-/opengl_renderer/CMakeCache.txt
-/opengl_renderer/CMakeFiles/
-/opengl_renderer/CMakeScripts/
-/opengl_renderer/Makefile
-/opengl_renderer/cmake_install.cmake
-/opengl_renderer/install_manifest.txt
-/opengl_renderer/compile_commands.json
-/opengl_renderer/*.cmake
-/opengl_renderer/CTestTestfile.cmake
-/opengl_renderer/Testing/
+/engine/CMakeCache.txt
+/engine/CMakeFiles/
+/engine/CMakeScripts/
+/engine/Makefile
+/engine/cmake_install.cmake
+/engine/install_manifest.txt
+/engine/compile_commands.json
+/engine/*.cmake
+/engine/CTestTestfile.cmake
+/engine/Testing/
 
-/opengl_renderer/*.o
-/opengl_renderer/*.obj
-/opengl_renderer/*.pch
-/opengl_renderer/*.slo
-/opengl_renderer/*.lo
-/opengl_renderer/*.a
-/opengl_renderer/*.lib
-/opengl_renderer/*.la
-/opengl_renderer/*.lai
+/engine/*.o
+/engine/*.obj
+/engine/*.pch
+/engine/*.slo
+/engine/*.lo
+/engine/*.a
+/engine/*.lib
+/engine/*.la
+/engine/*.lai
 
 *.log
 *.exe
@@ -55,13 +55,13 @@ Desktop.ini
 *.bak
 *.backup
 
-/opengl_renderer/vendor/**/build/
-/opengl_renderer/vendor/**/CMakeCache.txt
-/opengl_renderer/vendor/**/CMakeFiles/
+/engine/vendor/**/build/
+/engine/vendor/**/CMakeCache.txt
+/engine/vendor/**/CMakeFiles/
 
-/opengl_renderer/*.gch
-/opengl_renderer/**/*.gch
+/engine/*.gch
+/engine/**/*.gch
 
-/opengl_renderer/.tmp/
-/opengl_renderer/temp/
+/engine/.tmp/
+/engine/temp/
 

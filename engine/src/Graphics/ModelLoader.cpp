@@ -9,7 +9,7 @@
 #include "Common/Macros.h"
 #include "Core/AssetImporter.h"
 #include "Core/AssetManager.h"
-#include "Core/CmakeConfig.h"
+#include "Core/CMakeConfig.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
@@ -32,7 +32,7 @@ namespace Real {
         };
 
         if (!std_fs::exists(rootDir)) {
-            Warn("[ModelLoader::LoadAll] There is no rootDir for model loading!");
+            Warn("[ModelLoader::LoadAll] There is no rootDir for model loading: " + rootDir);
             return;
         }
 

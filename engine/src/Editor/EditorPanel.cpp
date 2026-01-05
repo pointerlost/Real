@@ -122,19 +122,20 @@ namespace Real::UI {
         // Font style
         // Hardcoded for now!!
         const auto& assetManager = Services::GetAssetManager();
+        const auto assets_dir = std::string(ASSETS_DIR);
 
         const ImGuiIO& io = ImGui::GetIO();
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Regular", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Regular-Big", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold", io.Fonts->AddFontFromFileTTF(fontFile, 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Bold", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
-        if (constexpr auto fontFile = "assets/fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold-Big", io.Fonts->AddFontFromFileTTF(fontFile, 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
+            assetManager->AddFontStyle("Ubuntu-Bold-Big", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
         }
     }
 

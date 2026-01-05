@@ -14,7 +14,6 @@
 #include "Util/Util.h"
 #include <Tools/DDS.h>
 #include <algorithm>
-#include "Core/CmakeConfig.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 

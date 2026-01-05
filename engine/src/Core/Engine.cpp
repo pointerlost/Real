@@ -3,8 +3,7 @@
 //
 #include "Core/Engine.h"
 #include <Core/RealConfig.h>
-#include <Core/CmakeConfig.h>
-#include <Core/RealConfig.h>
+#include <Core/CMakeConfig.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 

@@ -2,8 +2,8 @@
 // Created by pointerlost on 12/22/25.
 //
 #pragma once
+#include <Core/CMakeConfig.h>
 #include <nlohmann/json.hpp>
-#include "CmakeConfig.h"
 #include "Utils.h"
 #include "UUID.h"
 

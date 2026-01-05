@@ -8,7 +8,7 @@
 #include <fstream>
 #include <ranges>
 #include <thread>
-#include <Core/CmakeConfig.h>
+#include <Core/CMakeConfig.h>
 #include "Graphics/Material.h"
 #include "queue"
 #include "Math/Math.h"

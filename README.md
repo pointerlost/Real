@@ -1,6 +1,6 @@
-# OpenGL Renderer
+# Real Engine
 
-A modern OpenGL-based 3D renderer.
+A modern OpenGL-based 3D(for now) renderer!
 
 ## Prerequisites
 

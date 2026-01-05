@@ -117,11 +117,27 @@ add_executable(engine
     include/Core/AssetImporter.h
     src/Core/AssetImporter.cpp
     src/Graphics/Model.cpp
+    include/Core/CMakeConfig.h
+)
+
+set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
+set(ASSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Core/Config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
+    @ONLY
+)
+
+target_sources(engine
+    PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
 
-target_include_directories(engine PUBLIC
+target_include_directories(engine
+    PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor
@@ -129,7 +145,8 @@ target_include_directories(engine PUBLIC
 
 target_include_directories(glad_local PUBLIC vendor/glad/include)
 
-target_link_libraries(engine PRIVATE
+target_link_libraries(engine
+    PRIVATE
     glad_local
     glfw
     glm::glm
@@ -150,12 +167,4 @@ target_link_libraries(engine PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_SSE.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX512.a
-)
-
-set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
-set(ASSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Core/Config.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CmakeConfig.h
 )

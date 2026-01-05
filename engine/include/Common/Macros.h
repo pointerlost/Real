@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <cstdint>
-#include "Core/CmakeConfig.h"
+#include "Core/CMakeConfig.h"
 
 constexpr auto ASSETS_SOURCE_DIR  = ASSETS_DIR "sources/";
 constexpr auto ASSETS_RUNTIME_DIR = ASSETS_DIR "runtime/";

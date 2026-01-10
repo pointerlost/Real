@@ -23,8 +23,9 @@ namespace Real {
     };
 
     struct MaterialSSBO {
-        glm::vec4 m_BaseColor = glm::vec4(1.0, 0.2, 0.0, 1.0);
-        glm::vec4 m_NormalORM = {}; // 0 = normal, 1 = ambient occlusion, 2 = roughness, 3 = metallic
+        glm::vec4 m_BaseColorFactor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        // 0 = ambient occlusion, 1 = roughness, 2 = metallic, 3 = padding
+        glm::vec4 m_ORMFactor = glm::vec4{1.0, 1.0, 1.0, 1.0};
 
         // lookup table provides us texIndex and texArrayIndex
         int m_BindlessAlbedoIdx;

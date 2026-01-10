@@ -1,126 +1,46 @@
 {
     "materials": {
-        "10229768341936228607": {
-            "name": "Ford_raptor_RaptorMAT",
+        "10606067465824656685": {
+            "name": "Ford_raptor_Rim_T",
             "textures": {
-                "albedo": 0,
+                "albedo": 17186228200125445836,
+                "emissive": 0,
+                "height": 0,
+                "normal": 12944183022023707946,
+                "orm": 0
+            }
+        },
+        "10906834769437498803": {
+            "name": "porsche_turbo_glass",
+            "textures": {
+                "albedo": 17911514857449026667,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 3923486054728874755
+            }
+        },
+        "10936795689475156034": {
+            "name": "Ford_raptor_RaptorPaaint",
+            "textures": {
+                "albedo": 12021914946342025805,
                 "emissive": 0,
                 "height": 0,
                 "normal": 0,
                 "orm": 0
             }
         },
-        "10403721849863601612": {
-            "name": "Ford_raptor_Leather_Int",
+        "11018827729748091161": {
+            "name": "porsche_turbo_material_0",
             "textures": {
-                "albedo": 4117523518488821757,
-                "emissive": 0,
-                "height": 0,
-                "normal": 8066449295965396033,
-                "orm": 0
-            }
-        },
-        "10861469527241811251": {
-            "name": "Ford_raptor_Raptordummy_material_3_024",
-            "textures": {
-                "albedo": 0,
+                "albedo": 6334755290638148008,
                 "emissive": 0,
                 "height": 0,
                 "normal": 0,
                 "orm": 0
             }
         },
-        "11459536967332497481": {
-            "name": "Ford_raptor_Raptorcaalb",
-            "textures": {
-                "albedo": 0,
-                "emissive": 0,
-                "height": 0,
-                "normal": 0,
-                "orm": 0
-            }
-        },
-        "12006199951649505185": {
-            "name": "Ford_raptor_Suspension",
-            "textures": {
-                "albedo": 12026556929178924683,
-                "emissive": 0,
-                "height": 0,
-                "normal": 16385122493339801712,
-                "orm": 0
-            }
-        },
-        "12234579280104966393": {
-            "name": "Ford_raptor_RaptorENG_Plastic",
-            "textures": {
-                "albedo": 1000121439890543733,
-                "emissive": 0,
-                "height": 0,
-                "normal": 3403728293699151334,
-                "orm": 0
-            }
-        },
-        "13830830717445673955": {
-            "name": "Ford_raptor_Raptorgrid_a",
-            "textures": {
-                "albedo": 4591269750752824478,
-                "emissive": 0,
-                "height": 0,
-                "normal": 4974820852112148839,
-                "orm": 0
-            }
-        },
-        "14080232261980224811": {
-            "name": "Ford_raptor_RaptorINT_cloth",
-            "textures": {
-                "albedo": 4117523518488821757,
-                "emissive": 0,
-                "height": 0,
-                "normal": 8066449295965396033,
-                "orm": 0
-            }
-        },
-        "15972680006120847517": {
-            "name": "Ford_raptor_Cabin_C",
-            "textures": {
-                "albedo": 2953174453168281056,
-                "emissive": 0,
-                "height": 0,
-                "normal": 6328337263093145334,
-                "orm": 0
-            }
-        },
-        "16992001713639226886": {
-            "name": "Ford_raptor_Light_glass",
-            "textures": {
-                "albedo": 0,
-                "emissive": 0,
-                "height": 0,
-                "normal": 0,
-                "orm": 0
-            }
-        },
-        "1730761814409372798": {
-            "name": "Ford_raptor_Logo",
-            "textures": {
-                "albedo": 6165895958640216136,
-                "emissive": 0,
-                "height": 0,
-                "normal": 3946511567221262258,
-                "orm": 0
-            }
-        },
-        "17431348904362536909": {
-            "name": "Ford_raptor_Exhaust",
-            "textures": {
-                "albedo": 2006704579435466199,
-                "emissive": 0,
-                "height": 0,
-                "normal": 0,
-                "orm": 0
-            }
-        },
-        "1903350598203275745": {
+        "11394486662443240498": {
             "name": "Ford_raptor_mirror",
             "textures": {
                 "albedo": 0,
@@ -130,87 +50,607 @@
                 "orm": 0
             }
         },
-        "2477279105299922229": {
-            "name": "Ford_raptor_Metal_Int",
+        "11479313800720940604": {
+            "name": "mountain_road_Dark_Brown_1",
             "textures": {
-                "albedo": 4117523518488821757,
+                "albedo": 0,
                 "emissive": 0,
                 "height": 0,
-                "normal": 8066449295965396033,
+                "normal": 0,
                 "orm": 0
             }
         },
-        "2583494149839470500": {
-            "name": "Ford_raptor_Light",
-            "textures": {
-                "albedo": 10817043865502620929,
-                "emissive": 10528172464201738170,
-                "height": 0,
-                "normal": 2566346126218770794,
-                "orm": 0
-            }
-        },
-        "263631097453425337": {
-            "name": "Ford_raptor_costuras",
-            "textures": {
-                "albedo": 8206910139510679119,
-                "emissive": 0,
-                "height": 0,
-                "normal": 15516767866281858190,
-                "orm": 0
-            }
-        },
-        "3500474943086184569": {
-            "name": "Ford_raptor_INT_Plastic",
-            "textures": {
-                "albedo": 4117523518488821757,
-                "emissive": 0,
-                "height": 0,
-                "normal": 8066449295965396033,
-                "orm": 0
-            }
-        },
-        "3985039413809397720": {
+        "11669463037864355472": {
             "name": "Ford_raptor_Caarbon",
             "textures": {
-                "albedo": 4639336462390816514,
+                "albedo": 13731231078489194079,
                 "emissive": 0,
                 "height": 0,
-                "normal": 11698663747059626553,
+                "normal": 4247197824073665432,
                 "orm": 0
             }
         },
-        "4413594717872794924": {
-            "name": "Ford_raptor_Int_T",
-            "textures": {
-                "albedo": 8188057004437214038,
-                "emissive": 4701175731559532025,
-                "height": 0,
-                "normal": 8066449295965396033,
-                "orm": 0
-            }
-        },
-        "4811655228319651588": {
+        "11882494249542791003": {
             "name": "Ford_raptor_RaptorMETAL_ENG",
             "textures": {
-                "albedo": 1000121439890543733,
+                "albedo": 8843013665977395311,
                 "emissive": 0,
                 "height": 0,
-                "normal": 3403728293699151334,
+                "normal": 10295924244880685354,
                 "orm": 0
             }
         },
-        "4924812866420191076": {
+        "11941887384725670362": {
+            "name": "Ford_raptor_material",
+            "textures": {
+                "albedo": 12466424891580696079,
+                "emissive": 0,
+                "height": 0,
+                "normal": 12944183022023707946,
+                "orm": 0
+            }
+        },
+        "11966684960009399407": {
+            "name": "mountain_road_Brick_Rough_Dark",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "12057940486275969996": {
+            "name": "Ford_raptor_INT_Plastic",
+            "textures": {
+                "albedo": 4258873486817358889,
+                "emissive": 0,
+                "height": 0,
+                "normal": 15792524683938982078,
+                "orm": 0
+            }
+        },
+        "12225472552308703105": {
+            "name": "mountain_road_Concrete_rough",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "12254461154424573936": {
+            "name": "porsche_turbo_paint",
+            "textures": {
+                "albedo": 11135963925080703447,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 11880975758196294401
+            }
+        },
+        "12489004593261201824": {
+            "name": "Ford_raptor_Raptordummy_material_3_024",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "12509319697952867347": {
+            "name": "mountain_road_material",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 17716797124271976604
+            }
+        },
+        "12570488819409809225": {
+            "name": "Ford_raptor_Logo_D",
+            "textures": {
+                "albedo": 13545208167267069009,
+                "emissive": 0,
+                "height": 0,
+                "normal": 3516052778397464351,
+                "orm": 0
+            }
+        },
+        "12654702520486500991": {
+            "name": "mountain_road_material_0",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "13297357927134852740": {
+            "name": "city_road_ROAD_MARKINGS",
+            "textures": {
+                "albedo": 13020602178614436300,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10148256744773777233,
+                "orm": 8023691898521121217
+            }
+        },
+        "135127053662361275": {
+            "name": "porsche_turbo_930_rim",
+            "textures": {
+                "albedo": 10290111033360697086,
+                "emissive": 0,
+                "height": 0,
+                "normal": 2382873516208592515,
+                "orm": 3256065087308889056
+            }
+        },
+        "13568764066770680898": {
+            "name": "porsche_turbo_plate",
+            "textures": {
+                "albedo": 15410687642990753776,
+                "emissive": 0,
+                "height": 0,
+                "normal": 2607373261829173308,
+                "orm": 0
+            }
+        },
+        "13680686672140544560": {
+            "name": "porsche_turbo_black",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "14066826015216703184": {
+            "name": "island_tree_island_tree_02",
+            "textures": {
+                "albedo": 1568673430975939773,
+                "emissive": 0,
+                "height": 0,
+                "normal": 16549138639014104258,
+                "orm": 8019158294436086477
+            }
+        },
+        "14138767203875162986": {
+            "name": "Ford_raptor_Breaks",
+            "textures": {
+                "albedo": 16261589911498661010,
+                "emissive": 0,
+                "height": 0,
+                "normal": 4639810649653389176,
+                "orm": 0
+            }
+        },
+        "14158678678277950792": {
+            "name": "mountain_road_Dark_Brown",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "14226438470055473184": {
+            "name": "Ford_raptor_Light",
+            "textures": {
+                "albedo": 12124412967773918885,
+                "emissive": 5096089896018192026,
+                "height": 0,
+                "normal": 3425897284868958105,
+                "orm": 0
+            }
+        },
+        "14334608414618728491": {
+            "name": "Ford_raptor_Cabin_C",
+            "textures": {
+                "albedo": 6679864625811766122,
+                "emissive": 0,
+                "height": 0,
+                "normal": 12324219460775464979,
+                "orm": 0
+            }
+        },
+        "14528553258348677080": {
+            "name": "Ford_raptor_Raptorgrid_a",
+            "textures": {
+                "albedo": 12931306896551472666,
+                "emissive": 0,
+                "height": 0,
+                "normal": 5981695280079728535,
+                "orm": 0
+            }
+        },
+        "14695054819865519983": {
+            "name": "Marble009",
+            "textures": {
+                "albedo": 1779846608590487941,
+                "emissive": 0,
+                "height": 12086806958242014511,
+                "normal": 15629010407066023598,
+                "orm": 2028326121095368579
+            }
+        },
+        "15306690043131483898": {
+            "name": "Ford_raptor_RaptorMAT",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "16278990333841829944": {
+            "name": "porsche_turbo_930_stickers",
+            "textures": {
+                "albedo": 5689150940691485229,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "16419660691226045532": {
+            "name": "city_road_ROAD_GENERIC",
+            "textures": {
+                "albedo": 921815435122832474,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "1658875605297420261": {
+            "name": "Ford_raptor_Leather_Int",
+            "textures": {
+                "albedo": 4258873486817358889,
+                "emissive": 0,
+                "height": 0,
+                "normal": 15792524683938982078,
+                "orm": 0
+            }
+        },
+        "16782109109630700652": {
+            "name": "city_road_CROSSINGS",
+            "textures": {
+                "albedo": 921815435122832474,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "16858099498935300991": {
+            "name": "city_road_GENERIC_SIDEWALKS",
+            "textures": {
+                "albedo": 2445492539284425696,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6326505405665304302,
+                "orm": 4838055549791020056
+            }
+        },
+        "17138051018440116591": {
+            "name": "mountain_road_Blue",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "17206305890956680349": {
+            "name": "Ford_raptor_Metal_Int",
+            "textures": {
+                "albedo": 4258873486817358889,
+                "emissive": 0,
+                "height": 0,
+                "normal": 15792524683938982078,
+                "orm": 0
+            }
+        },
+        "17735554533648533133": {
+            "name": "porsche_turbo_930_lights",
+            "textures": {
+                "albedo": 12325672919436244701,
+                "emissive": 0,
+                "height": 0,
+                "normal": 8210299362835541861,
+                "orm": 757308091926352765
+            }
+        },
+        "17867098059204184999": {
+            "name": "Ford_raptor_Exhaust",
+            "textures": {
+                "albedo": 12618738965317799541,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "17958016047907281089": {
+            "name": "porsche_turbo_930_tire",
+            "textures": {
+                "albedo": 14086360596408599336,
+                "emissive": 0,
+                "height": 0,
+                "normal": 17401519343499267917,
+                "orm": 6742503063405273312
+            }
+        },
+        "17964755142615598990": {
+            "name": "Ford_raptor_Suspension",
+            "textures": {
+                "albedo": 11770594038657810879,
+                "emissive": 0,
+                "height": 0,
+                "normal": 3658107278055708402,
+                "orm": 0
+            }
+        },
+        "18380269378475055255": {
+            "name": "city_road_GRASS",
+            "textures": {
+                "albedo": 635645017312134186,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "208405882165676934": {
+            "name": "Ford_raptor_Raptorcaalb",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "2183201047650507785": {
+            "name": "Ford_raptor_Logo",
+            "textures": {
+                "albedo": 15210085788182642792,
+                "emissive": 0,
+                "height": 0,
+                "normal": 12036303526373560773,
+                "orm": 0
+            }
+        },
+        "2402416195053377680": {
+            "name": "city_road_BIKE_LANES",
+            "textures": {
+                "albedo": 13282527877532491077,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 15541913407944664445
+            }
+        },
+        "2572468346925807193": {
+            "name": "mountain_road_material_1",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 13962977421984586005
+            }
+        },
+        "2630827269601349053": {
+            "name": "city_road_ROAD_WEAR_TRANSPARENT",
+            "textures": {
+                "albedo": 14044898663414988428,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "2970938312329103317": {
+            "name": "city_road_ASPHALT_BARE",
+            "textures": {
+                "albedo": 8848103986048021710,
+                "emissive": 0,
+                "height": 0,
+                "normal": 8888781564031422972,
+                "orm": 7227129808011864083
+            }
+        },
+        "3926994725448446455": {
+            "name": "mountain_road_material_10",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 17719471204674964711
+            }
+        },
+        "4221919727959703457": {
+            "name": "porsche_turbo_930_plastics",
+            "textures": {
+                "albedo": 949467842633401818,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 13511512753549880719
+            }
+        },
+        "4336850189088667027": {
+            "name": "Ford_raptor_RaptorINT_cloth",
+            "textures": {
+                "albedo": 4258873486817358889,
+                "emissive": 0,
+                "height": 0,
+                "normal": 15792524683938982078,
+                "orm": 0
+            }
+        },
+        "4542385916487855330": {
+            "name": "mountain_road_material_4",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "4603594027180764323": {
+            "name": "Ford_raptor_costuras",
+            "textures": {
+                "albedo": 98757137689020807,
+                "emissive": 0,
+                "height": 0,
+                "normal": 9101767168349938262,
+                "orm": 0
+            }
+        },
+        "4604997561215186225": {
             "name": "Ford_raptor_RaptorGrille_F",
             "textures": {
-                "albedo": 10841859879074473789,
+                "albedo": 9566891395731142511,
                 "emissive": 0,
                 "height": 0,
-                "normal": 9647631886245763813,
+                "normal": 3072858867284857658,
                 "orm": 0
             }
         },
-        "5044851220197055116": {
+        "5130968068038812646": {
+            "name": "island_tree_island_tree_02_leaves",
+            "textures": {
+                "albedo": 6679144457219018438,
+                "emissive": 0,
+                "height": 0,
+                "normal": 2263657371353449860,
+                "orm": 9958074210459750597
+            }
+        },
+        "5166465391278114658": {
+            "name": "Ford_raptor_RaptorENG_Plastic",
+            "textures": {
+                "albedo": 8843013665977395311,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10295924244880685354,
+                "orm": 0
+            }
+        },
+        "5237310352993549874": {
+            "name": "Ford_raptor_tire",
+            "textures": {
+                "albedo": 342552040257512834,
+                "emissive": 0,
+                "height": 0,
+                "normal": 17263881438000273844,
+                "orm": 0
+            }
+        },
+        "53121093623275944": {
+            "name": "porsche_turbo_coat",
+            "textures": {
+                "albedo": 3485149677532950359,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10315132900425876973,
+                "orm": 11714220274095476337
+            }
+        },
+        "5437475280859393055": {
+            "name": "mountain_road_RosyBrown_1",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "5465578999108196631": {
+            "name": "Ford_raptor_Raptorgrid_B",
+            "textures": {
+                "albedo": 17793111375057174893,
+                "emissive": 0,
+                "height": 0,
+                "normal": 6208985329418793407,
+                "orm": 0
+            }
+        },
+        "5652974015725000217": {
+            "name": "mountain_road_Concrete_rough_2",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "6056643393524055807": {
+            "name": "porsche_turbo_930_chromes",
+            "textures": {
+                "albedo": 837698722580227323,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 16962141271181878220
+            }
+        },
+        "6451327429266247861": {
+            "name": "mountain_road_material_2",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "6672072261643767874": {
+            "name": "city_road_OLD_SIDEWALK_TRIMSHEET",
+            "textures": {
+                "albedo": 9682553535839651936,
+                "emissive": 0,
+                "height": 0,
+                "normal": 619227040623440120,
+                "orm": 5737375192781536316
+            }
+        },
+        "6694198514887137284": {
+            "name": "mountain_road_Water_Deep",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "6948683668459452087": {
+            "name": "mountain_road_material_4_1",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "733480698111885395": {
             "name": "Ford_raptor_Window",
             "textures": {
                 "albedo": 0,
@@ -220,847 +660,1381 @@
                 "orm": 0
             }
         },
-        "5119703119848589346": {
-            "name": "Ford_raptor_Breaks",
+        "7648959985868931492": {
+            "name": "mountain_road_Black",
             "textures": {
-                "albedo": 4526500986050027882,
-                "emissive": 0,
-                "height": 0,
-                "normal": 599001126592410965,
-                "orm": 0
-            }
-        },
-        "5473305688130688934": {
-            "name": "Marble009",
-            "textures": {
-                "albedo": 2713264958202398793,
-                "emissive": 0,
-                "height": 10801017725001722448,
-                "normal": 8339018871153588724,
-                "orm": 7473642321833609379
-            }
-        },
-        "5757239607882434720": {
-            "name": "Ford_raptor_Dashb",
-            "textures": {
-                "albedo": 15678741856414765111,
-                "emissive": 7307750754864714186,
-                "height": 0,
-                "normal": 0,
-                "orm": 0
-            }
-        },
-        "6829795656821487367": {
-            "name": "Ford_raptor_material",
-            "textures": {
-                "albedo": 11913197308493808409,
-                "emissive": 0,
-                "height": 0,
-                "normal": 10329789631495649398,
-                "orm": 0
-            }
-        },
-        "7620937775789082540": {
-            "name": "Ford_raptor_Rim_T",
-            "textures": {
-                "albedo": 13375876403986505155,
-                "emissive": 0,
-                "height": 0,
-                "normal": 10329789631495649398,
-                "orm": 0
-            }
-        },
-        "8339263051545221773": {
-            "name": "Ford_raptor_tire",
-            "textures": {
-                "albedo": 10103464125387948908,
-                "emissive": 0,
-                "height": 0,
-                "normal": 13441801789215296681,
-                "orm": 0
-            }
-        },
-        "8677332453477229219": {
-            "name": "Ford_raptor_RaptorPaaint",
-            "textures": {
-                "albedo": 16165411882446807859,
+                "albedo": 0,
                 "emissive": 0,
                 "height": 0,
                 "normal": 0,
                 "orm": 0
             }
         },
-        "9154224596604331371": {
+        "7723619733901297808": {
+            "name": "porsche_turbo_930_lights_refraction",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 8210299362835541861,
+                "orm": 0
+            }
+        },
+        "7744163641049521783": {
+            "name": "mountain_road_Gold",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "7902614307520614060": {
+            "name": "Ford_raptor_Light_glass",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "8332395721935986500": {
+            "name": "mountain_road_material_22",
+            "textures": {
+                "albedo": 0,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "8422189054304765026": {
+            "name": "city_road_ROAD_WORNED",
+            "textures": {
+                "albedo": 137033223504808553,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 4349917314871505444
+            }
+        },
+        "868462248911975022": {
             "name": "Ford_raptor_RaptorENG_T",
             "textures": {
-                "albedo": 6453341931087808503,
+                "albedo": 2653648810596631636,
                 "emissive": 0,
                 "height": 0,
-                "normal": 3403728293699151334,
+                "normal": 10295924244880685354,
                 "orm": 0
             }
         },
-        "9258545294120695996": {
-            "name": "Ford_raptor_Logo_D",
+        "8964019983867710175": {
+            "name": "Ford_raptor_Int_T",
             "textures": {
-                "albedo": 12502777805927804350,
-                "emissive": 0,
+                "albedo": 14925222764531804331,
+                "emissive": 5333506321681735691,
                 "height": 0,
-                "normal": 7764306124435588893,
+                "normal": 15792524683938982078,
                 "orm": 0
             }
         },
-        "9630384198565707856": {
-            "name": "Ford_raptor_Raptorgrid_B",
+        "9376950481122887026": {
+            "name": "city_road_ROAD_NEW",
             "textures": {
-                "albedo": 5711753358086171543,
+                "albedo": 921815435122832474,
                 "emissive": 0,
                 "height": 0,
-                "normal": 715757259010927715,
+                "normal": 0,
+                "orm": 16472719126171806912
+            }
+        },
+        "9510983283358403207": {
+            "name": "mountain_road_material_5",
+            "textures": {
+                "albedo": 12320691719335262291,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
                 "orm": 0
+            }
+        },
+        "9624969785754242254": {
+            "name": "Ford_raptor_Dashb",
+            "textures": {
+                "albedo": 14122727406837890609,
+                "emissive": 13978705377402890103,
+                "height": 0,
+                "normal": 0,
+                "orm": 0
+            }
+        },
+        "9815315512600951395": {
+            "name": "island_tree_island_tree_02_branches",
+            "textures": {
+                "albedo": 15332063671041591913,
+                "emissive": 0,
+                "height": 0,
+                "normal": 10631224318076539464,
+                "orm": 12612838596138665436
+            }
+        },
+        "992722389028291732": {
+            "name": "porsche_turbo_930_wunderbaum",
+            "textures": {
+                "albedo": 6521356279414614711,
+                "emissive": 0,
+                "height": 0,
+                "normal": 0,
+                "orm": 2941494229851085590
             }
         }
     },
     "meshes": {
-        "10028335871111518636": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_Leather_Int_0"
-        },
-        "10450130136110677807": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_010_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_010_Raptor:INT_cloth_0"
-        },
-        "10464118392652422977": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_023_Light_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_023_Light_0"
-        },
-        "10569300637079070902": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_015_Light_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_015_Light_0"
-        },
-        "10739228229704196930": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Exhaust_101_001_SK_Exhaust_101_dummy_material_0_007_Exhaust_0.mesh",
-            "name": "Raptor:SK_Exhaust_101_001_SK_Exhaust_101_dummy_material_0_007_Exhaust_0"
-        },
-        "11063095497464785964": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_016_Window_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_016_Window_0"
-        },
-        "11171910320759939121": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_024_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_024_Exhaust_0"
-        },
-        "11305517996242726784": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_027_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_027_Raptor:INT_cloth_0"
-        },
-        "11430561748946600614": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_INT_Plastic_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_INT_Plastic_0"
-        },
-        "11456977948728465789": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_021_Window_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_021_Window_0"
-        },
-        "11464530315746699273": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_033_Cabin_C_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_033_Cabin_C_0"
-        },
-        "11489144053775330090": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_012_Logo_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_012_Logo_0"
-        },
-        "11549109260292869568": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_015_Exhaust_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_015_Exhaust_0"
-        },
-        "11650258546069852842": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_015_Window_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_015_Window_0"
-        },
-        "11698495628581825098": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_022_Light_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_022_Light_0"
-        },
-        "1174331878574883241": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_020_Window_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_020_Window_0"
-        },
-        "11825561145313129254": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_Rim_T_0.mesh",
-            "name": "Raptor:Ani_Wheel_BL82_Rim_T_0"
-        },
-        "12027844402334547214": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_020_Exhaust_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_020_Exhaust_0"
-        },
-        "12126088737450355634": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_026_Light_glass_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_026_Light_glass_0"
-        },
-        "12170194770390861993": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_BL82_Breaks_0"
-        },
-        "12174470864094687030": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_026_mirror_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_026_mirror_0"
-        },
-        "12237347769391760777": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_020_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_020_Raptor:ENG_Plastic_0"
-        },
-        "12257448278757918728": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_015_Int_T_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_015_Int_T_0"
-        },
-        "12520913517001707902": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0"
-        },
-        "126437475438843704": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_Raptor:MAT_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_022_Raptor:MAT_0"
-        },
-        "12769541783065083802": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_012_Suspension_0.mesh",
-            "name": "Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_012_Suspension_0"
-        },
-        "12771860592534608850": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_Raptor:MAT_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_Raptor:MAT_0"
-        },
-        "12805607608281491391": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_Rim_T_0.mesh",
-            "name": "Raptor:Ani_Wheel_FL82_Rim_T_0"
-        },
-        "12975182802829221270": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_018_Exhaust_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_018_Exhaust_0"
-        },
-        "13050091037602410403": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_011_Raptor:METAL_ENG_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_011_Raptor:METAL_ENG_0"
-        },
-        "13235667492511325493": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_011_Int_T_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_011_Int_T_0"
-        },
-        "13282823101426068413": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_021_Logo_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_021_Logo_0"
-        },
-        "13330204777659071428": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_FR11_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_Caliper_FR11_Breaks_0"
-        },
-        "13332998805366328184": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_023_Light_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_023_Light_0"
-        },
-        "13393067955410968080": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_1_Int_T_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_1_Int_T_0"
-        },
-        "13597068549035643344": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_007_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_007_Raptor:Paaint_0"
-        },
-        "13850339026050373165": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_009_INT_Plastic_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_009_INT_Plastic_0"
-        },
-        "14066718992819253084": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_015_Raptor:ENG_T_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_015_Raptor:ENG_T_0"
-        },
-        "14165697659644606491": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_018_Raptor:MAT_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_018_Raptor:MAT_0"
-        },
-        "14184636398082512693": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_018_Light_0.mesh",
-            "name": "Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_018_Light_0"
-        },
-        "14209066187376486685": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_BL11_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_Caliper_BL11_Breaks_0"
-        },
-        "14210101660358069957": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_010_Exhaust_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_010_Exhaust_0"
-        },
-        "14258650348845021893": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_022_Light_glass_0.mesh",
-            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_022_Light_glass_0"
-        },
-        "14298474689347528827": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_019_Light_0.mesh",
-            "name": "Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_019_Light_0"
-        },
-        "14664939662998625454": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_019_Exhaust_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_019_Exhaust_0"
-        },
-        "14715198531689747315": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_costuras_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_006_costuras_0"
-        },
-        "14815202555151218649": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_tire_0.mesh",
-            "name": "Raptor:Ani_Wheel_BR82_tire_0"
-        },
-        "15052449872984989202": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_Rim_T_0.mesh",
-            "name": "Raptor:Ani_Wheel_BR82_Rim_T_0"
-        },
-        "15075100745012587628": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_costuras_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_costuras_0"
-        },
-        "15120256439768755777": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_035_Metal_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_035_Metal_Int_0"
-        },
-        "15236857260194111754": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_008_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_008_Raptor:ENG_Plastic_0"
-        },
-        "15267520798534479716": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_015_Exhaust_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_015_Exhaust_0"
-        },
-        "15271630687877517956": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_costuras_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_costuras_0"
-        },
-        "15309057682160518335": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_hub_0.mesh",
-            "name": "Raptor:Ani_Wheel_BR82_hub_0"
-        },
-        "15369076161338909012": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_014_Cabin_C_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_014_Cabin_C_0"
-        },
-        "15405183683428064484": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_007_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_007_Raptor:Paaint_0"
-        },
-        "1541549854874574301": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_008_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_008_Metal_Int_0"
-        },
-        "15424861436436552644": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_017_Window_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_017_Window_0"
-        },
-        "15434009377559063400": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_tire_0.mesh",
-            "name": "Raptor:Ani_Wheel_BL82_tire_0"
-        },
-        "15539696339826988140": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_016_Raptor:MAT_0.mesh",
-            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_016_Raptor:MAT_0"
-        },
-        "15938027228979382904": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_012_Int_T_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_012_Int_T_0"
-        },
-        "15957128041338627983": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_costuras_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_costuras_0"
-        },
-        "16099079637442586373": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_011_Exhaust_0.mesh",
-            "name": "Raptor:SK_Suspension_101_001_SK_Suspension_101_dummy_material_0_011_Exhaust_0"
-        },
-        "16231341538947955893": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_024_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_024_Raptor:Paaint_0"
-        },
-        "16271413748198267903": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_016_Exhaust_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_016_Exhaust_0"
-        },
-        "16307151950349615397": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_021_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_021_Exhaust_0"
-        },
-        "16357605463894133238": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_008_INT_Plastic_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_008_INT_Plastic_0"
-        },
-        "1638065125989195464": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_013_Exhaust_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_013_Exhaust_0"
-        },
-        "16422245431598543369": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_019_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_019_Raptor:Paaint_0"
-        },
-        "16457174878398001792": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_031_Dashb_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_031_Dashb_0"
-        },
-        "16535135326331850768": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_015_Light_glass_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_015_Light_glass_0"
-        },
-        "16631922048958947068": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_011_Caarbon_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_011_Caarbon_0"
-        },
-        "16808477753189322351": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_023_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_023_Exhaust_0"
-        },
-        "16841451853128243526": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_FL82_Breaks_0"
-        },
-        "16935282812216444160": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_Leather_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_Leather_Int_0"
-        },
-        "17355491072525768795": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_016_Raptor:grid_a_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_016_Raptor:grid_a_0"
-        },
-        "1736396933418211203": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_021_Exhaust_0.mesh",
-            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_021_Exhaust_0"
-        },
-        "17389269937046862758": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_008_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_008_Metal_Int_0"
-        },
-        "17398470102249926206": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_020_Raptor:dummy_material_3_024_0"
-        },
-        "17538156518371521502": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_014_Window_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_014_Window_0"
-        },
-        "17540353425287937366": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_023_Metal_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_023_Metal_Int_0"
-        },
-        "17623135660438748235": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_Leather_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_028_Leather_Int_0"
-        },
-        "17647105511361454236": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_012_Logo_D_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_012_Logo_D_0"
-        },
-        "17681727388673509099": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_018_Exhaust_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_018_Exhaust_0"
-        },
-        "17870665405486675828": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_030_Raptor:grid_a_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_030_Raptor:grid_a_0"
-        },
-        "18030819915403065051": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_022_Exhaust_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_022_Exhaust_0"
-        },
-        "18036166739622671017": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_009_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_009_Metal_Int_0"
-        },
-        "18048492501488055295": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_016_Exhaust_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_016_Exhaust_0"
-        },
-        "18146369683574025543": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_7_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_7_Metal_Int_0"
-        },
-        "18150268465169050346": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_014_Exhaust_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_014_Exhaust_0"
-        },
-        "18155629980570120955": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_017_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_017_Raptor:ENG_Plastic_0"
-        },
-        "18225621964980429851": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_017_Logo_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_017_Logo_0"
-        },
-        "18288471578659324255": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_009_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_009_Metal_Int_0"
-        },
-        "18334438890629898063": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_017_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_017_Raptor:Paaint_0"
-        },
-        "18385200658910753673": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BL82_hub_0.mesh",
-            "name": "Raptor:Ani_Wheel_BL82_hub_0"
-        },
-        "184607672990131525": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_016_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_016_Raptor:ENG_Plastic_0"
-        },
-        "2212870174282414439": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_4_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_4_Metal_Int_0"
-        },
-        "2343875280657597435": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_010_INT_Plastic_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_010_INT_Plastic_0"
-        },
-        "2558959512592051876": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_Rim_T_0.mesh",
-            "name": "Raptor:Ani_Disc_Scale_FR7_Rim_T_0"
-        },
-        "2651183521990238965": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_013_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_013_Raptor:Paaint_0"
-        },
-        "2763633392734444648": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_6_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_6_Metal_Int_0"
-        },
-        "2767570484508188362": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_019_Suspension_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_019_Suspension_0"
-        },
-        "2768716464669288622": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_Breaks_0.mesh",
-            "name": "Raptor:Ani_Disc_Scale_FR7_Breaks_0"
-        },
-        "2808964768636091881": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_014_Exhaust_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_014_Exhaust_0"
-        },
-        "2819196066489420070": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_018_Raptor:MAT_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_018_Raptor:MAT_0"
-        },
-        "2904240338795618717": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_012_Caarbon_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_012_Caarbon_0"
-        },
-        "311088701825144634": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_Leather_Int_0"
-        },
-        "3230189500318886379": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_costuras_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_011_costuras_0"
-        },
-        "324346842870280105": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_FL12_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_Caliper_FL12_Breaks_0"
-        },
-        "3251946681037551103": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_006_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_006_Raptor:Paaint_0"
-        },
-        "3466389467523671428": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_027_mirror_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_027_mirror_0"
-        },
-        "3517575796256675142": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_022_Raptor:METAL_ENG_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_022_Raptor:METAL_ENG_0"
-        },
-        "360135339424161294": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_costuras_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_costuras_0"
-        },
-        "3724274203829379345": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_010_Cabin_C_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_010_Cabin_C_0"
-        },
-        "3736386129701669974": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_021_Raptor:caalb_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_021_Raptor:caalb_0"
-        },
-        "3779321620500245050": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_hub_0.mesh",
-            "name": "Raptor:Ani_Wheel_FL82_hub_0"
-        },
-        "3796651842437721681": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_022_Light_glass_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_022_Light_glass_0"
-        },
-        "3814374070274093281": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_INT_Plastic_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_024_INT_Plastic_0"
-        },
-        "385572466646490723": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_023_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_023_Exhaust_0"
-        },
-        "3980469807002989579": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_015_Raptor:ENG_T_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_015_Raptor:ENG_T_0"
-        },
-        "4479897255350238716": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_014_Light_0.mesh",
-            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_014_Light_0"
-        },
-        "4543600413509517903": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_BR82_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_BR82_Breaks_0"
-        },
-        "455570039285357328": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_017_Logo_D_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_017_Logo_D_0"
-        },
-        "4608588961740311121": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_8_Exhaust_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_8_Exhaust_0"
-        },
-        "4733215374523660271": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_032_mirror_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_032_mirror_0"
-        },
-        "4810394531797530993": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_024_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideSkirts_101_SM_SideSkirts_101_dummy_material_0_024_Exhaust_0"
-        },
-        "4816393105191859722": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_013_Cabin_C_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_013_Cabin_C_0"
-        },
-        "4873452051291107755": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_016_Exhaust_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_016_Exhaust_0"
-        },
-        "4924804594325613976": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_021_Light_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_021_Light_0"
-        },
-        "5073050103643480729": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_010_Leather_Int_0"
-        },
-        "5096108426486546229": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_017_Logo_0.mesh",
-            "name": "Raptor:SM_Fender_F_101_SM_Fender_F_101_dummy_material_0_017_Logo_0"
-        },
-        "5221041960452265655": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_020_Light_glass_0.mesh",
-            "name": "Raptor:SM_Light_F_101_SM_Light_F_101_dummy_material_0_020_Light_glass_0"
-        },
-        "5308098816589876145": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Leather_Int_0"
-        },
-        "5313883052017233090": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_018_Raptor:grid_a_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_018_Raptor:grid_a_0"
-        },
-        "5388777110949276566": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_costuras_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_costuras_0"
-        },
-        "5610849417323546951": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_017_Exhaust_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_017_Exhaust_0"
-        },
-        "5622363044284904901": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_017_Exhaust_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_017_Exhaust_0"
-        },
-        "5653066598003314804": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_020_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_020_Raptor:Paaint_0"
-        },
-        "5954022653529256497": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_hub_0.mesh",
-            "name": "Raptor:Ani_Disc_Scale_FR7_hub_0"
-        },
-        "5977633733862898913": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_025_Caarbon_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_025_Caarbon_0"
-        },
-        "6146944980729724135": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_012_Int_T_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_012_Int_T_0"
-        },
-        "6162597892210750535": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_5_Metal_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_5_Metal_Int_0"
-        },
-        "6192331784659257908": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_012_Caarbon_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_012_Caarbon_0"
-        },
-        "6277510746918452008": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_019_Raptor:grid_a_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_019_Raptor:grid_a_0"
-        },
-        "6324576691778097064": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_014_Int_T_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_014_Int_T_0"
-        },
-        "6342146524273235733": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_007_INT_Plastic_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_007_INT_Plastic_0"
-        },
-        "6410171922370041413": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_Caliper_BR12_Breaks_0.mesh",
-            "name": "Raptor:Ani_Wheel_Caliper_BR12_Breaks_0"
-        },
-        "6552278667367469905": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_034_Metal_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_034_Metal_Int_0"
-        },
-        "6848762091294254734": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_costuras_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_013_costuras_0"
-        },
-        "7007277670078055479": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_Leather_Int_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_029_Leather_Int_0"
-        },
-        "7146474093133178876": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_019_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_Fender_B_101_SM_Fender_B_101_dummy_material_0_019_Raptor:Paaint_0"
-        },
-        "7513553744436991953": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_016_Raptor:grid_B_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_016_Raptor:grid_B_0"
-        },
-        "7533059164730251322": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_010_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_010_Raptor:Paaint_0"
-        },
-        "756390516368591014": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Disc_Scale_FR7_tire_0.mesh",
-            "name": "Raptor:Ani_Disc_Scale_FR7_tire_0"
-        },
-        "759704975450772863": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_025_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_SideMirror_R_101_SM_SideMirror_R_101_dummy_material_0_025_Raptor:Paaint_0"
-        },
-        "7601425062182667745": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_019_Raptor:Grille_F_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_019_Raptor:Grille_F_0"
-        },
-        "762599922756353717": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_022_Exhaust_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_022_Exhaust_0"
-        },
-        "7646994975847944032": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Int_T_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_3_Int_T_0"
-        },
-        "7698001705316469636": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_018_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_018_Raptor:ENG_Plastic_0"
-        },
-        "7855051745992944041": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_015_Exhaust_0.mesh",
-            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_015_Exhaust_0"
-        },
-        "8062252094421213737": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_007_Leather_Int_0"
-        },
-        "8065944140403071534": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Wheel_FL82_tire_0.mesh",
-            "name": "Raptor:Ani_Wheel_FL82_tire_0"
-        },
-        "8193321996738450938": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_013_Caarbon_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_013_Caarbon_0"
-        },
-        "8196746008065097210": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_025_Light_glass_0.mesh",
-            "name": "Raptor:SM_SideMirror_L_101_SM_SideMirror_L_101_dummy_material_0_025_Light_glass_0"
-        },
-        "823871101962713227": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_016_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SM_Bumper_F_101_SM_Bumper_F_101_dummy_material_0_016_Raptor:Paaint_0"
-        },
-        "8291590694433405523": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_013_Light_glass_0.mesh",
-            "name": "Raptor:SM_Bumper_B_101_SM_Bumper_B_101_dummy_material_0_013_Light_glass_0"
-        },
-        "8343315542422857071": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_026_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_026_Raptor:INT_cloth_0"
-        },
-        "8363493741915360016": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_013_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_013_Raptor:INT_cloth_0"
-        },
-        "8389042565772976382": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_005_Raptor:Paaint_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_005_Raptor:Paaint_0"
-        },
-        "8408469821219747203": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_007_Raptor:METAL_ENG_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_007_Raptor:METAL_ENG_0"
-        },
-        "8513309932666909878": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_Leather_Int_0.mesh",
-            "name": "Raptor:SK_Body_Bones_101_001_SK_Body_Bones_101_dummy_material_2_Leather_Int_0"
-        },
-        "8663238859601027605": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_014_Exhaust_0.mesh",
-            "name": "Raptor:SK_Hood_101_001_SK_Hood_101_dummy_material_0_014_Exhaust_0"
-        },
-        "8706150098141276248": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:Ani_Door_BR7_Raptor:grid_a_0.mesh",
-            "name": "Raptor:Ani_Door_BR7_Raptor:grid_a_0"
-        },
-        "8761925146427479717": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_019_Raptor:ENG_Plastic_0.mesh",
-            "name": "Raptor:SM_Engine_101_SM_Engine_101_dummy_material_0_019_Raptor:ENG_Plastic_0"
-        },
-        "8911551350606109378": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_014_Cabin_C_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_014_Cabin_C_0"
-        },
-        "9167098147251801621": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_018_Exhaust_0.mesh",
-            "name": "Raptor:SK_Door_FR_101_001_SK_Door_FR_101_dummy_material_0_018_Exhaust_0"
-        },
-        "9182264504442270438": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_016_Raptor:Grille_F_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_016_Raptor:Grille_F_0"
-        },
-        "9198428443706197043": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_023_Light_0.mesh",
-            "name": "Raptor:SM_Roof_101_SM_Roof_101_dummy_material_0_023_Light_0"
-        },
-        "9198628799677714549": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_012_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SK_Door_FL_101_001_SK_Door_FL_101_dummy_material_0_012_Raptor:INT_cloth_0"
-        },
-        "9634697502431738240": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_019_Light_glass_0.mesh",
-            "name": "Raptor:SM_Light_B_101_SM_Light_B_101_dummy_material_0_019_Light_glass_0"
-        },
-        "9643694951769264331": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SM_Body_101_SM_Body_101_dummy_material_0_018_Logo_D_0.mesh",
-            "name": "Raptor:SM_Body_101_SM_Body_101_dummy_material_0_018_Logo_D_0"
-        },
-        "9700378325071571220": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_011_Cabin_C_0.mesh",
-            "name": "Raptor:SK_Door_BR_101_001_SK_Door_BR_101_dummy_material_0_011_Cabin_C_0"
-        },
-        "9735777671780006595": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_017_Logo_0.mesh",
-            "name": "Raptor:SK_Trunk_101_001_SK_Trunk_101_dummy_material_0_017_Logo_0"
-        },
-        "9928412530802484160": {
-            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_009_Raptor:INT_cloth_0.mesh",
-            "name": "Raptor:SK_Door_BL_101_001_SK_Door_BL_101_dummy_material_0_009_Raptor:INT_cloth_0"
+        "10023495106155088232": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10023495106155088232.mesh",
+            "name": "10023495106155088232"
+        },
+        "1004019748447380658": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1004019748447380658.mesh",
+            "name": "1004019748447380658"
+        },
+        "10065365866176569102": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10065365866176569102.mesh",
+            "name": "10065365866176569102"
+        },
+        "10078448293151390622": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10078448293151390622.mesh",
+            "name": "10078448293151390622"
+        },
+        "10117090845711455744": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10117090845711455744.mesh",
+            "name": "10117090845711455744"
+        },
+        "10145662903898500799": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10145662903898500799.mesh",
+            "name": "10145662903898500799"
+        },
+        "10148557375550452693": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10148557375550452693.mesh",
+            "name": "10148557375550452693"
+        },
+        "10149818719257104038": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10149818719257104038.mesh",
+            "name": "10149818719257104038"
+        },
+        "10249504877784575987": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10249504877784575987.mesh",
+            "name": "10249504877784575987"
+        },
+        "10277641199893054992": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10277641199893054992.mesh",
+            "name": "10277641199893054992"
+        },
+        "10312132640166617079": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10312132640166617079.mesh",
+            "name": "10312132640166617079"
+        },
+        "10340431882562226982": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10340431882562226982.mesh",
+            "name": "10340431882562226982"
+        },
+        "1048958546739824503": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1048958546739824503.mesh",
+            "name": "1048958546739824503"
+        },
+        "10497065722243373252": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10497065722243373252.mesh",
+            "name": "10497065722243373252"
+        },
+        "10524938978443322279": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10524938978443322279.mesh",
+            "name": "10524938978443322279"
+        },
+        "10564104552645291151": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10564104552645291151.mesh",
+            "name": "10564104552645291151"
+        },
+        "10602074650248808456": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10602074650248808456.mesh",
+            "name": "10602074650248808456"
+        },
+        "10621056715316257588": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10621056715316257588.mesh",
+            "name": "10621056715316257588"
+        },
+        "10719236771206368758": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10719236771206368758.mesh",
+            "name": "10719236771206368758"
+        },
+        "10754856676491917090": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10754856676491917090.mesh",
+            "name": "10754856676491917090"
+        },
+        "10826837822848075926": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10826837822848075926.mesh",
+            "name": "10826837822848075926"
+        },
+        "10943490423604338194": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10943490423604338194.mesh",
+            "name": "10943490423604338194"
+        },
+        "10977991538585838496": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10977991538585838496.mesh",
+            "name": "10977991538585838496"
+        },
+        "10995435103907344702": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/10995435103907344702.mesh",
+            "name": "10995435103907344702"
+        },
+        "11067913648817964412": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11067913648817964412.mesh",
+            "name": "11067913648817964412"
+        },
+        "11102843332986365870": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11102843332986365870.mesh",
+            "name": "11102843332986365870"
+        },
+        "11178762586097442984": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11178762586097442984.mesh",
+            "name": "11178762586097442984"
+        },
+        "11181559968944552275": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11181559968944552275.mesh",
+            "name": "11181559968944552275"
+        },
+        "11417288726560919725": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11417288726560919725.mesh",
+            "name": "11417288726560919725"
+        },
+        "11424103056820169325": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11424103056820169325.mesh",
+            "name": "11424103056820169325"
+        },
+        "11453923730818886865": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11453923730818886865.mesh",
+            "name": "11453923730818886865"
+        },
+        "11462951028981568784": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11462951028981568784.mesh",
+            "name": "11462951028981568784"
+        },
+        "11658995091590564154": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11658995091590564154.mesh",
+            "name": "11658995091590564154"
+        },
+        "11708264184942407517": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11708264184942407517.mesh",
+            "name": "11708264184942407517"
+        },
+        "11807493155642847604": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11807493155642847604.mesh",
+            "name": "11807493155642847604"
+        },
+        "11934107541096037627": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11934107541096037627.mesh",
+            "name": "11934107541096037627"
+        },
+        "11985536383718976055": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/11985536383718976055.mesh",
+            "name": "11985536383718976055"
+        },
+        "12031494795539070275": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12031494795539070275.mesh",
+            "name": "12031494795539070275"
+        },
+        "12045691760341731705": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12045691760341731705.mesh",
+            "name": "12045691760341731705"
+        },
+        "12108851772258107020": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12108851772258107020.mesh",
+            "name": "12108851772258107020"
+        },
+        "12184945671616999629": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12184945671616999629.mesh",
+            "name": "12184945671616999629"
+        },
+        "12188762471656239274": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12188762471656239274.mesh",
+            "name": "12188762471656239274"
+        },
+        "12205187032605234610": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12205187032605234610.mesh",
+            "name": "12205187032605234610"
+        },
+        "12219811533410952055": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12219811533410952055.mesh",
+            "name": "12219811533410952055"
+        },
+        "12233972053864049637": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12233972053864049637.mesh",
+            "name": "12233972053864049637"
+        },
+        "12414697157902978473": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12414697157902978473.mesh",
+            "name": "12414697157902978473"
+        },
+        "12416767395630314571": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12416767395630314571.mesh",
+            "name": "12416767395630314571"
+        },
+        "1243378445470794335": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1243378445470794335.mesh",
+            "name": "1243378445470794335"
+        },
+        "1254980221589753957": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1254980221589753957.mesh",
+            "name": "1254980221589753957"
+        },
+        "12619547121025549056": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12619547121025549056.mesh",
+            "name": "12619547121025549056"
+        },
+        "12668003084734704857": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12668003084734704857.mesh",
+            "name": "12668003084734704857"
+        },
+        "12780659693629691447": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12780659693629691447.mesh",
+            "name": "12780659693629691447"
+        },
+        "12784376630712138363": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12784376630712138363.mesh",
+            "name": "12784376630712138363"
+        },
+        "12872101163245973256": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12872101163245973256.mesh",
+            "name": "12872101163245973256"
+        },
+        "12893265208829051984": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12893265208829051984.mesh",
+            "name": "12893265208829051984"
+        },
+        "12964133926444550789": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12964133926444550789.mesh",
+            "name": "12964133926444550789"
+        },
+        "12972122668569726486": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/12972122668569726486.mesh",
+            "name": "12972122668569726486"
+        },
+        "13011109639192674299": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13011109639192674299.mesh",
+            "name": "13011109639192674299"
+        },
+        "13050047246538931645": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13050047246538931645.mesh",
+            "name": "13050047246538931645"
+        },
+        "13061117561730635740": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13061117561730635740.mesh",
+            "name": "13061117561730635740"
+        },
+        "13122079618596278860": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13122079618596278860.mesh",
+            "name": "13122079618596278860"
+        },
+        "13172749726014605548": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13172749726014605548.mesh",
+            "name": "13172749726014605548"
+        },
+        "13257221192255421752": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13257221192255421752.mesh",
+            "name": "13257221192255421752"
+        },
+        "13275417478961448623": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13275417478961448623.mesh",
+            "name": "13275417478961448623"
+        },
+        "13312853107979844464": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13312853107979844464.mesh",
+            "name": "13312853107979844464"
+        },
+        "13433047207583428234": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13433047207583428234.mesh",
+            "name": "13433047207583428234"
+        },
+        "13471270154292857499": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13471270154292857499.mesh",
+            "name": "13471270154292857499"
+        },
+        "13484486730487819962": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13484486730487819962.mesh",
+            "name": "13484486730487819962"
+        },
+        "1361465102050712394": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1361465102050712394.mesh",
+            "name": "1361465102050712394"
+        },
+        "13698751330692810909": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13698751330692810909.mesh",
+            "name": "13698751330692810909"
+        },
+        "13769650050306736228": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13769650050306736228.mesh",
+            "name": "13769650050306736228"
+        },
+        "13812609702135795647": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13812609702135795647.mesh",
+            "name": "13812609702135795647"
+        },
+        "13851927474833379930": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13851927474833379930.mesh",
+            "name": "13851927474833379930"
+        },
+        "13863158234722616134": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13863158234722616134.mesh",
+            "name": "13863158234722616134"
+        },
+        "13868132103067159429": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13868132103067159429.mesh",
+            "name": "13868132103067159429"
+        },
+        "13906070661781465830": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13906070661781465830.mesh",
+            "name": "13906070661781465830"
+        },
+        "13907070550599348277": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13907070550599348277.mesh",
+            "name": "13907070550599348277"
+        },
+        "13941573224422397774": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13941573224422397774.mesh",
+            "name": "13941573224422397774"
+        },
+        "13952178775666694568": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13952178775666694568.mesh",
+            "name": "13952178775666694568"
+        },
+        "13963227720228873820": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13963227720228873820.mesh",
+            "name": "13963227720228873820"
+        },
+        "13988911539300232892": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/13988911539300232892.mesh",
+            "name": "13988911539300232892"
+        },
+        "14028878807096138192": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14028878807096138192.mesh",
+            "name": "14028878807096138192"
+        },
+        "14031911624553495625": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14031911624553495625.mesh",
+            "name": "14031911624553495625"
+        },
+        "14071045559704074175": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14071045559704074175.mesh",
+            "name": "14071045559704074175"
+        },
+        "14102062738900461788": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14102062738900461788.mesh",
+            "name": "14102062738900461788"
+        },
+        "14133898379950555113": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14133898379950555113.mesh",
+            "name": "14133898379950555113"
+        },
+        "14197525645905314514": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14197525645905314514.mesh",
+            "name": "14197525645905314514"
+        },
+        "14201090977378193367": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14201090977378193367.mesh",
+            "name": "14201090977378193367"
+        },
+        "14202761190996245903": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14202761190996245903.mesh",
+            "name": "14202761190996245903"
+        },
+        "14302289222777262505": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14302289222777262505.mesh",
+            "name": "14302289222777262505"
+        },
+        "14375440076236201489": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14375440076236201489.mesh",
+            "name": "14375440076236201489"
+        },
+        "14405115594362781594": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14405115594362781594.mesh",
+            "name": "14405115594362781594"
+        },
+        "14411632778189074856": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14411632778189074856.mesh",
+            "name": "14411632778189074856"
+        },
+        "14475878058624572330": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14475878058624572330.mesh",
+            "name": "14475878058624572330"
+        },
+        "1449384091302722146": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1449384091302722146.mesh",
+            "name": "1449384091302722146"
+        },
+        "14539932949883105264": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14539932949883105264.mesh",
+            "name": "14539932949883105264"
+        },
+        "1477079237867935062": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1477079237867935062.mesh",
+            "name": "1477079237867935062"
+        },
+        "14941447292560120137": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/14941447292560120137.mesh",
+            "name": "14941447292560120137"
+        },
+        "15070712640604822215": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15070712640604822215.mesh",
+            "name": "15070712640604822215"
+        },
+        "15100790508506242456": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15100790508506242456.mesh",
+            "name": "15100790508506242456"
+        },
+        "15127534658858451837": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15127534658858451837.mesh",
+            "name": "15127534658858451837"
+        },
+        "15206305028335217830": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15206305028335217830.mesh",
+            "name": "15206305028335217830"
+        },
+        "15255913914751156313": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15255913914751156313.mesh",
+            "name": "15255913914751156313"
+        },
+        "15303088185805129309": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15303088185805129309.mesh",
+            "name": "15303088185805129309"
+        },
+        "15405928605940417051": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15405928605940417051.mesh",
+            "name": "15405928605940417051"
+        },
+        "15469219502008208424": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15469219502008208424.mesh",
+            "name": "15469219502008208424"
+        },
+        "15510990828051768849": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15510990828051768849.mesh",
+            "name": "15510990828051768849"
+        },
+        "1551443467835575609": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1551443467835575609.mesh",
+            "name": "1551443467835575609"
+        },
+        "15516177768285980548": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15516177768285980548.mesh",
+            "name": "15516177768285980548"
+        },
+        "15522810645644712539": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15522810645644712539.mesh",
+            "name": "15522810645644712539"
+        },
+        "15588186030517133664": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15588186030517133664.mesh",
+            "name": "15588186030517133664"
+        },
+        "1560541791646530247": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1560541791646530247.mesh",
+            "name": "1560541791646530247"
+        },
+        "15608018200780828891": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15608018200780828891.mesh",
+            "name": "15608018200780828891"
+        },
+        "15663975885102576967": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15663975885102576967.mesh",
+            "name": "15663975885102576967"
+        },
+        "15725126766779516562": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15725126766779516562.mesh",
+            "name": "15725126766779516562"
+        },
+        "15808763526457877789": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15808763526457877789.mesh",
+            "name": "15808763526457877789"
+        },
+        "15818733578744361827": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15818733578744361827.mesh",
+            "name": "15818733578744361827"
+        },
+        "1586165182203624448": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1586165182203624448.mesh",
+            "name": "1586165182203624448"
+        },
+        "15894483923422249301": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15894483923422249301.mesh",
+            "name": "15894483923422249301"
+        },
+        "15936562395368685223": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15936562395368685223.mesh",
+            "name": "15936562395368685223"
+        },
+        "15966381041537345185": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/15966381041537345185.mesh",
+            "name": "15966381041537345185"
+        },
+        "16020148295432804377": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16020148295432804377.mesh",
+            "name": "16020148295432804377"
+        },
+        "16035989904693826740": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16035989904693826740.mesh",
+            "name": "16035989904693826740"
+        },
+        "16071897746702280991": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16071897746702280991.mesh",
+            "name": "16071897746702280991"
+        },
+        "16230202775383741618": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16230202775383741618.mesh",
+            "name": "16230202775383741618"
+        },
+        "1625087841157994741": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1625087841157994741.mesh",
+            "name": "1625087841157994741"
+        },
+        "16254235309001248522": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16254235309001248522.mesh",
+            "name": "16254235309001248522"
+        },
+        "16258134816561601767": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16258134816561601767.mesh",
+            "name": "16258134816561601767"
+        },
+        "16385178428984436632": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16385178428984436632.mesh",
+            "name": "16385178428984436632"
+        },
+        "16395348430328456459": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16395348430328456459.mesh",
+            "name": "16395348430328456459"
+        },
+        "16461094509548619678": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16461094509548619678.mesh",
+            "name": "16461094509548619678"
+        },
+        "1648527135996897166": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1648527135996897166.mesh",
+            "name": "1648527135996897166"
+        },
+        "16569996320762287829": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16569996320762287829.mesh",
+            "name": "16569996320762287829"
+        },
+        "16696391377378457347": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16696391377378457347.mesh",
+            "name": "16696391377378457347"
+        },
+        "16797410096692986916": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16797410096692986916.mesh",
+            "name": "16797410096692986916"
+        },
+        "16831776621621924176": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16831776621621924176.mesh",
+            "name": "16831776621621924176"
+        },
+        "16943098709496865884": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/16943098709496865884.mesh",
+            "name": "16943098709496865884"
+        },
+        "17018272041593611174": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17018272041593611174.mesh",
+            "name": "17018272041593611174"
+        },
+        "17148642648051655855": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17148642648051655855.mesh",
+            "name": "17148642648051655855"
+        },
+        "17174942942211690424": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17174942942211690424.mesh",
+            "name": "17174942942211690424"
+        },
+        "17192789505025698702": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17192789505025698702.mesh",
+            "name": "17192789505025698702"
+        },
+        "17210998406952838608": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17210998406952838608.mesh",
+            "name": "17210998406952838608"
+        },
+        "17223546503371898302": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17223546503371898302.mesh",
+            "name": "17223546503371898302"
+        },
+        "17224327645746754876": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17224327645746754876.mesh",
+            "name": "17224327645746754876"
+        },
+        "17247995982415638688": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17247995982415638688.mesh",
+            "name": "17247995982415638688"
+        },
+        "17330030810818315322": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17330030810818315322.mesh",
+            "name": "17330030810818315322"
+        },
+        "17401359848257321213": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17401359848257321213.mesh",
+            "name": "17401359848257321213"
+        },
+        "17480969662385228194": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17480969662385228194.mesh",
+            "name": "17480969662385228194"
+        },
+        "17553108495422559380": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17553108495422559380.mesh",
+            "name": "17553108495422559380"
+        },
+        "17588840850658903224": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17588840850658903224.mesh",
+            "name": "17588840850658903224"
+        },
+        "17806435099998605793": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17806435099998605793.mesh",
+            "name": "17806435099998605793"
+        },
+        "17852406825161240924": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17852406825161240924.mesh",
+            "name": "17852406825161240924"
+        },
+        "17918260085968913456": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17918260085968913456.mesh",
+            "name": "17918260085968913456"
+        },
+        "17953173374685268369": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/17953173374685268369.mesh",
+            "name": "17953173374685268369"
+        },
+        "18285205105221960433": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/18285205105221960433.mesh",
+            "name": "18285205105221960433"
+        },
+        "18320641544905716845": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/18320641544905716845.mesh",
+            "name": "18320641544905716845"
+        },
+        "18339078086282518000": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/18339078086282518000.mesh",
+            "name": "18339078086282518000"
+        },
+        "18355729130778086652": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/18355729130778086652.mesh",
+            "name": "18355729130778086652"
+        },
+        "18362218653468546060": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/18362218653468546060.mesh",
+            "name": "18362218653468546060"
+        },
+        "187638364465437028": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/187638364465437028.mesh",
+            "name": "187638364465437028"
+        },
+        "1965024052133656982": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1965024052133656982.mesh",
+            "name": "1965024052133656982"
+        },
+        "1995525167706425985": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/1995525167706425985.mesh",
+            "name": "1995525167706425985"
+        },
+        "20013852554327840": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/20013852554327840.mesh",
+            "name": "20013852554327840"
+        },
+        "2014311754343450781": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2014311754343450781.mesh",
+            "name": "2014311754343450781"
+        },
+        "2045578026276065115": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2045578026276065115.mesh",
+            "name": "2045578026276065115"
+        },
+        "2118492113984251924": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2118492113984251924.mesh",
+            "name": "2118492113984251924"
+        },
+        "2139471612391153442": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2139471612391153442.mesh",
+            "name": "2139471612391153442"
+        },
+        "2141616972979211010": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2141616972979211010.mesh",
+            "name": "2141616972979211010"
+        },
+        "2248333243058162570": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2248333243058162570.mesh",
+            "name": "2248333243058162570"
+        },
+        "242146879867872420": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/242146879867872420.mesh",
+            "name": "242146879867872420"
+        },
+        "2467522769365521043": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2467522769365521043.mesh",
+            "name": "2467522769365521043"
+        },
+        "2478332866832403358": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2478332866832403358.mesh",
+            "name": "2478332866832403358"
+        },
+        "2507581818770613793": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2507581818770613793.mesh",
+            "name": "2507581818770613793"
+        },
+        "2563582469762247393": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2563582469762247393.mesh",
+            "name": "2563582469762247393"
+        },
+        "2591838577544458916": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2591838577544458916.mesh",
+            "name": "2591838577544458916"
+        },
+        "2634677489311683203": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2634677489311683203.mesh",
+            "name": "2634677489311683203"
+        },
+        "270840684313009598": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/270840684313009598.mesh",
+            "name": "270840684313009598"
+        },
+        "272823791273924036": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/272823791273924036.mesh",
+            "name": "272823791273924036"
+        },
+        "2757885024571951667": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2757885024571951667.mesh",
+            "name": "2757885024571951667"
+        },
+        "290534466811751026": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/290534466811751026.mesh",
+            "name": "290534466811751026"
+        },
+        "299820503625363567": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/299820503625363567.mesh",
+            "name": "299820503625363567"
+        },
+        "2999226589480472838": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/2999226589480472838.mesh",
+            "name": "2999226589480472838"
+        },
+        "3060568473465502773": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3060568473465502773.mesh",
+            "name": "3060568473465502773"
+        },
+        "3082499869728511501": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3082499869728511501.mesh",
+            "name": "3082499869728511501"
+        },
+        "3105779195624063491": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3105779195624063491.mesh",
+            "name": "3105779195624063491"
+        },
+        "3108829203348415215": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3108829203348415215.mesh",
+            "name": "3108829203348415215"
+        },
+        "3127262157820085857": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3127262157820085857.mesh",
+            "name": "3127262157820085857"
+        },
+        "3143290128676838308": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3143290128676838308.mesh",
+            "name": "3143290128676838308"
+        },
+        "3172159725551847314": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3172159725551847314.mesh",
+            "name": "3172159725551847314"
+        },
+        "3261531302343633479": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3261531302343633479.mesh",
+            "name": "3261531302343633479"
+        },
+        "3271266359666595280": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3271266359666595280.mesh",
+            "name": "3271266359666595280"
+        },
+        "3359992004143782740": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3359992004143782740.mesh",
+            "name": "3359992004143782740"
+        },
+        "3449456122135743126": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3449456122135743126.mesh",
+            "name": "3449456122135743126"
+        },
+        "3507660395365652020": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3507660395365652020.mesh",
+            "name": "3507660395365652020"
+        },
+        "3556248475224477100": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3556248475224477100.mesh",
+            "name": "3556248475224477100"
+        },
+        "3574381700473437506": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3574381700473437506.mesh",
+            "name": "3574381700473437506"
+        },
+        "3588711749764918266": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3588711749764918266.mesh",
+            "name": "3588711749764918266"
+        },
+        "3624670961565890401": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3624670961565890401.mesh",
+            "name": "3624670961565890401"
+        },
+        "3672001452799064715": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/3672001452799064715.mesh",
+            "name": "3672001452799064715"
+        },
+        "4136019276709409783": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4136019276709409783.mesh",
+            "name": "4136019276709409783"
+        },
+        "415950946740728041": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/415950946740728041.mesh",
+            "name": "415950946740728041"
+        },
+        "4192781469938797941": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4192781469938797941.mesh",
+            "name": "4192781469938797941"
+        },
+        "4207056082664709636": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4207056082664709636.mesh",
+            "name": "4207056082664709636"
+        },
+        "4233931720914936497": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4233931720914936497.mesh",
+            "name": "4233931720914936497"
+        },
+        "4256533997801019279": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4256533997801019279.mesh",
+            "name": "4256533997801019279"
+        },
+        "4321609380746843002": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4321609380746843002.mesh",
+            "name": "4321609380746843002"
+        },
+        "4334170729873070387": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4334170729873070387.mesh",
+            "name": "4334170729873070387"
+        },
+        "4577318005431856865": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4577318005431856865.mesh",
+            "name": "4577318005431856865"
+        },
+        "4654370426847615753": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4654370426847615753.mesh",
+            "name": "4654370426847615753"
+        },
+        "4718135146624177935": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4718135146624177935.mesh",
+            "name": "4718135146624177935"
+        },
+        "474851374064109628": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/474851374064109628.mesh",
+            "name": "474851374064109628"
+        },
+        "4901766130038915179": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4901766130038915179.mesh",
+            "name": "4901766130038915179"
+        },
+        "4964686561941286302": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4964686561941286302.mesh",
+            "name": "4964686561941286302"
+        },
+        "4980566462355798188": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/4980566462355798188.mesh",
+            "name": "4980566462355798188"
+        },
+        "5039425228890096847": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5039425228890096847.mesh",
+            "name": "5039425228890096847"
+        },
+        "5067893459994731130": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5067893459994731130.mesh",
+            "name": "5067893459994731130"
+        },
+        "5147277509856255422": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5147277509856255422.mesh",
+            "name": "5147277509856255422"
+        },
+        "5256636455039926422": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5256636455039926422.mesh",
+            "name": "5256636455039926422"
+        },
+        "5259516134448348864": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5259516134448348864.mesh",
+            "name": "5259516134448348864"
+        },
+        "5276378880173689449": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5276378880173689449.mesh",
+            "name": "5276378880173689449"
+        },
+        "5330243232911581103": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5330243232911581103.mesh",
+            "name": "5330243232911581103"
+        },
+        "5421285360190754103": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5421285360190754103.mesh",
+            "name": "5421285360190754103"
+        },
+        "5499215020091411011": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5499215020091411011.mesh",
+            "name": "5499215020091411011"
+        },
+        "5516780531261349934": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5516780531261349934.mesh",
+            "name": "5516780531261349934"
+        },
+        "5547828438050832500": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5547828438050832500.mesh",
+            "name": "5547828438050832500"
+        },
+        "5553733808819935724": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5553733808819935724.mesh",
+            "name": "5553733808819935724"
+        },
+        "5573829783251490810": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5573829783251490810.mesh",
+            "name": "5573829783251490810"
+        },
+        "5672793874252396878": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5672793874252396878.mesh",
+            "name": "5672793874252396878"
+        },
+        "5687269654719804951": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5687269654719804951.mesh",
+            "name": "5687269654719804951"
+        },
+        "5724387204913403731": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5724387204913403731.mesh",
+            "name": "5724387204913403731"
+        },
+        "5902401949518382076": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5902401949518382076.mesh",
+            "name": "5902401949518382076"
+        },
+        "5923274112720256460": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/5923274112720256460.mesh",
+            "name": "5923274112720256460"
+        },
+        "6007782123898998048": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6007782123898998048.mesh",
+            "name": "6007782123898998048"
+        },
+        "6096789883387917358": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6096789883387917358.mesh",
+            "name": "6096789883387917358"
+        },
+        "6128553992908984927": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6128553992908984927.mesh",
+            "name": "6128553992908984927"
+        },
+        "6234959801496543123": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6234959801496543123.mesh",
+            "name": "6234959801496543123"
+        },
+        "6280922285416838026": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6280922285416838026.mesh",
+            "name": "6280922285416838026"
+        },
+        "635948696124798529": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/635948696124798529.mesh",
+            "name": "635948696124798529"
+        },
+        "6434304785133625601": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6434304785133625601.mesh",
+            "name": "6434304785133625601"
+        },
+        "6463242219566472820": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6463242219566472820.mesh",
+            "name": "6463242219566472820"
+        },
+        "6545742517363984862": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6545742517363984862.mesh",
+            "name": "6545742517363984862"
+        },
+        "6574078750098229238": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6574078750098229238.mesh",
+            "name": "6574078750098229238"
+        },
+        "6588999202541081173": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6588999202541081173.mesh",
+            "name": "6588999202541081173"
+        },
+        "6614083201517641498": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6614083201517641498.mesh",
+            "name": "6614083201517641498"
+        },
+        "6780579633656234230": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6780579633656234230.mesh",
+            "name": "6780579633656234230"
+        },
+        "6834653722719189680": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6834653722719189680.mesh",
+            "name": "6834653722719189680"
+        },
+        "6933592506558173347": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/6933592506558173347.mesh",
+            "name": "6933592506558173347"
+        },
+        "699458742816821034": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/699458742816821034.mesh",
+            "name": "699458742816821034"
+        },
+        "7058277445752137692": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7058277445752137692.mesh",
+            "name": "7058277445752137692"
+        },
+        "7205139218684219463": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7205139218684219463.mesh",
+            "name": "7205139218684219463"
+        },
+        "7223523515084588750": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7223523515084588750.mesh",
+            "name": "7223523515084588750"
+        },
+        "7251941217589904781": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7251941217589904781.mesh",
+            "name": "7251941217589904781"
+        },
+        "7287544925183963228": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7287544925183963228.mesh",
+            "name": "7287544925183963228"
+        },
+        "7290722002177862849": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7290722002177862849.mesh",
+            "name": "7290722002177862849"
+        },
+        "7324676073034193527": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7324676073034193527.mesh",
+            "name": "7324676073034193527"
+        },
+        "7359658498493017355": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7359658498493017355.mesh",
+            "name": "7359658498493017355"
+        },
+        "7546915181314075770": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7546915181314075770.mesh",
+            "name": "7546915181314075770"
+        },
+        "7560207284391175486": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7560207284391175486.mesh",
+            "name": "7560207284391175486"
+        },
+        "7605201801452577786": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7605201801452577786.mesh",
+            "name": "7605201801452577786"
+        },
+        "7641002899595999169": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7641002899595999169.mesh",
+            "name": "7641002899595999169"
+        },
+        "7691245014729464992": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7691245014729464992.mesh",
+            "name": "7691245014729464992"
+        },
+        "7770903201227537173": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7770903201227537173.mesh",
+            "name": "7770903201227537173"
+        },
+        "7810357363705689166": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7810357363705689166.mesh",
+            "name": "7810357363705689166"
+        },
+        "7857619171553972495": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/7857619171553972495.mesh",
+            "name": "7857619171553972495"
+        },
+        "8031655283763331729": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8031655283763331729.mesh",
+            "name": "8031655283763331729"
+        },
+        "809824230312510603": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/809824230312510603.mesh",
+            "name": "809824230312510603"
+        },
+        "8127586027405576004": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8127586027405576004.mesh",
+            "name": "8127586027405576004"
+        },
+        "8130866732528578761": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8130866732528578761.mesh",
+            "name": "8130866732528578761"
+        },
+        "8160917184709137604": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8160917184709137604.mesh",
+            "name": "8160917184709137604"
+        },
+        "8196141026272521962": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8196141026272521962.mesh",
+            "name": "8196141026272521962"
+        },
+        "8216466728921308866": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8216466728921308866.mesh",
+            "name": "8216466728921308866"
+        },
+        "834699067795944944": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/834699067795944944.mesh",
+            "name": "834699067795944944"
+        },
+        "8375718340875897421": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8375718340875897421.mesh",
+            "name": "8375718340875897421"
+        },
+        "8418079733581945285": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8418079733581945285.mesh",
+            "name": "8418079733581945285"
+        },
+        "8421129021778406404": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8421129021778406404.mesh",
+            "name": "8421129021778406404"
+        },
+        "8596122692993726783": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8596122692993726783.mesh",
+            "name": "8596122692993726783"
+        },
+        "8640272503110341389": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8640272503110341389.mesh",
+            "name": "8640272503110341389"
+        },
+        "8696641520360977808": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8696641520360977808.mesh",
+            "name": "8696641520360977808"
+        },
+        "8699659556342746202": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8699659556342746202.mesh",
+            "name": "8699659556342746202"
+        },
+        "8705286017550969256": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8705286017550969256.mesh",
+            "name": "8705286017550969256"
+        },
+        "8798086760427841055": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8798086760427841055.mesh",
+            "name": "8798086760427841055"
+        },
+        "8824825263735319709": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8824825263735319709.mesh",
+            "name": "8824825263735319709"
+        },
+        "8830668870567423062": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8830668870567423062.mesh",
+            "name": "8830668870567423062"
+        },
+        "8848887046115322676": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8848887046115322676.mesh",
+            "name": "8848887046115322676"
+        },
+        "8938489657680668042": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8938489657680668042.mesh",
+            "name": "8938489657680668042"
+        },
+        "8940748740313201721": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8940748740313201721.mesh",
+            "name": "8940748740313201721"
+        },
+        "8981051995060770752": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/8981051995060770752.mesh",
+            "name": "8981051995060770752"
+        },
+        "9015521315925272701": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9015521315925272701.mesh",
+            "name": "9015521315925272701"
+        },
+        "904288260684901544": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/904288260684901544.mesh",
+            "name": "904288260684901544"
+        },
+        "9106793826787091458": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9106793826787091458.mesh",
+            "name": "9106793826787091458"
+        },
+        "9161673086322214159": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9161673086322214159.mesh",
+            "name": "9161673086322214159"
+        },
+        "9217583360829919379": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9217583360829919379.mesh",
+            "name": "9217583360829919379"
+        },
+        "9244988274109034012": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9244988274109034012.mesh",
+            "name": "9244988274109034012"
+        },
+        "934872981239561463": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/934872981239561463.mesh",
+            "name": "934872981239561463"
+        },
+        "9405144029774131652": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9405144029774131652.mesh",
+            "name": "9405144029774131652"
+        },
+        "9414133414789820787": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9414133414789820787.mesh",
+            "name": "9414133414789820787"
+        },
+        "9452217488050943526": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9452217488050943526.mesh",
+            "name": "9452217488050943526"
+        },
+        "9479124265940617543": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9479124265940617543.mesh",
+            "name": "9479124265940617543"
+        },
+        "958215915211650241": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/958215915211650241.mesh",
+            "name": "958215915211650241"
+        },
+        "9721276445039795592": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9721276445039795592.mesh",
+            "name": "9721276445039795592"
+        },
+        "9801985676596000253": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9801985676596000253.mesh",
+            "name": "9801985676596000253"
+        },
+        "9875857259222416916": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/meshes/9875857259222416916.mesh",
+            "name": "9875857259222416916"
         }
     },
     "models": {
-        "7818367221747144573": {
+        "1059164606400606881": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/models/porsche_turbo.model",
+            "file_extension": ".gltf",
+            "file_name": "scene.gltf",
+            "file_path": "/home/pointerlost/Real/engine/assets/sources/models/porsche_turbo/scene.gltf",
+            "file_stem": "scene",
+            "name": "porsche_turbo"
+        },
+        "12011247678213289316": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/models/city_road.model",
+            "file_extension": ".gltf",
+            "file_name": "scene.gltf",
+            "file_path": "/home/pointerlost/Real/engine/assets/sources/models/city_road/scene.gltf",
+            "file_stem": "scene",
+            "name": "city_road"
+        },
+        "4292542825799875590": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/models/mountain_road.model",
+            "file_extension": ".gltf",
+            "file_name": "scene.gltf",
+            "file_path": "/home/pointerlost/Real/engine/assets/sources/models/mountain_road/scene.gltf",
+            "file_stem": "scene",
+            "name": "mountain_road"
+        },
+        "4801036550516172195": {
+            "binary": "/home/pointerlost/Real/engine/assets/runtime/models/island_tree.model",
+            "file_extension": ".gltf",
+            "file_name": "island_tree_02_4k.gltf",
+            "file_path": "/home/pointerlost/Real/engine/assets/sources/models/island_tree/island_tree_02_4k.gltf",
+            "file_stem": "island_tree_02_4k",
+            "name": "island_tree"
+        },
+        "9540023115651965661": {
             "binary": "/home/pointerlost/Real/engine/assets/runtime/models/Ford_raptor.model",
             "file_extension": ".gltf",
             "file_name": "scene.gltf",
@@ -1070,175 +2044,23 @@
         }
     },
     "textures": {
-        "1000121439890543733": {
+        "10148256744773777233": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_RaptorMETAL_ENG_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorMETAL_ENG_ALB.dds",
-            "stem": "Ford_raptor_RaptorMETAL_ENG_ALB",
-            "type": "ALB"
-        },
-        "10103464125387948908": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_tire_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_tire_ALB.dds",
-            "stem": "Ford_raptor_tire_ALB",
-            "type": "ALB"
-        },
-        "10329789631495649398": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_material_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_material_NRM.dds",
-            "stem": "Ford_raptor_material_NRM",
+            "name": "city_road_ROAD_MARKINGS_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ROAD_MARKINGS_NRM.dds",
+            "stem": "city_road_ROAD_MARKINGS_NRM",
             "type": "NRM"
         },
-        "10528172464201738170": {
+        "10290111033360697086": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Light_EMISSIVE.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_EMISSIVE.dds",
-            "stem": "Ford_raptor_Light_EMISSIVE",
-            "type": "EMISSIVE"
-        },
-        "10801017725001722448": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Marble009_HEIGHT.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_HEIGHT.dds",
-            "stem": "Marble009_HEIGHT",
-            "type": "HEIGHT"
-        },
-        "10817043865502620929": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Light_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_ALB.dds",
-            "stem": "Ford_raptor_Light_ALB",
+            "name": "porsche_turbo_930_rim_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_rim_ALB.dds",
+            "stem": "porsche_turbo_930_rim_ALB",
             "type": "ALB"
         },
-        "10841859879074473789": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_RaptorGrille_F_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorGrille_F_ALB.dds",
-            "stem": "Ford_raptor_RaptorGrille_F_ALB",
-            "type": "ALB"
-        },
-        "11698663747059626553": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Caarbon_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Caarbon_NRM.dds",
-            "stem": "Ford_raptor_Caarbon_NRM",
-            "type": "NRM"
-        },
-        "11913197308493808409": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_material_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_material_ALB.dds",
-            "stem": "Ford_raptor_material_ALB",
-            "type": "ALB"
-        },
-        "12026556929178924683": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Suspension_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Suspension_ALB.dds",
-            "stem": "Ford_raptor_Suspension_ALB",
-            "type": "ALB"
-        },
-        "12502777805927804350": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Logo_D_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_D_ALB.dds",
-            "stem": "Ford_raptor_Logo_D_ALB",
-            "type": "ALB"
-        },
-        "13375876403986505155": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Rim_T_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Rim_T_ALB.dds",
-            "stem": "Ford_raptor_Rim_T_ALB",
-            "type": "ALB"
-        },
-        "13441801789215296681": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_tire_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_tire_NRM.dds",
-            "stem": "Ford_raptor_tire_NRM",
-            "type": "NRM"
-        },
-        "15516767866281858190": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_costuras_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_costuras_NRM.dds",
-            "stem": "Ford_raptor_costuras_NRM",
-            "type": "NRM"
-        },
-        "15678741856414765111": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Dashb_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Dashb_ALB.dds",
-            "stem": "Ford_raptor_Dashb_ALB",
-            "type": "ALB"
-        },
-        "16165411882446807859": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_RaptorPaaint_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorPaaint_ALB.dds",
-            "stem": "Ford_raptor_RaptorPaaint_ALB",
-            "type": "ALB"
-        },
-        "16385122493339801712": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Suspension_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Suspension_NRM.dds",
-            "stem": "Ford_raptor_Suspension_NRM",
-            "type": "NRM"
-        },
-        "2006704579435466199": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Exhaust_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Exhaust_ALB.dds",
-            "stem": "Ford_raptor_Exhaust_ALB",
-            "type": "ALB"
-        },
-        "2566346126218770794": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Light_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_NRM.dds",
-            "stem": "Ford_raptor_Light_NRM",
-            "type": "NRM"
-        },
-        "2713264958202398793": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Marble009_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_ALB.dds",
-            "stem": "Marble009_ALB",
-            "type": "ALB"
-        },
-        "2953174453168281056": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Cabin_C_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Cabin_C_ALB.dds",
-            "stem": "Ford_raptor_Cabin_C_ALB",
-            "type": "ALB"
-        },
-        "3403728293699151334": {
+        "10295924244880685354": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_RaptorMETAL_ENG_NRM.dds",
@@ -1246,7 +2068,47 @@
             "stem": "Ford_raptor_RaptorMETAL_ENG_NRM",
             "type": "NRM"
         },
-        "3946511567221262258": {
+        "10315132900425876973": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_coat_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_coat_NRM.dds",
+            "stem": "porsche_turbo_coat_NRM",
+            "type": "NRM"
+        },
+        "10631224318076539464": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_branches_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_branches_NRM.dds",
+            "stem": "island_tree_island_tree_02_branches_NRM",
+            "type": "NRM"
+        },
+        "11135963925080703447": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_paint_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_paint_ALB.dds",
+            "stem": "porsche_turbo_paint_ALB",
+            "type": "ALB"
+        },
+        "11770594038657810879": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Suspension_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Suspension_ALB.dds",
+            "stem": "Ford_raptor_Suspension_ALB",
+            "type": "ALB"
+        },
+        "12021914946342025805": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorPaaint_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorPaaint_ALB.dds",
+            "stem": "Ford_raptor_RaptorPaaint_ALB",
+            "type": "ALB"
+        },
+        "12036303526373560773": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_Logo_NRM.dds",
@@ -1254,79 +2116,31 @@
             "stem": "Ford_raptor_Logo_NRM",
             "type": "NRM"
         },
-        "4117523518488821757": {
+        "12086806958242014511": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Leather_Int_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Leather_Int_ALB.dds",
-            "stem": "Ford_raptor_Leather_Int_ALB",
+            "name": "Marble009_HEIGHT.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_HEIGHT.dds",
+            "stem": "Marble009_HEIGHT",
+            "type": "HEIGHT"
+        },
+        "12124412967773918885": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_ALB.dds",
+            "stem": "Ford_raptor_Light_ALB",
             "type": "ALB"
         },
-        "4526500986050027882": {
+        "12320691719335262291": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Breaks_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Breaks_ALB.dds",
-            "stem": "Ford_raptor_Breaks_ALB",
+            "name": "mountain_road_material_5_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/mountain_road_material_5_ALB.dds",
+            "stem": "mountain_road_material_5_ALB",
             "type": "ALB"
         },
-        "4591269750752824478": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Raptorgrid_a_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_a_ALB.dds",
-            "stem": "Ford_raptor_Raptorgrid_a_ALB",
-            "type": "ALB"
-        },
-        "4639336462390816514": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Caarbon_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Caarbon_ALB.dds",
-            "stem": "Ford_raptor_Caarbon_ALB",
-            "type": "ALB"
-        },
-        "4701175731559532025": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Int_T_EMISSIVE.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Int_T_EMISSIVE.dds",
-            "stem": "Ford_raptor_Int_T_EMISSIVE",
-            "type": "EMISSIVE"
-        },
-        "4974820852112148839": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Raptorgrid_a_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_a_NRM.dds",
-            "stem": "Ford_raptor_Raptorgrid_a_NRM",
-            "type": "NRM"
-        },
-        "5711753358086171543": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Raptorgrid_B_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_B_ALB.dds",
-            "stem": "Ford_raptor_Raptorgrid_B_ALB",
-            "type": "ALB"
-        },
-        "599001126592410965": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Breaks_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Breaks_NRM.dds",
-            "stem": "Ford_raptor_Breaks_NRM",
-            "type": "NRM"
-        },
-        "6165895958640216136": {
-            "extension": ".dds",
-            "image_format_state": "compressed",
-            "name": "Ford_raptor_Logo_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_ALB.dds",
-            "stem": "Ford_raptor_Logo_ALB",
-            "type": "ALB"
-        },
-        "6328337263093145334": {
+        "12324219460775464979": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_Cabin_C_NRM.dds",
@@ -1334,23 +2148,87 @@
             "stem": "Ford_raptor_Cabin_C_NRM",
             "type": "NRM"
         },
-        "6453341931087808503": {
+        "12325672919436244701": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_RaptorENG_T_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorENG_T_ALB.dds",
-            "stem": "Ford_raptor_RaptorENG_T_ALB",
+            "name": "porsche_turbo_930_lights_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_lights_ALB.dds",
+            "stem": "porsche_turbo_930_lights_ALB",
             "type": "ALB"
         },
-        "715757259010927715": {
+        "12466424891580696079": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Raptorgrid_B_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_B_NRM.dds",
-            "stem": "Ford_raptor_Raptorgrid_B_NRM",
+            "name": "Ford_raptor_material_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_material_ALB.dds",
+            "stem": "Ford_raptor_material_ALB",
+            "type": "ALB"
+        },
+        "12618738965317799541": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Exhaust_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Exhaust_ALB.dds",
+            "stem": "Ford_raptor_Exhaust_ALB",
+            "type": "ALB"
+        },
+        "12931306896551472666": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_a_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_a_ALB.dds",
+            "stem": "Ford_raptor_Raptorgrid_a_ALB",
+            "type": "ALB"
+        },
+        "12944183022023707946": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_material_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_material_NRM.dds",
+            "stem": "Ford_raptor_material_NRM",
             "type": "NRM"
         },
-        "7307750754864714186": {
+        "13020602178614436300": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_ROAD_MARKINGS_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ROAD_MARKINGS_ALB.dds",
+            "stem": "city_road_ROAD_MARKINGS_ALB",
+            "type": "ALB"
+        },
+        "13282527877532491077": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_BIKE_LANES_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_BIKE_LANES_ALB.dds",
+            "stem": "city_road_BIKE_LANES_ALB",
+            "type": "ALB"
+        },
+        "13545208167267069009": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_D_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_D_ALB.dds",
+            "stem": "Ford_raptor_Logo_D_ALB",
+            "type": "ALB"
+        },
+        "137033223504808553": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_ROAD_WORNED_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ROAD_WORNED_ALB.dds",
+            "stem": "city_road_ROAD_WORNED_ALB",
+            "type": "ALB"
+        },
+        "13731231078489194079": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Caarbon_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Caarbon_ALB.dds",
+            "stem": "Ford_raptor_Caarbon_ALB",
+            "type": "ALB"
+        },
+        "13978705377402890103": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_Dashb_EMISSIVE.dds",
@@ -1358,31 +2236,31 @@
             "stem": "Ford_raptor_Dashb_EMISSIVE",
             "type": "EMISSIVE"
         },
-        "7473642321833609379": {
+        "14044898663414988428": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Marble009_ORM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_ORM.dds",
-            "stem": "Marble009_ORM",
-            "type": "ORM"
+            "name": "city_road_ROAD_WEAR_TRANSPARENT_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ROAD_WEAR_TRANSPARENT_ALB.dds",
+            "stem": "city_road_ROAD_WEAR_TRANSPARENT_ALB",
+            "type": "ALB"
         },
-        "7764306124435588893": {
+        "14086360596408599336": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Logo_D_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_D_NRM.dds",
-            "stem": "Ford_raptor_Logo_D_NRM",
-            "type": "NRM"
+            "name": "porsche_turbo_930_tire_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_tire_ALB.dds",
+            "stem": "porsche_turbo_930_tire_ALB",
+            "type": "ALB"
         },
-        "8066449295965396033": {
+        "14122727406837890609": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_Int_T_NRM.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Int_T_NRM.dds",
-            "stem": "Ford_raptor_Int_T_NRM",
-            "type": "NRM"
+            "name": "Ford_raptor_Dashb_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Dashb_ALB.dds",
+            "stem": "Ford_raptor_Dashb_ALB",
+            "type": "ALB"
         },
-        "8188057004437214038": {
+        "14925222764531804331": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_Int_T_ALB.dds",
@@ -1390,15 +2268,31 @@
             "stem": "Ford_raptor_Int_T_ALB",
             "type": "ALB"
         },
-        "8206910139510679119": {
+        "15210085788182642792": {
             "extension": ".dds",
             "image_format_state": "compressed",
-            "name": "Ford_raptor_costuras_ALB.dds",
-            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_costuras_ALB.dds",
-            "stem": "Ford_raptor_costuras_ALB",
+            "name": "Ford_raptor_Logo_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_ALB.dds",
+            "stem": "Ford_raptor_Logo_ALB",
             "type": "ALB"
         },
-        "8339018871153588724": {
+        "15332063671041591913": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_branches_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_branches_ALB.dds",
+            "stem": "island_tree_island_tree_02_branches_ALB",
+            "type": "ALB"
+        },
+        "15410687642990753776": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_plate_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_plate_ALB.dds",
+            "stem": "porsche_turbo_plate_ALB",
+            "type": "ALB"
+        },
+        "15629010407066023598": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Marble009_NRM.dds",
@@ -1406,13 +2300,389 @@
             "stem": "Marble009_NRM",
             "type": "NRM"
         },
-        "9647631886245763813": {
+        "1568673430975939773": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_ALB.dds",
+            "stem": "island_tree_island_tree_02_ALB",
+            "type": "ALB"
+        },
+        "15792524683938982078": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Int_T_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Int_T_NRM.dds",
+            "stem": "Ford_raptor_Int_T_NRM",
+            "type": "NRM"
+        },
+        "16261589911498661010": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Breaks_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Breaks_ALB.dds",
+            "stem": "Ford_raptor_Breaks_ALB",
+            "type": "ALB"
+        },
+        "16549138639014104258": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_NRM.dds",
+            "stem": "island_tree_island_tree_02_NRM",
+            "type": "NRM"
+        },
+        "17186228200125445836": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Rim_T_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Rim_T_ALB.dds",
+            "stem": "Ford_raptor_Rim_T_ALB",
+            "type": "ALB"
+        },
+        "17263881438000273844": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_tire_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_tire_NRM.dds",
+            "stem": "Ford_raptor_tire_NRM",
+            "type": "NRM"
+        },
+        "17401519343499267917": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_tire_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_tire_NRM.dds",
+            "stem": "porsche_turbo_930_tire_NRM",
+            "type": "NRM"
+        },
+        "17793111375057174893": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_B_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_B_ALB.dds",
+            "stem": "Ford_raptor_Raptorgrid_B_ALB",
+            "type": "ALB"
+        },
+        "1779846608590487941": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_ALB.dds",
+            "stem": "Marble009_ALB",
+            "type": "ALB"
+        },
+        "17911514857449026667": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_glass_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_glass_ALB.dds",
+            "stem": "porsche_turbo_glass_ALB",
+            "type": "ALB"
+        },
+        "2028326121095368579": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Marble009_ORM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Marble009_ORM.dds",
+            "stem": "Marble009_ORM",
+            "type": "ORM"
+        },
+        "2263657371353449860": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_leaves_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_leaves_NRM.dds",
+            "stem": "island_tree_island_tree_02_leaves_NRM",
+            "type": "NRM"
+        },
+        "2382873516208592515": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_rim_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_rim_NRM.dds",
+            "stem": "porsche_turbo_930_rim_NRM",
+            "type": "NRM"
+        },
+        "2445492539284425696": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_GENERIC_SIDEWALKS_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_GENERIC_SIDEWALKS_ALB.dds",
+            "stem": "city_road_GENERIC_SIDEWALKS_ALB",
+            "type": "ALB"
+        },
+        "2607373261829173308": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_plate_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_plate_NRM.dds",
+            "stem": "porsche_turbo_plate_NRM",
+            "type": "NRM"
+        },
+        "2653648810596631636": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorENG_T_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorENG_T_ALB.dds",
+            "stem": "Ford_raptor_RaptorENG_T_ALB",
+            "type": "ALB"
+        },
+        "3072858867284857658": {
             "extension": ".dds",
             "image_format_state": "compressed",
             "name": "Ford_raptor_RaptorGrille_F_NRM.dds",
             "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorGrille_F_NRM.dds",
             "stem": "Ford_raptor_RaptorGrille_F_NRM",
             "type": "NRM"
+        },
+        "342552040257512834": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_tire_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_tire_ALB.dds",
+            "stem": "Ford_raptor_tire_ALB",
+            "type": "ALB"
+        },
+        "3425897284868958105": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_NRM.dds",
+            "stem": "Ford_raptor_Light_NRM",
+            "type": "NRM"
+        },
+        "3485149677532950359": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_coat_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_coat_ALB.dds",
+            "stem": "porsche_turbo_coat_ALB",
+            "type": "ALB"
+        },
+        "3516052778397464351": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Logo_D_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Logo_D_NRM.dds",
+            "stem": "Ford_raptor_Logo_D_NRM",
+            "type": "NRM"
+        },
+        "3658107278055708402": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Suspension_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Suspension_NRM.dds",
+            "stem": "Ford_raptor_Suspension_NRM",
+            "type": "NRM"
+        },
+        "4247197824073665432": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Caarbon_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Caarbon_NRM.dds",
+            "stem": "Ford_raptor_Caarbon_NRM",
+            "type": "NRM"
+        },
+        "4258873486817358889": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Leather_Int_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Leather_Int_ALB.dds",
+            "stem": "Ford_raptor_Leather_Int_ALB",
+            "type": "ALB"
+        },
+        "4639810649653389176": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Breaks_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Breaks_NRM.dds",
+            "stem": "Ford_raptor_Breaks_NRM",
+            "type": "NRM"
+        },
+        "5096089896018192026": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Light_EMISSIVE.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Light_EMISSIVE.dds",
+            "stem": "Ford_raptor_Light_EMISSIVE",
+            "type": "EMISSIVE"
+        },
+        "5333506321681735691": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Int_T_EMISSIVE.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Int_T_EMISSIVE.dds",
+            "stem": "Ford_raptor_Int_T_EMISSIVE",
+            "type": "EMISSIVE"
+        },
+        "5689150940691485229": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_stickers_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_stickers_ALB.dds",
+            "stem": "porsche_turbo_930_stickers_ALB",
+            "type": "ALB"
+        },
+        "5981695280079728535": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_a_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_a_NRM.dds",
+            "stem": "Ford_raptor_Raptorgrid_a_NRM",
+            "type": "NRM"
+        },
+        "619227040623440120": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_OLD_SIDEWALK_TRIMSHEET_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_OLD_SIDEWALK_TRIMSHEET_NRM.dds",
+            "stem": "city_road_OLD_SIDEWALK_TRIMSHEET_NRM",
+            "type": "NRM"
+        },
+        "6208985329418793407": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Raptorgrid_B_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Raptorgrid_B_NRM.dds",
+            "stem": "Ford_raptor_Raptorgrid_B_NRM",
+            "type": "NRM"
+        },
+        "6326505405665304302": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_GENERIC_SIDEWALKS_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_GENERIC_SIDEWALKS_NRM.dds",
+            "stem": "city_road_GENERIC_SIDEWALKS_NRM",
+            "type": "NRM"
+        },
+        "6334755290638148008": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_material_0_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_material_0_ALB.dds",
+            "stem": "porsche_turbo_material_0_ALB",
+            "type": "ALB"
+        },
+        "635645017312134186": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_GRASS_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_GRASS_ALB.dds",
+            "stem": "city_road_GRASS_ALB",
+            "type": "ALB"
+        },
+        "6521356279414614711": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_wunderbaum_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_wunderbaum_ALB.dds",
+            "stem": "porsche_turbo_930_wunderbaum_ALB",
+            "type": "ALB"
+        },
+        "6679144457219018438": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "island_tree_island_tree_02_leaves_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/island_tree_island_tree_02_leaves_ALB.dds",
+            "stem": "island_tree_island_tree_02_leaves_ALB",
+            "type": "ALB"
+        },
+        "6679864625811766122": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_Cabin_C_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_Cabin_C_ALB.dds",
+            "stem": "Ford_raptor_Cabin_C_ALB",
+            "type": "ALB"
+        },
+        "8210299362835541861": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_lights_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_lights_NRM.dds",
+            "stem": "porsche_turbo_930_lights_NRM",
+            "type": "NRM"
+        },
+        "837698722580227323": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_chromes_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_chromes_ALB.dds",
+            "stem": "porsche_turbo_930_chromes_ALB",
+            "type": "ALB"
+        },
+        "8843013665977395311": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorMETAL_ENG_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorMETAL_ENG_ALB.dds",
+            "stem": "Ford_raptor_RaptorMETAL_ENG_ALB",
+            "type": "ALB"
+        },
+        "8848103986048021710": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_ASPHALT_BARE_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ASPHALT_BARE_ALB.dds",
+            "stem": "city_road_ASPHALT_BARE_ALB",
+            "type": "ALB"
+        },
+        "8888781564031422972": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_ASPHALT_BARE_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ASPHALT_BARE_NRM.dds",
+            "stem": "city_road_ASPHALT_BARE_NRM",
+            "type": "NRM"
+        },
+        "9101767168349938262": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_costuras_NRM.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_costuras_NRM.dds",
+            "stem": "Ford_raptor_costuras_NRM",
+            "type": "NRM"
+        },
+        "921815435122832474": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_ROAD_NEW_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_ROAD_NEW_ALB.dds",
+            "stem": "city_road_ROAD_NEW_ALB",
+            "type": "ALB"
+        },
+        "949467842633401818": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "porsche_turbo_930_plastics_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/porsche_turbo_930_plastics_ALB.dds",
+            "stem": "porsche_turbo_930_plastics_ALB",
+            "type": "ALB"
+        },
+        "9566891395731142511": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_RaptorGrille_F_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_RaptorGrille_F_ALB.dds",
+            "stem": "Ford_raptor_RaptorGrille_F_ALB",
+            "type": "ALB"
+        },
+        "9682553535839651936": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "city_road_OLD_SIDEWALK_TRIMSHEET_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/city_road_OLD_SIDEWALK_TRIMSHEET_ALB.dds",
+            "stem": "city_road_OLD_SIDEWALK_TRIMSHEET_ALB",
+            "type": "ALB"
+        },
+        "98757137689020807": {
+            "extension": ".dds",
+            "image_format_state": "compressed",
+            "name": "Ford_raptor_costuras_ALB.dds",
+            "path": "/home/pointerlost/Real/engine/assets/textures/compressed/Ford_raptor_costuras_ALB.dds",
+            "stem": "Ford_raptor_costuras_ALB",
+            "type": "ALB"
         }
     }
 }

@@ -53,11 +53,13 @@ namespace Real {
         }
 
         for (const auto& folder : modelFolders) {
+            // Clear and rebuild texture index for this model folder
             m_TextureIndex.clear();
             std::vector<std::string> modelsPath;
             const auto& modelName = folder.filename().string();
 
             for (const auto& entry : std_fs::recursive_directory_iterator(folder)) {
+
                 if (entry.is_regular_file() && IsModelFile(entry.path())) {
                     m_CurrentDirectory = entry.path().parent_path().string();
                     modelsPath.push_back(entry.path().string());
@@ -71,9 +73,6 @@ namespace Real {
 
             for (const auto& modelPath : modelsPath) {
                 if (IsModelFile(modelPath)) {
-                    // Clear and rebuild texture index for this model file
-                    m_TextureIndex.clear();
-
                     // Build texture index from this model's directory
                     std::filesystem::path modelDir = std::filesystem::path(modelPath).parent_path();
                     for (const auto& entry : std_fs::directory_iterator(modelDir)) {
@@ -120,14 +119,12 @@ namespace Real {
             aiProcess_GenSmoothNormals |
             aiProcess_FlipUVs |
             aiProcess_JoinIdenticalVertices |
-            aiProcess_OptimizeMeshes   |      // Important for large models
             aiProcess_ImproveCacheLocality;   // Better performance
 
         // TODO: I'll add this flag when I add tangents and bitangents!
         // aiProcess_CalcTangentSpace |      /* For normal mapping */
 
         if (m_IsFBX) { // Need some optimization because .fbx models are slower than gltf or something
-            importFlags &= ~aiProcess_OptimizeMeshes;
             importFlags &= ~aiProcess_ImproveCacheLocality;
         }
 
@@ -141,7 +138,8 @@ namespace Real {
         }
 
         // Start processing from root node
-        ProcessNode(scene->mRootNode, scene);
+        const aiMatrix4x4 identity;
+        ProcessNode(scene->mRootNode, scene, identity);
 
         const auto& binary_path = std::string(ASSETS_RUNTIME_DIR) + "models/" + m_CurrentModel->m_Name + ".model";
 
@@ -164,20 +162,22 @@ namespace Real {
         return m_CurrentModel;
     }
 
-    void ModelLoader::ProcessNode(const aiNode *node, const aiScene *scene) {
-         // Process all meshes in this node
-         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-             const aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-             ProcessMesh(mesh, scene);
-         }
+    void ModelLoader::ProcessNode(const aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform) {
+        const aiMatrix4x4 globalTransform = parentTransform * node->mTransformation;
 
-         // Process all children nodes
-         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-             ProcessNode(node->mChildren[i], scene);
-         }
-     }
+        // Process all meshes in this node
+        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+            const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            ProcessMesh(mesh, scene, globalTransform);
+        }
 
-    void ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene) {
+        // Process all children nodes
+        for (unsigned int i = 0; i < node->mNumChildren; i++) {
+            ProcessNode(node->mChildren[i], scene, globalTransform);
+        }
+    }
+
+    void ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene, const aiMatrix4x4& transform) {
         const auto& mm = Services::GetMeshManager();
         // Create containers for vertex data
         std::vector<Vertex> vertices;
@@ -188,24 +188,12 @@ namespace Real {
             const aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
             Ref<Material> real_material;
 
-            const auto it = m_CacheProcessedMaterials.find(material);
-            if (it != m_CacheProcessedMaterials.end()) {
-                real_material = it->second;
-            } else {
-                real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
-                m_CacheProcessedMaterials.emplace(material, real_material);
-            }
-
+            real_material = ProcessMaterial(material, (int)mesh->mMaterialIndex);
             materialUUID = real_material ? real_material->m_UUID : materialUUID;
-
-            m_CurrentModel->m_MaterialAssetUUIDs.push_back(materialUUID);
         }
 
-        // If meshes loaded before, just get UUIDs
-        if (const auto it = m_CacheProcessedMeshes.find(mesh); it != m_CacheProcessedMeshes.end()) {
-            m_CurrentModel->m_MeshUUIDs.push_back(it->second);
-            return;
-        }
+        aiMatrix3x3 normalMat(transform);
+        normalMat.Inverse().Transpose();
 
         // Process vertices
         vertices.reserve(mesh->mNumVertices);
@@ -213,15 +201,13 @@ namespace Real {
             Vertex vertex{};
 
             // Position
-            vertex.m_Position.x = mesh->mVertices[i].x;
-            vertex.m_Position.y = mesh->mVertices[i].y;
-            vertex.m_Position.z = mesh->mVertices[i].z;
+            aiVector3D p = transform * mesh->mVertices[i];
+            vertex.m_Position = { p.x, p.y, p.z };
 
             // Normal
             if (mesh->HasNormals()) {
-                vertex.m_Normal.x = mesh->mNormals[i].x;
-                vertex.m_Normal.y = mesh->mNormals[i].y;
-                vertex.m_Normal.z = mesh->mNormals[i].z;
+                aiVector3D n = normalMat * mesh->mNormals[i];
+                vertex.m_Normal = { n.x, n.y, n.z };
             } else {
                 vertex.m_Normal = glm::vec3(0.0, 1.0, 0.0);
             }
@@ -250,9 +236,13 @@ namespace Real {
             }
         }
 
+        // Get offsets before creation current meshes
+        const auto vertexOffset = mm->GetVerticesCount();
+        const auto indexOffset  = mm->GetIndicesCount();
+
         const UUID meshUUID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, UUID{}).m_MeshUUID;
         m_CurrentModel->m_MeshUUIDs.push_back(meshUUID);
-        m_CacheProcessedMeshes.emplace(mesh, meshUUID);
+        m_CurrentModel->m_MaterialAssetUUIDs.push_back(materialUUID);
 
         MeshBinaryHeader header;
         header.m_Magic        = REAL_MAGIC;
@@ -261,12 +251,13 @@ namespace Real {
         header.m_MaterialUUID = materialUUID;
         header.m_VertexCount  = vertices.size();
         header.m_IndexCount   = indices.size();
-        header.m_VertexOffset = mm->GetVerticesCount();
-        header.m_IndexOffset  = mm->GetIndicesCount();
+        header.m_VertexOffset = vertexOffset;
+        header.m_IndexOffset  = indexOffset;
 
-        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + mesh->mName.C_Str() + ".mesh";
+        const auto meshNameAsUUID = std::to_string(meshUUID);
+        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + meshNameAsUUID + ".mesh";
         serialization::binary::WriteMesh(mBinaryPath, header, vertices, indices);
-        Services::GetAssetImporter()->SaveMeshToAssetDB(header, mesh->mName.C_Str());
+        Services::GetAssetImporter()->SaveMeshToAssetDB(header, meshNameAsUUID);
     }
 
     Ref<Material> ModelLoader::ProcessMaterial(const aiMaterial *mat, int materialIndex) {
@@ -342,12 +333,16 @@ namespace Real {
             std::string path;
             std::string ext = p.extension().string();
 
+            if (!pathStr.empty() && pathStr.front() == '*') {
+                Warn("There are embedded textures!!" + pathStr);
+            }
+
             if (m_TextureIndex.contains(p.stem().string())) {
                 const auto realPath = ChooseBest(m_TextureIndex[p.stem().string()]);
                 path = realPath.string();
                 ext  = realPath.extension().string();
             } else {
-                Warn("Missing texture for material: " +  material->m_Name + p.string() + " skipping!");
+                Warn("Missing texture for material: " + material->m_Name + " | texture path: " + p.string() + " and skipping!");
                 return; // Skip if texture does not exist
             }
 
@@ -410,6 +405,9 @@ namespace Real {
 
         LoadTexture(aiTextureType_BASE_COLOR);
         LoadTexture(aiTextureType_DIFFUSE);
+        LoadTexture(aiTextureType_SPECULAR);
+        LoadTexture(aiTextureType_SHININESS);
+        LoadTexture(aiTextureType_REFLECTION);
         LoadTexture(aiTextureType_NORMAL_CAMERA);
         LoadTexture(aiTextureType_NORMALS);
         LoadTexture(aiTextureType_METALNESS);
@@ -458,43 +456,27 @@ namespace Real {
 
     std::filesystem::path ModelLoader::ChooseBest(const std::vector<std::filesystem::path> &paths) {
         // Prefer by order
-        static constexpr std::array<std::string_view, 6> priority = {
+        static constexpr std::array<std::string_view, 7> priority = {
             ".png",
             ".tga",
             ".jpg",
+            ".jpeg",
             ".tif",
             ".bmp",
             ".webp"
         };
 
-        for (auto& ext : priority)
-            for (auto& p : paths)
-                if (p.extension() == ext)
+        for (auto& ext : priority) {
+            for (auto& p : paths) {
+                auto e = p.extension().string();
+                std::ranges::transform(e, e.begin(), ::tolower);
+                if (e == ext)
                     return p;
+            }
+        }
 
         if (paths.empty()) return {};
-
         return paths.front();
-    }
-
-    TextureType ModelLoader::GetRealTypeFromAssimpTexType(aiTextureType type) {
-         switch (type) {
-             case aiTextureType_DIFFUSE:
-             case aiTextureType_BASE_COLOR:        return TextureType::ALBEDO;
-             case aiTextureType_NORMAL_CAMERA:
-             case aiTextureType_NORMALS:           return TextureType::NORMAL;
-             case aiTextureType_DIFFUSE_ROUGHNESS: return TextureType::ALBEDO_ROUGHNESS;
-             case aiTextureType_METALNESS:         return TextureType::METALLIC;
-             case aiTextureType_AMBIENT:
-             case aiTextureType_LIGHTMAP:
-             case aiTextureType_AMBIENT_OCCLUSION: return TextureType::AMBIENT_OCCLUSION;
-             case aiTextureType_OPACITY:           return TextureType::ALPHA;
-             case aiTextureType_EMISSIVE:          return TextureType::EMISSIVE;
-             case aiTextureType_HEIGHT:
-             case aiTextureType_DISPLACEMENT:      return TextureType::HEIGHT;
-             // TODO: Height and Displacement are different things in advanced pipeline, so should be different cases
-             default: return TextureType::UNDEFINED;
-         }
     }
 
 }

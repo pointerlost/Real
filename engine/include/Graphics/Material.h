@@ -39,8 +39,8 @@ namespace Real {
         MaterialInstance(const MaterialInstance&) = default;
 
         // Instance override colors
-        glm::vec4 m_BaseColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        glm::vec4 m_NormalRMA = {};
+        glm::vec4 m_BaseColorFactor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        glm::vec4 m_ORMFactor = {}; // last index padding
 
         // Instance override textures
         std::optional<UUID> m_AlbedoOverride;

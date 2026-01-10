@@ -50,9 +50,6 @@ namespace Real::UI {
         if (entity->HasComponent<TransformComponent>()) {
             DrawComponent(&entity->GetComponentUnchecked<TransformComponent>(), scene);
         }
-        // if (entity->HasComponent<MaterialComponent>()) {
-            // DrawComponent(entity->GetComponent<MaterialComponent>(), scene);
-        // }
         if (entity->HasComponent<MeshRendererComponent>()) {
             DrawComponent(&entity->GetComponent<MeshRendererComponent>(), scene);
         }
@@ -146,39 +143,156 @@ namespace Real::UI {
     }
     //
     // void HierarchyPanel::DrawComponent(MaterialComponent *comp, Scene* scene) {
-    //     const auto& material = comp->m_Instance;
-    //     auto& baseColor = material->m_BaseColor;
-    //     constexpr auto textSize = ImVec2(45.0, 30.0);
-    //     if (ImGui::CollapsingHeader("Material Component")) {
-    //         // Base color
-    //         {
-    //             constexpr auto  textboxSize = ImVec2(22.0, 30.0);
-    //             constexpr float dragCount = 4.0;
-    //             const auto dragSize = static_cast<float>((m_SizeX - 4.0 * textboxSize.x - textSize.x) / dragCount - 17.5);
     //
-    //             DrawCustomTextShape("Color", textSize, ImVec4(0.1019, 0.1568, 0.1372, 1.0));
-    //             ImGui::SameLine();
-    //             DrawCustomTextShape("R", textboxSize, ImVec4(1.0, 0.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-    //             ImGui::SameLine();
-    //             DrawCustomSizedDragger(dragSize, baseColor.r, 0.001, 0.0, 1.0, "%.2f");
-    //             ImGui::SameLine();
-    //             DrawCustomTextShape("G", textboxSize, ImVec4(0.0, 1.0, 0.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-    //             ImGui::SameLine();
-    //             DrawCustomSizedDragger(dragSize, baseColor.g, 0.001, 0.0, 1.0, "%.2f");
-    //             ImGui::SameLine();
-    //             DrawCustomTextShape("B", textboxSize, ImVec4(0.0, 0.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-    //             ImGui::SameLine();
-    //             DrawCustomSizedDragger(dragSize, baseColor.b, 0.001, 0.0, 1.0, "%.2f");
-    //             ImGui::SameLine();
-    //             DrawCustomTextShape("A", textboxSize, ImVec4(1.0, 1.0, 1.0, 1.0), true, ImVec4(0.05, 0.05, 0.05, 1.0));
-    //             ImGui::SameLine();
-    //             DrawCustomSizedDragger(dragSize, baseColor.a, 0.001, 0.0, 1.0, "%.2f");
-    //         }
-    //     }
     // }
 
-    void HierarchyPanel::DrawComponent(MeshRendererComponent *comp, Scene* scene) {
-        if (ImGui::CollapsingHeader("Mesh Component")) {
+    void HierarchyPanel::DrawComponent(const MeshRendererComponent *comp, Scene* scene) {
+        const auto& am = Services::GetAssetManager();
+
+        if (!ImGui::CollapsingHeader("Mesh Component", ImGuiTreeNodeFlags_DefaultOpen))
+            return;
+
+        const auto mat = am->GetMaterialInstance(comp->m_MaterialInstanceUUIDs[0]);
+        if (!mat)
+            return;
+
+        auto& baseColor = mat->m_BaseColorFactor;
+        auto& factors = mat->m_ORMFactor; // x=AO, y=Roughness, z=Metallic, w=padding
+
+        ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 4));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
+
+        if (ImGui::BeginTable("MaterialFactors", 5,
+            ImGuiTableFlags_SizingStretchProp |
+            ImGuiTableFlags_RowBg |
+            ImGuiTableFlags_BordersInnerV |
+            ImGuiTableFlags_NoHostExtendX))
+        {
+            ImGui::TableSetupColumn("Property", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("R", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+            ImGui::TableSetupColumn("G", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+            ImGui::TableSetupColumn("B", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+            ImGui::TableSetupColumn("A", ImGuiTableColumnFlags_WidthFixed, 70.0f);
+
+            // ================= Header =================
+            ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+            ImGui::TableSetColumnIndex(0);
+            ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.9f, 1.0f), "Property");
+
+            constexpr ImVec4 headerColors[] = {
+                ImVec4(0.9f, 0.4f, 0.4f, 1.0f), // R
+                ImVec4(0.4f, 0.9f, 0.4f, 1.0f), // G
+                ImVec4(0.4f, 0.5f, 0.9f, 1.0f), // B
+                ImVec4(0.7f, 0.7f, 0.7f, 1.0f)  // A
+            };
+
+            for (int i = 1; i < 5; i++) {
+                ImGui::TableSetColumnIndex(i);
+                ImGui::PushStyleColor(ImGuiCol_Text, headerColors[i-1]);
+                ImGui::Text("%s", i == 1 ? "R" : i == 2 ? "G" : i == 3 ? "B" : "A");
+                ImGui::PopStyleColor();
+            }
+
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 40, 128));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(60, 60, 60, 200));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgActive, IM_COL32(80, 80, 80, 255));
+
+            // Base Color
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Base Color");
+
+            // Show color preview
+            ImGui::SameLine();
+            ImGui::ColorButton("##BaseColorPreview",
+                ImVec4(baseColor.r, baseColor.g, baseColor.b, baseColor.a),
+                ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip,
+                ImVec2(16, 16)
+            );
+
+            constexpr float dragSpeed = 0.005f;
+            const auto format = "%.3f";
+
+            // Red channel
+            ImGui::TableSetColumnIndex(1);
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(100, 40, 40, 128));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(120, 50, 50, 200));
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::DragFloat("##BaseR", &baseColor.r, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::PopStyleColor(2);
+
+            // Green channel
+            ImGui::TableSetColumnIndex(2);
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 100, 40, 128));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 120, 50, 200));
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::DragFloat("##BaseG", &baseColor.g, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::PopStyleColor(2);
+
+            // Blue channel
+            ImGui::TableSetColumnIndex(3);
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 100, 128));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 50, 120, 200));
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::DragFloat("##BaseB", &baseColor.b, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::PopStyleColor(2);
+
+            // Alpha channel
+            ImGui::TableSetColumnIndex(4);
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(80, 80, 80, 128));
+            ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(100, 100, 100, 200));
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::DragFloat("##BaseA", &baseColor.a, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::PopStyleColor(2);
+
+            // Surface Factors
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Surface");
+
+            // AO
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::DragFloat("##AO", &factors.x, 0.005f, 0.0f, 1.0f, "AO: %.3f")) {
+            }
+
+            // Roughness
+            ImGui::TableSetColumnIndex(2);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::DragFloat("##Roughness", &factors.y, 0.005f, 0.0f, 1.0f, "R: %.3f")) {
+            }
+
+            // Metallic
+            ImGui::TableSetColumnIndex(3);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::DragFloat("##Metallic", &factors.z, 0.005f, 0.0f, 1.0f, "M: %.3f")) {
+            }
+
+            // Empty column for alignment
+            ImGui::TableSetColumnIndex(4);
+            ImGui::TextDisabled("-");
+
+            ImGui::PopStyleColor(3); // FrameBg colors
+            ImGui::EndTable();
+        }
+
+        ImGui::PopStyleVar(2);
+
+        // Optional: Add a color picker for the base color
+        if (ImGui::Button("Color Picker...", ImVec2(-FLT_MIN, 0))) {
+            ImGui::OpenPopup("BaseColorPicker");
+        }
+
+        if (ImGui::BeginPopup("BaseColorPicker")) {
+            ImGui::ColorPicker4("Base Color", &baseColor.r,
+                ImGuiColorEditFlags_DisplayRGB |
+                ImGuiColorEditFlags_DisplayHSV |
+                ImGuiColorEditFlags_AlphaBar |
+                ImGuiColorEditFlags_PickerHueBar);
+            ImGui::EndPopup();
         }
     }
 

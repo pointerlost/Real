@@ -104,7 +104,7 @@ namespace Real::UI {
     void EditorPanel::DrawPerformanceProfile() {
         if (Input::IsKeyPressed(REAL_KEY_F11)) openPerfProfile = !openPerfProfile;
         if (openPerfProfile) return;
-        const std::string fps = "FPS: " + std::to_string(Services::GetEditorTimer()->GetFPS());
+        const auto fps = "FPS: " + std::to_string(Services::GetEditorTimer()->GetFPS());
         ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), fps.c_str());
     }
 
@@ -192,6 +192,7 @@ namespace Real::UI {
 
     void EditorPanel::DebugGizmos() {
         if (!Services::GetEditorState()->selectedEntity) return;
+
         if (ImGuizmo::IsUsing()) {
             ImGui::Text("Using gizmo");
         } else {

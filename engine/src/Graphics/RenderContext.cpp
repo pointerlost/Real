@@ -162,20 +162,24 @@ namespace Real {
 
     void RenderContext::PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex,uint baseInstance)
     {
-        DrawElementsIndirectCommand cmd{};
-        cmd.count         = mesh->m_IndexCount;
-        cmd.instanceCount = 1;
-        cmd.firstIndex    = mesh->m_IndexOffset;
-        cmd.baseVertex    = 0;
-        cmd.baseInstance  = baseInstance;
+        if (mesh) {
+            DrawElementsIndirectCommand cmd{};
+            cmd.count         = mesh->m_IndexCount;
+            cmd.instanceCount = 1;
+            cmd.firstIndex    = mesh->m_IndexOffset;
+            cmd.baseVertex    = 0;
+            cmd.baseInstance  = baseInstance;
 
-        m_GPUDatas.drawCommands.push_back(cmd);
+            m_GPUDatas.drawCommands.push_back(cmd);
+        }
 
         EntityMetadata em{};
         em.transformIndex = transformIndex;
         em.materialIndex  = materialIndex;
-        em.indexCount     = static_cast<int>(mesh->m_IndexCount);
-        em.indexOffset    = static_cast<int>(mesh->m_IndexOffset);
+        if (mesh) {
+            em.indexCount  = static_cast<int>(mesh->m_IndexCount);
+            em.indexOffset = static_cast<int>(mesh->m_IndexOffset);
+        }
 
         m_GPUDatas.entityData.push_back(em);
     }

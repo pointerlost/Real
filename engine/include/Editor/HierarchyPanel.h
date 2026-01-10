@@ -30,7 +30,7 @@ namespace Real::UI {
         void DrawComponents(Scene* scene);
         void DrawComponent(TagComponent* comp, Scene* scene);
         void DrawComponent(TransformComponent* comp, Scene* scene);
-        void DrawComponent(MeshRendererComponent* comp, Scene* scene);
+        void DrawComponent(const MeshRendererComponent* comp, Scene* scene);
         void DrawComponent(LightComponent* comp, TransformComponent* tc, Scene* scene);
         void DrawComponent(CameraComponent* comp, Scene* scene);
 

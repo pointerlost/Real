@@ -32,8 +32,8 @@ struct TexturePack {
 
 struct Material {
     // Texture Override Colors
-    vec4 m_BaseColor;
-    vec4 m_NormalORM; // 0 = normal, 1 = ao, 2 = roughness, 3 = metallic
+    vec4 m_BaseColorFactor;
+    vec4 m_ORMFactor; // 0 = normal, 1 = ao, 2 = roughness, 3 = metallic
 
     // Texture index
     int m_BindlessAlbedoIdx;
@@ -61,11 +61,10 @@ bool IsValidTextureIdx(int idx) {
 }
 
 // Material property getters
-vec4 GetMatBaseColor(int idx) { return materials[idx].m_BaseColor; }
-float GetMatNormalColor(int idx) { return materials[idx].m_NormalORM[0]; }
-float GetMatRoughnessColor(int idx) { return materials[idx].m_NormalORM[1]; }
-float GetMatMetallicColor(int idx) { return materials[idx].m_NormalORM[2]; }
-float GetMatAOColor(int idx) { return materials[idx].m_NormalORM[3]; }
+vec3 GetMaterialBaseColorFactor(int idx) { return materials[idx].m_BaseColorFactor.rgb; }
+float GetMaterialAOFactor(int idx) { return materials[idx].m_ORMFactor[0]; }
+float GetMaterialRGHFactor(int idx) { return materials[idx].m_ORMFactor[1]; }
+float GetMaterialMTLFactor(int idx) { return materials[idx].m_ORMFactor[2]; }
 int GetAlbedoTexIdx(int idx) { return materials[idx].m_BindlessAlbedoIdx; }
 int GetNormalTexIdx(int idx) { return materials[idx].m_BindlessNormalIdx; }
 int GetORMTexIdx(int idx) { return materials[idx].m_BindlessORMIdx; }
@@ -82,9 +81,8 @@ vec3 GetAlbedoSampler2D(int matIdx, vec2 UV) {
         uint64_t handle = bindlessTextures[texIdx];
         return pow(texture(sampler2D(handle), UV).rgb, vec3(2.2));
     }
-    // Fallback to material's base color or default
-    vec4 baseColor = GetMatBaseColor(matIdx);
-    return (baseColor.a > 0.0) ? baseColor.rgb : DEFAULT_ALBEDO;
+    // Fallback to material's albedo default
+    return DEFAULT_ALBEDO;
 }
 
 // Normal sampling with fallback
@@ -98,6 +96,10 @@ vec3 GetNormalSampler2D(int matIdx, vec2 UV) {
     return DEFAULT_NORMAL;
 }
 
+bool HasNormalMap(int matIdx) {
+    return IsValidTextureIdx(GetNormalTexIdx(matIdx));
+}
+
 // Roughness sampling with fallback
 float GetRoughnessSampler2D(int matIdx, vec2 UV) {
     int texIdx = GetORMTexIdx(matIdx);
@@ -105,9 +107,8 @@ float GetRoughnessSampler2D(int matIdx, vec2 UV) {
         uint64_t handle = bindlessTextures[texIdx];
         return texture(sampler2D(handle), UV).r;
     }
-    // Fallback to material's roughness value or default
-    float matRoughness = GetMatRoughnessColor(matIdx);
-    return (matRoughness > 0.0) ? matRoughness : DEFAULT_ROUGHNESS;
+    // Fallback to material's roughness default
+    return DEFAULT_ROUGHNESS;
 }
 
 // Metallic sampling with fallback
@@ -117,9 +118,8 @@ float GetMetallicSampler2D(int matIdx, vec2 UV) {
         uint64_t handle = bindlessTextures[texIdx];
         return texture(sampler2D(handle), UV).g;
     }
-    // Fallback to material's metallic value or default
-    float matMetallic = GetMatMetallicColor(matIdx);
-    return (matMetallic > 0.0) ? matMetallic : DEFAULT_METALLIC;
+    // Fallback to material's metallic default
+    return DEFAULT_METALLIC;
 }
 
 // AO sampling with fallback
@@ -129,9 +129,8 @@ float GetAOSampler2D(int matIdx, vec2 UV) {
         uint64_t handle = bindlessTextures[texIdx];
         return texture(sampler2D(handle), UV).b;
     }
-    // Fallback to material's AO value or default
-    float matAO = GetMatAOColor(matIdx);
-    return (matAO > 0.0) ? matAO : DEFAULT_AO;
+    // Fallback to material's AO default
+    return DEFAULT_AO;
 }
 
 // Height sampling with fallback
@@ -146,10 +145,11 @@ float GetHeightSampler2D(int matIdx, vec2 UV) {
 }
 
 TexturePack GetTexturePack(int materialIndex, vec2 UV) {
-    vec3  albedo    = GetAlbedoSampler2D(materialIndex, UV);
-    float roughness = GetRoughnessSampler2D(materialIndex, UV);
-    float metallic  = GetMetallicSampler2D(materialIndex, UV);
-    float ao        = GetAOSampler2D(materialIndex, UV);
+    // Mix with texture's override color(Factors) for GUI
+    vec3  albedo    = GetAlbedoSampler2D(materialIndex, UV)    * GetMaterialBaseColorFactor(materialIndex);
+    float roughness = GetRoughnessSampler2D(materialIndex, UV) * GetMaterialRGHFactor(materialIndex);
+    float metallic  = GetMetallicSampler2D(materialIndex, UV)  * GetMaterialMTLFactor(materialIndex);
+    float ao        = GetAOSampler2D(materialIndex, UV)        * GetMaterialAOFactor(materialIndex);
     return TexturePack(albedo, roughness, metallic, ao);
 }
 

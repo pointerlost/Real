@@ -234,6 +234,26 @@ namespace Real {
         fordCar.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
         (void)fordCar.AddComponent<ModelComponent>(m_AssetManager->GetModel("Ford_raptor"));
 
+        auto& island_tree = m_Scene->CreateEntity("Island Tree");
+        island_tree.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
+        island_tree.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        (void)island_tree.AddComponent<ModelComponent>(m_AssetManager->GetModel("island_tree"));
+
+        auto& mountain_road = m_Scene->CreateEntity("Mountain road");
+        mountain_road.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
+        mountain_road.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        (void)mountain_road.AddComponent<ModelComponent>(m_AssetManager->GetModel("mountain_road"));
+
+        auto& porsche_car = m_Scene->CreateEntity("Porsche");
+        porsche_car.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
+        porsche_car.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        (void)porsche_car.AddComponent<ModelComponent>(m_AssetManager->GetModel("porsche_turbo"));
+
+        auto& city_road = m_Scene->CreateEntity("City Road");
+        city_road.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
+        city_road.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        (void)city_road.AddComponent<ModelComponent>(m_AssetManager->GetModel("city_road"));
+
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
         (void)light.AddComponent<LightComponent>();

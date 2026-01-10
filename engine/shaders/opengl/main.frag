@@ -25,18 +25,22 @@ out vec4 FragColor;
 
 void main() {
     PerVertexData pvd = PerVertexData(fs_in.FragPos, fs_in.MaterialIndex, fs_in.Normal, fs_in.UV);
+    TexturePack tp    = GetTexturePack(fs_in.MaterialIndex, fs_in.UV);
 
     vec3 normal   = normalize(fs_in.Normal);
-    vec3 matColor = GetMatBaseColor(fs_in.MaterialIndex).rgb;
-
-    TexturePack tp = GetTexturePack(fs_in.MaterialIndex, fs_in.UV);
-    tp.albedo *= matColor; // Mix with texture's override color for GUI
 
     // Get normal from normal map if available, otherwise use vertex normal
-    vec3 sampledNormal = GetNormalSampler2D(fs_in.MaterialIndex, fs_in.UV);
-    vec3 N = (length(sampledNormal) > 0.1) ?
-             GetNormalFromMap(sampledNormal, fs_in.FragPos, normal, fs_in.UV) :
-             normal;
+    vec3 N = normalize(fs_in.Normal);
+
+    if (HasNormalMap(fs_in.MaterialIndex)) {
+        vec3 sampledNormal = GetNormalSampler2D(fs_in.MaterialIndex, fs_in.UV);
+        N = GetNormalFromMap(
+            sampledNormal,
+            fs_in.FragPos,
+            fs_in.Normal,
+            fs_in.UV
+        );
+    }
 
     vec3 V  = normalize(GetViewPos() - fs_in.FragPos);
     vec3 F0 = mix(vec3(0.04), tp.albedo, tp.metallic);

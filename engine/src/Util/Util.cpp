@@ -270,8 +270,8 @@ namespace Real::util {
 
     TextureType AssimpTextureTypeToRealType(const aiTextureType type) {
         switch (type) {
-            case aiTextureType_BASE_COLOR:
             case aiTextureType_DIFFUSE:
+            case aiTextureType_BASE_COLOR:
                 return TextureType::ALBEDO;
 
             case aiTextureType_NORMAL_CAMERA:
@@ -282,12 +282,24 @@ namespace Real::util {
             case aiTextureType_HEIGHT:
                 return TextureType::HEIGHT;
 
-            case aiTextureType_AMBIENT_OCCLUSION:       return TextureType::AMBIENT_OCCLUSION;
+            case aiTextureType_LIGHTMAP:
+            case aiTextureType_AMBIENT_OCCLUSION:
+                return TextureType::AMBIENT_OCCLUSION;
+
+            case aiTextureType_SPECULAR:
+            case aiTextureType_SHININESS:
+                return TextureType::ROUGHNESS;
+
+            case aiTextureType_AMBIENT:
+            case aiTextureType_OPACITY:
+                return TextureType::ALPHA;
+
             case aiTextureType_METALNESS:               return TextureType::METALLIC;
             case aiTextureType_EMISSIVE:                return TextureType::EMISSIVE;
             case aiTextureType_DIFFUSE_ROUGHNESS:       return TextureType::ALBEDO_ROUGHNESS;
             case aiTextureType_GLTF_METALLIC_ROUGHNESS: return TextureType::METALLIC_ROUGHNESS;
 
+            // TODO: Height and Displacement are different things in advanced pipeline, so should be different cases
             default: return TextureType::UNDEFINED;
         }
     }

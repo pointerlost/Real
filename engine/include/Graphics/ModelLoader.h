@@ -23,14 +23,13 @@ namespace Real {
         Ref<Model> Load(const std::string& filePath, const std::string& name, ImageFormatState state = ImageFormatState::COMPRESS_ME);
 
     private:
-        void ProcessNode(const aiNode* node, const aiScene* scene);
-        void ProcessMesh(const aiMesh* mesh, const aiScene* scene);
+        void ProcessNode(const aiNode* node, const aiScene* scene, const aiMatrix4x4& parentTransform);
+        void ProcessMesh(const aiMesh* mesh, const aiScene* scene, const aiMatrix4x4& transform);
         Ref<Material> ProcessMaterial(const aiMaterial* mat, int materialIndex);
         void AddTextureToMaterial(const Ref<OpenGLTexture>& tex, const Ref<Material>& material);
         void SaveModelTextureAsFile(const Ref<OpenGLTexture>& tex);
 
         std::filesystem::path ChooseBest(const std::vector<std::filesystem::path>& paths);
-        TextureType GetRealTypeFromAssimpTexType(aiTextureType type);
 
     private:
         bool m_IsFBX = false;
@@ -39,7 +38,5 @@ namespace Real {
         ImageFormatState m_CurrImageFormatState = ImageFormatState::COMPRESS_ME;
         std::unordered_map<std::string, std::vector<std::filesystem::path>> m_TextureIndex;
         std::unordered_map<std::string, UUID> m_CacheProcessedTextures;
-        std::unordered_map<const aiMaterial*, Ref<Material>> m_CacheProcessedMaterials;
-        std::unordered_map<const aiMesh*, UUID> m_CacheProcessedMeshes;
     };
 }

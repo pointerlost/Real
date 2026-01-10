@@ -33,8 +33,8 @@ namespace Real {
         gpuData.m_BindlessEmissiveIdx = static_cast<uint>(GetIndex(emissiveUUID, TextureType::EMISSIVE));
 
         // Override colors
-        gpuData.m_BaseColor = m_BaseColor;
-        gpuData.m_NormalORM = m_NormalRMA;
+        gpuData.m_BaseColorFactor = m_BaseColorFactor;
+        gpuData.m_ORMFactor = m_ORMFactor;
 
         return gpuData;
     }

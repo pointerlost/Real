@@ -9,6 +9,7 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Light.h"
 #include "Graphics/Transformations.h"
+#include "Physics/Collision/Primitives.h"
 
 namespace Real {
     struct Model;
@@ -57,6 +58,9 @@ namespace Real {
             : m_MeshUUIDs{meshUUID}, m_MaterialInstanceUUIDs{matInstanceUUID} {}
         MeshRendererComponent() = default;
         MeshRendererComponent(MeshRendererComponent&) = default;
+    };
+
+    struct ColliderComponent {
     };
 
     struct ModelComponent {

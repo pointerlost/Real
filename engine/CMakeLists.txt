@@ -17,6 +17,9 @@ find_package(glm CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
+# Physx
+find_package(unofficial-omniverse-physx-sdk CONFIG REQUIRED)
+
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
@@ -118,6 +121,12 @@ add_executable(engine
     src/Core/AssetImporter.cpp
     src/Graphics/Model.cpp
     include/Core/CMakeConfig.h
+    include/Math/Vec3.h
+    include/Math/Vec2.h
+    include/Math/Vec4.h
+        include/Math/Mat2.h
+        include/Math/Mat3.h
+        include/Math/Mat4.h
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
@@ -155,7 +164,10 @@ target_link_libraries(engine
     assimp::assimp
     zstd::libzstd
 
-    # Compressonator
+    # Physx lib
+    unofficial::omniverse-physx-sdk::sdk
+
+    # AMD Compressonator lib
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Compressonator.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Framework.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core.a

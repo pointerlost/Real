@@ -108,12 +108,12 @@ namespace Real {
             const auto e = m_Scene->GetEntityWithUUID(id.m_UUID);
             if (!e) continue;
 
-            const int transformIndex = PushTransform(transform);
+            const int transformIndex = BuildTransform(transform);
             CollectCamera(e);
             CollectLight(e);
 
             for (const auto& [meshData, matUUID] : CollectRenderables(e)) {
-                const int materialIndex = matUUID != 0 ? PushMaterial(matUUID) : 0;
+                const int materialIndex = matUUID != 0 ? BuildMaterial(matUUID) : 0;
                 PushDrawCommand(meshData, transformIndex, materialIndex, baseInstance);
                 ++baseInstance;
             }
@@ -134,18 +134,21 @@ namespace Real {
         if (entity->HasComponent<CameraComponent>()) {
             auto& cc = entity->GetComponentUnchecked<CameraComponent>();
             auto& tc = entity->GetComponentUnchecked<TransformComponent>();
-            m_GPUDatas.camera = cc.m_Camera.ConvertToGPUFormat(tc.m_Transform);
+            m_GPUDatas.camera = cc.m_Camera.ConvertToGPUFormat(tc.transform);
         }
     }
 
-    int RenderContext::PushTransform(TransformComponent& tc) {
-        const TransformSSBO gpuTransform = tc.m_Transform.ConvertToGPUFormat();
+    int RenderContext::BuildTransform(const TransformComponent& tc) {
+        TransformSSBO gpu{};
         const int index = static_cast<int>(m_GPUDatas.transforms.size());
-        m_GPUDatas.transforms.push_back(gpuTransform);
+        const auto& model = tc.transform.GetModelMatrix();
+        gpu.modelMatrix   = model;
+        gpu.normalMatrix  = math::Mat4::FromGLM(glm::mat4(glm::transpose(glm::inverse(glm::mat3(model.ToGLM())))));
+        m_GPUDatas.transforms.push_back(gpu);
         return index;
     }
 
-    int RenderContext::PushMaterial(const UUID& materialUUID) {
+    int RenderContext::BuildMaterial(const UUID& materialUUID) {
         const auto it = m_MaterialIdxCache.find(materialUUID);
         if (it != m_MaterialIdxCache.end())
             return it->second;
@@ -211,12 +214,12 @@ namespace Real {
         if (entity->HasComponent<LightComponent>()) {
             auto& lc = entity->GetComponentUnchecked<LightComponent>();
             auto& tc = entity->GetComponentUnchecked<TransformComponent>();
-            m_GPUDatas.lights.push_back(lc.m_Light.ConvertToGPUFormat(tc.m_Transform));
+            m_GPUDatas.lights.push_back(lc.m_Light.ConvertToGPUFormat(tc.transform));
         }
     }
 
     void RenderContext::CollectGlobalData() {
-        m_GPUDatas.globalData.GlobalAmbient = glm::vec4(0.1);
+        m_GPUDatas.globalData.GlobalAmbient = math::Vec4(0.1);
         m_GPUDatas.globalData.lightCount[0] = 1; // TODO: remove the hardcoded value for multiple lighting!!!
     }
 

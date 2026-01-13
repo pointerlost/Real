@@ -4,14 +4,15 @@
 #include "Graphics/MeshFactory.h"
 #include <glm/ext.hpp>
 #include "Common/RealTypes.h"
+#include "Math/Vec3.h"
 
 namespace Real {
 
     std::pair<std::vector<Vertex>, std::vector<uint32_t>> MeshFactory::CreateTriangle() {
         std::vector<Vertex> vertices = {
-            { glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f) },
-            { glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f) },
-            { glm::vec3( 0.0f,  0.5f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.5f, 1.0f) }
+            { math::Vec3(-0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.0f, 0.0f) },
+            { math::Vec3( 0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(1.0f, 0.0f) },
+            { math::Vec3( 0.0f,  0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.5f, 1.0f) }
         };
 
         std::vector<uint32_t> indices = { 0, 1, 2 };
@@ -24,40 +25,40 @@ namespace Real {
 		{	// Vertices, Normal, UV
 
 			// Front face (+Z)
-			{ glm::vec3(-0.5f, -0.5f, 0.5f),   glm::vec3 {0.0,  0.0, 1.0},  {0.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  -0.5f, 0.5f),   glm::vec3 {0.0,  0.0, 1.0},  {1.0f, 0.0f}  },
-			{ glm::vec3(0.5f,   0.5f, 0.5f),   glm::vec3 {0.0,  0.0, 1.0},  {1.0f, 1.0f}  },
-			{ glm::vec3(-0.5f,  0.5f, 0.5f),   glm::vec3 {0.0,  0.0, 1.0},  {0.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, -0.5f, 0.5f),   math::Vec3 {0.0,  0.0, 1.0},  {0.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  -0.5f, 0.5f),   math::Vec3 {0.0,  0.0, 1.0},  {1.0f, 0.0f}  },
+			{ math::Vec3(0.5f,   0.5f, 0.5f),   math::Vec3 {0.0,  0.0, 1.0},  {1.0f, 1.0f}  },
+			{ math::Vec3(-0.5f,  0.5f, 0.5f),   math::Vec3 {0.0,  0.0, 1.0},  {0.0f, 1.0f}  },
 
 			// Back face  (-Z)
-			{ glm::vec3(0.5f,  -0.5f, -0.5f),  glm::vec3 {0.0,  0.0, -1.0}, {0.0f, 0.0f}  },
-			{ glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3 {0.0,  0.0, -1.0}, {1.0f, 0.0f}  },
-			{ glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3 {0.0,  0.0, -1.0}, {1.0f, 1.0f}  },
-			{ glm::vec3(0.5f,   0.5f, -0.5f),  glm::vec3 {0.0,  0.0, -1.0}, {0.0f, 1.0f}  },
+			{ math::Vec3(0.5f,  -0.5f, -0.5f),  math::Vec3 {0.0,  0.0, -1.0}, {0.0f, 0.0f}  },
+			{ math::Vec3(-0.5f, -0.5f, -0.5f),  math::Vec3 {0.0,  0.0, -1.0}, {1.0f, 0.0f}  },
+			{ math::Vec3(-0.5f,  0.5f, -0.5f),  math::Vec3 {0.0,  0.0, -1.0}, {1.0f, 1.0f}  },
+			{ math::Vec3(0.5f,   0.5f, -0.5f),  math::Vec3 {0.0,  0.0, -1.0}, {0.0f, 1.0f}  },
 
 			// Left face  (-X)
-			{ glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3 {-1.0,  0.0, 0.0}, {0.0f, 0.0f}  },
-			{ glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3 {-1.0,  0.0, 0.0}, {1.0f, 0.0f}  },
-			{ glm::vec3(-0.5f,  0.5f,  0.5f),  glm::vec3 {-1.0,  0.0, 0.0}, {1.0f, 1.0f}  },
-			{ glm::vec3(-0.5f,  0.5f, -0.5f),  glm::vec3 {-1.0,  0.0, 0.0}, {0.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, -0.5f, -0.5f),  math::Vec3 {-1.0,  0.0, 0.0}, {0.0f, 0.0f}  },
+			{ math::Vec3(-0.5f, -0.5f,  0.5f),  math::Vec3 {-1.0,  0.0, 0.0}, {1.0f, 0.0f}  },
+			{ math::Vec3(-0.5f,  0.5f,  0.5f),  math::Vec3 {-1.0,  0.0, 0.0}, {1.0f, 1.0f}  },
+			{ math::Vec3(-0.5f,  0.5f, -0.5f),  math::Vec3 {-1.0,  0.0, 0.0}, {0.0f, 1.0f}  },
 
 			// Right face (+X)
-			{ glm::vec3(0.5f, -0.5f,  0.5f),   glm::vec3 {1.0,  0.0, 0.0},  {0.0f, 0.0f}  },
-			{ glm::vec3(0.5f, -0.5f, -0.5f),   glm::vec3 {1.0,  0.0, 0.0},  {1.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  0.5f, -0.5f),   glm::vec3 {1.0,  0.0, 0.0},  {1.0f, 1.0f}  },
-			{ glm::vec3(0.5f,  0.5f,  0.5f),   glm::vec3 {1.0,  0.0, 0.0},  {0.0f, 1.0f}  },
+			{ math::Vec3(0.5f, -0.5f,  0.5f),   math::Vec3 {1.0,  0.0, 0.0},  {0.0f, 0.0f}  },
+			{ math::Vec3(0.5f, -0.5f, -0.5f),   math::Vec3 {1.0,  0.0, 0.0},  {1.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  0.5f, -0.5f),   math::Vec3 {1.0,  0.0, 0.0},  {1.0f, 1.0f}  },
+			{ math::Vec3(0.5f,  0.5f,  0.5f),   math::Vec3 {1.0,  0.0, 0.0},  {0.0f, 1.0f}  },
 
 			// Top face (+Y)
-			{ glm::vec3(-0.5f, 0.5f,  0.5f),   glm::vec3 {0.0,  1.0, 0.0},  {0.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  0.5f,  0.5f),   glm::vec3 {0.0,  1.0, 0.0},  {1.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  0.5f, -0.5f),   glm::vec3 {0.0,  1.0, 0.0},  {1.0f, 1.0f}  },
-			{ glm::vec3(-0.5f, 0.5f, -0.5f),   glm::vec3 {0.0,  1.0, 0.0},  {0.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, 0.5f,  0.5f),   math::Vec3 {0.0,  1.0, 0.0},  {0.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  0.5f,  0.5f),   math::Vec3 {0.0,  1.0, 0.0},  {1.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  0.5f, -0.5f),   math::Vec3 {0.0,  1.0, 0.0},  {1.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, 0.5f, -0.5f),   math::Vec3 {0.0,  1.0, 0.0},  {0.0f, 1.0f}  },
 
 			// Bottom face (-Y)
-			{ glm::vec3(-0.5f, -0.5f, -0.5f),  glm::vec3 {0.0, -1.0, 0.0},  {0.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  -0.5f, -0.5f),  glm::vec3 {0.0, -1.0, 0.0},  {1.0f, 0.0f}  },
-			{ glm::vec3(0.5f,  -0.5f,  0.5f),  glm::vec3 {0.0, -1.0, 0.0},  {1.0f, 1.0f}  },
-			{ glm::vec3(-0.5f, -0.5f,  0.5f),  glm::vec3 {0.0, -1.0, 0.0},  {0.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, -0.5f, -0.5f),  math::Vec3 {0.0, -1.0, 0.0},  {0.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  -0.5f, -0.5f),  math::Vec3 {0.0, -1.0, 0.0},  {1.0f, 0.0f}  },
+			{ math::Vec3(0.5f,  -0.5f,  0.5f),  math::Vec3 {0.0, -1.0, 0.0},  {1.0f, 1.0f}  },
+			{ math::Vec3(-0.5f, -0.5f,  0.5f),  math::Vec3 {0.0, -1.0, 0.0},  {0.0f, 1.0f}  },
 		};
 
 		std::vector<uint32_t> indices =

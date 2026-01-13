@@ -7,6 +7,15 @@
 #include <glad/glad.h>
 #include <glm/ext.hpp>
 
+namespace Real::math {
+    struct Mat4;
+    struct Mat2;
+    struct Vec4;
+    struct Vec3;
+    struct Vec2;
+    struct Mat3;
+}
+
 namespace Real {
 
     class Shader {
@@ -22,15 +31,15 @@ namespace Real {
         void SetBool(const std::string& name, bool value) const;
         void SetUint(const std::string& name, uint value) const;
         void SetFloat(const std::string& name, float value) const;
-        void SetVec2(const std::string& name, const glm::vec2& value) const;
+        void SetVec2(const std::string& name, const math::Vec2& value) const;
         void SetVec2(const std::string& name, float x, float y) const;
-        void SetVec3(const std::string& name, const glm::vec3& value) const;
+        void SetVec3(const std::string& name, const math::Vec3& value) const;
         void SetVec3(const std::string& name, float x, float y, float z) const;
-        void SetVec4(const std::string& name, const glm::vec4& value) const;
+        void SetVec4(const std::string& name, const math::Vec4& value) const;
         void SetVec4(const std::string& name, float x, float y, float z, float w) const;
-        void SetMat2(const std::string& name, const glm::mat2& mat) const;
-        void SetMat3(const std::string& name, const glm::mat3& mat) const;
-        void SetMat4(const std::string& name, const glm::mat4& mat) const;
+        void SetMat2(const std::string& name, const math::Mat2& mat) const;
+        void SetMat3(const std::string& name, const math::Mat3& mat) const;
+        void SetMat4(const std::string& name, const math::Mat4& mat) const;
 
         [[nodiscard]] const std::string& GetName() const { return m_Name; }
         [[nodiscard]] const GLuint& GetProgram() const { return m_Program; }
@@ -47,6 +56,6 @@ namespace Real {
     private:
         /* Get uniform location */
         [[nodiscard]] int GetULocation(const std::string& name) const;
-        void CheckCompileErrors(GLuint shader, std::string type);
+        void CheckCompileErrors(GLuint shader, const std::string& type);
     };
 }

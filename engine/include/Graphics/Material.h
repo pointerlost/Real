@@ -38,9 +38,10 @@ namespace Real {
         explicit MaterialInstance(const Ref<Material>& assetMaterial);
         MaterialInstance(const MaterialInstance&) = default;
 
+        // TODO: Factors should add into AssetDB
         // Instance override colors
-        glm::vec4 m_BaseColorFactor = glm::vec4(1.0, 1.0, 1.0, 1.0);
-        glm::vec4 m_ORMFactor = {}; // last index padding
+        math::Vec4 m_BaseColorFactor = math::Vec4(1.0, 1.0, 1.0, 1.0);
+        math::Vec4 m_ORMFactor = {}; // last index padding
 
         // Instance override textures
         std::optional<UUID> m_AlbedoOverride;

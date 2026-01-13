@@ -149,7 +149,7 @@ namespace Real {
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();
         (void)m_EditorState->camera->AddComponent<VelocityComponent>();
-        m_EditorState->camera->GetComponentUnchecked<TransformComponent>().m_Transform.SetTranslate(glm::vec3(0.0, 2.0, 5.0));
+        m_EditorState->camera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
 
         if (m_EditorState->camera) {
             m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
@@ -196,66 +196,66 @@ namespace Real {
 
     void Engine::InitGameResources() {
         auto& cube = m_Scene->CreateEntity("RightWall");
-        cube.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(26.0, 1.5, 0.0));
-        cube.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
+        cube.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(26.0, 1.5, 0.0));
+        cube.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(45.0, 20.0, 1.0));
         (void)cube.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
 
         auto& cube2 = m_Scene->CreateEntity("LeftWall");
-        cube2.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-26.0, 1.5, 0.0));
-        cube2.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(45.0, 20.0, 1.0));
+        cube2.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(-26.0, 1.5, 0.0));
+        cube2.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(45.0, 20.0, 1.0));
         (void)cube2.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
 
         auto& cube3 = m_Scene->CreateEntity("Floor");
-        cube3.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 0.5, 98.0));
+        cube3.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(97.0, 0.5, 98.0));
         (void)cube3.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
 
         auto& cube4 = m_Scene->CreateEntity("Roof");
-        cube4.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 13.5, 0.0));
-        cube4.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(97.0, 4.0, 1.0));
+        cube4.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 13.5, 0.0));
+        cube4.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(97.0, 4.0, 1.0));
         (void)cube4.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
 
         auto& cube5 = m_Scene->CreateEntity("Container");
-        cube5.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 0.0, 12.0));
-        cube5.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(8.0, 8.0, 8.0));
+        cube5.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 0.0, 12.0));
+        cube5.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(8.0, 8.0, 8.0));
         (void)cube5.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
 
         auto& fordCar = m_Scene->CreateEntity("FordCar");
-        fordCar.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
-        fordCar.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        fordCar.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
+        fordCar.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(1.0, 1.0, 1.0));
         (void)fordCar.AddComponent<ModelComponent>(m_AssetManager->GetModel("Ford_raptor"));
 
         auto& island_tree = m_Scene->CreateEntity("Island Tree");
-        island_tree.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
-        island_tree.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        island_tree.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
+        island_tree.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(1.0, 1.0, 1.0));
         (void)island_tree.AddComponent<ModelComponent>(m_AssetManager->GetModel("island_tree"));
 
         auto& mountain_road = m_Scene->CreateEntity("Mountain road");
-        mountain_road.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
-        mountain_road.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        mountain_road.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
+        mountain_road.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(1.0, 1.0, 1.0));
         (void)mountain_road.AddComponent<ModelComponent>(m_AssetManager->GetModel("mountain_road"));
 
         auto& porsche_car = m_Scene->CreateEntity("Porsche");
-        porsche_car.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
-        porsche_car.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        porsche_car.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
+        porsche_car.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(1.0, 1.0, 1.0));
         (void)porsche_car.AddComponent<ModelComponent>(m_AssetManager->GetModel("porsche_turbo"));
 
         auto& city_road = m_Scene->CreateEntity("City Road");
-        city_road.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(0.0, 10.0, 0.0));
-        city_road.GetComponentForModification<TransformComponent>()->m_Transform.SetScale(glm::vec3(1.0, 1.0, 1.0));
+        city_road.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
+        city_road.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(1.0, 1.0, 1.0));
         (void)city_road.AddComponent<ModelComponent>(m_AssetManager->GetModel("city_road"));
 
         auto& light = m_Scene->CreateEntity("Light");
-        light.GetComponentForModification<TransformComponent>()->m_Transform.SetTranslate(glm::vec3(-10.0, 10.0, -10.0));
+        light.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(-10.0, 10.0, -10.0));
         (void)light.AddComponent<LightComponent>();
         (void)light.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")

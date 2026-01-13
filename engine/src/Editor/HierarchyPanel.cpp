@@ -73,10 +73,10 @@ namespace Real::UI {
     }
 
     void HierarchyPanel::DrawComponent(TransformComponent *comp, Scene* scene) {
-        auto& transform = comp->m_Transform;
-        auto position = transform.GetTranslate();
-        auto rotate   = transform.GetRotationEuler();
-        auto scale    = transform.GetScale();
+        auto& transform = comp->transform;
+        auto position = transform.position;
+        auto rotate   = transform.rotation;
+        auto scale    = transform.scale;
 
         constexpr auto textboxSize = ImVec2(25.0, 30.0);
         constexpr auto textSize    = ImVec2(70.0, 30.0);
@@ -99,7 +99,7 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, position.z, 0.1, -360.0, 360.0, "%.2f");
 
-                transform.SetTranslate(position);
+                transform.SetPosition(position);
             }
 
             // Rotate
@@ -118,7 +118,7 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, rotate.z, 0.1, -360.0, 360.0, "%.2f");
 
-                transform.SetRotationEuler(rotate);
+                transform.SetRotation(rotate);
             }
 
             // Scale
@@ -207,7 +207,8 @@ namespace Real::UI {
             // Show color preview
             ImGui::SameLine();
             ImGui::ColorButton("##BaseColorPreview",
-                ImVec4(baseColor.r, baseColor.g, baseColor.b, baseColor.a),
+                // RGBA
+                ImVec4(baseColor.x, baseColor.y, baseColor.z, baseColor.w),
                 ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip,
                 ImVec2(16, 16)
             );
@@ -220,7 +221,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(100, 40, 40, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(120, 50, 50, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseR", &baseColor.r, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat("##BaseR", &baseColor.x, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Green channel
@@ -228,7 +229,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 100, 40, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 120, 50, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseG", &baseColor.g, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat("##BaseG", &baseColor.y, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Blue channel
@@ -236,7 +237,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 100, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 50, 120, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseB", &baseColor.b, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat("##BaseB", &baseColor.z, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Alpha channel
@@ -244,7 +245,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(80, 80, 80, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(100, 100, 100, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseA", &baseColor.a, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat("##BaseA", &baseColor.w, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Surface Factors
@@ -287,7 +288,7 @@ namespace Real::UI {
         }
 
         if (ImGui::BeginPopup("BaseColorPicker")) {
-            ImGui::ColorPicker4("Base Color", &baseColor.r,
+            ImGui::ColorPicker4("Base Color", &baseColor.x,
                 ImGuiColorEditFlags_DisplayRGB |
                 ImGuiColorEditFlags_DisplayHSV |
                 ImGuiColorEditFlags_AlphaBar |
@@ -308,7 +309,7 @@ namespace Real::UI {
         if (ImGui::CollapsingHeader("Light Component")) {
             const auto lightType = light.GetType();
 
-            if (ImGui::ColorEdit3("Radiance", &radiance[0])) {
+            if (ImGui::ColorEdit3("Radiance", radiance.ValuePtr())) {
                 light.SetRadiance(radiance);
             }
 

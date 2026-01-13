@@ -5,55 +5,49 @@
 #include <cmath>
 #include <glm/vec3.hpp>
 
-namespace Real::Math {
+#include "Vec2.h"
+
+namespace Real::math {
 
     struct Vec3 {
-        float x, y, z;
+        float x{}, y{}, z{};
 
-        Vec3() = default;
-        Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+        constexpr Vec3() = default;
+        explicit constexpr Vec3(float v) : x(v), y(v), z(v) {}
+        constexpr Vec3(const Vec2& xy, float z) : x(xy.x), y(xy.y), z(z) {}
+        constexpr Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-        Vec3 operator+(const Vec3& r) const noexcept {
-            return { x + r.x, y + r.y, z + r.z };
+        // Binary
+        Vec3 operator+(const Vec3& r) const noexcept { return { x+r.x, y+r.y, z+r.z }; }
+        Vec3 operator-(const Vec3& r) const noexcept { return { x-r.x, y-r.y, z-r.z }; }
+        Vec3 operator*(float s) const noexcept { return { x*s, y*s, z*s }; }
+        Vec3 operator/(float s) const noexcept { return { x/s, y/s, z/s }; }
+
+        // Compound
+        Vec3& operator+=(const Vec3& r) noexcept { x+=r.x; y+=r.y; z+=r.z; return *this; }
+        Vec3& operator-=(const Vec3& r) noexcept { x-=r.x; y-=r.y; z-=r.z; return *this; }
+        Vec3& operator*=(float s) noexcept { x*=s; y*=s; z*=s; return *this; }
+        Vec3& operator/=(float s) noexcept { x/=s; y/=s; z/=s; return *this; }
+
+        [[nodiscard]] Vec3 Normalized() const noexcept;
+
+        static float Dot(const Vec3& a, const Vec3& b) noexcept { return a.x*b.x + a.y*b.y + a.z*b.z; }
+        [[nodiscard]] Vec3 Cross(const Vec3& r) const noexcept {
+            return {
+                y*r.z - z*r.y,
+                z*r.x - x*r.z,
+                x*r.y - y*r.x
+            };
         }
 
-        Vec3 operator-(const Vec3& r) const noexcept {
-            return { x - r.x, y - r.y, z - r.z };
-        }
+        static float LengthSq(const Vec3& v) noexcept { return Dot(v,v); }
+        static float Length(const Vec3& v) noexcept { return std::sqrt(LengthSq(v)); }
 
-        Vec3 operator*(float s) const noexcept {
-            return { x * s, y * s, z * s };
-        }
+        [[nodiscard]] const float* ValuePtr() const noexcept { return &x; }
+        float* ValuePtr() noexcept { return &x; }
 
-        friend Vec3 operator*(float s, const Vec3& v) noexcept {
-            return { v.x*s, v.y*s, v.z*s };
-        }
-
-        [[nodiscard]] glm::vec3 ToGLM() const noexcept { return {x, y, z}; }
-        static Vec3 FromGLM(const glm::vec3& v) {
-            return { v.x, v.y, v.z };
-        }
-
-        // The original vector doesn't change, it's just returning a new one
-        [[nodiscard]] Vec3 Normalized() const noexcept {
-            // Compute "Squared Length" -> square of |v|
-            const float lenSq = x*x + y*y + z*z;
-            if (lenSq <= 0.0f) return { 0, 0, 0 }; // Zero check (can't division by zero) and Null values like 0.0f
-            const float inv = 1.0f / std::sqrt(lenSq); // Computes 1 / |v|
-            // Scale vector
-            return { x*inv, y*inv, z*inv };
-        }
-
-        [[nodiscard]] static float Dot(const Vec3& a, const Vec3& b) noexcept {
-            return a.x*b.x + a.y*b.y + a.z*b.z;
-        }
-
-        [[nodiscard]] static float Length(const Vec3& v) noexcept {
-            return std::sqrt(LengthSq(v));
-        }
-
-        [[nodiscard]] static float LengthSq(const Vec3& v) noexcept {
-            return Dot(v, v);
-        }
+        [[nodiscard]] glm::vec3 ToGLM() const noexcept { return { x,y,z }; }
+        static Vec3 FromGLM(const glm::vec3& v) noexcept { return { v.x,v.y,v.z }; }
     };
+
 }

@@ -5,9 +5,10 @@
 #include <glm/ext.hpp>
 #include "../Core/RealConfig.h"
 #include "GPUBuffers.h"
+#include "Math/Mat4.h"
 
 namespace Real {
-    class Transformations;
+    class Transform;
 }
 
 namespace Real {
@@ -37,13 +38,13 @@ namespace Real {
         [[nodiscard]] float GetAspect() const { return m_Aspect; }
         [[nodiscard]] float GetFOV()    const { return m_FOV;    }
 
-        [[nodiscard]] glm::mat4& GetView() { return m_View; }
-        [[nodiscard]] glm::mat4& GetProjection() { return m_Projection; }
-        [[nodiscard]] const glm::mat4& GetView() const { return m_View; }
-        [[nodiscard]] const glm::mat4& GetProjection() const { return m_Projection; }
+        [[nodiscard]] math::Mat4& GetView() { return m_View; }
+        [[nodiscard]] math::Mat4& GetProjection() { return m_Projection; }
+        [[nodiscard]] const math::Mat4& GetView() const { return m_View; }
+        [[nodiscard]] const math::Mat4& GetProjection() const { return m_Projection; }
 
-        void Update(Transformations& transform);
-        [[nodiscard]] CameraUBO ConvertToGPUFormat(Transformations& transform);
+        void Update(Transform& transform);
+        [[nodiscard]] CameraUBO ConvertToGPUFormat(const Transform& transform);
 
     private:
         float m_Near = 0.1;
@@ -52,11 +53,11 @@ namespace Real {
         float m_Aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
         CameraMode m_Mode = CameraMode::Perspective;
 
-        const glm::vec3 m_SceneCenter = glm::vec3(0.0);
-        const glm::vec3 m_WorldUp = glm::vec3(0.0, 1.0, 0.0);
+        const math::Vec3 m_SceneCenter = math::Vec3(0.0);
+        const math::Vec3 m_WorldUp = math::Vec3(0.0, 1.0, 0.0);
 
-        glm::mat4 m_View = glm::mat4(1.0);
-        glm::mat4 m_Projection = glm::mat4(1.0);
+        math::Mat4 m_View = math::Mat4(1.0);
+        math::Mat4 m_Projection = math::Mat4(1.0);
         bool m_ProjectionDirty = true;
     };
 }

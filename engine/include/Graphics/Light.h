@@ -6,7 +6,7 @@
 
 #include "GPUBuffers.h"
 
-namespace Real { class Transformations; }
+namespace Real { class Transform; }
 
 namespace Real {
 
@@ -22,9 +22,9 @@ namespace Real {
         ~Light() = default;
         Light(const Light&) = default;
 
-        void SetRadiance(const glm::vec3& radiance) { m_Radiance = radiance;  }
-        [[maybe_unused]] glm::vec3& GetRadiance()   { return m_Radiance;  }
-        [[nodiscard]] glm::vec3 GetRadiance() const { return m_Radiance;  }
+        void SetRadiance(const math::Vec3& radiance) { m_Radiance = radiance;  }
+        [[maybe_unused]] math::Vec3& GetRadiance()   { return m_Radiance;  }
+        [[nodiscard]] math::Vec3 GetRadiance() const { return m_Radiance;  }
 
         void SetConstant(float constant) { m_Constant = constant; }
         [[nodiscard]] float GetConstant() const { return m_Constant; }
@@ -40,11 +40,11 @@ namespace Real {
 
         [[nodiscard]] LightType GetType() const { return m_Type; }
 
-        void Update(Transformations& transform);
-        [[nodiscard]] LightSSBO ConvertToGPUFormat(Transformations& transform);
+        void Update(Transform& transform);
+        [[nodiscard]] LightSSBO ConvertToGPUFormat(const Transform& transform);
 
     private:
-        glm::vec3 m_Radiance  = glm::vec3(1.0);
+        math::Vec3 m_Radiance = math::Vec3(1.0);
 
         // Attenuation parameters
         float m_Constant = 1.0;

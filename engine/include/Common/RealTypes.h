@@ -7,12 +7,14 @@
 #include <vector>
 #include <Core/UUID.h>
 
+#include "Math/Vec3.h"
+
 namespace Real {
 
     struct Vertex {
-        glm::vec3 m_Position;
-        glm::vec3 m_Normal;
-        glm::vec2 m_UV;
+        math::Vec3 m_Position;
+        math::Vec3 m_Normal;
+        math::Vec2 m_UV;
     };
 
     struct TextureData {

@@ -5,6 +5,9 @@
 
 #include <utility>
 #include "Core/Logger.h"
+#include "Math/Mat2.h"
+#include "Math/Mat3.h"
+#include "Math/Vec3.h"
 
 namespace Real {
 
@@ -47,40 +50,40 @@ namespace Real {
         glUniform1f(GetULocation(name), value);
     }
 
-    void Shader::SetVec2(const std::string &name, const glm::vec2 &value) const {
-        glUniform2fv(GetULocation(name), 1, &value[0]);
+    void Shader::SetVec2(const std::string &name, const math::Vec2& value) const {
+        glUniform2fv(GetULocation(name), 1, value.ValuePtr());
     }
 
     void Shader::SetVec2(const std::string &name, float x, float y) const {
         glUniform2f(GetULocation(name), x, y);
     }
 
-    void Shader::SetVec3(const std::string &name, const glm::vec3 &value) const {
-        glUniform3fv(GetULocation(name), 1, &value[0]);
+    void Shader::SetVec3(const std::string &name, const math::Vec3 &value) const {
+        glUniform3fv(GetULocation(name), 1, value.ValuePtr());
     }
 
     void Shader::SetVec3(const std::string &name, float x, float y, float z) const {
         glUniform3f(GetULocation(name), x, y, z);
     }
 
-    void Shader::SetVec4(const std::string &name, const glm::vec4 &value) const {
-        glUniform4fv(GetULocation(name), 1, &value[0]);
+    void Shader::SetVec4(const std::string &name, const math::Vec4& value) const {
+        glUniform4fv(GetULocation(name), 1, value.ValuePtr());
     }
 
     void Shader::SetVec4(const std::string &name, float x, float y, float z, float w) const {
         glUniform4f(GetULocation(name), x, y, z, w);
     }
 
-    void Shader::SetMat2(const std::string &name, const glm::mat2 &mat) const {
-        glUniformMatrix2fv(GetULocation(name), 1, GL_FALSE, &mat[0][0]);
+    void Shader::SetMat2(const std::string &name, const math::Mat2& mat) const {
+        glUniformMatrix2fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
-    void Shader::SetMat3(const std::string &name, const glm::mat3 &mat) const {
-        glUniformMatrix3fv(GetULocation(name), 1, GL_FALSE, &mat[0][0]);
+    void Shader::SetMat3(const std::string &name, const math::Mat3& mat) const {
+        glUniformMatrix3fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
-    void Shader::SetMat4(const std::string &name, const glm::mat4 &mat) const {
-        glUniformMatrix4fv(GetULocation(name), 1, GL_FALSE, &mat[0][0]);
+    void Shader::SetMat4(const std::string &name, const math::Mat4& mat) const {
+        glUniformMatrix4fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
     int Shader::GetULocation(const std::string &name) const {
@@ -92,7 +95,7 @@ namespace Real {
         return loc;
     }
 
-    void Shader::CheckCompileErrors(GLuint shader, std::string type) {
+    void Shader::CheckCompileErrors(GLuint shader, const std::string& type) {
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM") {

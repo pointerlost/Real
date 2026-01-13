@@ -31,13 +31,14 @@ namespace Real {
 
         if (!Services::GetEditorState()->FpsMode) return;
         if (Input::IsKeyHeld(REAL_MOUSE_BUTTON_LEFT) || Input::IsKeyPressed(REAL_MOUSE_BUTTON_LEFT)) {
-            auto deltaX = Input::g_MouseX - Input::g_MouseLastX;
-            auto deltaY = Input::g_MouseLastY - Input::g_MouseY; // Y-axis should be reversed
+            // Use inverted yaw and pitch because of "REAL" engine using right-handed coordinate system
+            auto deltaX = Input::g_MouseLastX - Input::g_MouseX; // X-axis inverted
+            auto deltaY = Input::g_MouseLastY - Input::g_MouseY; // Y-axis inverted
 
             deltaX *= Input::g_Sensitivity;
             deltaY *= Input::g_Sensitivity;
 
-            Input::g_Yaw += static_cast<float>(deltaX);
+            Input::g_Yaw   += static_cast<float>(deltaX);
             Input::g_Pitch += static_cast<float>(deltaY);
 
             if (Input::g_Pitch > 89.0f)  Input::g_Pitch = 89.0f;

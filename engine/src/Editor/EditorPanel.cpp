@@ -170,20 +170,20 @@ namespace Real::UI {
             // Draw gizmos rect
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
 
-            auto& transform = Services::GetEditorState()->selectedEntity->GetComponentUnchecked<TransformComponent>().m_Transform;
+            auto& transform = Services::GetEditorState()->selectedEntity->GetComponentUnchecked<TransformComponent>().transform;
             auto& camera = Services::GetEditorState()->camera->GetComponent<CameraComponent>().m_Camera;
             auto model = transform.GetModelMatrix();
 
-            ImGuizmo::Manipulate(glm::value_ptr(camera.GetView()), glm::value_ptr(camera.GetProjection()),
-                (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(model)
+            ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
+                (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, model.ValuePtr()
             );
 
             if (ImGuizmo::IsUsing()) {
-                glm::vec3 translation, scale;
-                glm::quat rotate;
+                math::Vec3 translation{}, scale{};
+                math::Quat rotate;
 
                 math::DecomposeTransform(model, translation, rotate, scale);
-                transform.SetTranslate(translation);
+                transform.SetPosition(translation);
                 transform.SetRotation(rotate);
                 transform.SetScale(scale);
             }

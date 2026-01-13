@@ -2,19 +2,20 @@
 // Created by pointerlost on 10/13/25.
 //
 #pragma once
-#include <glm/ext.hpp>
+#include "Math/Mat4.h"
+#include "Math/Vec4.h"
 
 namespace Real {
 
     struct TransformSSBO {
-        glm::mat4 modelMatrix;
-        glm::mat4 normalMatrix;
+        math::Mat4 modelMatrix;
+        math::Mat4 normalMatrix;
     };
 
     struct LightSSBO {
-        glm::vec4 pos_cutoff{0.0}; // vec3 = position, float = cutoff
-        glm::vec4 dir_outer{0.0}; // vec3 direction, float = outerCutoff
-        glm::vec4 radiance{0.0};
+        math::Vec4 pos_cutoff{0.0}; // vec3 = position, float = cutoff
+        math::Vec4 dir_outer{0.0}; // vec3 direction, float = outerCutoff
+        math::Vec4 radiance{0.0};
         int type = 0;
         // Attenuation parameters
         float constant = 1.0;
@@ -23,9 +24,9 @@ namespace Real {
     };
 
     struct MaterialSSBO {
-        glm::vec4 m_BaseColorFactor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+        math::Vec4 m_BaseColorFactor = math::Vec4(1.0, 1.0, 1.0, 1.0);
         // 0 = ambient occlusion, 1 = roughness, 2 = metallic, 3 = padding
-        glm::vec4 m_ORMFactor = glm::vec4{1.0, 1.0, 1.0, 1.0};
+        math::Vec4 m_ORMFactor = math::Vec4{1.0, 1.0, 1.0, 1.0};
 
         // lookup table provides us texIndex and texArrayIndex
         int m_BindlessAlbedoIdx;
@@ -37,15 +38,15 @@ namespace Real {
     };
 
     struct CameraUBO {
-        glm::vec4 position       = glm::vec4(0.0f);
-        glm::mat4 view           = glm::mat4(1.0f);
-        glm::mat4 projection     = glm::mat4(1.0f);
-        glm::mat4 viewProjection = glm::mat4(1.0f);
+        math::Vec4 position       = math::Vec4(0.0f);
+        math::Mat4 view           = math::Mat4(1.0f);
+        math::Mat4 projection     = math::Mat4(1.0f);
+        math::Mat4 viewProjection = math::Mat4(1.0f);
     };
 
     struct GlobalUBO {
-        glm::vec4 GlobalAmbient{0.1};
-        int lightCount[4]; // 0 = light count, other indices padding
+        math::Vec4 GlobalAmbient{0.1};
+        int lightCount[4]{}; // 0 = light count, other indices padding
     };
 
 }

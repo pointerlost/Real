@@ -2,86 +2,50 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
-#include <glm/ext.hpp>
-
-#include "GPUBuffers.h"
+#include "Math/Math.h"
+#include "Math/Quat.h"
 
 namespace Real {
 
-    class Transformations {
-    public:
-        // TODO: implement it
-        Transformations(const glm::vec3& translate, const glm::vec3& rotate, const glm::vec3& scale);
-        Transformations(const glm::vec3& translate, const glm::quat& rotate, const glm::vec3& scale);
-        Transformations() = default;
-        ~Transformations() = default;
-        Transformations(Transformations&) = default;
+    struct Transform {
+        // Local transform data
+        math::Vec3 position{ 0.0f };
+        math::Quat rotation = math::Quat::Identity();
+        math::Vec3 scale{ 1.0f };
 
-        void SetModelMatrix(const glm::mat4& model) { m_ModelMatrix = model; }
-        // To update gizmos
-        [[nodiscard]] glm::mat4& GetModelMatrix() { m_ModelMatrixDirty = false; return m_ModelMatrix; }
-        [[nodiscard]] const glm::mat4& GetModelMatrix() const { return m_ModelMatrix; }
-        [[nodiscard]] glm::mat3 GetNormalMatrix() const { return glm::transpose(glm::inverse(glm::mat3(m_ModelMatrix))); }
-
-        void AddTranslate(const glm::vec3& position) { m_Translate += position; m_ModelMatrixDirty = true; }
-        void SetTranslate(const glm::vec3& position) { m_Translate = position;  m_ModelMatrixDirty = true; }
-        [[nodiscard]] const glm::vec3& GetTranslate() const { return m_Translate; }
-        [[nodiscard]] glm::vec3 GetTranslate() { return m_Translate; }
-
-        // World-space direction
-        void SetWorldDirection(const glm::vec3& dir) { m_ModelMatrixDirty = true; m_WorldForward = dir; }
-        [[nodiscard]] glm::vec3 GetWorldDirection() const {
-            return glm::normalize(glm::mat3(m_ModelMatrix) * glm::vec3(0.0, 0.0, -1.0));
+        [[nodiscard]] math::Mat4 GetModelMatrix() const {
+            // TRANSLATE * ROTATE * SCALE
+            return  math::Mat4::Translate(position) * rotation.ToMat4() * math::Mat4::Scale(scale);
         }
 
-        void SetLocalDirection(const glm::vec3& dir) { m_ModelMatrixDirty = true; m_LocalForward = dir; }
-        [[nodiscard]] glm::vec3 GetLocalDirection() const {
-            return glm::normalize(glm::mat3(m_Rotate) * glm::vec3(0.0, 0.0, -1.0));
+        // Directions (World-space)
+        [[nodiscard]] math::Vec3 Forward() const { return rotation.Rotate({ 0.0f, 0.0f, -1.0f }); }
+        [[nodiscard]] math::Vec3 Up()      const { return rotation.Rotate({ 0.0f, 1.0f,  0.0f }); }
+        [[nodiscard]] math::Vec3 Right()   const { return rotation.Rotate({ 1.0f, 0.0f,  0.0f }); }
+
+        void SetPosition(const math::Vec3& p) { position = p; }
+        void Translate(const math::Vec3& delta) { position += delta; }
+
+        // default -> rotate in object space (expected by users)
+        void SetRotation(const math::Quat& q) { rotation = q.Normalized(); }
+        void Rotate(const math::Quat& delta)  { rotation = (rotation * delta).Normalized(); }
+
+        void RotateAxisAngle(const math::Vec3& axis, float radians) {
+            Rotate(math::Quat::FromAxisAngle(axis, radians));
         }
 
-        void SetUp(const glm::vec3& up) { m_Up = up; }
-        void SetRight(const glm::vec3& right) { m_Right = right; }
-        [[nodiscard]] const glm::vec3& GetUp() const { return m_Up; }
-        [[nodiscard]] const glm::vec3& GetRight() const { return m_Right; }
-
-        void AddRotate(float angle, const glm::vec3& axis) {
-            m_ModelMatrixDirty = true;
-            m_Rotate = glm::angleAxis(glm::radians(angle), axis) * m_Rotate;
+        void LookAt(const math::Vec3& target, const math::Vec3& worldUp = { 0, 1, 0 }) {
+            const math::Vec3 forward = (target - position).Normalized();
+            rotation = math::LookRotation(forward, worldUp);
         }
-        void SetRotate(float angle, const glm::vec3& axis) {
-            m_ModelMatrixDirty = true;
-            m_Rotate = glm::angleAxis(glm::radians(angle), axis);
+
+        void SetScale(const math::Vec3& s) { scale = s; }
+
+        void MultiplyScale(const math::Vec3& factor) {
+            scale.x *= factor.x;
+            scale.y *= factor.y;
+            scale.z *= factor.z;
         }
-        void SetRotationEuler(const glm::vec3& eulerDegrees) {
-            m_ModelMatrixDirty = true;
-            m_Rotate = glm::quat(glm::radians(eulerDegrees));
-        }
-        void SetRotation(const glm::quat& rotate) { m_ModelMatrixDirty = true; m_Rotate = rotate; }
-        void SetRotation(const glm::mat4& rotate) { m_ModelMatrixDirty = true; m_Rotate = glm::quat_cast(rotate); }
-        void SetRotation(const glm::vec3& forward) { m_ModelMatrixDirty = true; m_Rotate = glm::quat(glm::vec3(0, 0, -1), forward); }
-        [[nodiscard]] glm::vec3 GetRotationEuler() const { return glm::degrees(glm::eulerAngles(m_Rotate)); }
-        [[nodiscard]] const glm::quat& GetRotationWithQuat() const { return m_Rotate; }
-        [[nodiscard]] glm::mat4 GetRotationWithMat4() const { return glm::mat4_cast(m_Rotate); }
-
-        void AddScale(const glm::vec3& scale) { m_Scale += scale; m_ModelMatrixDirty = true; }
-        void SetScale(const glm::vec3& scale) { m_Scale = scale;  m_ModelMatrixDirty = true; }
-        [[nodiscard]] const glm::vec3& GetScale() const { return m_Scale; }
-        [[nodiscard]] glm::vec3 GetScale() { return m_Scale; }
-
-        void Update();
-        [[nodiscard]] TransformSSBO ConvertToGPUFormat();
-
-    private:
-        glm::vec3 m_Translate = glm::vec3(0.0f);
-        glm::quat m_Rotate = glm::identity<glm::quat>();
-        glm::vec3 m_Scale = glm::vec3(1.0f);
-
-        glm::vec3 m_LocalForward = glm::vec3(0.0, 0.0, -1.0);
-        glm::vec3 m_WorldForward = glm::vec3(0.0, 0.0, -1.0);
-        glm::vec3 m_Up = glm::vec3(0.0, 1.0, 0.0);
-        glm::vec3 m_Right = glm::vec3(1.0, 0.0, 0.0);
-
-        glm::mat4 m_ModelMatrix = glm::mat4(1.0f);
-        mutable bool m_ModelMatrixDirty = true;
     };
+
 }

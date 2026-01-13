@@ -62,8 +62,8 @@ namespace Real {
     private:
         void CollectLight(const Entity* entity);
         void CollectCamera(const Entity* entity);
-        int PushTransform(TransformComponent& tc);
-        int PushMaterial(const UUID& materialUUID);
+        int BuildTransform(const TransformComponent& tc);
+        int BuildMaterial(const UUID& materialUUID);
         void PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex, uint baseInstance);
         std::vector<RenderableData> CollectRenderables(const Entity* entity);
         void CollectGlobalData();

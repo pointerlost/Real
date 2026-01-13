@@ -209,7 +209,7 @@ namespace Real {
                 aiVector3D n = normalMat * mesh->mNormals[i];
                 vertex.m_Normal = { n.x, n.y, n.z };
             } else {
-                vertex.m_Normal = glm::vec3(0.0, 1.0, 0.0);
+                vertex.m_Normal = math::Vec3(0.0, 1.0, 0.0);
             }
 
             // UV
@@ -217,7 +217,7 @@ namespace Real {
                 vertex.m_UV.x = mesh->mTextureCoords[0][i].x;
                 vertex.m_UV.y = mesh->mTextureCoords[0][i].y;
             } else {
-                vertex.m_UV = glm::vec2(0.0, 0.0);
+                vertex.m_UV = math::Vec2(0.0, 0.0);
             }
 
             // Tangent and Bitangent

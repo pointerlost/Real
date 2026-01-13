@@ -124,9 +124,17 @@ add_executable(engine
     include/Math/Vec3.h
     include/Math/Vec2.h
     include/Math/Vec4.h
-        include/Math/Mat2.h
-        include/Math/Mat3.h
-        include/Math/Mat4.h
+    include/Math/Mat2.h
+    include/Math/Mat3.h
+    include/Math/Mat4.h
+    include/Math/Quat.h
+    src/Math/Quat.cpp
+    src/Math/Mat2.cpp
+    src/Math/Mat3.cpp
+    src/Math/Mat4.cpp
+    src/Math/Vec2.cpp
+    src/Math/Vec3.cpp
+    src/Math/Vec4.cpp
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)

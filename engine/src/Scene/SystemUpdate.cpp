@@ -11,7 +11,8 @@ namespace Real {
         const auto& view = scene->GetAllEntitiesWith<TransformComponent>();
 
         for (const auto& [entity, transform] : view.each()) {
-            transform.m_Transform.Update();
+            // TODO: need an update helper?
+            // transform.transform.Update();
         }
     }
 
@@ -19,16 +20,16 @@ namespace Real {
         const auto& view = scene->GetAllEntitiesWith<VelocityComponent, TransformComponent>();
 
         for (const auto& [entity, vc, tc] : view.each()) {
-            auto& transform = tc.m_Transform;
+            auto& transform = tc.transform;
 
             vc.m_LinearVelocity = (
-                transform.GetRight() * vc.m_Speed.x +
-                transform.GetUp()    * vc.m_Speed.y +
-                transform.GetWorldDirection() * vc.m_Speed.z
+                transform.Right() * vc.m_Speed.x +
+                transform.Up()    * vc.m_Speed.y +
+                transform.Forward() * vc.m_Speed.z
             );
 
             // TODO: need movement system to update transform stuff
-            transform.AddTranslate(vc.m_LinearVelocity);
+            transform.Translate(vc.m_LinearVelocity);
 
             // TODO: Add acceleration for rotation
         }
@@ -41,7 +42,7 @@ namespace Real {
         const auto& view = scene->GetAllEntitiesWith<CameraComponent, TransformComponent>();
 
         for (const auto& [entity, camera, transform] : view.each()) {
-            camera.m_Camera.Update(transform.m_Transform);
+            camera.m_Camera.Update(transform.transform);
         }
     }
 
@@ -49,7 +50,7 @@ namespace Real {
         const auto& view = scene->GetAllEntitiesWith<LightComponent, TransformComponent>();
 
         for (const auto& [entity, light, transform] : view.each()) {
-            light.m_Light.Update(transform.m_Transform);
+            light.m_Light.Update(transform.transform);
         }
     }
 }

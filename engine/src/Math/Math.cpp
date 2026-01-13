@@ -4,16 +4,22 @@
 #include "Math/Math.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/matrix_decompose.hpp"
+#include "Math/Mat4.h"
+#include "Math/Quat.h"
 
 namespace Real::math {
 
-    bool DecomposeTransform(const glm::mat4 &transform, glm::vec3& translation, glm::quat &rotation, glm::vec3 &scale) {
-        // From glm::decompose in matrix_decompose.inl
+    bool DecomposeTransform(Mat4& transform, Vec3& translation, Quat& rotation, Vec3& scale) {
+        const glm::mat4 glmTransform = transform.ToGLM();
+        glm::vec3 glmTranslation     = {};
+        glm::quat glmRotation        = {};
+        glm::vec3 glmScale           = {};
 
+        // From glm::decompose in matrix_decompose.inl
         using namespace glm;
         using T = float;
 
-        mat4 LocalMatrix(transform);
+        mat4 LocalMatrix(glmTransform);
 
         // Normalize the matrix.
         if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
@@ -31,7 +37,7 @@ namespace Real::math {
         }
 
         // Next take care of translation (easy).
-        translation = vec3(LocalMatrix[3]);
+        glmTranslation = vec3(LocalMatrix[3]);
         LocalMatrix[3] = vec4(0, 0, 0, LocalMatrix[3].w);
 
         vec3 Row[3], Pdum3;
@@ -42,11 +48,11 @@ namespace Real::math {
                 Row[i][j] = LocalMatrix[i][j];
 
         // Compute X scale factor and normalize first row.
-        scale.x = length(Row[0]);
+        glmScale.x = length(Row[0]);
         Row[0] = detail::scale(Row[0], static_cast<T>(1));
-        scale.y = length(Row[1]);
+        glmScale.y = length(Row[1]);
         Row[1] = detail::scale(Row[1], static_cast<T>(1));
-        scale.z = length(Row[2]);
+        glmScale.z = length(Row[2]);
         Row[2] = detail::scale(Row[2], static_cast<T>(1));
 
         // At this point, the matrix (in rows[]) is orthonormal.
@@ -65,8 +71,14 @@ namespace Real::math {
     #endif
 
         // Convert the 3x3 rotation matrix to quaternion
-        mat3 rotationMatrix = mat3(Row[0], Row[1], Row[2]);
-        rotation = quat_cast(rotationMatrix);
+        const auto rotationMatrix = mat3(Row[0], Row[1], Row[2]);
+        glmRotation = quat_cast(rotationMatrix);
+
+        // Convert glm math to REAL custom math
+        transform   = Mat4::FromGLM(glmTransform);
+        translation = Vec3::FromGLM(glmTranslation);
+        rotation    = Quat::FromGLM(glmRotation);
+        scale       = Vec3::FromGLM(glmScale);
 
         return true;
     }
@@ -82,5 +94,55 @@ namespace Real::math {
             x <<= 1;
         }
         return abs(y - num) > abs(x - num) ? x : y;
+    }
+
+    Quat LookRotation(const Vec3 &fwd, const Vec3 &up) noexcept {
+        // Ensure forward is normalized
+        const Vec3 f = fwd.Normalized();
+        // Ensure up is not parallel to forward
+        const Vec3 r = up.Cross(f).Normalized();
+        // Recalculate orthonormal up
+        const Vec3 u = f.Cross(r);
+
+        // Create rotation matrix from orthonormal basis
+        const float m00 = r.x, m01 = r.y, m02 = r.z;
+        const float m10 = u.x, m11 = u.y, m12 = u.z;
+        const float m20 = f.x, m21 = f.y, m22 = f.z;
+
+        // Convert matrix to quaternion (trace method)
+        const float trace = m00 + m11 + m22;
+        Quat q{};
+
+        if (trace > 0.0f) {
+            const float s = sqrt(trace + 1.0f) * 2.0f;
+            const float invS = 1.0f / s;
+            q.w = 0.25f * s;
+            q.x = (m12 - m21) * invS;
+            q.y = (m20 - m02) * invS;
+            q.z = (m01 - m10) * invS;
+        } else if (m00 > m11 && m00 > m22) {
+            const float s = sqrt(1.0f + m00 - m11 - m22) * 2.0f;
+            const float invS = 1.0f / s;
+            q.w = (m12 - m21) * invS;
+            q.x = 0.25f * s;
+            q.y = (m01 + m10) * invS;
+            q.z = (m02 + m20) * invS;
+        } else if (m11 > m22) {
+            const float s = sqrt(1.0f + m11 - m00 - m22) * 2.0f;
+            const float invS = 1.0f / s;
+            q.w = (m20 - m02) * invS;
+            q.x = (m01 + m10) * invS;
+            q.y = 0.25f * s;
+            q.z = (m12 + m21) * invS;
+        } else {
+            const float s = sqrt(1.0f + m22 - m00 - m11) * 2.0f;
+            const float invS = 1.0f / s;
+            q.w = (m01 - m10) * invS;
+            q.x = (m02 + m20) * invS;
+            q.y = (m12 + m21) * invS;
+            q.z = 0.25f * s;
+        }
+
+        return q.Normalized();
     }
 }

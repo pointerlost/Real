@@ -2,52 +2,35 @@
 // Created by pointerlost on 1/11/26.
 //
 #pragma once
-#include <cmath>
 #include "Vec2.h"
+#include <glm/mat2x2.hpp>
 
-namespace Real::Math {
+#include "Math.h"
+
+namespace Real::math {
 
     struct Mat2 {
-        // column-major: m[col][row]
+        // Column-major: m[column][row]
         float m[2][2]{};
 
-        Mat2() noexcept {
-            *this = Identity();
-        }
-
-        static Mat2 Identity() noexcept {
-            Mat2 r{};
-            r.m[0][0] = 1.0f;
-            r.m[1][1] = 1.0f;
-            return r;
-        }
-
-        static Mat2 Rotation(float rad) noexcept {
-            Mat2 r{};
-            float c = std::cos(rad);
-            float s = std::sin(rad);
-
-            r.m[0][0] =  c; r.m[1][0] = -s;
-            r.m[0][1] =  s; r.m[1][1] =  c;
-            return r;
-        }
-
-        Vec2 operator*(const Vec2& v) const noexcept {
-            return {
-                m[0][0] * v.x + m[1][0] * v.y,
-                m[0][1] * v.x + m[1][1] * v.y
-            };
-        }
-
-        Mat2 operator*(const Mat2& r) const noexcept {
-            Mat2 out{};
+        constexpr Mat2(float diagonal = 1.0f) noexcept {
             for (int c = 0; c < 2; ++c)
-                for (int row = 0; row < 2; ++row)
-                    out.m[c][row] =
-                        m[0][row] * r.m[c][0] +
-                        m[1][row] * r.m[c][1];
-            return out;
+                for (int r = 0; r < 2; ++r)
+                    m[c][r] = (c == r) ? diagonal : 0.0f;
         }
+
+        static constexpr Mat2 Identity() noexcept { return { 1.0f }; }
+        Mat2 operator*(const Mat2& rhs) const noexcept;
+
+        static Mat2 Rotate(float rad)  noexcept;
+        static Mat2 Scale(const Vec2& s) noexcept;
+
+        [[nodiscard]] const float* ValuePtr() const noexcept { return &m[0][0]; }
+        [[nodiscard]] float*       ValuePtr()       noexcept { return &m[0][0]; }
+
+        [[nodiscard]] glm::mat2 ToGLM() const noexcept;
+        static Mat2 FromGLM(const glm::mat2& g) noexcept;
     };
+
 
 }

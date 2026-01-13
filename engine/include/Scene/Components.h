@@ -9,7 +9,6 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Light.h"
 #include "Graphics/Transformations.h"
-#include "Physics/Collision/Primitives.h"
 
 namespace Real {
     struct Model;
@@ -35,15 +34,15 @@ namespace Real {
     };
 
     struct TransformComponent {
-        Transformations m_Transform{};
+        Transform transform{};
         TransformComponent() = default;
         TransformComponent(const TransformComponent&) = delete;
     };
 
     struct VelocityComponent {
-        glm::vec3 m_LinearVelocity = glm::vec3(0.0);
-        glm::vec3 m_Acceleration   = glm::vec3(0.0);
-        glm::vec3 m_Speed          = glm::vec3(0.0);
+        math::Vec3 m_LinearVelocity = math::Vec3(0.0);
+        math::Vec3 m_Acceleration   = math::Vec3(0.0);
+        math::Vec3 m_Speed          = math::Vec3(0.0);
 
         VelocityComponent() = default;
         VelocityComponent(const VelocityComponent&) = default;

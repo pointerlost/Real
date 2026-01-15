@@ -78,4 +78,10 @@ namespace Real {
         // TODO: Need transform for per mesh!
     };
 
+    enum class BodyType {
+        Static,
+        Dynamic,
+        Kinematic,
+    };
+
 }

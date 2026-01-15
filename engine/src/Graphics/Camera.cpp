@@ -33,7 +33,7 @@ namespace Real {
 
         // Build Projection matrix
         if (m_Mode == CameraMode::Perspective && m_ProjectionDirty) {
-            m_Projection = math::Mat4::FromGLM(glm::perspective(glm::radians(m_FOV), m_Aspect, m_Near, m_Far));
+            m_Projection = math::Mat4::FromGLM(glm::perspective(math::radians(m_FOV), m_Aspect, m_Near, m_Far));
             m_ProjectionDirty = false;
         }
 

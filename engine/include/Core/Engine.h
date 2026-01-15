@@ -18,7 +18,7 @@
 #include "Resource/ResourceLoader.h"
 #include "Core/AssetImporter.h"
 #include "Scene/Scene.h"
-#include "Scene/Systems.h"
+#include "../Scene/Systems/Systems.h"
 
 namespace Real {
 

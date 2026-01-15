@@ -76,7 +76,7 @@ namespace Real {
         Input::Update(m_CameraInput.get());
         m_AssetImporter->Update();
         m_AssetManager->Update();
-        m_Systems->UpdateAll(m_Scene.get(), m_EditorTimer->GetDelta());
+        m_Systems->Update(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
     }
 

@@ -58,6 +58,9 @@ Desktop.ini
 /engine/vendor/**/build/
 /engine/vendor/**/CMakeCache.txt
 /engine/vendor/**/CMakeFiles/
+/engine/vendor/**/release/
+/engine/vendor/**/debug/
+/engine/vendor/**/lib/
 
 /engine/*.gch
 /engine/**/*.gch

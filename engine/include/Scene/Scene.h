@@ -8,11 +8,8 @@
 #include "Graphics/Light.h"
 
 namespace Real {
-    struct Model;
-}
-
-namespace Real {
     class Entity;
+    struct Model;
 
     namespace opengl {
         class Renderer;

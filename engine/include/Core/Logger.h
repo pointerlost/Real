@@ -22,6 +22,12 @@ namespace Real {
         throw std::runtime_error(message);
     }
 
+    template <typename T>
+    constexpr void Error(const T& message, const char* file, int line) {
+        std::cerr << "ERROR: " << message << " file: " << file << " line: " << line << std::endl;
+        throw std::runtime_error(message);
+    }
+
     template <typename... Args>
     constexpr void WarnDebugExtraInfo(Args&&... args) {
         // TODO: fill

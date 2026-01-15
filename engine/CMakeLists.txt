@@ -17,13 +17,11 @@ find_package(glm CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
-# Physx
-find_package(unofficial-omniverse-physx-sdk CONFIG REQUIRED)
 
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
-add_executable(engine
+add_executable(ENGINE_TARGET
     main/main.cpp
     src/Core/file_manager.cpp
     include/Core/Window.h
@@ -89,10 +87,8 @@ add_executable(engine
     vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
-    include/Scene/Systems.h
-    include/Scene/SystemUpdate.h
-    src/Scene/SystemUpdate.cpp
-    src/Scene/Systems.cpp
+    include/Scene/Systems/Systems.h
+    src/Scene/Systems/Systems.cpp
     include/API/OpenGL/Types/FrameBuffer.h
     src/API/OpenGL/Types/FrameBuffer.cpp
     include/Util/Util.h
@@ -135,6 +131,23 @@ add_executable(engine
     src/Math/Vec2.cpp
     src/Math/Vec3.cpp
     src/Math/Vec4.cpp
+    include/Scene/Systems/PhysicsSystem.h
+    include/Physics/PhysXContext.h
+    src/Physics/PhysXContext.cpp
+    include/Physics/PhysXTypes.h
+    src/Scene/Systems/PhysicsSystem.cpp
+    include/Scene/Systems/TransformSystem.h
+    include/Scene/Systems/MeshRendererSystem.h
+    include/Scene/Systems/CameraSystem.h
+    include/Scene/Systems/LightSystem.h
+    src/Scene/Systems/TransformSystem.cpp
+    src/Scene/Systems/MeshRendererSystem.cpp
+    src/Scene/Systems/CameraSystem.cpp
+    src/Scene/Systems/LightSystem.cpp
+    include/Physics/PhysXErrorCallback.h
+    src/Physics/PhysXErrorCallback.cpp
+    src/Physics/PhysXAllocator.cpp
+    include/Physics/PhysXAllocator.h
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
@@ -146,23 +159,26 @@ configure_file(
     @ONLY
 )
 
-target_sources(engine
+target_sources(ENGINE_TARGET
     PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
 )
 
 add_library(glad_local STATIC vendor/glad/src/glad.c)
 
-target_include_directories(engine
+target_include_directories(glad_local PUBLIC vendor/glad/include)
+
+target_include_directories(ENGINE_TARGET
     PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_BINARY_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/physx/include
 )
 
-target_include_directories(glad_local PUBLIC vendor/glad/include)
+set(PHYSX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vendor/physx)
 
-target_link_libraries(engine
+target_link_libraries(ENGINE_TARGET
     PRIVATE
     glad_local
     glfw
@@ -171,9 +187,6 @@ target_link_libraries(engine
     imgui::imgui
     assimp::assimp
     zstd::libzstd
-
-    # Physx lib
-    unofficial::omniverse-physx-sdk::sdk
 
     # AMD Compressonator lib
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Compressonator.a
@@ -187,4 +200,17 @@ target_link_libraries(engine
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_SSE.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX.a
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX512.a
+
+    # PhysX
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysX_static_64.a>
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXExtensions_static_64.a>
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXCommon_static_64.a>
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXFoundation_static_64.a>
+    $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysX_static_64.a>
+    $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
+    $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXCommon_static_64.a>
+    $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXFoundation_static_64.a>
 )
+if(UNIX AND NOT APPLE)
+    target_link_libraries(ENGINE_TARGET PRIVATE pthread dl)
+endif()

@@ -4,11 +4,14 @@
 #pragma once
 #include <utility>
 #include <vector>
+
+#include "Common/RealTypes.h"
 #include "Core/Utils.h"
 #include "Core/UUID.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Light.h"
 #include "Graphics/Transformations.h"
+#include "Physics/PhysXTypes.h"
 
 namespace Real {
     struct Model;
@@ -59,7 +62,20 @@ namespace Real {
         MeshRendererComponent(MeshRendererComponent&) = default;
     };
 
-    struct ColliderComponent {
+    struct RigidBodyComponent {
+        BodyType type = BodyType::Static;
+        float mass = 1.0f;
+        bool useGravity = true;
+    };
+
+    struct BoxColliderComponent {
+        math::Vec3 halfExtents{0.5f};
+        bool isTrigger = false;
+    };
+
+    struct SphereColliderComponent {
+        float radius = 0.5f;
+        bool isTrigger = false;
     };
 
     struct ModelComponent {

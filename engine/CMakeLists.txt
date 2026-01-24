@@ -136,11 +136,9 @@ add_executable(ENGINE_TARGET
     src/Physics/PhysXContext.cpp
     include/Physics/PhysXTypes.h
     src/Scene/Systems/PhysicsSystem.cpp
-    include/Scene/Systems/TransformSystem.h
     include/Scene/Systems/MeshRendererSystem.h
     include/Scene/Systems/CameraSystem.h
     include/Scene/Systems/LightSystem.h
-    src/Scene/Systems/TransformSystem.cpp
     src/Scene/Systems/MeshRendererSystem.cpp
     src/Scene/Systems/CameraSystem.cpp
     src/Scene/Systems/LightSystem.cpp

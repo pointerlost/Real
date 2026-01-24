@@ -30,16 +30,16 @@ namespace Real {
 
         // Input: Keyboard State
         if (Input::IsKeyHeld(REAL_KEY_W)) {
-            velocity.m_Speed.z += static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.z += 22.5f;
         }
         if (Input::IsKeyHeld(REAL_KEY_A)) {
-            velocity.m_Speed.x -= static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.x -= 22.5f;
         }
         if (Input::IsKeyHeld(REAL_KEY_S)) {
-            velocity.m_Speed.z -= static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.z -= 22.5f;
         }
         if (Input::IsKeyHeld(REAL_KEY_D)) {
-            velocity.m_Speed.x += static_cast<float>(35.0 * deltaTime);
+            velocity.m_Speed.x += 22.5f;
         }
 
         // Input: Mouse Button State

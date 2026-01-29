@@ -10,5 +10,9 @@ namespace Real::ecs {
         void Init() override;
         void Update(Scene *scene, float deltaTime) override;
         void Shutdown() override;
+        void SetRegistry(entt::registry& registry) override;
+
+    private:
+        entt::registry* m_Registry = nullptr;
     };
 }

@@ -1,6 +1,7 @@
 //
 // Created by pointerlost on 1/13/26.
 //
+#include <glm/gtc/type_ptr.hpp>
 #include <Math/Mat4.h>
 
 namespace Real::math {
@@ -47,5 +48,24 @@ namespace Real::math {
             for (int row = 0; row < 4; ++row)
                 r.m[c][row] = g[c][row];
         return r;
+    }
+
+    Mat4 Mat4::Inverted() const noexcept {
+        // Let GLM handle the inverse
+        const glm::mat4 inv = glm::inverse(ToGLM());
+
+        // Convert back to Real Mat4
+        return Mat4(FromGLM(inv));
+    }
+
+    Mat4 Mat4::Inverted(const Mat4 &m) noexcept {
+        // Convert Mat4 to glm::mat4
+        const glm::mat4 glmMat = m.ToGLM();
+
+        // Let GLM handle the inverse
+        const glm::mat4 inv = glm::inverse(glmMat);
+
+        // Convert back to Real Mat4
+        return Mat4(FromGLM(inv));
     }
 }

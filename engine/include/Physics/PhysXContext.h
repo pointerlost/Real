@@ -8,7 +8,7 @@
 #include "PhysXErrorCallback.h"
 #include "Core/Utils.h"
 
-namespace Real::ecs {
+namespace Real::physics {
 
     // This class manages: PhysX lifetime and low-level state
     class PhysXContext {
@@ -16,9 +16,9 @@ namespace Real::ecs {
         void Init();
         void Shutdown();
 
-        [[nodiscard]] physx::PxPhysics& Physics() const { return *m_Physics; }
-        [[nodiscard]] physx::PxScene&   Scene()   const { return *m_Scene; }
-        [[nodiscard]] physx::PxMaterial& DefaultMaterial() const { return *m_DefaultMaterial; }
+        [[nodiscard]] physx::PxPhysics& GetPhysics() const { return *m_Physics; }
+        [[nodiscard]] physx::PxScene&   GetScene()   const { return *m_Scene; }
+        [[nodiscard]] physx::PxMaterial& GetDefaultMaterial() const { return *m_DefaultMaterial; }
 
     private:
         physx::PxFoundation*    m_Foundation = nullptr;

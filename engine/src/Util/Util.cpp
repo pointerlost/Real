@@ -6,14 +6,58 @@
 #include <fstream>
 #include <GL/glext.h>
 #include <nlohmann/json.hpp>
+
+#include "PxMaterial.h"
+#include "PxPhysics.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
 #include "Graphics/Texture.h"
+#include "Graphics/Transformations.h"
+#include "Math/Quat.h"
+#include "Physics/PhysicsTypes.h"
 
 namespace Real::util {
 
     bool IsSubString(const std::string &subStr, const std::string &string) {
         return string.find(subStr) != std::string::npos;
+    }
+
+    math::Vec3 PXToReal(const physx::PxVec3& v) {
+        return { v.x, v.y, v.z };
+    }
+
+    math::Quat PXToReal(const physx::PxQuat& q) {
+        return { q.x, q.y, q.z, q.w };
+    }
+
+    Transform PXToReal(const physx::PxTransform& t) {
+        return { PXToReal(t.p), PXToReal(t.q) };
+    }
+
+    physx::PxVec3 RealToPX(const math::Vec3 &v) {
+        return { v.x, v.y, v.z };
+    }
+
+    physx::PxQuat RealToPX(const math::Quat &q) {
+        return { q.x, q.y, q.z, q.w };
+    }
+
+    physx::PxTransform RealToPX(const Transform &t) {
+        return { RealToPX(t.position), RealToPX(t.rotation) };
+    }
+
+    physx::PxShape* CreatePhysXShapeFromReal(physx::PxPhysics& px, const physx::PxMaterial* mat, const physics::ColliderShape shape) {
+        switch (shape) {
+            case physics::ColliderShape::Box:
+                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat);
+            case physics::ColliderShape::Capsule:
+                return px.createShape(physx::PxCapsuleGeometry(0.5f, 1.0f), *mat);
+            case physics::ColliderShape::Sphere:
+                return px.createShape(physx::PxSphereGeometry(1.0f), *mat);
+            default:
+                Info("There is no Collider Shape! returning a box!");
+                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat);
+        }
     }
 
     int TextureTypeToChannelCount(TextureType type) {

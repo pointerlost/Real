@@ -5,6 +5,7 @@
 #include "Core/Utils.h"
 #include "entt/entt.hpp"
 #include "Core/UUID.h"
+#include "Event/SceneEvents.h"
 #include "Graphics/Light.h"
 
 namespace Real {
@@ -39,13 +40,18 @@ namespace Real {
         Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
 
         Entity* GetEntityWithUUID(UUID uuid);
-        void OnModelAssigned(Entity& parent, const Ref<Model>& model);
+        void HandleModelAssigned(Entity& parent, const Ref<Model>& model);
 
         template <typename T>
         void OnComponentAdded(Entity& entity, T& component);
 
+        event::SceneEvents& Events() { return m_Events; }
+
     private:
         entt::registry m_Registry;
         std::unordered_map<UUID, Entity> m_Entities;
+
+    private:
+        event::SceneEvents m_Events;
     };
 }

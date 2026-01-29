@@ -1,12 +1,12 @@
 //
-// Created by pointerlost on 1/14/26.
+// Created by pointerlost on 1/25/26.
 //
 #pragma once
 #include "Systems.h"
 
 namespace Real::ecs {
 
-    class LightSystem final : public Systems {
+    class MovementSystem final : public Systems {
         void Init() override;
         void Update(Scene *scene, float deltaTime) override;
         void Shutdown() override;

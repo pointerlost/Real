@@ -13,4 +13,8 @@ namespace Real::ecs {
 
     void MeshRendererSystem::Shutdown() {
     }
+
+    void MeshRendererSystem::SetRegistry(entt::registry &registry) {
+        m_Registry = &registry;
+    }
 }

@@ -52,6 +52,11 @@ namespace Real {
         // Load all the resources with the ResourceLoader
         InitResourceLoader();
 
+        // Set registries to sub-systems
+        for (const auto& ss : m_Systems->GetSubSystems()) {
+            ss->SetRegistry(m_Scene->GetRegistry());
+        }
+
         Info("Engine Resources loaded successfully!");
     }
 
@@ -148,7 +153,7 @@ namespace Real {
         // Editor camera
         m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
         (void)m_EditorState->camera->AddComponent<CameraComponent>();
-        (void)m_EditorState->camera->AddComponent<VelocityComponent>();
+        (void)m_EditorState->camera->AddComponent<MovementComponent>();
         m_EditorState->camera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
 
         if (m_EditorState->camera) {
@@ -214,6 +219,8 @@ namespace Real {
         (void)cube3.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
+        cube3.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
+        cube3.AddComponent<PhysicsBodyComponent>().bodyType = physics::BodyType::Static;
 
         auto& cube4 = m_Scene->CreateEntity("Roof");
         cube4.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 13.5, 0.0));
@@ -256,7 +263,7 @@ namespace Real {
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(-10.0, 10.0, -10.0));
-        (void)light.AddComponent<LightComponent>();
+        (void)light.AddComponent<LightComponent>(LightType::DIRECTIONAL);
         (void)light.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );

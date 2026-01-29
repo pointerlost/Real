@@ -32,6 +32,15 @@ namespace Real {
     }
 
     template<>
+    void Scene::OnComponentAdded<PhysicsBodyComponent>(Entity& entity, PhysicsBodyComponent& component) {
+        m_Events.OnPhysicsBodyAdded.Emit(entity, component);
+    }
+
+    template<>
+    void Scene::OnComponentAdded<ColliderComponent>(Entity& entity, ColliderComponent& component) {
+    }
+
+    template<>
     void Scene::OnComponentAdded<CameraComponent>(Entity& entity, CameraComponent& component) {
     }
 
@@ -41,7 +50,10 @@ namespace Real {
 
     template<>
     void Scene::OnComponentAdded<ModelComponent>(Entity& entity, ModelComponent& component) {
-        OnModelAssigned(entity, component.m_Model);
+        HandleModelAssigned(entity, component.m_Model);
+
+        // Notify systems
+        m_Events.OnModelAssigned.Emit(entity, component);
     }
 
     template<>
@@ -49,7 +61,7 @@ namespace Real {
     }
 
     template<>
-    void Scene::OnComponentAdded<VelocityComponent>(Entity& entity, VelocityComponent& component) {
+    void Scene::OnComponentAdded<MovementComponent>(Entity& entity, MovementComponent& component) {
     }
 
     template<>
@@ -92,7 +104,7 @@ namespace Real {
         return &it->second;
     }
 
-    void Scene::OnModelAssigned(Entity& parent, const Ref<Model>& model) {
+    void Scene::HandleModelAssigned(Entity& parent, const Ref<Model>& model) {
         std::vector<UUID> matInstanceUUIDs;
 
         for (const auto& matUUID : model->m_MaterialAssetUUIDs) {

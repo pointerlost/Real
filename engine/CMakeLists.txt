@@ -146,6 +146,14 @@ add_executable(ENGINE_TARGET
     src/Physics/PhysXErrorCallback.cpp
     src/Physics/PhysXAllocator.cpp
     include/Physics/PhysXAllocator.h
+    include/Physics/PhysicsTypes.h
+        include/Scene/Systems/MovementSystem.h
+        src/Scene/Systems/MovementSystem.cpp
+        include/Physics/PhysicsAPI.h
+        include/Event/Signal.h
+        include/Event/SceneEvents.h
+        src/Event/Signal.cpp
+        src/Event/SceneEvents.cpp
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)

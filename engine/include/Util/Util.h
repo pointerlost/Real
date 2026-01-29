@@ -7,8 +7,26 @@
 #include "compressonator/include/cmp_compressonatorlib/compressonator.h"
 #include "glad/glad.h"
 #include <assimp/material.h>
-#include <nlohmann/json_fwd.hpp>
 #include "Graphics/Texture.h"
+#include <PxActor.h>
+
+namespace Real::physics {
+    enum class ColliderShape;
+}
+
+namespace physx {
+    class PxMaterial;
+    class PxPhysics;
+    class PxShape;
+}
+
+namespace Real {
+    struct Transform;
+}
+
+namespace Real::math {
+    struct Quat;
+}
 
 namespace Real {
     struct TextureData;
@@ -56,4 +74,13 @@ namespace Real::util {
 
     /* ***************************************** MIXED STATE  ************************************** */
     bool IsSubString(const std::string& subStr, const std::string& string);
+
+    /* ***************************************** PHYSICS STATE  ************************************** */
+    math::Vec3 PXToReal(const physx::PxVec3& v);
+    math::Quat PXToReal(const physx::PxQuat& q);
+    Transform PXToReal(const physx::PxTransform& t);
+    physx::PxVec3 RealToPX(const math::Vec3& v);
+    physx::PxQuat RealToPX(const math::Quat& q);
+    physx::PxTransform RealToPX(const Transform& t);
+    physx::PxShape* CreatePhysXShapeFromReal(physx::PxPhysics& px, const physx::PxMaterial* mat, physics::ColliderShape shape);
 }

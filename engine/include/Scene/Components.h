@@ -4,14 +4,17 @@
 #pragma once
 #include <utility>
 #include <vector>
-
-#include "Common/RealTypes.h"
 #include "Core/Utils.h"
 #include "Core/UUID.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Light.h"
 #include "Graphics/Transformations.h"
-#include "Physics/PhysXTypes.h"
+#include "Physics/PhysicsTypes.h"
+
+namespace physx {
+    class PxShape;
+    class PxRigidActor;
+}
 
 namespace Real {
     struct Model;
@@ -42,15 +45,6 @@ namespace Real {
         TransformComponent(const TransformComponent&) = delete;
     };
 
-    struct VelocityComponent {
-        math::Vec3 m_LinearVelocity = math::Vec3(0.0);
-        math::Vec3 m_Acceleration   = math::Vec3(0.0);
-        math::Vec3 m_Speed          = math::Vec3(0.0);
-
-        VelocityComponent() = default;
-        VelocityComponent(const VelocityComponent&) = default;
-    };
-
     struct MeshRendererComponent {
         std::vector<UUID> m_MeshUUIDs = {};
         std::vector<UUID> m_MaterialInstanceUUIDs = {};
@@ -62,20 +56,40 @@ namespace Real {
         MeshRendererComponent(MeshRendererComponent&) = default;
     };
 
-    struct RigidBodyComponent {
-        BodyType type = BodyType::Static;
+    // This component is only for behavior. It's optional and not necessary for PhysX
+    struct PhysicsBodyComponent {
+        physics::BodyType bodyType = physics::BodyType::Static;
         float mass = 1.0f;
-        bool useGravity = true;
+
+        PhysicsBodyComponent() = default;
+        explicit PhysicsBodyComponent(const physics::BodyType bodyType, float mass = 1.0f)
+            : bodyType(bodyType), mass(mass) {}
     };
 
-    struct BoxColliderComponent {
-        math::Vec3 halfExtents{0.5f};
+    struct ColliderComponent {
+        physics::ColliderShape shape = physics::ColliderShape::Box;
+
+        // Geometry
+        math::Vec3 size{0.5f};
+
+        // Local offset relative to actor
+        math::Vec3 localPosition{0.0f};
+        math::Quat localRotation = math::Quat::Identity();
+
         bool isTrigger = false;
+
+        // runtime (physics)
+        physx::PxRigidActor* actor = nullptr;
+        physx::PxShape* shapeHandle = nullptr;
     };
 
-    struct SphereColliderComponent {
-        float radius = 0.5f;
-        bool isTrigger = false;
+    struct MovementComponent {
+        math::Vec3 moveInput = { 0.0, 0.0, 0.0 }; // normalized direction
+        float maxSpeed = 6.0f;
+        float acceleration = 20.0f;
+        float airControl = 0.4f;
+
+        bool jumpRequested  = false;
     };
 
     struct ModelComponent {
@@ -88,6 +102,7 @@ namespace Real {
     struct LightComponent {
         Light m_Light{};
         explicit LightComponent(const Light &light) : m_Light(light) {}
+        explicit LightComponent(const LightType type) : m_Light(Light{type}) {}
         LightComponent() = default;
         LightComponent(const LightComponent&) = default;
     };

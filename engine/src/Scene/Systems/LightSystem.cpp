@@ -11,13 +11,20 @@ namespace Real::ecs {
     }
 
     void LightSystem::Update(Scene *scene, float deltaTime) {
-        const auto& view = scene->GetAllEntitiesWith<LightComponent, TransformComponent>();
+        auto view = m_Registry->view<LightComponent, TransformComponent>();
 
-        for (const auto& [entity, light, transform] : view.each()) {
+        for (const auto entity : view) {
+            auto& light     = view.get<LightComponent>(entity);
+            auto& transform = view.get<TransformComponent>(entity);
+
             light.m_Light.Update(transform.transform);
         }
     }
 
     void LightSystem::Shutdown() {
+    }
+
+    void LightSystem::SetRegistry(entt::registry &registry) {
+        m_Registry = &registry;
     }
 }

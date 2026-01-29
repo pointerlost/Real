@@ -4,6 +4,7 @@
 #include "Editor/EditorPanel.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "PxShape.h"
 #include "Core/AssetManager.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
@@ -12,6 +13,7 @@
 #include "Editor/EditorState.h"
 #include "Editor/HierarchyPanel.h"
 #include "Editor/InspectorPanel.h"
+#include "geometry/PxBoxGeometry.h"
 #include "Graphics/Renderer.h"
 #include "Input/Keycodes.h"
 #include "ImGuizmo/ImSequencer.h"
@@ -20,6 +22,7 @@
 #include "Input/Input.h"
 #include "Math/Math.h"
 #include "Scene/Components.h"
+#include "Util/Util.h"
 
 namespace Real::UI {
 
@@ -154,39 +157,101 @@ namespace Real::UI {
     }
 
     void EditorPanel::DrawGizmos() {
-        if (Input::IsKeyPressed(REAL_KEY_E)) {
+        static bool transformGizmosOn = true;
+
+        // Toggle gizmo target (entity <-> collider)
+        if (Input::IsKeyPressed(REAL_KEY_Y))
+            transformGizmosOn = !transformGizmosOn;
+
+        // Select gizmo operation
+        if (Input::IsKeyPressed(REAL_KEY_E))
             m_GizmoType = ImGuizmo::TRANSLATE;
-        } else if (Input::IsKeyPressed(REAL_KEY_R)) {
+        else if (Input::IsKeyPressed(REAL_KEY_R))
             m_GizmoType = ImGuizmo::ROTATE;
-        } else if (Input::IsKeyPressed(REAL_KEY_T)){
+        else if (Input::IsKeyPressed(REAL_KEY_T))
             m_GizmoType = ImGuizmo::SCALE;
+
+        const auto* editorState = Services::GetEditorState();
+        if (!editorState->selectedEntity)
+            return;
+
+        // Currently using 3D
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        ImGuizmo::SetRect(
+            ImGui::GetWindowPos().x,
+            ImGui::GetWindowPos().y,
+            ImGui::GetWindowSize().x,
+            ImGui::GetWindowSize().y
+        );
+
+        auto& entity    = *editorState->selectedEntity;
+        auto& transform = entity.GetComponentUnchecked<TransformComponent>().transform;
+        auto& collider  = entity.GetComponent<ColliderComponent>();
+        auto& camera    = editorState->camera->GetComponent<CameraComponent>().m_Camera;
+
+        // Build ACTOR world matrix (no scale!)
+        const math::Mat4 actorWorld = math::Mat4::Translate(transform.position) * transform.rotation.ToMat4();
+
+        // Build COLLIDER world matrix (actor x local)
+        const math::Mat4 colliderWorld =
+            actorWorld *
+            math::Mat4::Translate(collider.localPosition) *
+            collider.localRotation.ToMat4();
+
+        // Choose which matrix the gizmo edits
+        math::Mat4 gizmoMatrix = transformGizmosOn && entity.HasComponent<ColliderComponent>()
+            ? transform.GetModelMatrix()
+            : colliderWorld;
+
+        ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
+            (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, gizmoMatrix.ValuePtr()
+        );
+
+        if (!ImGuizmo::IsUsing())
+            return;
+
+        math::Vec3 translation{}, scale{};
+        math::Quat rotation{};
+        // Decompose manipulated matrix
+        math::DecomposeTransform(gizmoMatrix, translation, rotation, scale);
+
+        // ENTITY transform edited
+        if (transformGizmosOn) {
+            transform.SetPosition(translation);
+            transform.SetRotation(rotation);
+            transform.SetScale(scale);
+            return;
         }
 
-        if (Services::GetEditorState()->selectedEntity) {
-            // Using perspective projection
-            ImGuizmo::SetOrthographic(false);
-            ImGuizmo::SetDrawlist();
+        // COLLIDER edited (convert WORLD to LOCAL)
+        const math::Mat4 invActorWorld = actorWorld.Inverted();
+        math::Mat4 localMatrix   = invActorWorld * gizmoMatrix;
 
-            // Draw gizmos rect
-            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+        math::Vec3 localPos{}, localScale{};
+        math::Quat localRot{};
+        math::DecomposeTransform(localMatrix, localPos, localRot, localScale);
 
-            auto& transform = Services::GetEditorState()->selectedEntity->GetComponentUnchecked<TransformComponent>().transform;
-            auto& camera = Services::GetEditorState()->camera->GetComponent<CameraComponent>().m_Camera;
-            auto model = transform.GetModelMatrix();
+        collider.localPosition = localPos;
+        collider.localRotation = localRot;
+        collider.size          = localScale * 0.5f; // full -> half extents
 
-            ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
-                (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, model.ValuePtr()
+        // Sync PhysX shape immediately
+        if (collider.shapeHandle) {
+            collider.shapeHandle->setLocalPose(
+                physx::PxTransform(
+                    util::RealToPX(collider.localPosition),
+                    util::RealToPX(collider.localRotation)
+                )
             );
 
-            if (ImGuizmo::IsUsing()) {
-                math::Vec3 translation{}, scale{};
-                math::Quat rotate;
-
-                math::DecomposeTransform(model, translation, rotate, scale);
-                transform.SetPosition(translation);
-                transform.SetRotation(rotate);
-                transform.SetScale(scale);
-            }
+            collider.shapeHandle->setGeometry(
+                physx::PxBoxGeometry(
+                    collider.size.x,
+                    collider.size.y,
+                    collider.size.z
+                )
+            );
         }
     }
 

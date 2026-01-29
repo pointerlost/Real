@@ -115,7 +115,7 @@ vec3 CalculatePBR(Light light, PerVertexData pvd, vec3 N, vec3 F0, TexturePack t
     // Unpacking Per vertex data
     vec3 fragPos  = pvd.fragPos;
     vec3 lightPos = light.pos_cutoff.xyz;
-    vec3 lightDir = light.dir_outer.xyz;
+    vec3 lightDir = normalize(light.dir_outer.xyz);
 
     vec3 V = normalize(GetViewPos() - fragPos);
 
@@ -136,17 +136,16 @@ vec3 CalculatePBR(Light light, PerVertexData pvd, vec3 N, vec3 F0, TexturePack t
         return PrepareCommonPBRData(light, pvd, N, V, L, F0, tp) * attenuation;
     }
     else if (light.type == 1) { // DIRECTIONAL
-        vec3 L = normalize(-lightDir);
+        vec3 L = -lightDir;
         return PrepareCommonPBRData(light, pvd, N, V, L, F0, tp);
     }
     else if (light.type == 2) { // SPOT
         vec3 L = normalize(lightPos - fragPos);
-        vec3 lightDirNorm = normalize(lightDir);
 
         float cutOff      = cos(radians(light.pos_cutoff.w));      // Inner cutoff
         float outerCutOff = cos(radians(light.dir_outer.w));       // Outer cutoff
 
-        float theta = dot(-L, lightDirNorm);  // Angle between light direction and fragment
+        float theta = dot(-L, lightDir);  // Angle between light direction and fragment
         float epsilon = cutOff - outerCutOff;
         float intensity = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
 

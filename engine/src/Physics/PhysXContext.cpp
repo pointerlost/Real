@@ -4,14 +4,14 @@
 #include <Physics/PhysXContext.h>
 #include <physx/include/PxPhysicsAPI.h>
 
-namespace Real::ecs {
+namespace Real::physics {
+    using namespace physx;
 
     void PhysXContext::Init() {
-        using namespace physx;
 
         // Create PhysX allocator and error callback (must init for Backend)
-        m_Allocator     = CreateScope<physics::PhysXAllocator>();
-        m_ErrorCallback = CreateScope<physics::PhysXErrorCallback>();
+        m_Allocator     = CreateScope<PhysXAllocator>();
+        m_ErrorCallback = CreateScope<PhysXErrorCallback>();
 
         m_Foundation = PxCreateFoundation(
             PX_PHYSICS_VERSION,
@@ -25,6 +25,8 @@ namespace Real::ecs {
         m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation,
             PxTolerancesScale(), recordMemoryAllocations, nullptr
         );
+
+        m_DefaultMaterial = m_Physics->createMaterial(0.5f, 0.5f, 0.6f);
 
         // Scene with collision detection enabled
         PxSceneDesc sceneDesc(m_Physics->getTolerancesScale());

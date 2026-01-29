@@ -30,6 +30,9 @@ namespace Real::math {
 
         [[nodiscard]] glm::mat4 ToGLM() const noexcept;
         static Mat4 FromGLM(const glm::mat4& g) noexcept;
+
+        [[nodiscard]] Mat4 Inverted() const noexcept;
+        static Mat4 Inverted(const Mat4& m) noexcept;
     };
 
 }

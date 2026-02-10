@@ -3,7 +3,8 @@
 #extension GL_ARB_gpu_shader_int64 : enable
 #extension GL_NV_gpu_shader5 : enable
 
-#include "opengl/buffers.glsl"
+#include "opengl/common/buffers.glsl"
+#include "opengl/common/frame.glsl"
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;

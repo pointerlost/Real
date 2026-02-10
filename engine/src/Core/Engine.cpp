@@ -27,6 +27,7 @@ namespace Real {
         m_Window.reset();
         m_EditorState.reset();
         m_AssetImporter.reset();
+        m_DebugRenderer.reset();
         ShutDown();
     }
 
@@ -44,6 +45,9 @@ namespace Real {
         InitEditorScene();
         InitEditorRenderer();
 
+        // Debugging state
+        InitDebugRenderer();
+
         InitServices();
 
         InitEditorUIState();
@@ -52,10 +56,10 @@ namespace Real {
         // Load all the resources with the ResourceLoader
         InitResourceLoader();
 
-        // Set registries to sub-systems
-        for (const auto& ss : m_Systems->GetSubSystems()) {
-            ss->SetRegistry(m_Scene->GetRegistry());
-        }
+        AttachSceneToSystems();
+
+        // We need to create shaders(from ResourceLoader) before init DebugRenderer
+        m_DebugRenderer->Init();
 
         Info("Engine Resources loaded successfully!");
     }
@@ -74,25 +78,32 @@ namespace Real {
 
         // Init UI
         m_EditorPanel->BeginFrame();
+        m_DebugRenderer->BeginFrame();
     }
 
     void Engine::UpdatePhase() const {
         m_EditorTimer->Update();
+        m_EditorPanel->Update();
         Input::Update(m_CameraInput.get());
         m_AssetImporter->Update();
         m_AssetManager->Update();
         m_Systems->Update(m_Scene.get(), m_EditorTimer->GetDelta());
         m_Scene->Update(m_Renderer.get());
+        m_DebugRenderer->Update();
     }
 
     void Engine::RenderPhase() const {
         // Draw OpenGL stuff
+        m_DebugRenderer->Render();
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
+        // TODO: Should it be called from within m_EditorPanel->render?
         // TODO: Requires double buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
     void Engine::EndPhase(GLFWwindow* window) {
         glfwSwapBuffers(window);
+        m_EditorPanel->EndFrame();
+        m_DebugRenderer->EndFrame();
     }
 
     void Engine::InitWindow() {
@@ -107,6 +118,7 @@ namespace Real {
         Services::SetEditorTimer(m_EditorTimer.get());
         Services::SetEditorState(m_EditorState.get());
         Services::SetAssetImporter(m_AssetImporter.get());
+        Services::SetDebugRenderer(m_DebugRenderer.get());
         // TODO: Need Shader manager?
 
         Info("Services initialized successfully!");
@@ -143,25 +155,30 @@ namespace Real {
 
     void Engine::InitEditorUIState() {
         // The order is matter!!!
-        m_HierarchyPanel = CreateScope<UI::HierarchyPanel>();
-        m_InspectorPanel = CreateScope<UI::InspectorPanel>();
+        m_HierarchyPanel = CreateScope<UI::InspectorPanel>();
+        m_InspectorPanel = CreateScope<UI::HierarchyPanel>();
         m_EditorPanel    = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
         Info("EditorPanel initialized successfully!");
     }
 
     void Engine::InitEditorCamera() {
         // Editor camera
-        m_EditorState->camera = &m_Scene->CreateEntity("Editor Camera");
-        (void)m_EditorState->camera->AddComponent<CameraComponent>();
-        (void)m_EditorState->camera->AddComponent<MovementComponent>();
-        m_EditorState->camera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
+        m_EditorState->editorCamera = &m_Scene->CreateEntity("Editor Camera");
+        (void)m_EditorState->editorCamera->AddComponent<CameraComponent>();
+        (void)m_EditorState->editorCamera->AddComponent<MovementComponent>();
+        m_EditorState->editorCamera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
 
-        if (m_EditorState->camera) {
-            m_CameraInput = CreateScope<CameraInput>(m_EditorState->camera);
+        if (m_EditorState->editorCamera) {
+            m_CameraInput = CreateScope<CameraInput>(m_EditorState->editorCamera);
         } else {
             Warn("There is no camera in editor state!!!");
         }
         Info("Editor Camera and Camera input initialized successfully!");
+    }
+
+    void Engine::InitDebugRenderer() {
+        m_DebugRenderer = CreateScope<graphics::debug::DebugRenderer>();
+        Info("Debug Renderer initialized successfully!");
     }
 
     void Engine::InitResourceLoader() {
@@ -189,6 +206,7 @@ namespace Real {
         // Activate automatic Gamma Correction
         // glEnable(GL_FRAMEBUFFER_SRGB);
 
+        // TODO: need an update for drawing opengl lines (depth testing etc.)
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_DEBUG_OUTPUT);
         // glDepthFunc(GL_LEQUAL);
@@ -197,6 +215,15 @@ namespace Real {
 
         // This only has affect if depth testing is enabled
         // glDepthMask(GL_FALSE);
+    }
+
+    void Engine::AttachSceneToSystems() {
+        for (const auto& ss : m_Systems->GetSubSystems()) {
+            ss->SetRegistry(m_Scene->GetRegistry());
+            ss->OnSceneAttach(m_Scene.get());
+        }
+
+        Info("AttachSceneToSystems initialized successfully!");
     }
 
     void Engine::InitGameResources() {
@@ -215,7 +242,7 @@ namespace Real {
         );
 
         auto& cube3 = m_Scene->CreateEntity("Floor");
-        cube3.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(97.0, 0.5, 98.0));
+        cube3.GetComponentForModification<TransformComponent>()->transform.SetScale(math::Vec3(97.0, 1.5, 98.0));
         (void)cube3.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
@@ -235,6 +262,8 @@ namespace Real {
         (void)cube5.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
+        cube5.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
+        cube5.AddComponent<PhysicsBodyComponent>().bodyType = physics::BodyType::Static;
 
         auto& fordCar = m_Scene->CreateEntity("FordCar");
         fordCar.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));

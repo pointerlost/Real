@@ -34,6 +34,38 @@ namespace Real::math {
         return r;
     }
 
+    Mat4 Mat4::FromDirection(const Vec3 &dir) noexcept {
+        const Vec3 forward = dir.Normalized();
+
+        // Fallback if direction is invalid
+        if (Vec3::LengthSq(forward) < 1e-6f) {
+            return Identity();
+        }
+
+        // Choose a stable up vector
+        const Vec3 worldUp = std::abs(forward.y) > 0.99f ? Vec3{1, 0, 0} : Vec3{0, 1, 0};
+
+        const Vec3 right = worldUp.Cross(forward).Normalized();
+        const Vec3 up    = forward.Cross(right);
+
+        Mat4 result(1.0f);
+
+        // Column-major layout
+        result.m[0][0] = forward.x;
+        result.m[0][1] = forward.y;
+        result.m[0][2] = forward.z;
+
+        result.m[1][0] = up.x;
+        result.m[1][1] = up.y;
+        result.m[1][2] = up.z;
+
+        result.m[2][0] = right.x;
+        result.m[2][1] = right.y;
+        result.m[2][2] = right.z;
+
+        return result;
+    }
+
     glm::mat4 Mat4::ToGLM() const noexcept {
         glm::mat4 g(1.0f);
         for (int c = 0; c < 4; ++c)

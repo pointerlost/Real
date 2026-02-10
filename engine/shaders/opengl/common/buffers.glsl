@@ -11,18 +11,6 @@ layout(std430, binding = 2) buffer TransformSSBO {
 mat4 GetModelMatrix(int idx)  { return transforms[idx].modelMatrix; }
 mat3 GetNormalMatrix(int idx) { return mat3(transforms[idx].normalMatrix); }
 
-layout(std140, binding = 3) uniform CameraUBO {
-    vec4 position;
-    mat4 view;
-    mat4 projection;
-    mat4 viewProjection;
-} uCamera;
-
-vec3 GetViewPos()    { return uCamera.position.xyz;   }
-mat4 GetProjView()   { return uCamera.viewProjection; }
-mat4 GetView()       { return uCamera.view;           }
-mat4 GetProjection() { return uCamera.projection;     }
-
 struct TexturePack {
     vec3 albedo;
     float roughness;

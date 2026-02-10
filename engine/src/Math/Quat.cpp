@@ -3,6 +3,8 @@
 //
 #include <Math/Quat.h>
 
+#include "Math/Math.h"
+
 namespace Real::math {
 
     Quat Quat::Normalized() const noexcept {
@@ -78,5 +80,9 @@ namespace Real::math {
         m.m[2][2] = 1 - 2*(xx + yy);
 
         return m;
+    }
+
+    Quat Quat::FromEulerDegrees(const Vec3 &eulerDegrees) noexcept {
+        return FromEulerRadians(DegreesToRadians(eulerDegrees));
     }
 }

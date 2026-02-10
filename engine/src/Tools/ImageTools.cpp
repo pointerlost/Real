@@ -39,12 +39,12 @@ namespace Real::tools {
         }
 
         Ref<OpenGLTexture> mixedTexture = CreateRef<OpenGLTexture>();
-        const int width  = texture->GetLevelData(0).m_Width;
-        const int height = texture->GetLevelData(0).m_Height;
+        const int width  = texture->GetLevelData(0).width;
+        const int height = texture->GetLevelData(0).height;
 
-        const auto tex1RawData = static_cast<uint8_t *>(ao->GetLevelData(0).m_Data);
-        const auto tex2RawData = static_cast<uint8_t *>(rgh->GetLevelData(0).m_Data);
-        const auto tex3RawData = static_cast<uint8_t *>(mtl->GetLevelData(0).m_Data);
+        const auto tex1RawData = static_cast<uint8_t *>(ao->GetLevelData(0).data);
+        const auto tex2RawData = static_cast<uint8_t *>(rgh->GetLevelData(0).data);
+        const auto tex3RawData = static_cast<uint8_t *>(mtl->GetLevelData(0).data);
 
         // All textures have the same resolution
         constexpr int channelCount = 4;
@@ -52,8 +52,8 @@ namespace Real::tools {
 
         // Create mixedTexture data
         TextureData mixedData;
-        mixedData.m_Data = new uint8_t[dataSize]; // Still void ptr
-        auto* mixedTexRawData = static_cast<uint8_t*>(mixedData.m_Data); // Cast to uint8_t*
+        mixedData.data = new uint8_t[dataSize]; // Still void ptr
+        auto* mixedTexRawData = static_cast<uint8_t*>(mixedData.data); // Cast to uint8_t*
 
         constexpr int greyscaleChannelCount = 1;
         for (size_t i = 0; i < width * height; i++) {
@@ -64,12 +64,12 @@ namespace Real::tools {
         }
 
         mixedTexture->SetType(TextureType::ORM);
-        mixedData.m_ChannelCount = channelCount;
-        mixedData.m_DataSize = dataSize;
-        mixedData.m_Width    = width;
-        mixedData.m_Height   = height;
-        mixedData.m_Format   = util::GetGLFormat(channelCount);
-        mixedData.m_InternalFormat = util::GetGLInternalFormat(channelCount);
+        mixedData.channelCount = channelCount;
+        mixedData.dataSize = dataSize;
+        mixedData.width    = width;
+        mixedData.height   = height;
+        mixedData.format   = util::GetGLFormat(channelCount);
+        mixedData.internalFormat = util::GetGLInternalFormat(channelCount);
 
         const auto& stateFolder = util::ImageFormatState_EnumToString(texture->GetImageFormatState());
         const auto ext = texture->GetImageFormatState() == ImageFormatState::DEFAULT ? ".png" : texture->GetExtension();
@@ -116,13 +116,13 @@ namespace Real::tools {
         const auto& destPath = texture->GetPath();
 
         if (extension == ".png") {
-            stbi_write_png(destPath.c_str(), width, height, cc, texture->GetLevelData(0).m_Data, stride_in_bytes);
+            stbi_write_png(destPath.c_str(), width, height, cc, texture->GetLevelData(0).data, stride_in_bytes);
         }
         else if (extension == ".jpg") {
-            stbi_write_jpg(destPath.c_str(), width, height, cc, texture->GetLevelData(0).m_Data, jpgQuality);
+            stbi_write_jpg(destPath.c_str(), width, height, cc, texture->GetLevelData(0).data, jpgQuality);
         }
         else if (extension == ".tga") {
-            stbi_write_tga(destPath.c_str(), width, height, cc, texture->GetLevelData(0).m_Data);
+            stbi_write_tga(destPath.c_str(), width, height, cc, texture->GetLevelData(0).data);
         } else {
             Warn("There is no extension for texture: " + texture->GetFileInfo().name);
             return false;
@@ -144,7 +144,7 @@ namespace Real::tools {
         }
 
         const auto [width, height] = texture->GetResolution(0);
-        const auto channelCount    = texture->GetLevelData(0).m_ChannelCount;
+        const auto channelCount    = texture->GetLevelData(0).channelCount;
 
         // Init framework plugin and IO interfaces
         CMP_InitFramework();
@@ -195,14 +195,14 @@ namespace Real::tools {
         for (size_t level = 0; level < MipSetCmp.m_nMipLevels; level++) {
             auto currLevel = MipSetCmp.m_pMipLevelTable[level];
             TextureData levelData;
-            levelData.m_Data = new uint8_t[currLevel->m_dwLinearSize];
-            memcpy(levelData.m_Data, currLevel->m_pbData, currLevel->m_dwLinearSize);
-            levelData.m_DataSize     = currLevel->m_dwLinearSize;
-            levelData.m_Width        = currLevel->m_nWidth;
-            levelData.m_Height       = currLevel->m_nHeight;
-            levelData.m_ChannelCount = channelCount;
-            levelData.m_Format       = util::GetGLFormat(channelCount);
-            levelData.m_InternalFormat = util::GetCompressedInternalFormat(channelCount);
+            levelData.data = new uint8_t[currLevel->m_dwLinearSize];
+            memcpy(levelData.data, currLevel->m_pbData, currLevel->m_dwLinearSize);
+            levelData.dataSize     = currLevel->m_dwLinearSize;
+            levelData.width        = currLevel->m_nWidth;
+            levelData.height       = currLevel->m_nHeight;
+            levelData.channelCount = channelCount;
+            levelData.format       = util::GetGLFormat(channelCount);
+            levelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
 
             mipLevelsData.push_back(levelData);
         }
@@ -253,7 +253,7 @@ namespace Real::tools {
         }
 
         const auto [width, height] = texture->GetResolution(0);
-        const auto channelCount = texture->GetLevelData(0).m_ChannelCount;
+        const auto channelCount = texture->GetLevelData(0).channelCount;
 
         // Init framework plugin and IO interfaces
         CMP_InitFramework();
@@ -263,8 +263,8 @@ namespace Real::tools {
         KernelOptions kernel_options = {};
 
         auto& texFirstMipLevelData = texture->GetLevelData(0);
-        texFirstMipLevelData.m_Format = util::GetGLFormat(channelCount);
-        texFirstMipLevelData.m_InternalFormat = util::GetCompressedInternalFormat(channelCount);
+        texFirstMipLevelData.format = util::GetGLFormat(channelCount);
+        texFirstMipLevelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
 
         CMP_FORMAT srcFormat;
         switch (channelCount) {
@@ -283,12 +283,12 @@ namespace Real::tools {
         }
 
         CMP_MipLevel* mipLevel = MipSetIn.m_pMipLevelTable[0];
-        mipLevel->m_dwLinearSize = texFirstMipLevelData.m_DataSize;
+        mipLevel->m_dwLinearSize = texFirstMipLevelData.dataSize;
         mipLevel->m_nWidth  = width;
         mipLevel->m_nHeight = height;
 
         mipLevel->m_pbData = (CMP_BYTE*)malloc(mipLevel->m_dwLinearSize);
-        memcpy(mipLevel->m_pbData, texFirstMipLevelData.m_Data, mipLevel->m_dwLinearSize);
+        memcpy(mipLevel->m_pbData, texFirstMipLevelData.data, mipLevel->m_dwLinearSize);
 
         if (CMP_GenerateMIPLevels(&MipSetIn, 4) != CMP_OK) {
             Warn(util::DebugCMPStatus(cmp_status));
@@ -316,14 +316,14 @@ namespace Real::tools {
         for (size_t level = 0; level < MipSetCmp.m_nMipLevels; level++) {
             auto currLevel = MipSetCmp.m_pMipLevelTable[level];
             TextureData levelData;
-            levelData.m_Data = new uint8_t[currLevel->m_dwLinearSize];
-            memcpy(levelData.m_Data, currLevel->m_pbData, currLevel->m_dwLinearSize);
-            levelData.m_DataSize     = currLevel->m_dwLinearSize;
-            levelData.m_Width        = currLevel->m_nWidth;
-            levelData.m_Height       = currLevel->m_nHeight;
-            levelData.m_ChannelCount = channelCount; // optional, may differ for compressed formats
-            levelData.m_Format       = util::GetGLFormat(channelCount);
-            levelData.m_InternalFormat = util::GetCompressedInternalFormat(channelCount);
+            levelData.data = new uint8_t[currLevel->m_dwLinearSize];
+            memcpy(levelData.data, currLevel->m_pbData, currLevel->m_dwLinearSize);
+            levelData.dataSize     = currLevel->m_dwLinearSize;
+            levelData.width        = currLevel->m_nWidth;
+            levelData.height       = currLevel->m_nHeight;
+            levelData.channelCount = channelCount; // optional, may differ for compressed formats
+            levelData.format       = util::GetGLFormat(channelCount);
+            levelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
             mipLevelsData.push_back(levelData);
         }
 
@@ -402,12 +402,12 @@ namespace Real::tools {
             uint32_t dataSize   = blocksWide * blocksHigh * blockSize;
 
             TextureData data = {};
-            data.m_Width          = (int)mipWidth;
-            data.m_Height         = (int)mipHeight;
-            data.m_DataSize       = (int)dataSize;
-            data.m_Format         = format;
-            data.m_InternalFormat = internalFormat;
-            data.m_ChannelCount   = channelCount;
+            data.width          = (int)mipWidth;
+            data.height         = (int)mipHeight;
+            data.dataSize       = (int)dataSize;
+            data.format         = format;
+            data.internalFormat = internalFormat;
+            data.channelCount   = channelCount;
 
             if (format == 0 || internalFormat == 0) {
                 Warn("Format or InternalFormat is UNDEFINED for: " + path);
@@ -415,8 +415,8 @@ namespace Real::tools {
             }
 
             // Allocate and read
-            data.m_Data = new uint8_t[dataSize];
-            file.read((char*)data.m_Data, dataSize);
+            data.data = new uint8_t[dataSize];
+            file.read((char*)data.data, dataSize);
 
             // Update dimensions for next mipmap level
             mipWidth  = std::max(4u, mipWidth  >> 1);
@@ -490,12 +490,12 @@ namespace Real::tools {
             uint32_t dataSize   = blocksWide * blocksHigh * blockSize;
 
             TextureData data = {};
-            data.m_Width          = (int)mipWidth;
-            data.m_Height         = (int)mipHeight;
-            data.m_DataSize       = (int)dataSize;
-            data.m_Format         = format;
-            data.m_InternalFormat = internalFormat;
-            data.m_ChannelCount   = channelCount;
+            data.width          = (int)mipWidth;
+            data.height         = (int)mipHeight;
+            data.dataSize       = (int)dataSize;
+            data.format         = format;
+            data.internalFormat = internalFormat;
+            data.channelCount   = channelCount;
 
             if (format == 0 || internalFormat == 0) {
                 Warn("Format or InternalFormat is UNDEFINED for: " + path);
@@ -503,8 +503,8 @@ namespace Real::tools {
             }
 
             // Allocate and read
-            data.m_Data = new uint8_t[dataSize];
-            file.read((char*)data.m_Data, dataSize);
+            data.data = new uint8_t[dataSize];
+            file.read((char*)data.data, dataSize);
 
             // Update dimensions for next mipmap level
             mipWidth  = std::max(4u, mipWidth  >> 1);

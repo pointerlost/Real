@@ -28,5 +28,7 @@ namespace Real::math {
         [[nodiscard]] Mat4 ToMat4() const noexcept;
         [[nodiscard]] glm::quat ToGLM() const noexcept { return {w, x, y, z}; }
         static Quat FromGLM(const glm::quat& q) noexcept { return { q.x, q.y, q.z, q.w }; }
+
+        static Quat FromEulerDegrees(const Vec3& eulerDegrees) noexcept;
     };
 }

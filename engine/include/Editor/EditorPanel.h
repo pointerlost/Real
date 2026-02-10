@@ -12,8 +12,8 @@
 namespace Real {
 
     namespace UI {
-        class HierarchyPanel;
         class InspectorPanel;
+        class HierarchyPanel;
     }
 
     namespace opengl {
@@ -29,20 +29,23 @@ namespace Real::UI {
 
     class EditorPanel final : public IPanel {
     public:
-        explicit EditorPanel(Graphics::Window* window, HierarchyPanel* hierarchyPanel, InspectorPanel* inspectorPanel);
+        explicit EditorPanel(Graphics::Window* window, InspectorPanel* hierarchyPanel, HierarchyPanel* inspectorPanel);
         void BeginFrame() override;
+        void Update() override;
         void Render(Scene* scene, opengl::Renderer* renderer) override;
         void EndFrame() override {}
         void Shutdown() override;
 
     private:
         Graphics::Window* m_Window;
-        friend class HierarchyPanel;
         friend class InspectorPanel;
-        HierarchyPanel* m_HierarchyPanel;
-        InspectorPanel* m_InspectorPanel;
+        friend class HierarchyPanel;
+        InspectorPanel* m_HierarchyPanel;
+        HierarchyPanel* m_InspectorPanel;
         bool openPerfProfile = false;
         ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
+        // User intention
+        bool m_EditEntityTransform = true;
 
         // Screen height can wrong for editor-time, because of main menu panel has some height
         ImVec2 m_SceneWindowSize = ImVec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
@@ -51,13 +54,20 @@ namespace Real::UI {
         void Render(Scene* scene);
 
         void RenderMenuBar();
+        void RenderFileBar();
+        void RenderEditBar();
+        void RenderViewBar();
+        void RenderDebugBar();
+        void RenderHelpBar();
+
         void DrawPerformanceProfile();
         void UpdateInputUI();
 
         void InitFontStyle();
         void InitDarkTheme();
 
-        void DrawGizmos();
+        void RenderSceneGizmos();
+        void UpdateGizmoLogic();
         void DebugGizmos();
     };
 }

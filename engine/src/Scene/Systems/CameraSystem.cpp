@@ -29,4 +29,10 @@ namespace Real::ecs {
     void CameraSystem::SetRegistry(entt::registry &registry) {
         m_Registry = &registry;
     }
+
+    void CameraSystem::OnSceneAttach(Scene *scene) {
+    }
+
+    void CameraSystem::OnSceneDetach(Scene *scene) {
+    }
 }

@@ -12,7 +12,7 @@ namespace Real {
     struct Transform {
         Transform() = default;
         Transform(const Transform&) = default;
-        Transform(const math::Vec3& pos, const math::Quat& quat);
+        Transform(const math::Vec3& pos, const math::Quat& quat, const math::Vec3& scale = math::Vec3{ 1.0f });
         explicit Transform(const math::Vec3& pos);
         explicit Transform(const math::Quat& quat);
 

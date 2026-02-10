@@ -1,7 +1,7 @@
 //
 // Created by pointerlost on 1/26/26.
 //
-#include <Event/Signal.h>
+#include <Event/Event.h>
 
 namespace Real::event {
 }

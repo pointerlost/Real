@@ -27,7 +27,7 @@ namespace Real {
         std::vector<LightSSBO> lights;
         std::vector<DrawElementsIndirectCommand> drawCommands;
         std::vector<EntityMetadata> entityData;
-        CameraUBO camera;
+        FrameUBO camera;
         GlobalUBO globalData;
     };
 

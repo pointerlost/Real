@@ -358,25 +358,25 @@ namespace Real::util {
     }
 
     TextureData ExtractChannel(const TextureData& data, int channelIndex) {
-        if (channelIndex < 0 || channelIndex >= data.m_ChannelCount) {
+        if (channelIndex < 0 || channelIndex >= data.channelCount) {
             Warn("[Util::ExtractChannel] Invalid channel index! Fix it!");
             return{};
         }
         TextureData d;
-        d.m_Width          = data.m_Width;
-        d.m_Height         = data.m_Height;
-        d.m_ChannelCount   = 1; // We are extracting '1' channel
-        d.m_DataSize       = data.m_Width * data.m_Height * 1;
-        d.m_Format         = GetGLFormat(d.m_ChannelCount);
-        d.m_InternalFormat = GetGLInternalFormat(d.m_ChannelCount);
+        d.width          = data.width;
+        d.height         = data.height;
+        d.channelCount   = 1; // We are extracting '1' channel
+        d.dataSize       = data.width * data.height * 1;
+        d.format         = GetGLFormat(d.channelCount);
+        d.internalFormat = GetGLInternalFormat(d.channelCount);
 
-        d.m_Data = new uint8_t[d.m_DataSize];
+        d.data = new uint8_t[d.dataSize];
 
-        const auto* src = static_cast<const uint8_t*>(data.m_Data);
-        auto* dst = static_cast<uint8_t*>(d.m_Data);
+        const auto* src = static_cast<const uint8_t*>(data.data);
+        auto* dst = static_cast<uint8_t*>(d.data);
 
-        for (int i = 0; i < data.m_Width * data.m_Height; i++)
-            dst[i] = src[i * data.m_ChannelCount + channelIndex];
+        for (int i = 0; i < data.width * data.height; i++)
+            dst[i] = src[i * data.channelCount + channelIndex];
 
         return d;
     }
@@ -385,21 +385,21 @@ namespace Real::util {
         const int outC = wantedChannels.size();
 
         TextureData d;
-        d.m_Width          = data.m_Width;
-        d.m_Height         = data.m_Height;
-        d.m_ChannelCount   = outC;
-        d.m_DataSize       = data.m_Width * data.m_Height * outC;
-        d.m_Format         = GetGLFormat(d.m_ChannelCount);
-        d.m_InternalFormat = GetGLInternalFormat(d.m_ChannelCount);
+        d.width          = data.width;
+        d.height         = data.height;
+        d.channelCount   = outC;
+        d.dataSize       = data.width * data.height * outC;
+        d.format         = GetGLFormat(d.channelCount);
+        d.internalFormat = GetGLInternalFormat(d.channelCount);
 
-        d.m_Data = new uint8_t[d.m_DataSize];
+        d.data = new uint8_t[d.dataSize];
 
-        const auto* src = static_cast<const uint8_t*>(data.m_Data);
-        auto* dst = static_cast<uint8_t*>(d.m_Data);
+        const auto* src = static_cast<const uint8_t*>(data.data);
+        auto* dst = static_cast<uint8_t*>(d.data);
 
-        for (int i = 0; i < data.m_Width * data.m_Height; i++)
+        for (int i = 0; i < data.width * data.height; i++)
             for (int j = 0; j < outC; j++)
-                dst[i * outC + j] = src[i * data.m_ChannelCount + wantedChannels[j]];
+                dst[i * outC + j] = src[i * data.channelCount + wantedChannels[j]];
 
         return d;
     }

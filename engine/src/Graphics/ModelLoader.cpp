@@ -145,10 +145,10 @@ namespace Real {
 
         // Create model binary file
         ModelBinaryHeader binary_file{};
-        binary_file.m_Magic     = REAL_MAGIC; // Real magic number
-        binary_file.m_Version   = 1;
-        binary_file.m_MeshCount = m_CurrentModel->m_MeshUUIDs.size();
-        binary_file.m_UUID      = m_CurrentModel->m_UUID;
+        binary_file.magic     = REAL_MAGIC; // Real magic number
+        binary_file.version   = 1;
+        binary_file.meshCount = m_CurrentModel->m_MeshUUIDs.size();
+        binary_file.uuid      = m_CurrentModel->m_UUID;
 
         serialization::binary::WriteModel(
             binary_path,
@@ -202,22 +202,22 @@ namespace Real {
 
             // Position
             aiVector3D p = transform * mesh->mVertices[i];
-            vertex.m_Position = { p.x, p.y, p.z };
+            vertex.position = { p.x, p.y, p.z };
 
             // Normal
             if (mesh->HasNormals()) {
                 aiVector3D n = normalMat * mesh->mNormals[i];
-                vertex.m_Normal = { n.x, n.y, n.z };
+                vertex.normal = { n.x, n.y, n.z };
             } else {
-                vertex.m_Normal = math::Vec3(0.0, 1.0, 0.0);
+                vertex.normal = math::Vec3(0.0, 1.0, 0.0);
             }
 
             // UV
             if (mesh->HasTextureCoords(0)) {
-                vertex.m_UV.x = mesh->mTextureCoords[0][i].x;
-                vertex.m_UV.y = mesh->mTextureCoords[0][i].y;
+                vertex.UV.x = mesh->mTextureCoords[0][i].x;
+                vertex.UV.y = mesh->mTextureCoords[0][i].y;
             } else {
-                vertex.m_UV = math::Vec2(0.0, 0.0);
+                vertex.UV = math::Vec2(0.0, 0.0);
             }
 
             // Tangent and Bitangent
@@ -240,19 +240,19 @@ namespace Real {
         const auto vertexOffset = mm->GetVerticesCount();
         const auto indexOffset  = mm->GetIndicesCount();
 
-        const UUID meshUUID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, UUID{}).m_MeshUUID;
+        const UUID meshUUID = Services::GetMeshManager()->CreateSingleMesh(vertices, indices, UUID{}).meshUUID;
         m_CurrentModel->m_MeshUUIDs.push_back(meshUUID);
         m_CurrentModel->m_MaterialAssetUUIDs.push_back(materialUUID);
 
         MeshBinaryHeader header;
-        header.m_Magic        = REAL_MAGIC;
-        header.m_Version      = 1;
-        header.m_UUID         = meshUUID;
-        header.m_MaterialUUID = materialUUID;
-        header.m_VertexCount  = vertices.size();
-        header.m_IndexCount   = indices.size();
-        header.m_VertexOffset = vertexOffset;
-        header.m_IndexOffset  = indexOffset;
+        header.magic        = REAL_MAGIC;
+        header.version      = 1;
+        header.uuid         = meshUUID;
+        header.materialUUID = materialUUID;
+        header.vertexCount  = vertices.size();
+        header.indexCount   = indices.size();
+        header.vertexOffset = vertexOffset;
+        header.indexOffset  = indexOffset;
 
         const auto meshNameAsUUID = std::to_string(meshUUID);
         const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + meshNameAsUUID + ".mesh";
@@ -359,9 +359,9 @@ namespace Real {
             if (path.empty()) return;
 
             TextureData texData = am->LoadTextureFromFile(path, realType);
-            if (!texData.m_Data) return;
+            if (!texData.data) return;
 
-            if (realType == TextureType::ALBEDO_ROUGHNESS && texData.m_ChannelCount > 3) {
+            if (realType == TextureType::ALBEDO_ROUGHNESS && texData.channelCount > 3) {
                 auto alb = util::ExtractChannels(texData, {0,1,2});
                 const auto albTex = CreateAndSave(alb,
                     destPath + material->m_Name + "_ALB" + ext,

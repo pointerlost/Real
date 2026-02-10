@@ -24,6 +24,7 @@ namespace Real::math {
 
         static Mat4 Translate(const Vec3& t) noexcept;
         static Mat4 Scale(const Vec3& s) noexcept;
+        static Mat4 FromDirection(const Vec3& dir) noexcept;
 
         [[nodiscard]] const float* ValuePtr() const noexcept { return &m[0][0]; }
         [[nodiscard]] float*       ValuePtr()       noexcept { return &m[0][0]; }

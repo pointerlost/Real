@@ -15,8 +15,8 @@ namespace Real {
         Input::g_Pitch = std::clamp(Input::g_Pitch, -89.0f, 89.0f);
 
         // Build rotation from yaw and pitch
-        const math::Quat yaw   = math::Quat::FromAxisAngle(math::Vec3(0, 1, 0), math::radians(Input::g_Yaw));
-        const math::Quat pitch = math::Quat::FromAxisAngle(math::Vec3(1, 0, 0), math::radians(Input::g_Pitch));
+        const math::Quat yaw   = math::Quat::FromAxisAngle(math::Vec3(0, 1, 0), math::DegreesToRadians(Input::g_Yaw));
+        const math::Quat pitch = math::Quat::FromAxisAngle(math::Vec3(1, 0, 0), math::DegreesToRadians(Input::g_Pitch));
 
         const math::Quat rotation = yaw * pitch;
 
@@ -33,15 +33,15 @@ namespace Real {
 
         // Build Projection matrix
         if (m_Mode == CameraMode::Perspective && m_ProjectionDirty) {
-            m_Projection = math::Mat4::FromGLM(glm::perspective(math::radians(m_FOV), m_Aspect, m_Near, m_Far));
+            m_Projection = math::Mat4::FromGLM(glm::perspective(math::DegreesToRadians(m_FOV), m_Aspect, m_Near, m_Far));
             m_ProjectionDirty = false;
         }
 
         // TODO: Add orthographic camera
     }
 
-    CameraUBO Camera::ConvertToGPUFormat(const Transform& transform) {
-        CameraUBO gpuData{};
+    FrameUBO Camera::ConvertToGPUFormat(const Transform& transform) {
+        FrameUBO gpuData{};
         gpuData.position = math::Vec4(transform.position, 0.0f); // w unused (padding)
         gpuData.view = m_View;
         gpuData.projection = m_Projection;

@@ -16,9 +16,9 @@ in VS_OUT {
     flat int MaterialIndex;
 } fs_in;
 
-// Before you include any file, pay attention to the order! (preprocessors work like recursion)
 #include "opengl/utils.glsl"
-#include "opengl/buffers.glsl"
+#include "opengl/common/buffers.glsl"
+#include "opengl/common/frame.glsl"
 #include "opengl/lighting_calc.glsl"
 
 out vec4 FragColor;
@@ -27,7 +27,7 @@ void main() {
     PerVertexData pvd = PerVertexData(fs_in.FragPos, fs_in.MaterialIndex, fs_in.Normal, fs_in.UV);
     TexturePack tp    = GetTexturePack(fs_in.MaterialIndex, fs_in.UV);
 
-    vec3 normal   = normalize(fs_in.Normal);
+    vec3 normal = normalize(fs_in.Normal);
 
     // Get normal from normal map if available, otherwise use vertex normal
     vec3 N = normalize(fs_in.Normal);
@@ -52,7 +52,7 @@ void main() {
         Lo += CalculatePBR(lights[i], pvd, N, F0, tp);
     }
 
-    // Ambient lighting - FIXED
+    // Ambient lighting
     vec3 kS = fresnelSchlick(max(dot(N, V), 0.0), F0);
     vec3 kD = (1.0 - kS) * (1.0 - tp.metallic);
 
@@ -65,11 +65,8 @@ void main() {
     // Optional HDR tonemapping
     // color = color / (color + vec3(1.0));
 
-    // Gamma correction - make sure this is correct for your setup
-    color = pow(color, vec3(1.0/2.2));  // Simple gamma correction
-
-    // Or use your existing function if it's correct
-    // color = Convert_LinearSpace_to_sRGB(color);
+    // Gamma correction
+    color = Convert_LinearSpace_to_sRGB(color);  // Simple gamma correction
 
     FragColor = vec4(color, 1.0);
 }

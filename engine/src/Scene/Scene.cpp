@@ -38,6 +38,7 @@ namespace Real {
 
     template<>
     void Scene::OnComponentAdded<ColliderComponent>(Entity& entity, ColliderComponent& component) {
+        m_Events.OnColliderAdded.Emit(entity, component);
     }
 
     template<>

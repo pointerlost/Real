@@ -45,7 +45,7 @@ namespace Real {
         [[nodiscard]] Ref<MaterialInstance> GetMaterialInstance(const UUID& instanceUUID);
 
         /* *********************************** GENERAL STATE ************************************ */
-        [[nodiscard]] const Shader &GetShader(const std::string& name);
+        [[nodiscard]] Shader &GetShader(const std::string& name);
         bool IsModelExist(const std::string& name);
         Ref<Model> GetModel(const std::string& name);
         bool IsMaterialExist(const std::string& name);

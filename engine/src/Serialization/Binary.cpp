@@ -20,7 +20,7 @@ namespace Real::serialization::binary {
         }
 
         // Update the mesh count to ensure the size is correct
-        binaryHeader.m_MeshCount = static_cast<uint32_t>(meshUUIDs.size());
+        binaryHeader.meshCount = static_cast<uint32_t>(meshUUIDs.size());
 
         // Write entire header once
         file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
@@ -66,24 +66,24 @@ namespace Real::serialization::binary {
         file.read(reinterpret_cast<char*>(&header), sizeof(header));
 
         // Validate REAL magic numbers
-        if (header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
+        if (header.magic != MakeFourCC('R', 'E', 'A', 'L')) { // Little-endian
             Warn("Real Magic number mismatch!");
             return{};
         }
 
-        std::vector<uint64_t> raw_MeshUUIDs(header.m_MeshCount);
-        std::vector<uint64_t> raw_MatUUIDs(header.m_MeshCount);
+        std::vector<uint64_t> raw_MeshUUIDs(header.meshCount);
+        std::vector<uint64_t> raw_MatUUIDs(header.meshCount);
 
         std::vector<UUID> meshUUIDs;
-        meshUUIDs.reserve(header.m_MeshCount);
+        meshUUIDs.reserve(header.meshCount);
 
         // per-mesh material so reserve with mesh count
         std::vector<UUID> materialUUIDs;
-        materialUUIDs.reserve(header.m_MeshCount);
+        materialUUIDs.reserve(header.meshCount);
 
-        if (header.m_MeshCount > 0) {
-            file.read(reinterpret_cast<char*>(raw_MeshUUIDs.data()), header.m_MeshCount * sizeof(uint64_t));
-            file.read(reinterpret_cast<char*>(raw_MatUUIDs.data()),  header.m_MeshCount * sizeof(uint64_t));
+        if (header.meshCount > 0) {
+            file.read(reinterpret_cast<char*>(raw_MeshUUIDs.data()), header.meshCount * sizeof(uint64_t));
+            file.read(reinterpret_cast<char*>(raw_MatUUIDs.data()),  header.meshCount * sizeof(uint64_t));
         }
 
         for (uint64_t raw_id : raw_MeshUUIDs) {
@@ -144,22 +144,22 @@ namespace Real::serialization::binary {
         file.read(reinterpret_cast<char*>(&result.header), sizeof(MeshBinaryHeader));
 
         // Validate REAL magic numbers
-        if (result.header.m_Magic != MakeFourCC('R', 'E', 'A', 'L')) {
+        if (result.header.magic != MakeFourCC('R', 'E', 'A', 'L')) {
             Warn("Real Magic number mismatch!");
             return {};
         }
 
-        if (result.header.m_VertexCount > 0) {
-            result.vertices.resize(result.header.m_VertexCount);
+        if (result.header.vertexCount > 0) {
+            result.vertices.resize(result.header.vertexCount);
             file.read(reinterpret_cast<char*>(result.vertices.data()),
-                        result.header.m_VertexCount * sizeof(Vertex)
+                        result.header.vertexCount * sizeof(Vertex)
             );
         }
 
-        if (result.header.m_IndexCount > 0) {
-            result.indices.resize(result.header.m_IndexCount);
+        if (result.header.indexCount > 0) {
+            result.indices.resize(result.header.indexCount);
             file.read(reinterpret_cast<char*>(result.indices.data()),
-                        result.header.m_IndexCount * sizeof(uint32_t)
+                        result.header.indexCount * sizeof(uint32_t)
             );
         }
 

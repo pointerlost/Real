@@ -44,11 +44,18 @@ namespace Real {
     }
 
     void ResourceLoader::LoadShaders() {
+        // TODO: I need to save shaders to asset database!
         const auto& am = Services::GetAssetManager();
 
-        const auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
-        const auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
+        auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
+        auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
         am->LoadShader(vert, frag, "main");
+
+        // Load shader and save to AssetManager then get and use
+        vert = ConcatStr(SHADERS_DIR, "opengl/debug/main.vert");
+        frag = ConcatStr(SHADERS_DIR, "opengl/debug/main.frag");
+        am->LoadShader(vert, frag, "debug");
+
         Info("[ResourceLoader] Shaders loaded successfully!");
     }
 

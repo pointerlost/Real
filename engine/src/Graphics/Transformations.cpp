@@ -5,8 +5,8 @@
 
 namespace Real {
 
-    Transform::Transform(const math::Vec3 &pos, const math::Quat &quat)
-        : position(pos), rotation(quat)
+    Transform::Transform(const math::Vec3 &pos, const math::Quat &quat, const math::Vec3& scale)
+        : position(pos), rotation(quat), scale(scale)
     {
     }
 

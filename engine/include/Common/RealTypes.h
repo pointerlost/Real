@@ -2,29 +2,31 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include <glm/ext.hpp>
 #include "Macros.h"
 #include <vector>
 #include <Core/UUID.h>
 
+#include "Graphics/Debug/DebugTypes.h"
+#include "Math/Mat4.h"
 #include "Math/Vec3.h"
+#include "Math/Vec4.h"
 
 namespace Real {
 
     struct Vertex {
-        math::Vec3 m_Position;
-        math::Vec3 m_Normal;
-        math::Vec2 m_UV;
+        math::Vec3 position;
+        math::Vec3 normal;
+        math::Vec2 UV;
     };
 
     struct TextureData {
-        void* m_Data = nullptr;
-        int m_ChannelCount = 0;
-        int m_Width = 0;
-        int m_Height = 0;
-        int m_DataSize = 0;
-        int m_Format = {};
-        int m_InternalFormat = {};
+        void* data = nullptr;
+        int channelCount = 0;
+        int width = 0;
+        int height = 0;
+        int dataSize = 0;
+        int format = {};
+        int internalFormat = {};
     };
 
     struct FileInfo {
@@ -36,23 +38,23 @@ namespace Real {
 
 #pragma pack(push, 1)
     struct ModelBinaryHeader {
-        uint32_t m_Magic = REAL_MAGIC; // Real Magic number
-        uint32_t m_Version = 1;
-        uint32_t m_MeshCount{};
-        uint64_t m_UUID{};
+        uint32_t magic = REAL_MAGIC; // Real Magic number
+        uint32_t version = 1;
+        uint32_t meshCount{};
+        uint64_t uuid{};
     };
 
     struct MeshBinaryHeader {
-        uint32_t m_Magic = REAL_MAGIC;
-        uint32_t m_Version = 1;
+        uint32_t magic = REAL_MAGIC;
+        uint32_t version = 1;
 
-        uint64_t m_UUID{};
-        uint64_t m_MaterialUUID{};
+        uint64_t uuid{};
+        uint64_t materialUUID{};
 
-        uint64_t m_VertexCount{};
-        uint64_t m_IndexCount{};
-        uint64_t m_VertexOffset{};
-        uint64_t m_IndexOffset{};
+        uint64_t vertexCount{};
+        uint64_t indexCount{};
+        uint64_t vertexOffset{};
+        uint64_t indexOffset{};
     };
 #pragma pack(pop)
 
@@ -63,18 +65,18 @@ namespace Real {
     };
 
     struct MeshAsset {
-        UUID m_MeshUUID;
+        UUID meshUUID;
         // TODO: Need transform for per mesh!
 
-        uint64_t m_VertexCount;
-        uint64_t m_IndexCount;
-        uint64_t m_VertexOffset;
-        uint64_t m_IndexOffset;
+        uint64_t vertexCount;
+        uint64_t indexCount;
+        uint64_t vertexOffset;
+        uint64_t indexOffset;
     };
 
     struct RenderableData {
-        const MeshAsset* m_Mesh;
-        UUID m_MaterialUUID{};
+        const MeshAsset* mesh;
+        UUID materialUUID{};
         // TODO: Need transform for per mesh!
     };
 

@@ -21,6 +21,7 @@ namespace Real::UI {
     public:
         virtual ~IPanel() = default;
         virtual void BeginFrame() = 0;
+        virtual void Update() = 0;
         virtual void Render(Scene* scene, opengl::Renderer* renderer) = 0;
         virtual void EndFrame() = 0;
         virtual void Shutdown() = 0;

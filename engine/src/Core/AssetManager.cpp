@@ -49,59 +49,55 @@ namespace Real {
     }
 
     std::string AssetManager::PreprocessorForShaders(const std::string &filePath) {
-        using namespace std;
+        std::unordered_set<std::string> includedFiles;
+        std::string output;
+        bool versionWritten = false;
 
-        string result;
-        queue<string> glslContentQueue;
+        std::function<void(const std::string&)> processFile = [&](const std::string& path)
+        {
+            if (includedFiles.contains(path))
+                return;
 
-        if (!fs::File::Exists(filePath)) return {};
+            includedFiles.insert(path);
 
-        ifstream stream(filePath, ios::in);
-        if (!stream.is_open()) {
-            Warn("File can't opening from: " + filePath);
-            return{};
-        }
-
-        // Load main files like (vertex, fragment)
-        std::string mainFileResult;
-        std::string line;
-        while (getline(stream, line)) {
-            if (line.substr(0, 8) == "#include") {
-                size_t pathFirstLine = 10;
-                glslContentQueue.push(ConcatStr(SHADERS_DIR + line.substr(pathFirstLine, line.size() - pathFirstLine - 1)));
-            } else if (line.substr(0, 1) != "#") {
-                mainFileResult.append(ConcatStr(line + "\n"));
-            } else if (line.substr(0, 7) != "#version") {
-                result.append(ConcatStr(line + "\n"));
+            std::ifstream file(path);
+            if (!file.is_open()) {
+                Warn("Shader include failed: " + path);
+                return;
             }
-        }
 
-        // Merge all files containing '#include'
-        while (!glslContentQueue.empty()) {
-            line = "";
-            std::string queuePath = glslContentQueue.front();
-            glslContentQueue.pop();
+            std::string line;
+            while (std::getline(file, line)) {
+                if (line.starts_with("#version")) {
+                    if (!versionWritten) {
+                        output += line + "\n";
+                        versionWritten = true;
+                    }
+                    continue;
+                }
 
-            ifstream newStream(queuePath, ios::in);
-            while (getline(newStream, line)) {
-                if (line.substr(0, 8) == "#include") {
-                    size_t pathFirstLine = 10;
-                    glslContentQueue.push(ConcatStr(SHADERS_DIR + line.substr(pathFirstLine, line.size() - pathFirstLine - 1)));
-                } else if (line.substr(0, 7) != "#version" || line.substr(0, 1) != "#") {
-                    // Load into the beginning because main section should at the end
-                    // result.append(ConcatStr(line + "\n"));
-                    result += ConcatStr(line + "\n");
+                if (line.starts_with("#include")) {
+                    const size_t firstQuote = line.find('"');
+                    const size_t lastQuote  = line.find_last_of('"');
+
+                    if (firstQuote == std::string::npos || lastQuote <= firstQuote)
+                        continue;
+
+                    std::string includePath = SHADERS_DIR + line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+
+                    processFile(includePath);
+                    continue;
                 }
-                else if (line.substr(0, 5) == "#endif") {
-                    break;
-                }
+
+                output += line + "\n";
             }
-        }
+        };
 
-        return ConcatStr(result + mainFileResult);
+        processFile(filePath);
+        return output;
     }
 
-    const Shader& AssetManager::GetShader(const std::string &name) {
+    Shader& AssetManager::GetShader(const std::string &name) {
         if (!m_Shaders.contains(name)) {
             Warn(ConcatStr("Shader Doesn't exists! Warn from the file: ", __FILE__));
         }
@@ -155,8 +151,8 @@ namespace Real {
 
         const auto imageSize = resolution.x * resolution.y * channelCount;
         TextureData data;
-        data.m_Data = new uint8_t[imageSize];
-        auto* imageData = static_cast<uint8_t*>(data.m_Data);
+        data.data = new uint8_t[imageSize];
+        auto* imageData = static_cast<uint8_t*>(data.data);
 
         switch (channelCount) {
             case 1: // Grayscale
@@ -184,12 +180,12 @@ namespace Real {
                 Warn("Channel count mismatch! from: " + std::string(__FILE__));
         }
 
-        data.m_ChannelCount   = channelCount;
-        data.m_DataSize       = imageSize;
-        data.m_Width          = resolution.x;
-        data.m_Height         = resolution.y;
-        data.m_Format         = util::GetGLFormat(channelCount);
-        data.m_InternalFormat = util::GetGLInternalFormat(channelCount);
+        data.channelCount   = channelCount;
+        data.dataSize       = imageSize;
+        data.width          = resolution.x;
+        data.height         = resolution.y;
+        data.format         = util::GetGLFormat(channelCount);
+        data.internalFormat = util::GetGLInternalFormat(channelCount);
 
         defaultTex->SetImageFormatState(ImageFormatState::DEFAULT);
         defaultTex->CreateFromData(data, type);
@@ -206,15 +202,15 @@ namespace Real {
         const int desiredChannels = type != TextureType::UNDEFINED ? util::TextureTypeToChannelCount(type) : 0;
 
         TextureData data;
-        data.m_Data     = stbi_load(path.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, desiredChannels);
-        data.m_ChannelCount = desiredChannels != 0 ? desiredChannels : data.m_ChannelCount;
+        data.data     = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, desiredChannels);
+        data.channelCount = desiredChannels != 0 ? desiredChannels : data.channelCount;
         // We are using bytesPerChannel = 1 because of using 8-bit textures
-        data.m_DataSize = data.m_Width * data.m_Height * data.m_ChannelCount * 1;
-        data.m_Format   = util::GetGLFormat(data.m_ChannelCount);
-        data.m_InternalFormat = util::GetGLInternalFormat(data.m_ChannelCount);
+        data.dataSize = data.width * data.height * data.channelCount * 1;
+        data.format   = util::GetGLFormat(data.channelCount);
+        data.internalFormat = util::GetGLInternalFormat(data.channelCount);
 
-        if (!data.m_Data) { Warn("[LoadTextureFromFile] stbi_load returning nullptr! Fix it"); }
-        if (data.m_ChannelCount == 0) { Warn("[LoadTextureFromFile] has 0 channel count!!! Texture loading failed!"); }
+        if (!data.data) { Warn("[LoadTextureFromFile] stbi_load returning nullptr! Fix it"); }
+        if (data.channelCount == 0) { Warn("[LoadTextureFromFile] has 0 channel count!!! Texture loading failed!"); }
         return data;
     }
 

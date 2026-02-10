@@ -108,14 +108,14 @@ namespace Real {
         if (HasAssetWithPath(binaryPath))
             return;
 
-        const std::string uuidStr = std::to_string(header.m_UUID);
+        const std::string uuidStr = std::to_string(header.uuid);
         nlohmann::json& m = m_AssetDB["meshes"][uuidStr];
 
         // Binary file path
         m["binary"] = binaryPath;
         m["name"]   = name; // Engine asset name
 
-        CacheAssetWithPath(binaryPath, UUID(header.m_UUID));
+        CacheAssetWithPath(binaryPath, UUID(header.uuid));
         MarkDirtyAssetDB();
     }
 
@@ -184,7 +184,7 @@ namespace Real {
             const auto& bPath = mesh_data["binary"];
             // Save meshes to mesh manager
             const auto& [header, vertices, indices] = serialization::binary::LoadMesh(bPath);
-            UUID meshUUID{header.m_UUID};
+            UUID meshUUID{header.uuid};
             Services::GetMeshManager()->CreateSingleMesh(vertices, indices, meshUUID);
         }
     }
@@ -212,7 +212,7 @@ namespace Real {
             model->m_MaterialAssetUUIDs = matUUIDs;
             model->m_Name = modeldata["name"];
 
-            if (header.m_UUID != 0 && header.m_UUID != uuid) {
+            if (header.uuid != 0 && header.uuid != uuid) {
                 Warn("[AssetImporter] Model UUID mismatch!!! Binary UUID != AssetDbUUID fix it!");
             }
 

@@ -30,7 +30,15 @@ namespace Real::physics {
 
         // Scene with collision detection enabled
         PxSceneDesc sceneDesc(m_Physics->getTolerancesScale());
+
         sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+
+        // REQUIRED
+        sceneDesc.cpuDispatcher = PxDefaultCpuDispatcherCreate(2);
+        sceneDesc.filterShader  = PxDefaultSimulationFilterShader;
+
+        PX_ASSERT(sceneDesc.isValid());
+
         m_Scene = m_Physics->createScene(sceneDesc);
     }
 

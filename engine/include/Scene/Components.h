@@ -70,17 +70,26 @@ namespace Real {
         physics::ColliderShape shape = physics::ColliderShape::Box;
 
         // Geometry
-        math::Vec3 size{0.5f};
+        math::Vec3 size{ 0.5f };
 
         // Local offset relative to actor
-        math::Vec3 localPosition{0.0f};
+        math::Vec3 localPosition{ 0.0f };
         math::Quat localRotation = math::Quat::Identity();
 
         bool isTrigger = false;
 
-        // runtime (physics)
+        // User intent
+        bool enabled = true; // true = Attach shape, false = Detach shape
+
+        // Runtime state (PhysX truth)
+        bool attached = false;
+
+        // Runtime (physics)
         physx::PxRigidActor* actor = nullptr;
         physx::PxShape* shapeHandle = nullptr;
+
+        // Editor-only debug mode
+        physics::ColliderDebug debug;
     };
 
     struct MovementComponent {

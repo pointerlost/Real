@@ -25,6 +25,9 @@ namespace Real {
         void Shutdown() override;
         void SetRegistry(entt::registry& registry) override;
 
+        virtual void OnSceneAttach(Scene* scene) {}
+        virtual void OnSceneDetach(Scene* scene) {}
+
         const std::vector<Scope<Systems>>& GetSubSystems() const { return m_SubSystems; }
 
     private:

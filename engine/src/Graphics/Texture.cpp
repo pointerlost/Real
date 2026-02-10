@@ -59,7 +59,7 @@ namespace Real {
             Warn("[SetLevelData] mipLevel mismatch!");
             return;
         }
-        m_MipLevelsData[mipLevel].m_Data = data;
+        m_MipLevelsData[mipLevel].data = data;
     }
 
     void OpenGLTexture::SetFileInfo(FileInfo info) {
@@ -75,11 +75,11 @@ namespace Real {
     }
 
     void OpenGLTexture::SetFormat(int format, int mipLevel) {
-        m_MipLevelsData[mipLevel].m_Format = format;
+        m_MipLevelsData[mipLevel].format = format;
     }
 
     void OpenGLTexture::SetChannelCount(int count, int mipLevel) {
-        m_MipLevelsData[mipLevel].m_ChannelCount = count;
+        m_MipLevelsData[mipLevel].channelCount = count;
     }
 
     void OpenGLTexture::SetImageFormatState(ImageFormatState format) {
@@ -87,16 +87,16 @@ namespace Real {
     }
 
     void OpenGLTexture::SetInternalFormat(int format, int mipLevel) {
-        m_MipLevelsData[mipLevel].m_InternalFormat = format;
+        m_MipLevelsData[mipLevel].internalFormat = format;
     }
 
     void OpenGLTexture::SetResolution(const glm::ivec2 &res, int mipLevel) {
-        m_MipLevelsData[mipLevel].m_Width  = res.x;
-        m_MipLevelsData[mipLevel].m_Height = res.y;
+        m_MipLevelsData[mipLevel].width  = res.x;
+        m_MipLevelsData[mipLevel].height = res.y;
     }
 
     void OpenGLTexture::SetDataSize(int size, int mipLevel) {
-        m_MipLevelsData[mipLevel].m_DataSize = size;
+        m_MipLevelsData[mipLevel].dataSize = size;
     }
 
     void OpenGLTexture::SetTextureParameters() {
@@ -129,7 +129,7 @@ namespace Real {
     std::pair<int, int> OpenGLTexture::GetResolution(int mipLevel) {
         if (mipLevel < 0 || (mipLevel >= m_MipLevelsData.size() && !m_MipLevelsData.empty()))
             Warn("MipLevel index mismatch!!! name: " + m_FileInfo.name);
-        return std::make_pair(m_MipLevelsData[mipLevel].m_Width, m_MipLevelsData[mipLevel].m_Height);
+        return std::make_pair(m_MipLevelsData[mipLevel].width, m_MipLevelsData[mipLevel].height);
     }
 
     TextureData& OpenGLTexture::GetLevelData(int mipLevel) {
@@ -144,10 +144,10 @@ namespace Real {
             return {};
         }
         TextureData data;
-        data.m_Data = stbi_load(path.c_str(), &data.m_Width, &data.m_Height, &data.m_ChannelCount, 0);
-        if (data.m_ChannelCount == 3) {
-            const auto pixelCount = data.m_Width * data.m_Height;
-            const auto* rawData = static_cast<uint8_t*>(data.m_Data);
+        data.data = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, 0);
+        if (data.channelCount == 3) {
+            const auto pixelCount = data.width * data.height;
+            const auto* rawData = static_cast<uint8_t*>(data.data);
             auto* rgbaRawData = new uint8_t[pixelCount * 4];
 
             for (size_t i = 0; i < pixelCount; i++) {
@@ -157,14 +157,14 @@ namespace Real {
                 rgbaRawData[i * 4 + 3] = 255;
             }
 
-            stbi_image_free(data.m_Data);
-            data.m_Data = rgbaRawData;
-            data.m_ChannelCount = 4;
+            stbi_image_free(data.data);
+            data.data = rgbaRawData;
+            data.channelCount = 4;
         }
         // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
-        data.m_DataSize = data.m_Width * data.m_Height * data.m_ChannelCount * 1;
-        data.m_Format   = util::GetGLFormat(data.m_ChannelCount);
-        data.m_InternalFormat = util::GetGLInternalFormat(data.m_ChannelCount);
+        data.dataSize = data.width * data.height * data.channelCount * 1;
+        data.format   = util::GetGLFormat(data.channelCount);
+        data.internalFormat = util::GetGLInternalFormat(data.channelCount);
         m_IsSTBAllocated = true;
         return data;
     }
@@ -179,22 +179,22 @@ namespace Real {
         // One mip level is enough for CPU-generated textures
         m_MipLevelsData.push_back(data);
         if (m_ImageFormatState == ImageFormatState::COMPRESS_ME || m_ImageFormatState == ImageFormatState::COMPRESSED) {
-            m_MipLevelsData[0].m_InternalFormat = util::GetCompressedInternalFormat(m_MipLevelsData[0].m_ChannelCount);
+            m_MipLevelsData[0].internalFormat = util::GetCompressedInternalFormat(m_MipLevelsData[0].channelCount);
         } else {
-            m_MipLevelsData[0].m_InternalFormat = util::GetGLInternalFormat(m_MipLevelsData[0].m_ChannelCount);
+            m_MipLevelsData[0].internalFormat = util::GetGLInternalFormat(m_MipLevelsData[0].channelCount);
         }
-        m_MipLevelsData[0].m_Format = util::GetGLFormat(m_MipLevelsData[0].m_ChannelCount);
+        m_MipLevelsData[0].format = util::GetGLFormat(m_MipLevelsData[0].channelCount);
     }
 
     void OpenGLTexture::CleanUpCPUData() {
         for (auto& level : m_MipLevelsData) {
-            if (level.m_Data) {
+            if (level.data) {
                 if (m_IsSTBAllocated) {
-                    stbi_image_free(level.m_Data);
+                    stbi_image_free(level.data);
                 } else {
-                    delete[] static_cast<uint8_t*>(level.m_Data);
+                    delete[] static_cast<uint8_t*>(level.data);
                 }
-                level.m_Data = nullptr;
+                level.data = nullptr;
             }
         }
     }
@@ -247,18 +247,18 @@ namespace Real {
 
             case ImageFormatState::COMPRESSED: {
                 // Allocate enough memory for all the mip levels
-                glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].m_InternalFormat,
-                    m_MipLevelsData[0].m_Width, m_MipLevelsData[0].m_Height
+                glTextureStorage2D(m_Handle, m_MipLevelCount, m_MipLevelsData[0].internalFormat,
+                    m_MipLevelsData[0].width, m_MipLevelsData[0].height
                 );
 
                 for (int lvl = 0; lvl < m_MipLevelCount; lvl++) {
                     const auto& data = m_MipLevelsData[lvl];
-                    if (data.m_Width % 4 != 0 || data.m_Height % 4 != 0) {
+                    if (data.width % 4 != 0 || data.height % 4 != 0) {
                         Warn("Compressed mip level size mismatch, texture name: " + GetName());
                         break;
                     }
-                    glCompressedTextureSubImage2D(m_Handle, lvl, 0, 0, data.m_Width, data.m_Height,
-                        data.m_InternalFormat, (int)data.m_DataSize, data.m_Data
+                    glCompressedTextureSubImage2D(m_Handle, lvl, 0, 0, data.width, data.height,
+                        data.internalFormat, (int)data.dataSize, data.data
                     );
                 }
             } break;
@@ -266,12 +266,12 @@ namespace Real {
             case ImageFormatState::UNCOMPRESSED: {
                 // Allocate memory for uncompressed data
                 const auto& data = m_MipLevelsData[0];
-                m_MipLevelCount = CalculateMaxMipMapLevels(data.m_Width, data.m_Height);
+                m_MipLevelCount = CalculateMaxMipMapLevels(data.width, data.height);
 
                 // Allocate for all the mip levels
-                glTextureStorage2D(m_Handle, m_MipLevelCount, data.m_InternalFormat, data.m_Width, data.m_Height);
+                glTextureStorage2D(m_Handle, m_MipLevelCount, data.internalFormat, data.width, data.height);
                 // Load first mip level data
-                glTextureSubImage2D(m_Handle, 0, 0, 0, data.m_Width, data.m_Height, data.m_Format, GL_UNSIGNED_BYTE, data.m_Data);
+                glTextureSubImage2D(m_Handle, 0, 0, 0, data.width, data.height, data.format, GL_UNSIGNED_BYTE, data.data);
                 // Generate other mipmap levels
                 glGenerateTextureMipmap(m_Handle);
             } break;
@@ -331,31 +331,31 @@ namespace Real {
         auto& data = m_MipLevelsData[mipLevel];
 
         stbir_pixel_layout channelFlag;
-        switch (m_MipLevelsData[mipLevel].m_ChannelCount) {
+        switch (m_MipLevelsData[mipLevel].channelCount) {
             case 1: channelFlag  = STBIR_1CHANNEL; break;
             case 2: channelFlag  = STBIR_2CHANNEL; break;
             case 4: channelFlag  = STBIR_RGBA;     break;
             default: channelFlag = STBIR_RGB;
         }
 
-        const auto& rawData = data.m_Data;
+        const auto& rawData = data.data;
 
-        auto* tempData = new uint8_t[data.m_DataSize];
-        memcpy(tempData, data.m_Data, data.m_DataSize);
+        auto* tempData = new uint8_t[data.dataSize];
+        memcpy(tempData, data.data, data.dataSize);
 
         if (srgbSpace) {
-            data.m_Data = stbir_resize_uint8_srgb(tempData, data.m_Width, data.m_Height, 0,
+            data.data = stbir_resize_uint8_srgb(tempData, data.width, data.height, 0,
                 static_cast<unsigned char*>(rawData), resolution.x, resolution.y, 0, channelFlag
             );
         } else {
-            data.m_Data = stbir_resize_uint8_linear(tempData, data.m_Width, data.m_Height, 0,
+            data.data = stbir_resize_uint8_linear(tempData, data.width, data.height, 0,
                 static_cast<unsigned char*>(rawData), resolution.x, resolution.y, 0, channelFlag
             );
         }
         delete[] tempData;
 
-        data.m_Width  = resolution.x;
-        data.m_Height = resolution.y;
+        data.width  = resolution.x;
+        data.height = resolution.y;
     }
 
     void OpenGLTexture::MakeResident() const {

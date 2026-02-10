@@ -45,7 +45,7 @@ namespace Real {
         template <typename T>
         void OnComponentAdded(Entity& entity, T& component);
 
-        event::SceneEvents& Events() { return m_Events; }
+        event::SceneEvents& GetEvents() { return m_Events; }
 
     private:
         entt::registry m_Registry;

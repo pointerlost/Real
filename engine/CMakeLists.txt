@@ -79,11 +79,11 @@ add_executable(ENGINE_TARGET
     src/Graphics/Material.cpp
     src/Editor/EditorPanel.cpp
     include/Editor/EditorPanel.h
-    include/Editor/HierarchyPanel.h
     include/Editor/InspectorPanel.h
+    include/Editor/HierarchyPanel.h
     include/Editor/IPanel.h
-    src/Editor/HierarchyPanel.cpp
     src/Editor/InspectorPanel.cpp
+    src/Editor/HierarchyPanel.cpp
     vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
@@ -147,13 +147,20 @@ add_executable(ENGINE_TARGET
     src/Physics/PhysXAllocator.cpp
     include/Physics/PhysXAllocator.h
     include/Physics/PhysicsTypes.h
-        include/Scene/Systems/MovementSystem.h
-        src/Scene/Systems/MovementSystem.cpp
-        include/Physics/PhysicsAPI.h
-        include/Event/Signal.h
-        include/Event/SceneEvents.h
-        src/Event/Signal.cpp
-        src/Event/SceneEvents.cpp
+    include/Scene/Systems/MovementSystem.h
+    src/Scene/Systems/MovementSystem.cpp
+    include/Physics/PhysicsAPI.h
+    include/Event/Event.h
+    include/Event/SceneEvents.h
+    src/Event/Event.cpp
+    src/Event/SceneEvents.cpp
+    include/Graphics/Debug/DebugRenderer.h
+    src/Graphics/Debug/DebugRenderer.cpp
+    include/Graphics/Debug/DebugMeshFactory.h
+    src/Graphics/Debug/DebugMeshFactory.cpp
+    src/Editor/ViewportPanel.cpp
+    include/Editor/ViewportPanel.h
+        include/Graphics/Debug/DebugTypes.h
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
@@ -209,7 +216,8 @@ target_link_libraries(ENGINE_TARGET
 
     # PhysX
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysX_static_64.a>
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXExtensions_static_64.a>
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXPvdSDK_static_64.a>
+    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXCommon_static_64.a>
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXFoundation_static_64.a>
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysX_static_64.a>

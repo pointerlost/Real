@@ -14,6 +14,7 @@
 #include "Util/Util.h"
 #include "Common/RealEnum.h"
 #include "Graphics/Model.h"
+#include "Scene/Entity.h"
 
 namespace Real {
 
@@ -49,7 +50,7 @@ namespace Real {
             MAX_ENTITIES * sizeof(DrawElementsIndirectCommand), BufferType::SSBO
         );
 
-        m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(CameraUBO), BufferType::UBO);
+        m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(FrameUBO), BufferType::UBO);
 
         m_Buffers.globalData.Create(m_GPUDatas.globalData, 1 * sizeof(GlobalUBO), BufferType::UBO);
     }
@@ -92,7 +93,7 @@ namespace Real {
         );
 
         // Update Camera
-        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(CameraUBO), BufferType::UBO);
+        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(FrameUBO), BufferType::UBO);
 
         // Update Global Data
         m_Buffers.globalData.UploadToGPU(std::vector{m_GPUDatas.globalData}, 1 * sizeof(GlobalUBO), BufferType::UBO);
@@ -167,9 +168,9 @@ namespace Real {
     {
         if (mesh) {
             DrawElementsIndirectCommand cmd{};
-            cmd.count         = mesh->m_IndexCount;
+            cmd.count         = mesh->indexCount;
             cmd.instanceCount = 1;
-            cmd.firstIndex    = mesh->m_IndexOffset;
+            cmd.firstIndex    = mesh->indexOffset;
             cmd.baseVertex    = 0;
             cmd.baseInstance  = baseInstance;
 
@@ -180,8 +181,8 @@ namespace Real {
         em.transformIndex = transformIndex;
         em.materialIndex  = materialIndex;
         if (mesh) {
-            em.indexCount  = static_cast<int>(mesh->m_IndexCount);
-            em.indexOffset = static_cast<int>(mesh->m_IndexOffset);
+            em.indexCount  = static_cast<int>(mesh->indexCount);
+            em.indexOffset = static_cast<int>(mesh->indexOffset);
         }
 
         m_GPUDatas.entityData.push_back(em);
@@ -201,8 +202,8 @@ namespace Real {
             const size_t size = mrc.m_MeshUUIDs.size();
             for (size_t i = 0; i < size; i++) {
                 RenderableData data;
-                data.m_Mesh = Services::GetMeshManager()->GetMeshData(mrc.m_MeshUUIDs[i]);
-                data.m_MaterialUUID = mrc.m_MaterialInstanceUUIDs[i];
+                data.mesh = Services::GetMeshManager()->GetMeshData(mrc.m_MeshUUIDs[i]);
+                data.materialUUID = mrc.m_MaterialInstanceUUIDs[i];
                 result.push_back(data);
             }
         }

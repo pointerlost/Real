@@ -46,7 +46,7 @@ namespace Real {
         void Bind() const { glUseProgram(m_Program); }
 
     private:
-        GLuint m_Program;
+        GLuint m_Program{};
         std::string m_VertexPath;
         std::string m_FragmentPath;
         std::string m_Name;

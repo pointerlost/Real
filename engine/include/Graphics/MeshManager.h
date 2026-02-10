@@ -50,11 +50,11 @@ namespace Real {
         void AddMesh3DToMeshData(std::vector<Vertex> v, std::vector<uint32_t> i, const UUID& meshUUID);
 
         [[nodiscard]] uint32_t GetIndexCount(const UUID& uuid) const {
-            return GetMeshData(uuid)->m_IndexCount;
+            return GetMeshData(uuid)->indexCount;
         }
 
         [[nodiscard]] uint32_t GetIndexOffSet(const UUID& uuid) const {
-            return GetMeshData(uuid)->m_IndexOffset;
+            return GetMeshData(uuid)->indexOffset;
         }
     };
 }

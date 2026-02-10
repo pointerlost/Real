@@ -34,8 +34,11 @@ namespace Real::ecs {
         void Shutdown() override;
         void SetRegistry(entt::registry &registry) override;
 
-        void OnRigidBodyAdded(Entity e, Scene *scene);
-        void OnRigidBodyChanged(Entity e, Scene *scene);
+        void OnSceneAttach(Scene* scene) override;
+        void OnSceneDetach(Scene* scene) override;
+
+        void OnPhysicsBodyAdded(Entity e, Scene *scene);
+        void OnPhysicsBodyChanged(Entity e, Scene *scene);
         void OnColliderAdded(Entity e, Scene *scene);
         void OnColliderChanged(Entity e, Scene *scene);
 
@@ -47,9 +50,16 @@ namespace Real::ecs {
         void RecreateActor(Entity e, physics::BodyType type);
         void FinalizeActor(Entity e);
 
-        physx::PxRigidStatic* CreateStaticActor(const TransformComponent &tc);
+        void SubmitColliderDebug(const TransformComponent& tc, ColliderComponent& cc);
+        void EnableCollider(Entity e);
+        void DisableCollider(Entity e);
+        void RebuildCollider(Entity e, ColliderComponent& cc);
+
+        physx::PxRigidStatic*  CreateStaticActor(const TransformComponent &tc);
         physx::PxRigidDynamic* CreateDynamicActor(const TransformComponent &tc);
         physx::PxRigidDynamic* CreateKinematicActor(const TransformComponent &tc);
+
+        void RegisterEventCallbacks(Scene* scene);
 
     private:
         Scope<physics::PhysXContext> m_PhysX;

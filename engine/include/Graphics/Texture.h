@@ -49,7 +49,7 @@ namespace Real {
         [[nodiscard]] const std::string& GetExtension() const { return m_FileInfo.ext; }
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] bool IsCompressed() const { return m_ImageFormatState == ImageFormatState::COMPRESSED; }
-        [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].m_Data != nullptr; }
+        [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].data != nullptr; }
         [[nodiscard]] bool HasBindlessHandle() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] std::pair<int, int> GetResolution(int mipLevel);
         [[nodiscard]] uint32_t GetIndex() const { return m_GPUIndex; }
@@ -57,11 +57,11 @@ namespace Real {
         [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
         [[nodiscard]] ImageFormatState GetImageFormatState() const { return m_ImageFormatState; }
-        [[nodiscard]] int GetInternalFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].m_InternalFormat; }
-        [[nodiscard]] int GetFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].m_Format; }
+        [[nodiscard]] int GetInternalFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].internalFormat; }
+        [[nodiscard]] int GetFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].format; }
         [[nodiscard]] int GetMipMapCount() const { return m_MipLevelCount; }
-        [[nodiscard]] int GetChannelCount(int mipLevel) const { return m_MipLevelsData[mipLevel].m_ChannelCount; }
-        int& GetChannelCount(int mipLevel) { return m_MipLevelsData[mipLevel].m_ChannelCount; }
+        [[nodiscard]] int GetChannelCount(int mipLevel) const { return m_MipLevelsData[mipLevel].channelCount; }
+        int& GetChannelCount(int mipLevel) { return m_MipLevelsData[mipLevel].channelCount; }
         [[nodiscard]] UUID GetUUID() const { return m_UUID; }
         [[nodiscard]] GLuint GetHandle() const { return m_Handle; }
 

@@ -37,7 +37,7 @@ namespace Real {
         int pad1_, pad2_, pad3_;
     };
 
-    struct CameraUBO {
+    struct FrameUBO {
         math::Vec4 position       = math::Vec4(0.0f);
         math::Mat4 view           = math::Mat4(1.0f);
         math::Mat4 projection     = math::Mat4(1.0f);

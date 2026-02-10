@@ -42,9 +42,10 @@ namespace Real {
         [[nodiscard]] math::Mat4& GetProjection() { return m_Projection; }
         [[nodiscard]] const math::Mat4& GetView() const { return m_View; }
         [[nodiscard]] const math::Mat4& GetProjection() const { return m_Projection; }
+        [[nodiscard]] math::Mat4 GetViewProjection() const { return m_Projection * m_View; }
 
         void Update(Transform& transform);
-        [[nodiscard]] CameraUBO ConvertToGPUFormat(const Transform& transform);
+        [[nodiscard]] FrameUBO ConvertToGPUFormat(const Transform& transform);
 
     private:
         float m_Near = 0.1;

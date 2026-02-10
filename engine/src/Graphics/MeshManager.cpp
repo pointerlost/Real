@@ -27,17 +27,17 @@ namespace Real {
         if (m_MeshAssets.contains(meshUUID))
             return m_MeshAssets[meshUUID]; // Skip if mesh already exists
         MeshAsset info{};
-        info.m_MeshUUID     = meshUUID;
+        info.meshUUID     = meshUUID;
 
-        info.m_VertexCount  = vertices.size();
-        info.m_IndexCount   = indices.size();
-        info.m_VertexOffset = m_AllVertices.size();
-        info.m_IndexOffset  = m_AllIndices.size();
+        info.vertexCount  = vertices.size();
+        info.indexCount   = indices.size();
+        info.vertexOffset = m_AllVertices.size();
+        info.indexOffset  = m_AllIndices.size();
 
         m_AllVertices.insert(m_AllVertices.end(), vertices.begin(), vertices.end());
 
         for (const auto idx : indices) {
-            m_AllIndices.push_back(idx + info.m_VertexOffset);
+            m_AllIndices.push_back(idx + info.vertexOffset);
         }
 
         return m_MeshAssets[meshUUID] = info;
@@ -48,8 +48,8 @@ namespace Real {
 
         const auto& info = m_MeshAssets.at(uuid);
         return {
-            m_AllVertices.data() + info.m_VertexOffset,
-            info.m_VertexCount
+            m_AllVertices.data() + info.vertexOffset,
+            info.vertexCount
         };
     }
 
@@ -58,8 +58,8 @@ namespace Real {
 
         const auto& info = m_MeshAssets.at(uuid);
         return {
-            m_AllIndices.data() + info.m_IndexOffset,
-            info.m_IndexCount
+            m_AllIndices.data() + info.indexOffset,
+            info.indexCount
         };
     }
 
@@ -108,17 +108,17 @@ namespace Real {
 
         // Position attribute
         glEnableVertexArrayAttrib(m_UniversalVAO, 0);
-        glVertexArrayAttribFormat(m_UniversalVAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, m_Position));
+        glVertexArrayAttribFormat(m_UniversalVAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
         glVertexArrayAttribBinding(m_UniversalVAO, 0, 0);
 
         // Normal attribute
         glEnableVertexArrayAttrib(m_UniversalVAO, 1);
-        glVertexArrayAttribFormat(m_UniversalVAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, m_Normal));
+        glVertexArrayAttribFormat(m_UniversalVAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
         glVertexArrayAttribBinding(m_UniversalVAO, 1, 0);
 
         // UV attribute
         glEnableVertexArrayAttrib(m_UniversalVAO, 2);
-        glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, m_UV));
+        glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, UV));
         glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
     }
 

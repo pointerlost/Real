@@ -145,4 +145,25 @@ namespace Real::math {
 
         return q.Normalized();
     }
+
+    Vec3 DegreesToRadians(const Vec3 &deg) noexcept {
+        return {
+            DegreesToRadians(deg.x),
+            DegreesToRadians(deg.y),
+            DegreesToRadians(deg.z)
+        };
+    }
+
+    Vec3 RadiansToDegrees(const Vec3 &rad) noexcept {
+        return {
+            RadiansToDegrees(rad.x),
+            RadiansToDegrees(rad.y),
+            RadiansToDegrees(rad.z)
+        };
+    }
+
+    Vec3 ToEulerDegrees(const Quat &q) noexcept {
+        const glm::vec3 radians = glm::eulerAngles(q.ToGLM());
+        return RadiansToDegrees(Vec3::FromGLM(radians));
+    }
 }

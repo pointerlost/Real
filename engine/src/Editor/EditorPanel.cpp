@@ -11,10 +11,11 @@
 #include "Core/Timer.h"
 #include "Core/Window.h"
 #include "Editor/EditorState.h"
-#include "Editor/HierarchyPanel.h"
 #include "Editor/InspectorPanel.h"
+#include "Editor/HierarchyPanel.h"
 #include "geometry/PxBoxGeometry.h"
 #include "Graphics/Renderer.h"
+#include "Graphics/Debug/DebugRenderer.h"
 #include "Input/Keycodes.h"
 #include "ImGuizmo/ImSequencer.h"
 #include "ImGuizmo/ImCurveEdit.h"
@@ -22,11 +23,12 @@
 #include "Input/Input.h"
 #include "Math/Math.h"
 #include "Scene/Components.h"
+#include "Scene/Entity.h"
 #include "Util/Util.h"
 
 namespace Real::UI {
 
-    EditorPanel::EditorPanel(Graphics::Window *window, HierarchyPanel* hierarchyPanel, InspectorPanel* inspectorPanel)
+    EditorPanel::EditorPanel(Graphics::Window *window, InspectorPanel* hierarchyPanel, HierarchyPanel* inspectorPanel)
         : m_Window(window), m_HierarchyPanel(hierarchyPanel), m_InspectorPanel(inspectorPanel)
     {
         // Setup context
@@ -53,6 +55,11 @@ namespace Real::UI {
         ImGuizmo::BeginFrame();
     }
 
+    void EditorPanel::Update() {
+        UpdateInputUI();
+        UpdateGizmoLogic();
+    }
+
     void EditorPanel::Render(Scene* scene, opengl::Renderer* renderer) {
         // Scene window props
         // Hierarchy,Inspector width = SCREEN_WIDTH / 5 + 31.0
@@ -65,7 +72,7 @@ namespace Real::UI {
         // Draw main scene window into Editor Window
         ImGui::Begin("Scene", nullptr, windowFlags);
         // Main Scene window
-        renderer->Render(Services::GetEditorState()->camera);
+        renderer->Render(Services::GetEditorState()->editorCamera);
         // Draw UI
         Render(scene);
 
@@ -89,19 +96,111 @@ namespace Real::UI {
         ImGui::PushStyleVarY(ImGuiStyleVar_FramePadding, 5);
         ImGui::BeginMainMenuBar();
 
+        RenderFileBar();
+        RenderEditBar();
+        RenderViewBar();
+        RenderDebugBar();
+        RenderHelpBar();
+
+        ImGui::EndMainMenuBar();
+        ImGui::PopStyleVar();
+    }
+
+    void EditorPanel::RenderFileBar() {
         if (ImGui::BeginMenu("File")) {
-            if (ImGui::Button("Bla bla")) {
+
+            if (ImGui::MenuItem("New Scene", "Ctrl+N")) {
             }
-            if (ImGui::Button("Bla bla 2")) {
+
+            if (ImGui::MenuItem("Open Scene...", "Ctrl+O")) {
             }
-            if (ImGui::Button("Bla bla 3")) {
+
+            if (ImGui::MenuItem("Save Scene", "Ctrl+S")) {
+            }
+
+            if (ImGui::MenuItem("Save Scene As...")) {
+            }
+
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Exit")) {
+                Services::GetEditorState()->Running = false;
             }
 
             ImGui::EndMenu();
         }
+    }
 
-        ImGui::EndMainMenuBar();
-        ImGui::PopStyleVar();
+    void EditorPanel::RenderEditBar() {
+        if (ImGui::BeginMenu("Edit")) {
+
+            ImGui::MenuItem("Undo", "Ctrl+Z");
+            ImGui::MenuItem("Redo", "Ctrl+Y");
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Duplicate", "Ctrl+D");
+            ImGui::MenuItem("Delete", "Del");
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Editor Settings");
+
+            ImGui::EndMenu();
+        }
+    }
+
+    void EditorPanel::RenderViewBar() {
+        if (ImGui::BeginMenu("View")) {
+
+            ImGui::MenuItem("Show Grid",      nullptr, &Services::GetEditorState()->debug.showGrid);
+            ImGui::MenuItem("Show Colliders", nullptr, &Services::GetEditorState()->debug.showColliders);
+            ImGui::MenuItem("Show Physics",   nullptr, &Services::GetEditorState()->debug.showPhysics);
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Perspective");
+            ImGui::MenuItem("Orthographic");
+
+            ImGui::EndMenu();
+        }
+    }
+
+    void EditorPanel::RenderDebugBar() {
+        if (ImGui::BeginMenu("Debug")) {
+
+            ImGui::MenuItem("Show Colliders", nullptr, &Services::GetEditorState()->debug.showColliders);
+            ImGui::MenuItem("Show Physics Shapes", nullptr, &Services::GetEditorState()->debug.showPhysics);
+            ImGui::MenuItem("Show Bounds", nullptr, &Services::GetEditorState()->debug.showBounds);
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Show Camera Frustums");
+            ImGui::MenuItem("Show Light Volumes");
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Enable Debug Renderer");
+
+            ImGui::EndMenu();
+        }
+    }
+
+    void EditorPanel::RenderHelpBar() {
+        if (ImGui::BeginMenu("Help")) {
+
+            if (ImGui::MenuItem("About")) {
+            }
+
+            if (ImGui::MenuItem("Controls")) {
+            }
+
+            ImGui::Separator();
+
+            ImGui::MenuItem("Documentation");
+
+            ImGui::EndMenu();
+        }
     }
 
     void EditorPanel::DrawPerformanceProfile() {
@@ -129,16 +228,36 @@ namespace Real::UI {
 
         const ImGuiIO& io = ImGui::GetIO();
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+            assetManager->AddFontStyle("Ubuntu-Regular",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                16.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular-Big", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+            assetManager->AddFontStyle("Ubuntu-Regular-Big",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                17.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 16.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+            assetManager->AddFontStyle("Ubuntu-Bold",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                16.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold-Big", io.Fonts->AddFontFromFileTTF(fontFile.c_str(), 17.5f, nullptr, io.Fonts->GetGlyphRangesDefault()));
+            assetManager->AddFontStyle("Ubuntu-Bold-Big",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                17.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
         }
     }
 
@@ -156,12 +275,136 @@ namespace Real::UI {
         ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.03954, 0.03914, 0.03934, 1.0);
     }
 
-    void EditorPanel::DrawGizmos() {
-        static bool transformGizmosOn = true;
+    void EditorPanel::RenderSceneGizmos() {
+        const auto* editorState = Services::GetEditorState();
+        if (!editorState->selectedEntity)
+            return;
 
+        const ImVec2 min = ImGui::GetWindowContentRegionMin();
+        const ImVec2 max = ImGui::GetWindowContentRegionMax();
+        const ImVec2 pos = ImGui::GetWindowPos();
+
+        ImGuizmo::SetOrthographic(false);
+        ImGuizmo::SetDrawlist();
+        // screen-space rectangle of the Scene window
+        ImGuizmo::SetRect(
+            pos.x + min.x,
+            pos.y + min.y,
+            max.x - min.x,
+            max.y - min.y
+        );
+
+        Entity entity = *editorState->selectedEntity;
+        auto& tc = entity.GetComponentUnchecked<TransformComponent>();
+        auto& camera = editorState->editorCamera->GetComponent<CameraComponent>().m_Camera;
+
+        const bool hasCollider = entity.HasComponent<ColliderComponent>();
+        const bool hasPhysics  = entity.HasComponent<PhysicsBodyComponent>();
+
+        // Decide whether ENTITY transform is editable
+        bool canEditEntityTransform = true;
+
+        if (hasPhysics) {
+            const auto& pb = entity.GetComponentUnchecked<PhysicsBodyComponent>();
+            if (pb.bodyType == physics::BodyType::Dynamic) {
+                canEditEntityTransform = false;
+            }
+        }
+
+        /*
+         * PhysX rule:
+         * A shape never exists in world space
+         * A shape is always relative to its actor
+         * For example: shapeLocalPose = PxTransform(localPosition, localRotation);
+         *
+         * Static collider -> (Real) own transform
+         * Dynamic collider -> (PhysX) own transform
+         * Colliders always lives in actor space, Gizmos always edits world space
+        */
+
+        // Build actor (entity) world matrix without scaling,
+        // This is intentional, because PhysX does not allow scaling actors
+        const math::Mat4 actorWorld = math::Mat4::Translate(tc.transform.position) * tc.transform.rotation.ToMat4();
+
+        // Choose gizmo matrix
+        math::Mat4 gizmoMatrix = tc.transform.GetModelMatrix(); // Use entity transform as default
+
+        // If entity has a ColliderComponent, let Physx manages transform of entity's collider transform
+        if (!m_EditEntityTransform && hasCollider) {
+            const auto& cc = entity.GetComponentUnchecked<ColliderComponent>();
+
+            // ImGuizmo only understands world matrices
+            gizmoMatrix = actorWorld * math::Mat4::Translate(cc.localPosition) * cc.localRotation.ToMat4();
+        }
+
+        // Draw gizmo
+        ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
+            (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, gizmoMatrix.ValuePtr()
+        );
+
+        if (!ImGuizmo::IsUsing())
+            return;
+
+        // Decompose result
+        math::Vec3 translation{}, scale{};
+        math::Quat rotation{};
+        math::DecomposeTransform(gizmoMatrix, translation, rotation, scale);
+
+        // ENTITY TRANSFORM EDIT
+        if (m_EditEntityTransform || !hasCollider) {
+            if (!canEditEntityTransform) {
+                return; // Dynamic body not editable for transform, Because PhysX already handles this.
+            }
+
+            tc.transform.SetPosition(translation);
+            tc.transform.SetRotation(rotation);
+            tc.transform.SetScale(scale);
+            return;
+        }
+
+        // COLLIDER LOCAL TRANSFORM EDIT
+        auto& cc = entity.GetComponentUnchecked<ColliderComponent>();
+        if (cc.shape == physics::ColliderShape::Box) {
+        }
+
+        const math::Mat4 invActorWorld = actorWorld.Inverted();
+        math::Mat4 localMatrix  = invActorWorld * gizmoMatrix;
+
+        math::Vec3 localPos{}, localScale{};
+        math::Quat localRot{};
+        math::DecomposeTransform(localMatrix, localPos, localRot, localScale);
+
+        cc.localPosition = localPos;
+        cc.localRotation = localRot;
+        // PhysX works in half extents, Debug mesh works in full extents,
+        // in this case scale with 0.5 before sending to PhysX
+        cc.size = localScale * 0.5f; // full -> half extents
+
+        // TODO: I can add a Update function to PhysicsSystem for pose,geometry etc.
+        // TODO: then we can mark as dirty in here and update from system (interact with OnColliderChanged)
+        // Immediate PhysX sync (safe)
+        if (cc.shapeHandle) {
+            cc.shapeHandle->setLocalPose(
+                physx::PxTransform(
+                    util::RealToPX(cc.localPosition),
+                    util::RealToPX(cc.localRotation)
+                )
+            );
+
+            cc.shapeHandle->setGeometry(
+                physx::PxBoxGeometry(
+                    cc.size.x,
+                    cc.size.y,
+                    cc.size.z
+                )
+            );
+        }
+    }
+
+    void EditorPanel::UpdateGizmoLogic() {
         // Toggle gizmo target (entity <-> collider)
         if (Input::IsKeyPressed(REAL_KEY_Y))
-            transformGizmosOn = !transformGizmosOn;
+            m_EditEntityTransform = !m_EditEntityTransform;
 
         // Select gizmo operation
         if (Input::IsKeyPressed(REAL_KEY_E))
@@ -170,89 +413,6 @@ namespace Real::UI {
             m_GizmoType = ImGuizmo::ROTATE;
         else if (Input::IsKeyPressed(REAL_KEY_T))
             m_GizmoType = ImGuizmo::SCALE;
-
-        const auto* editorState = Services::GetEditorState();
-        if (!editorState->selectedEntity)
-            return;
-
-        // Currently using 3D
-        ImGuizmo::SetOrthographic(false);
-        ImGuizmo::SetDrawlist();
-        ImGuizmo::SetRect(
-            ImGui::GetWindowPos().x,
-            ImGui::GetWindowPos().y,
-            ImGui::GetWindowSize().x,
-            ImGui::GetWindowSize().y
-        );
-
-        auto& entity    = *editorState->selectedEntity;
-        auto& transform = entity.GetComponentUnchecked<TransformComponent>().transform;
-        auto& collider  = entity.GetComponent<ColliderComponent>();
-        auto& camera    = editorState->camera->GetComponent<CameraComponent>().m_Camera;
-
-        // Build ACTOR world matrix (no scale!)
-        const math::Mat4 actorWorld = math::Mat4::Translate(transform.position) * transform.rotation.ToMat4();
-
-        // Build COLLIDER world matrix (actor x local)
-        const math::Mat4 colliderWorld =
-            actorWorld *
-            math::Mat4::Translate(collider.localPosition) *
-            collider.localRotation.ToMat4();
-
-        // Choose which matrix the gizmo edits
-        math::Mat4 gizmoMatrix = transformGizmosOn && entity.HasComponent<ColliderComponent>()
-            ? transform.GetModelMatrix()
-            : colliderWorld;
-
-        ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
-            (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, gizmoMatrix.ValuePtr()
-        );
-
-        if (!ImGuizmo::IsUsing())
-            return;
-
-        math::Vec3 translation{}, scale{};
-        math::Quat rotation{};
-        // Decompose manipulated matrix
-        math::DecomposeTransform(gizmoMatrix, translation, rotation, scale);
-
-        // ENTITY transform edited
-        if (transformGizmosOn) {
-            transform.SetPosition(translation);
-            transform.SetRotation(rotation);
-            transform.SetScale(scale);
-            return;
-        }
-
-        // COLLIDER edited (convert WORLD to LOCAL)
-        const math::Mat4 invActorWorld = actorWorld.Inverted();
-        math::Mat4 localMatrix   = invActorWorld * gizmoMatrix;
-
-        math::Vec3 localPos{}, localScale{};
-        math::Quat localRot{};
-        math::DecomposeTransform(localMatrix, localPos, localRot, localScale);
-
-        collider.localPosition = localPos;
-        collider.localRotation = localRot;
-        collider.size          = localScale * 0.5f; // full -> half extents
-
-        // Sync PhysX shape immediately
-        if (collider.shapeHandle) {
-            collider.shapeHandle->setLocalPose(
-                physx::PxTransform(
-                    util::RealToPX(collider.localPosition),
-                    util::RealToPX(collider.localRotation)
-                )
-            );
-
-            collider.shapeHandle->setGeometry(
-                physx::PxBoxGeometry(
-                    collider.size.x,
-                    collider.size.y,
-                    collider.size.z
-                )
-            );
-        }
     }
 
     void EditorPanel::DebugGizmos() {
@@ -272,10 +432,9 @@ namespace Real::UI {
     }
 
     void EditorPanel::Render(Scene* scene) {
-        UpdateInputUI();
         RenderMenuBar();
+        RenderSceneGizmos();
         DrawPerformanceProfile();
-        DrawGizmos();
         // DebugGizmos();
     }
 

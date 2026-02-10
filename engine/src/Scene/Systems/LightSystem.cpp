@@ -27,4 +27,10 @@ namespace Real::ecs {
     void LightSystem::SetRegistry(entt::registry &registry) {
         m_Registry = &registry;
     }
+
+    void LightSystem::OnSceneAttach(Scene *scene) {
+    }
+
+    void LightSystem::OnSceneDetach(Scene *scene) {
+    }
 }

@@ -12,6 +12,9 @@ namespace Real::ecs {
         void Shutdown() override;
         void SetRegistry(entt::registry& registry) override;
 
+        void OnSceneAttach(Scene* scene) override;
+        void OnSceneDetach(Scene* scene) override;
+
     private:
         entt::registry* m_Registry = nullptr;
     };

@@ -41,4 +41,10 @@ namespace Real::ecs {
     void MovementSystem::SetRegistry(entt::registry &registry) {
         m_Registry = &registry;
     }
+
+    void MovementSystem::OnSceneAttach(Scene *scene) {
+    }
+
+    void MovementSystem::OnSceneDetach(Scene *scene) {
+    }
 }

@@ -9,8 +9,8 @@
 #include "Utils.h"
 #include "Editor/EditorPanel.h"
 #include "Editor/EditorState.h"
-#include "Editor/HierarchyPanel.h"
 #include "Editor/InspectorPanel.h"
+#include "Editor/HierarchyPanel.h"
 #include "Graphics/MeshManager.h"
 #include "Graphics/ModelLoader.h"
 #include "Graphics/Renderer.h"
@@ -19,6 +19,7 @@
 #include "Core/AssetImporter.h"
 #include "Scene/Scene.h"
 #include "../Scene/Systems/Systems.h"
+#include "Graphics/Debug/DebugRenderer.h"
 
 namespace Real {
 
@@ -39,11 +40,12 @@ namespace Real {
         Scope<MeshData> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
         Scope<opengl::Renderer> m_Renderer;
+        Scope<graphics::debug::DebugRenderer> m_DebugRenderer;
         Scope<Scene> m_Scene;
         Scope<CameraInput> m_CameraInput;
         Scope<UI::EditorPanel> m_EditorPanel;
-        Scope<UI::HierarchyPanel> m_HierarchyPanel;
-        Scope<UI::InspectorPanel> m_InspectorPanel;
+        Scope<UI::InspectorPanel> m_HierarchyPanel;
+        Scope<UI::HierarchyPanel> m_InspectorPanel;
         Scope<Systems> m_Systems;
         Scope<ResourceLoader> m_ResourceLoader;
         Scope<AssetImporter> m_AssetImporter;
@@ -66,10 +68,12 @@ namespace Real {
         void InitEditorRenderer();
         void InitEditorUIState();
         void InitEditorCamera();
+        void InitDebugRenderer();
         void InitResourceLoader();
         void InitAssetManager();
         void InitMeshManager();
         void SetOpenGLStateFunctions();
+        void AttachSceneToSystems();
 
         // TODO: Snapshot editor to game-time
     };

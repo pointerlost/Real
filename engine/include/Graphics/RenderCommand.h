@@ -13,6 +13,7 @@ namespace Real {
         uint baseVertex;
         uint baseInstance;
     } DrawElementsIndirectCommand;
+    static_assert(sizeof(DrawElementsIndirectCommand) == 20);
 
     typedef struct {
         int transformIndex;
@@ -20,4 +21,5 @@ namespace Real {
         int indexCount;
         int indexOffset;
     } EntityMetadata;
+    static_assert(sizeof(EntityMetadata) == 16);
 }

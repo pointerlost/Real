@@ -9,6 +9,10 @@ namespace Real {
     class Timer;
     struct EditorState;
     class AssetImporter;
+
+    namespace graphics::debug {
+        class DebugRenderer;
+    }
 }
 
 namespace Real::Services {
@@ -17,6 +21,7 @@ namespace Real::Services {
     void SetEditorTimer(Timer* timer);
     void SetEditorState(EditorState* state);
     void SetAssetImporter(AssetImporter* importer);
+    void SetDebugRenderer(graphics::debug::DebugRenderer* dr);
 }
 
 namespace Real::Services {
@@ -25,4 +30,5 @@ namespace Real::Services {
     Timer *GetEditorTimer();
     EditorState* GetEditorState();
     AssetImporter* GetAssetImporter();
+    graphics::debug::DebugRenderer* GetDebugRenderer();
 }

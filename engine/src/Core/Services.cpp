@@ -9,6 +9,7 @@ namespace {
     Real::Timer *s_EditorTimer;
     Real::EditorState* s_EditorState;
     Real::AssetImporter* s_AssetImporter;
+    Real::graphics::debug::DebugRenderer* s_DebugRenderer;
 }
 
 namespace Real::Services {
@@ -31,6 +32,10 @@ namespace Real::Services {
     void SetAssetImporter(AssetImporter *importer) {
         s_AssetImporter = importer;
     }
+
+    void SetDebugRenderer(graphics::debug::DebugRenderer *dr) {
+        s_DebugRenderer = dr;
+    }
 }
 
 namespace Real::Services {
@@ -52,5 +57,9 @@ namespace Real::Services {
 
     AssetImporter* GetAssetImporter() {
         return s_AssetImporter;
+    }
+
+    graphics::debug::DebugRenderer* GetDebugRenderer() {
+        return s_DebugRenderer;
     }
 }

@@ -26,8 +26,8 @@ namespace Real::UI {
 
     private:
         bool m_Open = true;
-        float m_SizeX = SCREEN_WIDTH / 5 + 31.0;
-        float m_SizeY = SCREEN_HEIGHT;
+        f32 m_SizeX = SCREEN_WIDTH / 5 + 31.0;
+        f32 m_SizeY = SCREEN_HEIGHT;
         int m_IDcounter = 0;
 
     private:
@@ -36,11 +36,11 @@ namespace Real::UI {
         void DrawComponent(TransformComponent* comp, Scene* scene);
         void DrawComponent(const MeshRendererComponent* comp, Scene* scene);
         void DrawComponent(Entity& entity, ColliderComponent *comp, Scene *scene);
-        void DrawComponent(Entity& entity, PhysicsBodyComponent *comp, Scene *scene);
+        void DrawComponent(Entity& entity, RigidBodyComponent *comp, Scene *scene);
         void DrawComponent(LightComponent* comp, TransformComponent* tc, Scene* scene);
         void DrawComponent(CameraComponent* comp, Scene* scene);
 
-        void DrawCustomTextShape(const std::string& text, ImVec2 boxSize, ImVec4 color, bool textColorActive = false, ImVec4 textColor = ImVec4());
-        void DrawCustomSizedDragger(float dragWidth, float& val, float speed, float v_min, float v_max, const char* format = "%.3f");
+        void DrawCustomTextShape(const String& text, ImVec2 boxSize, ImVec4 color, bool textColorActive = false, ImVec4 textColor = ImVec4());
+        void DrawCustomSizedDragger(f32 dragWidth, f32& val, f32 speed, f32 v_min, f32 v_max, const char* format = "%.3f");
     };
 }

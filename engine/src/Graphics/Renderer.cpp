@@ -2,16 +2,11 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Graphics/Renderer.h"
-
-#include <ranges>
-
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Core/Timer.h"
 #include "Graphics/MeshManager.h"
-#include "Graphics/Transformations.h"
-#include "Scene/Components.h"
-#include "Scene/Entity.h"
+#include "Graphics/Shader.h"
 #include "Scene/Scene.h"
 
 namespace Real::opengl {

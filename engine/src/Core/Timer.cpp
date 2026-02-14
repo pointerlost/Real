@@ -2,8 +2,7 @@
 // Created by pointerlost on 10/3/25.
 //
 #include "Core/Timer.h"
-
-#include <GLFW/glfw3.h>
+#include <chrono>
 
 namespace Real {
 
@@ -17,26 +16,28 @@ namespace Real {
     void Timer::Update() {
         if (!m_Running) return;
 
-        // Get current time with glfw
-        m_CurrFrameTime = static_cast<float>(glfwGetTime());
+        const TimePoint now = Clock::now();
 
-        m_DeltaTime = m_CurrFrameTime - m_LastFrameTime;
+        std::chrono::duration<f64> delta = now - m_LastTime;
+        m_DeltaTime = delta.count();
 
-        // The time since the application began
+        if (m_DeltaTime < 0.0)
+            m_DeltaTime = 0.0;
+
         m_ElapsedTime += m_DeltaTime;
 
-        m_LastFrameTime = m_CurrFrameTime;
+        m_LastTime = now;
     }
 
     void Timer::Stop() {
         m_Running = false;
     }
 
-    float Timer::GetDelta() const {
+    f64 Timer::GetDelta() const {
         return m_DeltaTime;
     }
 
-    float Timer::GetElapsed() const {
+    f64 Timer::GetElapsed() const {
         return m_ElapsedTime;
     }
 

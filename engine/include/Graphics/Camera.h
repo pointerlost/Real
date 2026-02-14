@@ -6,37 +6,39 @@
 #include "../Core/RealConfig.h"
 #include "GPUBuffers.h"
 #include "Math/Mat4.h"
+#include "Math/Vec3.h"
 
 namespace Real {
-    class Transform;
+    struct Transform;
 }
 
 namespace Real {
 
-    enum class CameraMode {
-        Perspective,
-        Orthographic
-    };
-
     class Camera {
     public:
-        explicit Camera(CameraMode mode = CameraMode::Perspective);
+        enum class Mode {
+            Perspective,
+            Orthographic
+        };
 
-        void SetNear(float near) { m_Near = near; m_ProjectionDirty = true; }
-        void SetFar(float far)   { m_Far = far;   m_ProjectionDirty = true; }
-        void SetAspect(float aspect) { m_Aspect = aspect; m_ProjectionDirty = true; }
-        void SetFOV(float fov) { m_FOV = fov; m_ProjectionDirty = true; }
-        void AddFOV(float fov) {
+    public:
+        explicit Camera(Mode mode = Mode::Perspective);
+
+        void SetNear(f32 near) { m_Near = near; m_ProjectionDirty = true; }
+        void SetFar(f32 far)   { m_Far = far;   m_ProjectionDirty = true; }
+        void SetAspect(f32 aspect) { m_Aspect = aspect; m_ProjectionDirty = true; }
+        void SetFOV(f32 fov) { m_FOV = fov; m_ProjectionDirty = true; }
+        void AddFOV(f32 fov) {
             m_FOV += fov;
             if (m_FOV > 45.0) m_FOV = 45.0f;
             else if (m_FOV < 1.0) m_FOV = 1.0f;
             m_ProjectionDirty = true;
         }
 
-        [[nodiscard]] float GetNear()   const { return m_Near;   }
-        [[nodiscard]] float GetFar()    const { return m_Far;    }
-        [[nodiscard]] float GetAspect() const { return m_Aspect; }
-        [[nodiscard]] float GetFOV()    const { return m_FOV;    }
+        [[nodiscard]] f32 GetNear()   const { return m_Near;   }
+        [[nodiscard]] f32 GetFar()    const { return m_Far;    }
+        [[nodiscard]] f32 GetAspect() const { return m_Aspect; }
+        [[nodiscard]] f32 GetFOV()    const { return m_FOV;    }
 
         [[nodiscard]] math::Mat4& GetView() { return m_View; }
         [[nodiscard]] math::Mat4& GetProjection() { return m_Projection; }
@@ -48,11 +50,11 @@ namespace Real {
         [[nodiscard]] FrameUBO ConvertToGPUFormat(const Transform& transform);
 
     private:
-        float m_Near = 0.1;
-        float m_Far  = 1000.0;
-        float m_FOV  = 45.0;
-        float m_Aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
-        CameraMode m_Mode = CameraMode::Perspective;
+        f32 m_Near = 0.1;
+        f32 m_Far  = 1000.0;
+        f32 m_FOV  = 45.0;
+        f32 m_Aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+        Mode m_Mode = Mode::Perspective;
 
         const math::Vec3 m_SceneCenter = math::Vec3(0.0);
         const math::Vec3 m_WorldUp = math::Vec3(0.0, 1.0, 0.0);

@@ -27,7 +27,7 @@ namespace Real::physics {
         physx::PxCpuDispatcher* m_Dispatcher = nullptr;
         physx::PxMaterial*      m_DefaultMaterial = nullptr;
 
-        Scope<physics::PhysXAllocator>      m_Allocator;
-        Scope<physics::PhysXErrorCallback>  m_ErrorCallback;
+        Scope<PhysXAllocator>      m_Allocator;
+        Scope<PhysXErrorCallback>  m_ErrorCallback;
     };
 }

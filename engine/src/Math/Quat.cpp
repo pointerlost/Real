@@ -4,13 +4,14 @@
 #include <Math/Quat.h>
 
 #include "Math/Math.h"
+#include "Math/Vec3.h"
 
 namespace Real::math {
 
     Quat Quat::Normalized() const noexcept {
-        const float len = std::sqrt(x*x + y*y + z*z + w*w);
+        const f32 len = sqrt(x*x + y*y + z*z + w*w);
         if (len <= 0.0f) return Identity();
-        const float inv = 1.0f / len;
+        const f32 inv = 1.0f / len;
         return { x*inv, y*inv, z*inv, w*inv };
     }
 
@@ -24,12 +25,12 @@ namespace Real::math {
     }
 
     Quat Quat::FromEulerRadians(const Vec3 &e) noexcept {
-        const float cx = std::cos(e.x * 0.5f);
-        const float sx = std::sin(e.x * 0.5f);
-        const float cy = std::cos(e.y * 0.5f);
-        const float sy = std::sin(e.y * 0.5f);
-        const float cz = std::cos(e.z * 0.5f);
-        const float sz = std::sin(e.z * 0.5f);
+        const f32 cx = cos(e.x * 0.5f);
+        const f32 sx = sin(e.x * 0.5f);
+        const f32 cy = cos(e.y * 0.5f);
+        const f32 sy = sin(e.y * 0.5f);
+        const f32 cz = cos(e.z * 0.5f);
+        const f32 sz = sin(e.z * 0.5f);
 
         Quat q{};
         q.w = cy * cx * cz + sy * sx * sz;
@@ -39,10 +40,10 @@ namespace Real::math {
         return q;
     }
 
-    Quat Quat::FromAxisAngle(const Vec3 &axis, float radians) noexcept {
+    Quat Quat::FromAxisAngle(const Vec3 &axis, f32 radians) noexcept {
         const Vec3 a = axis.Normalized();
-        const float s = std::sin(radians * 0.5f);
-        float c = std::cos(radians * 0.5f);
+        const f32 s = sin(radians * 0.5f);
+        f32 c = cos(radians * 0.5f);
         return { a.x*s, a.y*s, a.z*s, c };
     }
 
@@ -56,15 +57,15 @@ namespace Real::math {
     Mat4 Quat::ToMat4() const noexcept {
         const Quat q = Normalized();
 
-        const float xx = q.x * q.x;
-        const float yy = q.y * q.y;
-        const float zz = q.z * q.z;
-        const float xy = q.x * q.y;
-        const float xz = q.x * q.z;
-        const float yz = q.y * q.z;
-        const float wx = q.w * q.x;
-        const float wy = q.w * q.y;
-        const float wz = q.w * q.z;
+        const f32 xx = q.x * q.x;
+        const f32 yy = q.y * q.y;
+        const f32 zz = q.z * q.z;
+        const f32 xy = q.x * q.y;
+        const f32 xz = q.x * q.z;
+        const f32 yz = q.y * q.z;
+        const f32 wx = q.w * q.x;
+        const f32 wy = q.w * q.y;
+        const f32 wz = q.w * q.z;
 
         Mat4 m = Mat4::Identity();
         m.m[0][0] = 1 - 2*(yy + zz);
@@ -82,7 +83,7 @@ namespace Real::math {
         return m;
     }
 
-    Quat Quat::FromEulerDegrees(const Vec3 &eulerDegrees) noexcept {
+    Quat Quat::FromEulerDegrees(const Vec3& eulerDegrees) noexcept {
         return FromEulerRadians(DegreesToRadians(eulerDegrees));
     }
 }

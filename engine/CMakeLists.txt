@@ -134,7 +134,7 @@ add_executable(ENGINE_TARGET
     include/Scene/Systems/PhysicsSystem.h
     include/Physics/PhysXContext.h
     src/Physics/PhysXContext.cpp
-    include/Physics/PhysXTypes.h
+        include/Physics/Physx/PhysXTypes.h
     src/Scene/Systems/PhysicsSystem.cpp
     include/Scene/Systems/MeshRendererSystem.h
     include/Scene/Systems/CameraSystem.h
@@ -160,7 +160,15 @@ add_executable(ENGINE_TARGET
     src/Graphics/Debug/DebugMeshFactory.cpp
     src/Editor/ViewportPanel.cpp
     include/Editor/ViewportPanel.h
-        include/Graphics/Debug/DebugTypes.h
+    include/Graphics/Debug/DebugTypes.h
+    include/Math/Conversions/GLMConvertions.h
+    src/Math/Convertions/GLMConvertions.cpp
+    include/Physics/IPhysicsBackend.h
+    include/Physics/Physx/PhysXBackend.h
+    src/Physics/PhysX/PhysXBackend.cpp
+    include/Physics/PhysicsDescriptors.h
+        include/Scene/ISceneListener.h
+        include/Scene/Systems/ISystem.h
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)

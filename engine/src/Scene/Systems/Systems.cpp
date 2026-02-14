@@ -2,28 +2,31 @@
 // Created by pointerlost on 10/24/25.
 //
 #include "Scene/Systems/Systems.h"
-#include "Scene/Systems/CameraSystem.h"
-#include "Scene/Systems/PhysicsSystem.h"
-#include "Scene/Systems/MeshRendererSystem.h"
-#include "Scene/Systems/LightSystem.h"
-#include "Scene/Systems/MovementSystem.h"
+#include "Scene/ISceneListener.h"
+#include <cassert>
 
 namespace Real {
 
-    void Systems::Init() {
-        m_SubSystems.push_back(CreateScope<ecs::CameraSystem>());
-        m_SubSystems.push_back(CreateScope<ecs::PhysicsSystem>());
-        m_SubSystems.push_back(CreateScope<ecs::MovementSystem>());
-        m_SubSystems.push_back(CreateScope<ecs::MeshRendererSystem>());
-        m_SubSystems.push_back(CreateScope<ecs::LightSystem>());
+    void Systems::OnSceneAttach(Scene *scene) {
+        for (auto& s : m_SubSystems)
+            if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
+                listener->OnSceneAttach(scene);
+    }
 
+    void Systems::OnSceneDetach(Scene *scene) {
+        for (auto& s : m_SubSystems)
+            if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
+                listener->OnSceneDetach(scene);
+    }
+
+    void Systems::Init() {
         // Init sub-systems resources
         for (const auto& ss : m_SubSystems) {
             ss->Init();
         }
     }
 
-    void Systems::Update(Scene *scene, float deltaTime) {
+    void Systems::Update(Scene *scene, f32 deltaTime) {
         for (const auto& ss : m_SubSystems) {
             // Update sub-systems
             ss->Update(scene, deltaTime);
@@ -36,9 +39,9 @@ namespace Real {
         }
     }
 
-    void Systems::SetRegistry(entt::registry &registry) {
-        for (const auto& ss : m_SubSystems) {
-            ss->SetRegistry(registry);
-        }
+    void Systems::AddSystem(Scope<ISystem> system) {
+        // only non-null systems
+        assert(system);
+        m_SubSystems.push_back(std::move(system));
     }
 }

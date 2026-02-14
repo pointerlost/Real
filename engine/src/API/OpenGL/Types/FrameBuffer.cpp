@@ -10,12 +10,12 @@
 
 namespace Real::opengl {
 
-    FrameBuffer::FrameBuffer(std::string name, int width, int height)
+    FrameBuffer::FrameBuffer(String name, int width, int height)
         : m_Width(width), m_Height(height), m_Name(std::move(name))
     {
     }
 
-    FrameBuffer::FrameBuffer(std::string name, const glm::ivec2 &screenSize)
+    FrameBuffer::FrameBuffer(String name, const glm::ivec2 &screenSize)
         : m_Width(screenSize.x), m_Height(screenSize.y), m_Name(std::move(name))
     {
     }

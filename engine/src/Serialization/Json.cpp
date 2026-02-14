@@ -9,8 +9,8 @@
 
 namespace Real::serialization::json {
 
-    void Save(const std::string &path, const nlohmann::json &j) {
-        const std::string content = j.dump(4); // Serialize first
+    void Save(const String &path, const nlohmann::json &j) {
+        const String content = j.dump(4); // Serialize first
 
         std::ofstream file(path, std::ios::out | std::ios::binary);
         if (!file.is_open()) {
@@ -22,7 +22,7 @@ namespace Real::serialization::json {
         file.flush();
     }
 
-    nlohmann::json Load(const std::string &path) {
+    nlohmann::json Load(const String &path) {
         std::ifstream file(path);
 
         // File does not exist

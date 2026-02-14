@@ -6,7 +6,7 @@
 #include "Physics/PhysicsTypes.h"
 
 namespace Real {
-    struct PhysicsBodyComponent;
+    struct RigidBodyComponent;
     struct ColliderComponent;
     struct ModelComponent;
     class Entity;
@@ -18,8 +18,8 @@ namespace Real::event {
     public:
         Event<Entity&, ModelComponent&> OnModelAssigned;
         Event<Entity&, ColliderComponent&> OnColliderAdded;
-        Event<Entity&, ColliderComponent&, physics::ColliderChangeType> OnColliderChanged;
-        Event<Entity&, PhysicsBodyComponent&> OnPhysicsBodyAdded;
-        Event<Entity&, PhysicsBodyComponent&> OnPhysicsBodyChanged;
+        Event<Entity&, physics::ColliderChangeType> OnColliderChanged;
+        Event<Entity&, RigidBodyComponent&> OnPhysicsBodyAdded;
+        Event<Entity&, RigidBodyComponent&> OnPhysicsBodyChanged;
     };
 }

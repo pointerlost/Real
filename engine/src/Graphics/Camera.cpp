@@ -4,10 +4,11 @@
 #include "Graphics/Camera.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
+#include "Math/Conversions/GLMConvertions.h"
 
 namespace Real {
 
-    Camera::Camera(CameraMode mode) : m_Mode(mode) {
+    Camera::Camera(Mode mode) : m_Mode(mode) {
     }
 
     void Camera::Update(Transform& transform) {
@@ -24,16 +25,16 @@ namespace Real {
         transform.rotation = rotation;
 
         // Read directions from transform
-        const glm::vec3 position = transform.position.ToGLM();
-        const glm::vec3 forward  = transform.Forward().ToGLM();
-        const glm::vec3 up       = transform.Up().ToGLM();
+        const glm::vec3 position = interop::glm::To(transform.position);
+        const glm::vec3 forward  = interop::glm::To(transform.Forward());
+        const glm::vec3 up       = interop::glm::To(transform.Up());
 
         // Build view matrix
-        m_View = math::Mat4::FromGLM(glm::lookAt(position, position + forward, up));
+        m_View = interop::glm::From(glm::lookAt(position, position + forward, up));
 
         // Build Projection matrix
-        if (m_Mode == CameraMode::Perspective && m_ProjectionDirty) {
-            m_Projection = math::Mat4::FromGLM(glm::perspective(math::DegreesToRadians(m_FOV), m_Aspect, m_Near, m_Far));
+        if (m_Mode == Mode::Perspective && m_ProjectionDirty) {
+            m_Projection = interop::glm::From(glm::perspective(math::DegreesToRadians(m_FOV), m_Aspect, m_Near, m_Far));
             m_ProjectionDirty = false;
         }
 

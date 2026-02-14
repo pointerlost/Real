@@ -17,7 +17,7 @@ namespace Real {
     // TODO: Need material baking system to optimize run-time
     struct Material {
         UUID m_UUID = UUID(0);
-        std::string m_Name{};
+        String m_Name{};
 
         UUID m_Albedo   = UUID(0);
         UUID m_Normal   = UUID(0);
@@ -28,7 +28,7 @@ namespace Real {
         Material() = default;
         Material(const Material&) = default;
         explicit Material(const UUID& uuid) : m_UUID(uuid) {}
-        explicit Material(const UUID& uuid, std::string  name) : m_UUID(uuid), m_Name(std::move(name)) {}
+        explicit Material(const UUID& uuid, String  name) : m_UUID(uuid), m_Name(std::move(name)) {}
     };
 
     struct MaterialInstance {

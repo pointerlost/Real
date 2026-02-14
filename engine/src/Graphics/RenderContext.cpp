@@ -2,10 +2,8 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/RenderContext.h"
-
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
-#include "Editor/EditorState.h"
 #include "Graphics/Buffer.h"
 #include "Graphics/Material.h"
 #include "Graphics/MeshManager.h"
@@ -13,8 +11,13 @@
 #include "Scene/Scene.h"
 #include "Util/Util.h"
 #include "Common/RealEnum.h"
-#include "Graphics/Model.h"
+#include "Math/Conversions/GLMConvertions.h"
 #include "Scene/Entity.h"
+
+namespace {
+    constexpr int MAX_ENTITIES = 16384;
+    constexpr int MAX_LIGHTS = 512;
+}
 
 namespace Real {
 
@@ -93,10 +96,10 @@ namespace Real {
         );
 
         // Update Camera
-        m_Buffers.camera.UploadToGPU(std::vector{m_GPUDatas.camera}, 1 * sizeof(FrameUBO), BufferType::UBO);
+        m_Buffers.camera.UploadToGPU(Vector{m_GPUDatas.camera}, 1 * sizeof(FrameUBO), BufferType::UBO);
 
         // Update Global Data
-        m_Buffers.globalData.UploadToGPU(std::vector{m_GPUDatas.globalData}, 1 * sizeof(GlobalUBO), BufferType::UBO);
+        m_Buffers.globalData.UploadToGPU(Vector{m_GPUDatas.globalData}, 1 * sizeof(GlobalUBO), BufferType::UBO);
     }
 
     void RenderContext::CollectRenderables() {
@@ -144,7 +147,9 @@ namespace Real {
         const int index = static_cast<int>(m_GPUDatas.transforms.size());
         const auto& model = tc.transform.GetModelMatrix();
         gpu.modelMatrix   = model;
-        gpu.normalMatrix  = math::Mat4::FromGLM(glm::mat4(glm::transpose(glm::inverse(glm::mat3(model.ToGLM())))));
+        gpu.normalMatrix  = interop::glm::From(
+            glm::mat4(glm::transpose(glm::inverse(glm::mat3(interop::glm::To(model)))))
+        );
         m_GPUDatas.transforms.push_back(gpu);
         return index;
     }
@@ -188,8 +193,8 @@ namespace Real {
         m_GPUDatas.entityData.push_back(em);
     }
 
-    std::vector<RenderableData> RenderContext::CollectRenderables(const Entity* entity) {
-        std::vector<RenderableData> result;
+    Vector<RenderableData> RenderContext::CollectRenderables(const Entity* entity) {
+        Vector<RenderableData> result;
 
         if (entity->HasComponent<MeshRendererComponent>()) {
             const auto& mrc = entity->GetComponentUnchecked<MeshRendererComponent>();

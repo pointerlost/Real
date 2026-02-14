@@ -24,12 +24,12 @@ namespace Real {
         m_TextureArrays[TexArrayTypeToArrayIndex(texType)][TexArrayResolutionToIndex(resolution)].push_back(texMap);
     }
 
-    const std::vector<Ref<OpenGLTexture>>& TextureArrayManager::GetTextureArray(TextureType arrayType, TextureResolution res) {
+    const Vector<Ref<OpenGLTexture>>& TextureArrayManager::GetTextureArray(TextureType arrayType, TextureResolution res) {
         return m_TextureArrays[TexArrayTypeToArrayIndex(arrayType)][TexArrayResolutionToIndex(res)];
     }
 
     void TextureArrayManager::PrepareAndBindTextureArrays() {
-        auto create_compressed_tex_array = [](const std::string& arrayName, TextureType type) {
+        auto create_compressed_tex_array = [](const String& arrayName, TextureType type) {
             int resolution = 256;
             const size_t arrayTypeIndex = TexArrayTypeToArrayIndex(type);
             for (size_t i = 0; i <= 4; i++) {
@@ -70,7 +70,7 @@ namespace Real {
         }
     }
 
-    void TextureArrayManager::CreateCompressedTextureArray(const std::string& texMapName, const std::vector<Ref<OpenGLTexture>>& textureArray) {
+    void TextureArrayManager::CreateCompressedTextureArray(const String& texMapName, const Vector<Ref<OpenGLTexture>>& textureArray) {
         // if (m_TextureArrayHandles.contains(texMapName)) {
         //     Warn("TextureArray already loaded before with name: " + texMapName);
         //     return;

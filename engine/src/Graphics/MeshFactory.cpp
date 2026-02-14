@@ -2,26 +2,27 @@
 // Created by pointerlost on 10/4/25.
 //
 #include "Graphics/MeshFactory.h"
-#include <glm/ext.hpp>
-#include "Common/RealTypes.h"
+#include <Graphics/MeshManager.h>
+
+#include "Math/Vec2.h"
 #include "Math/Vec3.h"
 
 namespace Real {
 
-    std::pair<std::vector<Vertex>, std::vector<uint32_t>> MeshFactory::CreateTriangle() {
-        std::vector<Vertex> vertices = {
+    std::pair<Vector<Vertex>, Vector<u32>> MeshFactory::CreateTriangle() {
+        Vector<Vertex> vertices = {
             { math::Vec3(-0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.0f, 0.0f) },
             { math::Vec3( 0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(1.0f, 0.0f) },
             { math::Vec3( 0.0f,  0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.5f, 1.0f) }
         };
 
-        std::vector<uint32_t> indices = { 0, 1, 2 };
+        Vector<u32> indices = { 0, 1, 2 };
 
         return std::make_pair(vertices, indices);
     }
 
-    std::pair<std::vector<Vertex>, std::vector<uint32_t>> MeshFactory::CreateCube() {
-        std::vector<Vertex> vertices =
+    std::pair<Vector<Vertex>, Vector<u32>> MeshFactory::CreateCube() {
+        Vector<Vertex> vertices =
 		{	// Vertices, Normal, UV
 
 			// Front face (+Z)
@@ -61,7 +62,7 @@ namespace Real {
 			{ math::Vec3(-0.5f, -0.5f,  0.5f),  math::Vec3 {0.0, -1.0, 0.0},  {0.0f, 1.0f}  },
 		};
 
-		std::vector<uint32_t> indices =
+		Vector<u32> indices =
 		{
 			// Front face
 			0, 1, 2,      2, 3, 0,

@@ -11,13 +11,14 @@ namespace Real::ecs {
     void MovementSystem::Init() {
     }
 
-    void MovementSystem::Update(Scene *scene, float deltaTime) {
+    void MovementSystem::Update(Scene *scene, f32 deltaTime) {
         /*
          * MovementSystem JOB:
-            - Moves editor camera
             - Non-physics movement (editor camera, debug objects)
         */
-        const auto view = m_Registry->view<TransformComponent, MovementComponent>(entt::exclude<PhysicsBodyComponent>);
+        const auto view = scene->GetRegistry().view<
+            TransformComponent, MovementComponent>(entt::exclude<RigidBodyComponent>
+        );
 
         for (const auto entity : view) {
             auto& tc = view.get<TransformComponent>(entity);
@@ -38,13 +39,4 @@ namespace Real::ecs {
     void MovementSystem::Shutdown() {
     }
 
-    void MovementSystem::SetRegistry(entt::registry &registry) {
-        m_Registry = &registry;
-    }
-
-    void MovementSystem::OnSceneAttach(Scene *scene) {
-    }
-
-    void MovementSystem::OnSceneDetach(Scene *scene) {
-    }
 }

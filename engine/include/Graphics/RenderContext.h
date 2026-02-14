@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <unordered_map>
-
 #include "GPUBuffers.h"
 #include "RenderCommand.h"
 #include <vector>
@@ -21,12 +20,12 @@ namespace Real {
 namespace Real {
 
     struct GPUData {
-        std::vector<TransformSSBO> transforms;
-        std::vector<MaterialSSBO> materials;
-        std::vector<GLuint64> textures;
-        std::vector<LightSSBO> lights;
-        std::vector<DrawElementsIndirectCommand> drawCommands;
-        std::vector<EntityMetadata> entityData;
+        Vector<TransformSSBO> transforms;
+        Vector<MaterialSSBO> materials;
+        Vector<GLuint64> textures;
+        Vector<LightSSBO> lights;
+        Vector<DrawElementsIndirectCommand> drawCommands;
+        Vector<EntityMetadata> entityData;
         FrameUBO camera;
         GlobalUBO globalData;
     };
@@ -65,7 +64,7 @@ namespace Real {
         int BuildTransform(const TransformComponent& tc);
         int BuildMaterial(const UUID& materialUUID);
         void PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex, uint baseInstance);
-        std::vector<RenderableData> CollectRenderables(const Entity* entity);
+        Vector<RenderableData> CollectRenderables(const Entity* entity);
         void CollectGlobalData();
         void CleanPrevFrame();
         void UploadToGPU();

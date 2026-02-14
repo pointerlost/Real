@@ -18,7 +18,7 @@ namespace Real {
         }
     }
 
-    void set_mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    void set_mouse_callback(GLFWwindow *window, f64 xpos, f64 ypos) {
         if (s_FirstMouse) {
             Input::g_MouseLastX = xpos;
             Input::g_MouseLastY = ypos;
@@ -38,8 +38,8 @@ namespace Real {
             deltaX *= Input::g_Sensitivity;
             deltaY *= Input::g_Sensitivity;
 
-            Input::g_Yaw   += static_cast<float>(deltaX);
-            Input::g_Pitch += static_cast<float>(deltaY);
+            Input::g_Yaw   += static_cast<f32>(deltaX);
+            Input::g_Pitch += static_cast<f32>(deltaY);
 
             if (Input::g_Pitch > 89.0f)  Input::g_Pitch = 89.0f;
             if (Input::g_Pitch < -89.0f) Input::g_Pitch = -89.0f;
@@ -55,7 +55,7 @@ namespace Real {
         }
     }
 
-    void set_mouse_scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    void set_mouse_scroll_callback(GLFWwindow *window, f64 xoffset, f64 yoffset) {
         Input::g_IsScrolling = true;
         Input::g_Scroll -= yoffset;
     }

@@ -8,15 +8,15 @@
 
 namespace Real::Input {
 
-    double g_MouseX = 0.0;
-    double g_MouseLastX = SCREEN_WIDTH / 2;
-    double g_MouseY = 0.0;
-    double g_MouseLastY = SCREEN_HEIGHT / 2;
-    float g_Sensitivity = 0.079f;
+    f64 g_MouseX = 0.0;
+    f64 g_MouseLastX = SCREEN_WIDTH / 2;
+    f64 g_MouseY = 0.0;
+    f64 g_MouseLastY = SCREEN_HEIGHT / 2;
+    f32 g_Sensitivity = 0.079f;
 
-    float g_Yaw = -90.0f;
-    float g_Pitch = 0.0f;
-    double g_Scroll = 0.0f;
+    f32 g_Yaw = -90.0f;
+    f32 g_Pitch = 0.0f;
+    f64 g_Scroll = 0.0f;
     bool g_IsScrolling = false;
 
     bool g_KeyLastDown[REAL_KEY_COUNT] = { false };
@@ -29,7 +29,7 @@ namespace Real::Input {
     bool IsScrolling() { return g_IsScrolling; }
     void ResetScroll() { g_Scroll = 0.0f; }
 
-    float GetScroll() { return static_cast<float>(g_Scroll); }
+    f32 GetScroll() { return static_cast<f32>(g_Scroll); }
 
     void Update(CameraInput* cameraInput) {
 

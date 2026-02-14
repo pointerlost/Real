@@ -3,54 +3,43 @@
 //
 #pragma once
 #include <string>
-#include <vector>
 #include "compressonator/include/cmp_compressonatorlib/compressonator.h"
-#include "glad/glad.h"
+#include "glad/include/glad/glad.h"
 #include <assimp/material.h>
 #include "Graphics/Texture.h"
 #include <PxActor.h>
 
-namespace Real::physics {
-    enum class ColliderShape;
-}
-
-namespace physx {
-    class PxMaterial;
-    class PxPhysics;
-    class PxShape;
-}
-
 namespace Real {
     struct Transform;
-}
 
-namespace Real::math {
-    struct Quat;
-}
-
-namespace Real {
     struct TextureData;
-}
-
-namespace Real {
     enum class TextureFilterMode;
     enum class TextureResolution;
     enum class TextureType;
     enum class TextureWrapMode;
+
+    namespace math {
+        struct Quat;
+        struct Vec3;
+    }
+
+    namespace physics {
+        enum class ColliderShape;
+    }
 }
 
 namespace Real { struct FileInfo; }
 
 namespace Real::util {
     /* ***************************************** TEXTURE STATE  ************************************** */
-    std::string ImageFormatState_EnumToString(ImageFormatState state);
-    std::string TextureType_EnumToString(TextureType type);
-    std::string GetDefaultTextureName(TextureType type, int width);
-    std::string FormatToString(int format);
-    std::string InternalFormatToString(int format);
-    ImageFormatState ImageFormatState_StringToEnum(std::string state);
+    String ImageFormatState_EnumToString(ImageFormatState state);
+    String TextureType_EnumToString(TextureType type);
+    String GetDefaultTextureName(TextureType type, int width);
+    String FormatToString(int format);
+    String InternalFormatToString(int format);
+    ImageFormatState ImageFormatState_StringToEnum(String state);
     CMP_FORMAT GetCMPDestinationFormat(int channelCount);
-    TextureType TextureType_StringToEnum(const std::string& type);
+    TextureType TextureType_StringToEnum(const String& type);
     uint TexFormat_uncompressed_GetBitPerTexel(TextureType type);
     uint TexFormat_uncompressed_GetBytePerTexel(TextureType type);
     GLenum TextureWrapModeToGLEnum(TextureWrapMode mode);
@@ -62,25 +51,19 @@ namespace Real::util {
     int GetGLInternalFormat(int channelCount, bool srgb = false);
     TextureData ExtractChannel(const TextureData& data, int channelIndex);
     TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex);
-    TextureData ExtractChannels(const TextureData& data, const std::vector<int>& wantedChannels);
-    TextureData ExtractChannels(void* data, int width, int height, int channels, const std::vector<int>& wantedChannels);
+    TextureData ExtractChannels(const TextureData& data, const Vector<int>& wantedChannels);
+    TextureData ExtractChannels(void* data, int width, int height, int channels, const Vector<int>& wantedChannels);
 
     /* ***************************************** APIs DEBUG STATE  ************************************** */
     void DebugGLError();
-    std::string DebugCMPStatus(CMP_ERROR error);
+    String DebugCMPStatus(CMP_ERROR error);
 
     /* ***************************************** ENGINE STATE  ************************************** */
-    bool TryParseUUID(const std::string& strUUID, UUID& uuid);
+    bool TryParseUUID(const String& strUUID, UUID& uuid);
 
     /* ***************************************** MIXED STATE  ************************************** */
-    bool IsSubString(const std::string& subStr, const std::string& string);
+    bool IsSubString(const String& subStr, const String& string);
 
     /* ***************************************** PHYSICS STATE  ************************************** */
-    math::Vec3 PXToReal(const physx::PxVec3& v);
-    math::Quat PXToReal(const physx::PxQuat& q);
-    Transform PXToReal(const physx::PxTransform& t);
-    physx::PxVec3 RealToPX(const math::Vec3& v);
-    physx::PxQuat RealToPX(const math::Quat& q);
-    physx::PxTransform RealToPX(const Transform& t);
     physx::PxShape* CreatePhysXShapeFromReal(physx::PxPhysics& px, const physx::PxMaterial* mat, physics::ColliderShape shape);
 }

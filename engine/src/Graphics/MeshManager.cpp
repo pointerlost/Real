@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/4/25.
 //
 #include "Graphics/MeshManager.h"
-#include <glad/glad.h>
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 #include "Graphics/MeshFactory.h"
@@ -21,8 +20,8 @@ namespace Real {
         return &it->second;
     }
 
-    const MeshAsset& MeshData::CreateSingleMesh(std::vector<Vertex> vertices,
-        const std::vector<uint32_t>& indices, const UUID& meshUUID)
+    const MeshAsset& MeshData::CreateSingleMesh(Vector<Vertex> vertices,
+        const Vector<u32>& indices, const UUID& meshUUID)
     {
         if (m_MeshAssets.contains(meshUUID))
             return m_MeshAssets[meshUUID]; // Skip if mesh already exists
@@ -53,7 +52,7 @@ namespace Real {
         };
     }
 
-    std::span<const uint32_t> MeshData::ViewIndices(const UUID& uuid) const {
+    std::span<const u32> MeshData::ViewIndices(const UUID& uuid) const {
         if (!m_MeshAssets.contains(uuid)) return {};
 
         const auto& info = m_MeshAssets.at(uuid);
@@ -63,7 +62,7 @@ namespace Real {
         };
     }
 
-    const MeshAsset& MeshData::GetPrimitiveMeshData(const std::string &name) {
+    const MeshAsset& MeshData::GetPrimitiveMeshData(const String &name) {
         if (m_PrimitiveTypesUUIDs.contains(name)) {
             Warn("There is no primitive type with this name: " + name);
             return m_MeshAssets[m_PrimitiveTypesUUIDs["triangle"]];
@@ -71,8 +70,16 @@ namespace Real {
         return m_MeshAssets[m_PrimitiveTypesUUIDs[name]];
     }
 
-    const UUID& MeshData::GetPrimitiveUUID(const std::string &name) {
+    const UUID& MeshData::GetPrimitiveUUID(const String &name) {
         return m_PrimitiveTypesUUIDs[name];
+    }
+
+    void MeshData::BindUniversalVAO() const {
+        glBindVertexArray(m_UniversalVAO);
+    }
+
+    void MeshData::UnbindCurrVAO() const {
+        glBindVertexArray(0);
     }
 
     void MeshData::LoadPrimitiveTypes() {
@@ -85,9 +92,9 @@ namespace Real {
         CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs["cube"]);
     }
 
-    void MeshData3D::AddMesh3DToMeshData(std::vector<Vertex> v, std::vector<uint32_t> i, const UUID& meshUUID)
+    void MeshData3D::AddMesh3DToMeshData(Vector<Vertex> v, const Vector<u32>& i, const UUID& meshUUID)
     {
-        CreateSingleMesh(std::move(v), std::move(i), meshUUID);
+        CreateSingleMesh(std::move(v), i, meshUUID);
     }
 
     void MeshData::InitResources() {
@@ -95,7 +102,7 @@ namespace Real {
         glNamedBufferData(m_VBO, m_AllVertices.size() * sizeof(Vertex), m_AllVertices.data(), GL_STATIC_DRAW);
 
         glCreateBuffers(1, &m_EBO);
-        glNamedBufferData(m_EBO, m_AllIndices.size() * sizeof(uint32_t), m_AllIndices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(m_EBO, m_AllIndices.size() * sizeof(u32), m_AllIndices.data(), GL_STATIC_DRAW);
 
         // Create and bind global vao
         glCreateVertexArrays(1, &m_UniversalVAO);

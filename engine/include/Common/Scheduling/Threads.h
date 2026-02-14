@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <thread>
-#include <vector>
+#include "Common/RealTypes.h"
 
 namespace Real {
 
@@ -28,7 +28,7 @@ namespace Real {
         [[nodiscard]] bool IsWorkerAvailable() const { return m_WorkerCount > m_Workers.size(); }
 
     private:
-        std::vector<std::thread> m_Workers{};
+        Vector<std::thread> m_Workers{};
         // std::condition_variable m_CV;
         int m_WorkerCount = 0;
     };

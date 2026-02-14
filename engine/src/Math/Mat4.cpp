@@ -1,8 +1,9 @@
 //
 // Created by pointerlost on 1/13/26.
 //
-#include <glm/gtc/type_ptr.hpp>
-#include <Math/Mat4.h>
+#include "Math/Mat4.h"
+#include "Math/Vec3.h"
+#include "Math/Conversions/GLMConvertions.h"
 
 namespace Real::math {
 
@@ -66,38 +67,22 @@ namespace Real::math {
         return result;
     }
 
-    glm::mat4 Mat4::ToGLM() const noexcept {
-        glm::mat4 g(1.0f);
-        for (int c = 0; c < 4; ++c)
-            for (int r = 0; r < 4; ++r)
-                g[c][r] = m[c][r];
-        return g;
-    }
-
-    Mat4 Mat4::FromGLM(const glm::mat4 &g) noexcept {
-        Mat4 r(0.0f);
-        for (int c = 0; c < 4; ++c)
-            for (int row = 0; row < 4; ++row)
-                r.m[c][row] = g[c][row];
-        return r;
-    }
-
     Mat4 Mat4::Inverted() const noexcept {
         // Let GLM handle the inverse
-        const glm::mat4 inv = glm::inverse(ToGLM());
+        const glm::mat4 inv = glm::inverse(interop::glm::To(*this));
 
         // Convert back to Real Mat4
-        return Mat4(FromGLM(inv));
+        return Mat4(interop::glm::From(inv));
     }
 
     Mat4 Mat4::Inverted(const Mat4 &m) noexcept {
         // Convert Mat4 to glm::mat4
-        const glm::mat4 glmMat = m.ToGLM();
+        const glm::mat4 glmMat = interop::glm::To(m);
 
         // Let GLM handle the inverse
         const glm::mat4 inv = glm::inverse(glmMat);
 
         // Convert back to Real Mat4
-        return Mat4(FromGLM(inv));
+        return Mat4(interop::glm::From(inv));
     }
 }

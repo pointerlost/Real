@@ -6,6 +6,7 @@
 #include "imgui_impl_opengl3.h"
 #include "PxShape.h"
 #include "Core/AssetManager.h"
+#include "Core/CMakeConfig.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Core/Timer.h"
@@ -224,7 +225,7 @@ namespace Real::UI {
         // Font style
         // Hardcoded for now!!
         const auto& assetManager = Services::GetAssetManager();
-        const auto assets_dir = std::string(ASSETS_DIR);
+        const auto assets_dir = String(ASSETS_DIR);
 
         const ImGuiIO& io = ImGui::GetIO();
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
@@ -299,14 +300,14 @@ namespace Real::UI {
         auto& camera = editorState->editorCamera->GetComponent<CameraComponent>().m_Camera;
 
         const bool hasCollider = entity.HasComponent<ColliderComponent>();
-        const bool hasPhysics  = entity.HasComponent<PhysicsBodyComponent>();
+        const bool hasPhysics  = entity.HasComponent<RigidBodyComponent>();
 
         // Decide whether ENTITY transform is editable
         bool canEditEntityTransform = true;
 
         if (hasPhysics) {
-            const auto& pb = entity.GetComponentUnchecked<PhysicsBodyComponent>();
-            if (pb.bodyType == physics::BodyType::Dynamic) {
+            const auto& pb = entity.GetComponentUnchecked<RigidBodyComponent>();
+            if (pb.type == physics::BodyType::Dynamic) {
                 canEditEntityTransform = false;
             }
         }
@@ -379,26 +380,6 @@ namespace Real::UI {
         // PhysX works in half extents, Debug mesh works in full extents,
         // in this case scale with 0.5 before sending to PhysX
         cc.size = localScale * 0.5f; // full -> half extents
-
-        // TODO: I can add a Update function to PhysicsSystem for pose,geometry etc.
-        // TODO: then we can mark as dirty in here and update from system (interact with OnColliderChanged)
-        // Immediate PhysX sync (safe)
-        if (cc.shapeHandle) {
-            cc.shapeHandle->setLocalPose(
-                physx::PxTransform(
-                    util::RealToPX(cc.localPosition),
-                    util::RealToPX(cc.localRotation)
-                )
-            );
-
-            cc.shapeHandle->setGeometry(
-                physx::PxBoxGeometry(
-                    cc.size.x,
-                    cc.size.y,
-                    cc.size.z
-                )
-            );
-        }
     }
 
     void EditorPanel::UpdateGizmoLogic() {

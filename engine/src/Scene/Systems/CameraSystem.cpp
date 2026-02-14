@@ -12,8 +12,8 @@ namespace Real::ecs {
     void CameraSystem::Init() {
     }
 
-    void CameraSystem::Update(Scene *scene, float deltaTime) {
-        auto view = m_Registry->view<CameraComponent, TransformComponent>();
+    void CameraSystem::Update(Scene *scene, f32 deltaTime) {
+        auto view = scene->GetRegistry().view<CameraComponent, TransformComponent>();
 
         for (const auto entity : view) {
             auto& camera    = view.get<CameraComponent>(entity);
@@ -24,15 +24,5 @@ namespace Real::ecs {
     }
 
     void CameraSystem::Shutdown() {
-    }
-
-    void CameraSystem::SetRegistry(entt::registry &registry) {
-        m_Registry = &registry;
-    }
-
-    void CameraSystem::OnSceneAttach(Scene *scene) {
-    }
-
-    void CameraSystem::OnSceneDetach(Scene *scene) {
     }
 }

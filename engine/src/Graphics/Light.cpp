@@ -2,16 +2,11 @@
 // Created by pointerlost on 10/10/25.
 //
 #include "Graphics/Light.h"
-
-#include "Core/Services.h"
-#include "Core/Timer.h"
 #include "Graphics/Transformations.h"
-#include "Input/Input.h"
-#include "Input/Keycodes.h"
 
 namespace Real {
 
-    Light::Light(LightType type) : m_Type(type) {
+    Light::Light(Mode type) : m_Type(type) {
     }
 
     void Light::Update(Transform& transform) {

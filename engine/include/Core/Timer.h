@@ -2,9 +2,8 @@
 // Created by pointerlost on 10/3/25.
 //
 #pragma once
-#include <cstdint>
-#include <iostream>
-
+#include <chrono>
+#include "Common/RealTypes.h"
 
 namespace Real {
 
@@ -16,15 +15,18 @@ namespace Real {
         void Update();
         void Stop();
 
-        [[nodiscard]] float GetDelta() const;
-        [[nodiscard]] float GetElapsed() const;
+        [[nodiscard]] f64 GetDelta() const;
+        [[nodiscard]] f64 GetElapsed() const;
         [[nodiscard]] int GetFPS() const;
 
     private:
-        float m_CurrFrameTime = 0.0f;
-        float m_DeltaTime = 0.0f;
-        float m_LastFrameTime = 0.0f;
-        float m_ElapsedTime = 0.0f;
+        using Clock = std::chrono::_V2::steady_clock;
+        using TimePoint = std::chrono::time_point<Clock>;
+
+        TimePoint m_LastTime{};
+
+        f64 m_DeltaTime = 0.0f;
+        f64 m_ElapsedTime = 0.0f;
 
         bool m_Running = false;
     };

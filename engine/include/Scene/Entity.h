@@ -3,9 +3,6 @@
 //
 #pragma once
 #include <Scene/Scene.h>
-#include <entt/entt.hpp>
-#include "Core/Logger.h"
-#include "Core/Utils.h"
 
 namespace Real { class Scene; }
 
@@ -23,8 +20,8 @@ namespace Real {
         operator entt::entity() const {
             return m_Handle;
         }
-        operator uint32_t() const {
-            return static_cast<uint32_t>(m_Handle);
+        operator u32() const {
+            return static_cast<u32>(m_Handle);
         }
         [[nodiscard]] bool IsExists() const { return m_Handle != entt::null; }
 
@@ -69,7 +66,7 @@ namespace Real {
         [[nodiscard]] T& GetComponent() {
             auto* component = TryGetComponent<T>();
             if (!component) {
-                throw std::runtime_error("Component doesn't exist: " + std::string(typeid(T).name()));
+                throw std::runtime_error("Component doesn't exist: " + String(typeid(T).name()));
             }
             return *component;
         }

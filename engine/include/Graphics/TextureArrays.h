@@ -27,20 +27,20 @@ namespace Real {
 
     struct TextureArrayManager {
         static void AddTextureMap(TextureType texType, TextureResolution resolution, const Ref<OpenGLTexture> &texMap);
-        static const std::vector<Ref<OpenGLTexture>>& GetTextureArray(TextureType arrayType, TextureResolution res);
+        static const Vector<Ref<OpenGLTexture>>& GetTextureArray(TextureType arrayType, TextureResolution res);
         static void PrepareAndBindTextureArrays();
         static void BindTextureArrays();
 
     private:
         // [0][] = albedoMap, [1][] = normalMap, [2][] = rmaMap, [3][] = heightMap
         // [][0] = res256, [][1] = res512, [][2] = res1024, [][3] = res2048, [][4] = res4096
-        static inline std::vector<Ref<OpenGLTexture>> m_TextureArrays[4][5];
-        static inline std::unordered_map<std::string, GLuint> m_TextureArrayHandles;
+        static inline Vector<Ref<OpenGLTexture>> m_TextureArrays[4][5];
+        static inline std::unordered_map<String, GLuint> m_TextureArrayHandles;
         inline static size_t m_TexArrayIndex = 0;
 
     private:
         static size_t TexArrayTypeToArrayIndex(TextureType arrayType);
-        static void CreateCompressedTextureArray(const std::string& texMapName, const std::vector<Ref<OpenGLTexture>>& textureArray);
+        static void CreateCompressedTextureArray(const String& texMapName, const Vector<Ref<OpenGLTexture>>& textureArray);
         static size_t TexArrayResolutionToIndex(TextureResolution resolution);
     };
 }

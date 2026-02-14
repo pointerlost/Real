@@ -28,13 +28,13 @@ namespace Real {
         movement.moveInput = math::Vec3{ 0.0, 0.0, 0.0 };
 
         // Input: Keyboard State
-        if (Input::IsKeyHeld(REAL_KEY_W)) movement.moveInput.z += 1.0f;
-        if (Input::IsKeyHeld(REAL_KEY_S)) movement.moveInput.z -= 1.0f;
-        if (Input::IsKeyHeld(REAL_KEY_A)) movement.moveInput.x += 1.0f; // TODO: A and D working as opposite (Fix it)
-        if (Input::IsKeyHeld(REAL_KEY_D)) movement.moveInput.x -= 1.0f;
+        if (Input::IsKeyHeld(REAL_KEY_W)) movement.moveInput.z += 15.0f;
+        if (Input::IsKeyHeld(REAL_KEY_S)) movement.moveInput.z -= 15.0f;
+        if (Input::IsKeyHeld(REAL_KEY_A)) movement.moveInput.x += 15.0f; // TODO: A and D working as opposite (Fix it)
+        if (Input::IsKeyHeld(REAL_KEY_D)) movement.moveInput.x -= 15.0f;
 
         // Normalize diagonal input
-        // Used a small epsilon 1e-6f instead of 0 to avoid tiny float errors
+        // Used a small epsilon 1e-6f instead of 0 to avoid tiny f32 errors
         if (math::Vec3::LengthSq(movement.moveInput) > 1e-6f)
             movement.moveInput = movement.moveInput.Normalized();
 

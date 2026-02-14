@@ -2,22 +2,32 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include "Macros.h"
+#include <cstdint>
+#include <string>
 #include <vector>
 #include <Core/UUID.h>
 
-#include "Graphics/Debug/DebugTypes.h"
-#include "Math/Mat4.h"
-#include "Math/Vec3.h"
-#include "Math/Vec4.h"
-
 namespace Real {
+    struct Vertex;
+    using i8  = int8_t;
+    using i16 = int16_t;
+    using i32 = int32_t;
+    using i64 = int64_t;
 
-    struct Vertex {
-        math::Vec3 position;
-        math::Vec3 normal;
-        math::Vec2 UV;
-    };
+    using u8  = uint8_t;
+    using u16 = uint16_t;
+    using u32 = uint32_t;
+    using u64 = uint64_t;
+
+    using f32 = float;
+    using f64 = double;
+
+    template<typename T>
+    using Vector = std::vector<T>;
+
+    using String = std::string;
+
+    constexpr u32 REAL_MAGIC = 0x4C414552; // Little endian
 
     struct TextureData {
         void* data = nullptr;
@@ -30,48 +40,48 @@ namespace Real {
     };
 
     struct FileInfo {
-        std::string name; // Full name
-        std::string stem; // Name without extension
-        std::string path; // Full path
-        std::string ext;  // Extension
+        String name; // Full name
+        String stem; // Name without extension
+        String path; // Full path
+        String ext;  // Extension
     };
 
 #pragma pack(push, 1)
     struct ModelBinaryHeader {
-        uint32_t magic = REAL_MAGIC; // Real Magic number
-        uint32_t version = 1;
-        uint32_t meshCount{};
-        uint64_t uuid{};
+        u32 magic = REAL_MAGIC; // Real Magic number
+        u32 version = 1;
+        u32 meshCount{};
+        u64 uuid{};
     };
 
     struct MeshBinaryHeader {
-        uint32_t magic = REAL_MAGIC;
-        uint32_t version = 1;
+        u32 magic = REAL_MAGIC;
+        u32 version = 1;
 
-        uint64_t uuid{};
-        uint64_t materialUUID{};
+        u64 uuid{};
+        u64 materialUUID{};
 
-        uint64_t vertexCount{};
-        uint64_t indexCount{};
-        uint64_t vertexOffset{};
-        uint64_t indexOffset{};
+        u64 vertexCount{};
+        u64 indexCount{};
+        u64 vertexOffset{};
+        u64 indexOffset{};
     };
 #pragma pack(pop)
 
     struct MeshLoadResult {
         MeshBinaryHeader header;
-        std::vector<Vertex> vertices;
-        std::vector<uint32_t> indices;
+        Vector<Vertex> vertices;
+        Vector<u32> indices;
     };
 
     struct MeshAsset {
         UUID meshUUID;
         // TODO: Need transform for per mesh!
 
-        uint64_t vertexCount;
-        uint64_t indexCount;
-        uint64_t vertexOffset;
-        uint64_t indexOffset;
+        u64 vertexCount;
+        u64 indexCount;
+        u64 vertexOffset;
+        u64 indexOffset;
     };
 
     struct RenderableData {

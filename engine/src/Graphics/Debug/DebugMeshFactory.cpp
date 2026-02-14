@@ -6,22 +6,22 @@
 
 namespace Real::graphics::debug {
 
-    DebugMesh DebugMeshFactory::CreateLine(std::vector<DebugVertex>& vertices, std::vector<uint32_t>& indices) {
-        const uint32_t vertexOffset = vertices.size();
+    DebugMesh DebugMeshFactory::CreateLine(Vector<DebugVertex>& vertices, Vector<u32>& indices) {
+        const u32 vertexOffset = vertices.size();
 
         // Two vertices for a single line
         vertices.push_back({{0, 0, 0}});
         vertices.push_back({{1, 0, 0}});
 
-        const uint32_t indexOffset = indices.size();
+        const u32 indexOffset = indices.size();
         indices.push_back(vertexOffset + 0);
         indices.push_back(vertexOffset + 1);
 
         return { 2, indexOffset };
     }
 
-    DebugMesh DebugMeshFactory::CreateBoxWire(std::vector<DebugVertex>& vertices, std::vector<uint32_t>& indices) {
-        const uint32_t vertexOffset = vertices.size();
+    DebugMesh DebugMeshFactory::CreateBoxWire(Vector<DebugVertex>& vertices, Vector<u32>& indices) {
+        const u32 vertexOffset = vertices.size();
 
         const math::Vec3 p[8] = {
             {-0.5f,-0.5f,-0.5f}, {0.5f,-0.5f,-0.5f},
@@ -33,8 +33,8 @@ namespace Real::graphics::debug {
         for (int i = 0; i < 8; ++i)
             vertices.push_back({p[i]});
 
-        const uint32_t indexOffset = indices.size(); // start of new indices
-        const uint32_t edgeIndices[24] = {
+        const u32 indexOffset = indices.size(); // start of new indices
+        const u32 edgeIndices[24] = {
             0,1, 1,2, 2,3, 3,0,
             4,5, 5,6, 6,7, 7,4,
             0,4, 1,5, 2,6, 3,7
@@ -47,15 +47,15 @@ namespace Real::graphics::debug {
     }
 
     DebugMesh DebugMeshFactory::CreateSphereWire(
-        std::vector<DebugVertex> &vertices, std::vector<uint32_t>& indices, uint32_t slices)
+        Vector<DebugVertex> &vertices, Vector<u32>& indices, u32 slices)
     {
-        const uint32_t vertexOffset = vertices.size();
-        const uint32_t indexOffset = indices.size();
+        const u32 vertexOffset = vertices.size();
+        const u32 indexOffset = indices.size();
 
         // XY circle
-        for (uint32_t i = 0; i < slices; ++i) {
-            float a0 = (i / float(slices)) * 2.0f * math::PI;
-            float a1 = ((i+1) / float(slices)) * 2.0f * math::PI;
+        for (u32 i = 0; i < slices; ++i) {
+            f32 a0 = (i / f32(slices)) * 2.0f * math::PI;
+            f32 a1 = ((i+1) / f32(slices)) * 2.0f * math::PI;
             vertices.push_back({{math::cos(a0), math::sin(a0), 0}});
             vertices.push_back({{math::cos(a1), math::sin(a1), 0}});
             indices.push_back(vertexOffset + i*2);
@@ -63,10 +63,10 @@ namespace Real::graphics::debug {
         }
 
         // XZ circle
-        uint32_t xzOffset = vertices.size();
-        for (uint32_t i = 0; i < slices; ++i) {
-            float a0 = (i / float(slices)) * 2.0f * math::PI;
-            float a1 = ((i+1) / float(slices)) * 2.0f * math::PI;
+        u32 xzOffset = vertices.size();
+        for (u32 i = 0; i < slices; ++i) {
+            f32 a0 = (i / f32(slices)) * 2.0f * math::PI;
+            f32 a1 = ((i+1) / f32(slices)) * 2.0f * math::PI;
             vertices.push_back({{math::cos(a0), 0, math::sin(a0)}});
             vertices.push_back({{math::cos(a1), 0, math::sin(a1)}});
             indices.push_back(xzOffset + i*2);
@@ -74,16 +74,16 @@ namespace Real::graphics::debug {
         }
 
         // YZ circle
-        uint32_t yzOffset = vertices.size();
-        for (uint32_t i = 0; i < slices; ++i) {
-            float a0 = (i / float(slices)) * 2.0f * math::PI;
-            float a1 = ((i+1) / float(slices)) * 2.0f * math::PI;
+        u32 yzOffset = vertices.size();
+        for (u32 i = 0; i < slices; ++i) {
+            f32 a0 = (i / f32(slices)) * 2.0f * math::PI;
+            f32 a1 = ((i+1) / f32(slices)) * 2.0f * math::PI;
             vertices.push_back({{0, math::cos(a0), math::sin(a0)}});
             vertices.push_back({{0, math::cos(a1), math::sin(a1)}});
             indices.push_back(yzOffset + i*2);
             indices.push_back(yzOffset + i*2 + 1);
         }
 
-        return { static_cast<uint32_t>(indices.size() - indexOffset), indexOffset };
+        return { static_cast<u32>(indices.size() - indexOffset), indexOffset };
     }
 }

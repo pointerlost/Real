@@ -24,7 +24,7 @@ namespace Real {
         Scene();
         void Update(const opengl::Renderer* renderer);
 
-        Entity& CreateEntity(const std::string& tag = std::string());
+        Entity& CreateEntity(const String& tag = String());
         void DestroyEntity(entt::entity entity);
 
         entt::registry& GetRegistry() { return m_Registry; }
@@ -37,13 +37,16 @@ namespace Real {
         std::unordered_map<UUID, Entity>& GetEntities() { return m_Entities; }
         size_t GetEntityCount() const { return m_Entities.size(); }
 
-        Entity& CreateLight(const std::string& entityTag, LightType type = LightType::POINT);
+        Entity& CreateLight(const String& entityTag, Light::Mode mode = Light::Mode::POINT);
 
         Entity* GetEntityWithUUID(UUID uuid);
         void HandleModelAssigned(Entity& parent, const Ref<Model>& model);
 
         template <typename T>
         void OnComponentAdded(Entity& entity, T& component);
+
+        template<typename T>
+        void OnComponentConstructed(entt::registry& registry, entt::entity entity);
 
         event::SceneEvents& GetEvents() { return m_Events; }
 

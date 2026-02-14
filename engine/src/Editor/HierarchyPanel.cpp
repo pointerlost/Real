@@ -60,13 +60,13 @@ namespace Real::UI {
         // TODO: need update!
         if (ImGui::Selectable("Create")) {
             if (ImGui::Selectable("Point Light")) {
-                scene->CreateLight(std::string(), LightType::POINT);
+                scene->CreateLight(String(), Light::Mode::POINT);
             }
             if (ImGui::Selectable("Directional Light")) {
-                scene->CreateLight(std::string(), LightType::DIRECTIONAL);
+                scene->CreateLight(String(), Light::Mode::DIRECTIONAL);
             }
             if (ImGui::Selectable("Spot Light")) {
-                scene->CreateLight(std::string(), LightType::SPOT);
+                scene->CreateLight(String(), Light::Mode::SPOT);
             }
         }
 

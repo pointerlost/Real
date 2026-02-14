@@ -5,24 +5,27 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/matrix_decompose.hpp"
 #include "Math/Mat4.h"
+#include "Math/Vec3.h"
 #include "Math/Quat.h"
+
+#include "Math/Conversions/GLMConvertions.h"
 
 namespace Real::math {
 
     bool DecomposeTransform(Mat4& transform, Vec3& translation, Quat& rotation, Vec3& scale) {
-        const glm::mat4 glmTransform = transform.ToGLM();
+        const glm::mat4 glmTransform = interop::glm::To(transform);
         glm::vec3 glmTranslation     = {};
         glm::quat glmRotation        = {};
         glm::vec3 glmScale           = {};
 
         // From glm::decompose in matrix_decompose.inl
         using namespace glm;
-        using T = float;
+        using T = f32;
 
         mat4 LocalMatrix(glmTransform);
 
         // Normalize the matrix.
-        if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
+        if (epsilonEqual(LocalMatrix[3][3], static_cast<f32>(0), epsilon<T>()))
             return false;
 
         // First, isolate perspective.  This is the messiest.
@@ -75,10 +78,10 @@ namespace Real::math {
         glmRotation = quat_cast(rotationMatrix);
 
         // Convert glm math to REAL custom math
-        transform   = Mat4::FromGLM(glmTransform);
-        translation = Vec3::FromGLM(glmTranslation);
-        rotation    = Quat::FromGLM(glmRotation);
-        scale       = Vec3::FromGLM(glmScale);
+        transform   = interop::glm::From(glmTransform);
+        translation = interop::glm::From(glmTranslation);
+        rotation    = interop::glm::From(glmRotation);
+        scale       = interop::glm::From(glmScale);
 
         return true;
     }
@@ -105,38 +108,38 @@ namespace Real::math {
         const Vec3 u = f.Cross(r);
 
         // Create rotation matrix from orthonormal basis
-        const float m00 = r.x, m01 = r.y, m02 = r.z;
-        const float m10 = u.x, m11 = u.y, m12 = u.z;
-        const float m20 = f.x, m21 = f.y, m22 = f.z;
+        const f32 m00 = r.x, m01 = r.y, m02 = r.z;
+        const f32 m10 = u.x, m11 = u.y, m12 = u.z;
+        const f32 m20 = f.x, m21 = f.y, m22 = f.z;
 
         // Convert matrix to quaternion (trace method)
-        const float trace = m00 + m11 + m22;
+        const f32 trace = m00 + m11 + m22;
         Quat q{};
 
         if (trace > 0.0f) {
-            const float s = sqrt(trace + 1.0f) * 2.0f;
-            const float invS = 1.0f / s;
+            const f32 s = sqrt(trace + 1.0f) * 2.0f;
+            const f32 invS = 1.0f / s;
             q.w = 0.25f * s;
             q.x = (m12 - m21) * invS;
             q.y = (m20 - m02) * invS;
             q.z = (m01 - m10) * invS;
         } else if (m00 > m11 && m00 > m22) {
-            const float s = sqrt(1.0f + m00 - m11 - m22) * 2.0f;
-            const float invS = 1.0f / s;
+            const f32 s = sqrt(1.0f + m00 - m11 - m22) * 2.0f;
+            const f32 invS = 1.0f / s;
             q.w = (m12 - m21) * invS;
             q.x = 0.25f * s;
             q.y = (m01 + m10) * invS;
             q.z = (m02 + m20) * invS;
         } else if (m11 > m22) {
-            const float s = sqrt(1.0f + m11 - m00 - m22) * 2.0f;
-            const float invS = 1.0f / s;
+            const f32 s = sqrt(1.0f + m11 - m00 - m22) * 2.0f;
+            const f32 invS = 1.0f / s;
             q.w = (m20 - m02) * invS;
             q.x = (m01 + m10) * invS;
             q.y = 0.25f * s;
             q.z = (m12 + m21) * invS;
         } else {
-            const float s = sqrt(1.0f + m22 - m00 - m11) * 2.0f;
-            const float invS = 1.0f / s;
+            const f32 s = sqrt(1.0f + m22 - m00 - m11) * 2.0f;
+            const f32 invS = 1.0f / s;
             q.w = (m01 - m10) * invS;
             q.x = (m02 + m20) * invS;
             q.y = (m12 + m21) * invS;
@@ -163,7 +166,7 @@ namespace Real::math {
     }
 
     Vec3 ToEulerDegrees(const Quat &q) noexcept {
-        const glm::vec3 radians = glm::eulerAngles(q.ToGLM());
-        return RadiansToDegrees(Vec3::FromGLM(radians));
+        const glm::vec3 radians = glm::eulerAngles(interop::glm::To(q));
+        return RadiansToDegrees(interop::glm::From(radians));
     }
 }

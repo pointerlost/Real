@@ -3,6 +3,9 @@
 //
 #include <Math/Mat3.h>
 
+#include "Math/Math.h"
+#include "Math/Vec2.h"
+
 namespace Real::math {
 
     Mat3 Mat3::operator*(const Mat3 &rhs) const noexcept {
@@ -23,9 +26,9 @@ namespace Real::math {
         return r;
     }
 
-    Mat3 Mat3::Rotate(float rad) noexcept {
-        const float c = std::cos(rad);
-        const float s = std::sin(rad);
+    Mat3 Mat3::Rotate(f32 rad) noexcept {
+        const f32 c = cos(rad);
+        const f32 s = sin(rad);
 
         Mat3 r(1.0f);
         r.m[0][0] =  c; r.m[1][0] = -s;
@@ -37,22 +40,6 @@ namespace Real::math {
         Mat3 r(1.0f);
         r.m[0][0] = s.x;
         r.m[1][1] = s.y;
-        return r;
-    }
-
-    glm::mat3 Mat3::ToGLM() const noexcept {
-        glm::mat3 g(1.0f);
-        for (int c = 0; c < 3; ++c)
-            for (int r = 0; r < 3; ++r)
-                g[c][r] = m[c][r];
-        return g;
-    }
-
-    Mat3 Mat3::FromGLM(const glm::mat3 &g) noexcept {
-        Mat3 r(0.0f);
-        for (int c = 0; c < 3; ++c)
-            for (int row = 0; row < 3; ++row)
-                r.m[c][row] = g[c][row];
         return r;
     }
 }

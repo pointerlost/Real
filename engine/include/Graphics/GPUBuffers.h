@@ -13,14 +13,14 @@ namespace Real {
     };
 
     struct LightSSBO {
-        math::Vec4 pos_cutoff{0.0}; // vec3 = position, float = cutoff
-        math::Vec4 dir_outer{0.0}; // vec3 direction, float = outerCutoff
+        math::Vec4 pos_cutoff{0.0}; // vec3 = position, f32 = cutoff
+        math::Vec4 dir_outer{0.0}; // vec3 direction, f32 = outerCutoff
         math::Vec4 radiance{0.0};
         int type = 0;
         // Attenuation parameters
-        float constant = 1.0;
-        float linear = 0.09;
-        float quadratic = 0.002;
+        f32 constant = 1.0;
+        f32 linear = 0.09;
+        f32 quadratic = 0.002;
     };
 
     struct MaterialSSBO {

@@ -11,10 +11,10 @@ namespace Real {
 
     struct Model {
         UUID m_UUID{};
-        std::vector<UUID> m_MeshUUIDs{};
-        std::vector<UUID> m_MaterialAssetUUIDs{};
+        Vector<UUID> m_MeshUUIDs{};
+        Vector<UUID> m_MaterialAssetUUIDs{};
         FileInfo m_FileInfo{};
-        std::string m_Name = "NULL"; // Engine asset name
+        String m_Name = "NULL"; // Engine asset name
 
         void AddMesh(const UUID& uuid) {
             m_MeshUUIDs.push_back(uuid);

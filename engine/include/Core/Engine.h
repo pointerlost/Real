@@ -3,7 +3,6 @@
 //
 #pragma once
 #include <Core/Window.h>
-#include <memory>
 #include "AssetManager.h"
 #include "Timer.h"
 #include "Utils.h"
@@ -18,7 +17,7 @@
 #include "Resource/ResourceLoader.h"
 #include "Core/AssetImporter.h"
 #include "Scene/Scene.h"
-#include "../Scene/Systems/Systems.h"
+#include "Scene/Systems/Systems.h"
 #include "Graphics/Debug/DebugRenderer.h"
 
 namespace Real {
@@ -74,6 +73,7 @@ namespace Real {
         void InitMeshManager();
         void SetOpenGLStateFunctions();
         void AttachSceneToSystems();
+        void SetActiveScene(Scene* scene);
 
         // TODO: Snapshot editor to game-time
     };

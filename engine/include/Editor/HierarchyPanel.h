@@ -23,8 +23,8 @@ namespace Real::UI {
     private:
         bool m_Open = true;
         bool m_OpenRClickWindow = false;
-        float m_SizeX = SCREEN_WIDTH / 5 + 31.0;
-        float m_SizeY = SCREEN_HEIGHT;
+        f32 m_SizeX = SCREEN_WIDTH / 5 + 31.0;
+        f32 m_SizeY = SCREEN_HEIGHT;
 
     private:
         void IterateEntities(Scene* scene);

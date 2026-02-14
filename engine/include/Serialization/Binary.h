@@ -10,15 +10,15 @@
 namespace Real::serialization::binary {
 
     /* ********************************************* MODEL STATE ********************************************* */
-    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader,
-        const std::vector<UUID>& meshUUIDs, const std::vector<UUID>& materialUUIDs
+    void WriteModel(const String &path, ModelBinaryHeader binaryHeader,
+        const Vector<UUID>& meshUUIDs, const Vector<UUID>& materialUUIDs
     );
     // The second argument is MeshUUIDs and the third argument is MaterialUUIDs
-    [[maybe_unused]] std::tuple<ModelBinaryHeader, std::vector<UUID>, std::vector<UUID>> LoadModel(const std::string& path);
+    [[maybe_unused]] std::tuple<ModelBinaryHeader, Vector<UUID>, Vector<UUID>> LoadModel(const String& path);
 
     /* ********************************************* MESH STATE ********************************************* */
-    void WriteMesh(const std::string& path, const MeshBinaryHeader &binaryHeader,
-        const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices
+    void WriteMesh(const String& path, const MeshBinaryHeader &binaryHeader,
+        const Vector<Vertex>& vertices, const Vector<u32>& indices
     );
-    [[maybe_unused]] MeshLoadResult LoadMesh(const std::string& path);
+    [[maybe_unused]] MeshLoadResult LoadMesh(const String& path);
 }

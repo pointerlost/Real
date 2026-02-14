@@ -10,8 +10,8 @@ namespace Real::ecs {
     void LightSystem::Init() {
     }
 
-    void LightSystem::Update(Scene *scene, float deltaTime) {
-        auto view = m_Registry->view<LightComponent, TransformComponent>();
+    void LightSystem::Update(Scene *scene, f32 deltaTime) {
+        auto view = scene->GetRegistry().view<LightComponent, TransformComponent>();
 
         for (const auto entity : view) {
             auto& light     = view.get<LightComponent>(entity);
@@ -22,15 +22,5 @@ namespace Real::ecs {
     }
 
     void LightSystem::Shutdown() {
-    }
-
-    void LightSystem::SetRegistry(entt::registry &registry) {
-        m_Registry = &registry;
-    }
-
-    void LightSystem::OnSceneAttach(Scene *scene) {
-    }
-
-    void LightSystem::OnSceneDetach(Scene *scene) {
     }
 }

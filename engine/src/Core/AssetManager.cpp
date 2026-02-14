@@ -8,6 +8,7 @@
 #include <fstream>
 #include <ranges>
 #include <thread>
+#include <unordered_set>
 #include <Core/CMakeConfig.h>
 #include "Graphics/Material.h"
 #include "queue"
@@ -19,6 +20,7 @@
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Graphics/Model.h"
+#include "Graphics/Shader.h"
 
 namespace Real {
 
@@ -35,8 +37,8 @@ namespace Real {
     void AssetManager::Update() {
     }
 
-    void AssetManager::LoadShader(const std::string &vertexPath, const std::string &fragmentPath,
-                                  const std::string& name)
+    void AssetManager::LoadShader(const String &vertexPath, const String &fragmentPath,
+                                  const String& name)
     {
         const auto vertPath = PreprocessorForShaders(vertexPath);
         const auto fragPath = PreprocessorForShaders(fragmentPath);
@@ -48,12 +50,12 @@ namespace Real {
         // m_Shaders[name] = Shader{vert, frag, name};
     }
 
-    std::string AssetManager::PreprocessorForShaders(const std::string &filePath) {
-        std::unordered_set<std::string> includedFiles;
-        std::string output;
+    String AssetManager::PreprocessorForShaders(const String &filePath) {
+        std::unordered_set<String> includedFiles;
+        String output;
         bool versionWritten = false;
 
-        std::function<void(const std::string&)> processFile = [&](const std::string& path)
+        std::function<void(const String&)> processFile = [&](const String& path)
         {
             if (includedFiles.contains(path))
                 return;
@@ -66,7 +68,7 @@ namespace Real {
                 return;
             }
 
-            std::string line;
+            String line;
             while (std::getline(file, line)) {
                 if (line.starts_with("#version")) {
                     if (!versionWritten) {
@@ -80,10 +82,10 @@ namespace Real {
                     const size_t firstQuote = line.find('"');
                     const size_t lastQuote  = line.find_last_of('"');
 
-                    if (firstQuote == std::string::npos || lastQuote <= firstQuote)
+                    if (firstQuote == String::npos || lastQuote <= firstQuote)
                         continue;
 
-                    std::string includePath = SHADERS_DIR + line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
+                    String includePath = SHADERS_DIR + line.substr(firstQuote + 1, lastQuote - firstQuote - 1);
 
                     processFile(includePath);
                     continue;
@@ -97,7 +99,7 @@ namespace Real {
         return output;
     }
 
-    Shader& AssetManager::GetShader(const std::string &name) {
+    Shader& AssetManager::GetShader(const String &name) {
         if (!m_Shaders.contains(name)) {
             Warn(ConcatStr("Shader Doesn't exists! Warn from the file: ", __FILE__));
         }
@@ -117,7 +119,7 @@ namespace Real {
 
         const Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>();
 
-        uint8_t channelColor[4] = {UINT8_MAX};
+        u8 channelColor[4] = {UINT8_MAX};
         // Pick default color for specific texture types to leave unharmed (materials,models etc.)
         switch (type) {
             case TextureType::ALBEDO:
@@ -151,8 +153,8 @@ namespace Real {
 
         const auto imageSize = resolution.x * resolution.y * channelCount;
         TextureData data;
-        data.data = new uint8_t[imageSize];
-        auto* imageData = static_cast<uint8_t*>(data.data);
+        data.data = new u8[imageSize];
+        auto* imageData = static_cast<u8*>(data.data);
 
         switch (channelCount) {
             case 1: // Grayscale
@@ -177,7 +179,7 @@ namespace Real {
                 break;
 
             default:
-                Warn("Channel count mismatch! from: " + std::string(__FILE__));
+                Warn("Channel count mismatch! from: " + String(__FILE__));
         }
 
         data.channelCount   = channelCount;
@@ -193,11 +195,11 @@ namespace Real {
         return m_DefaultTextures[type] = defaultTex;
     }
 
-    bool AssetManager::IsTextureCompressed(const std::string &stem) const {
-        return fs::File::Exists(std::string(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
+    bool AssetManager::IsTextureCompressed(const String &stem) const {
+        return fs::File::Exists(String(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
     }
 
-    TextureData AssetManager::LoadTextureFromFile(const std::string &path, TextureType type) {
+    TextureData AssetManager::LoadTextureFromFile(const String &path, TextureType type) {
         if (!fs::File::Exists(path)) { Warn("There is no texture: " + path); }
         const int desiredChannels = type != TextureType::UNDEFINED ? util::TextureTypeToChannelCount(type) : 0;
 
@@ -243,7 +245,7 @@ namespace Real {
         return instance->m_UUID;
     }
 
-    UUID AssetManager::CreateMaterialInstance(const std::string &assetName) {
+    UUID AssetManager::CreateMaterialInstance(const String &assetName) {
         const auto assetUUID = m_MaterialNameToUUID.at(assetName);
         if (assetUUID.IsNull()) {
             Warn("Material not found: " + assetName); // TODO: i need to add material asset fallback
@@ -252,7 +254,7 @@ namespace Real {
         return CreateMaterialInstance(assetUUID);
     }
 
-    UUID AssetManager::GetMaterialAssetUUIDByName(const std::string& assetName) {
+    UUID AssetManager::GetMaterialAssetUUIDByName(const String& assetName) {
         const auto it = m_MaterialNameToUUID.find(assetName);
         if (it == m_MaterialNameToUUID.end()) {
             Warn("There is no material asset with this name: " + assetName);
@@ -271,13 +273,13 @@ namespace Real {
         return it->second;
     }
 
-    Ref<Material> AssetManager::GetOrCreateMaterialBase(const std::string& name) {
-        const std::string normalized = NormalizeMaterialName(name);
+    Ref<Material> AssetManager::GetOrCreateMaterialBase(const String& name) {
+        const String normalized = NormalizeMaterialName(name);
 
         if (m_MaterialNameToUUID.contains(normalized))
             return m_Materials[m_MaterialNameToUUID[normalized]];
 
-        const std::string uniqueName = GenerateUniqueMaterialName(normalized);
+        const String uniqueName = GenerateUniqueMaterialName(normalized);
         UUID uuid{};
 
         auto mat = CreateRef<Material>(uuid, uniqueName);
@@ -288,15 +290,15 @@ namespace Real {
         return mat;
     }
 
-    std::string AssetManager::GenerateUniqueMaterialName(const std::string &desiredName) {
-        std::string base = NormalizeMaterialName(desiredName);
+    String AssetManager::GenerateUniqueMaterialName(const String &desiredName) {
+        String base = NormalizeMaterialName(desiredName);
 
         // Fast path
         if (!m_MaterialNameToUUID.contains(base))
             return base;
 
-        uint32_t index = 1;
-        std::string candidate;
+        u32 index = 1;
+        String candidate;
 
         do {
             candidate = base + "_" + std::to_string(index++);
@@ -305,14 +307,14 @@ namespace Real {
         return candidate;
     }
 
-    std::string AssetManager::NormalizeMaterialName(std::string name) {
+    String AssetManager::NormalizeMaterialName(String name) {
         Trim(name);
         if (name.empty()) name = "New_Material";
         return name;
     }
 
-    std::vector<GLuint64> AssetManager::UploadTexturesToGPU() {
-        std::vector<GLuint64> bindlessIDs;
+    Vector<GLuint64> AssetManager::UploadTexturesToGPU() {
+        Vector<GLuint64> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
             if (tex->GetImageFormatState() == ImageFormatState::DEFAULT) continue;
             tex->PrepareOptionsAndUploadToGPU();
@@ -322,7 +324,7 @@ namespace Real {
         return bindlessIDs;
     }
 
-    void AssetManager::AddFontStyle(const std::string &fontName, ImFont *font) {
+    void AssetManager::AddFontStyle(const String &fontName, ImFont *font) {
         if (!font) {
             Warn("font is nullptr! name: " + fontName + "from: " + __FILE__);
             return;
@@ -334,7 +336,7 @@ namespace Real {
         m_Fonts[fontName] = font;
     }
 
-    ImFont* AssetManager::GetFontStyle(const std::string &fontName) {
+    ImFont* AssetManager::GetFontStyle(const String &fontName) {
         if (m_Fonts.contains(fontName)) {
             return m_Fonts[fontName];
         }
@@ -342,13 +344,13 @@ namespace Real {
         return nullptr;
     }
 
-    bool AssetManager::IsModelExist(const std::string &name) {
+    bool AssetManager::IsModelExist(const String &name) {
         if (m_ModelNameToUUID.contains(name) && m_Models.contains(m_ModelNameToUUID[name]))
             return true;
         return false;
     }
 
-    Ref<Model> AssetManager::GetModel(const std::string &name) {
+    Ref<Model> AssetManager::GetModel(const String &name) {
         const auto it = m_ModelNameToUUID.find(name);
         if (it == m_ModelNameToUUID.end()) {
             Warn("Model not found: " + name);
@@ -358,7 +360,7 @@ namespace Real {
         return (m != m_Models.end()) ? m->second : nullptr;
     }
 
-    bool AssetManager::IsMaterialExist(const std::string &name) {
+    bool AssetManager::IsMaterialExist(const String &name) {
         if (m_MaterialNameToUUID.contains(name) && m_Materials.contains(m_MaterialNameToUUID[name]))
             return true;
         return false;
@@ -383,8 +385,8 @@ namespace Real {
         return m_Materials;
     }
 
-    void AssetManager::RenameMaterial(const std::string &newName, const UUID &uuid) {
-        const std::string uuidStr = std::to_string(uuid);
+    void AssetManager::RenameMaterial(const String &newName, const UUID &uuid) {
+        const String uuidStr = std::to_string(uuid);
 
         const auto& ai = Services::GetAssetImporter();
         auto& db = ai->GetAssetDB();
@@ -416,10 +418,10 @@ namespace Real {
         }
     }
 
-    std::vector<Ref<OpenGLTexture>> AssetManager::GetMaterialTextures(const Material *mat) {
-        std::vector<Ref<OpenGLTexture>> textures;
+    Vector<Ref<OpenGLTexture>> AssetManager::GetMaterialTextures(const Material *mat) {
+        Vector<Ref<OpenGLTexture>> textures;
 
-        auto tryAddTexture = [this](const UUID textureId, std::vector<Ref<OpenGLTexture>>& outTextures) {
+        auto tryAddTexture = [this](const UUID textureId, Vector<Ref<OpenGLTexture>>& outTextures) {
             if (textureId == 0) return; // Skip invalid UUID
             const auto it = m_Textures.find(textureId);
             if (it != m_Textures.end() && it->second) {
@@ -436,7 +438,7 @@ namespace Real {
         return textures;
     }
 
-    Ref<Material> AssetManager::CreateMaterialBase(const std::string &name) {
+    Ref<Material> AssetManager::CreateMaterialBase(const String &name) {
         const auto uniqueName = GenerateUniqueMaterialName(name);
         // Material UUID is null at init-time and is initialized here with a new UUID
         const auto base = CreateRef<Material>(UUID{}, uniqueName);
@@ -447,7 +449,7 @@ namespace Real {
         return m_Materials.at(base->m_UUID);
     }
 
-    Ref<Material> AssetManager::GetMaterialBase(const std::string& assetName) {
+    Ref<Material> AssetManager::GetMaterialBase(const String& assetName) {
         const auto it = m_MaterialNameToUUID.find(assetName);
         if (it == m_MaterialNameToUUID.end()) {
             Warn("Material not found: " + assetName); // TODO: i need to add material asset fallback
@@ -466,7 +468,7 @@ namespace Real {
         return it->second;
     }
 
-    Ref<Material> AssetManager::LoadMaterialBaseAsset(const UUID &uuid, const std::string &name) {
+    Ref<Material> AssetManager::LoadMaterialBaseAsset(const UUID &uuid, const String &name) {
         if (m_Materials.contains(uuid))
             return m_Materials.at(uuid);
 

@@ -57,8 +57,8 @@ namespace Real::UI {
         if (entity->HasComponent<ColliderComponent>()) {
             DrawComponent(*entity, &entity->GetComponent<ColliderComponent>(), scene);
         }
-        if (entity->HasComponent<PhysicsBodyComponent>()) {
-            DrawComponent(*entity, &entity->GetComponent<PhysicsBodyComponent>(), scene);
+        if (entity->HasComponent<RigidBodyComponent>()) {
+            DrawComponent(*entity, &entity->GetComponent<RigidBodyComponent>(), scene);
         }
         if (entity->HasComponent<LightComponent>()) {
             DrawComponent(&entity->GetComponent<LightComponent>(), &entity->GetComponent<TransformComponent>(), scene);
@@ -87,8 +87,8 @@ namespace Real::UI {
 
         constexpr auto textboxSize = ImVec2(25.0, 30.0);
         constexpr auto textSize    = ImVec2(70.0, 30.0);
-        constexpr float dragCount = 3.0;
-        const auto dragSize = static_cast<float>((m_SizeX - 3.0 * textboxSize.x - textSize.x) / dragCount - 20.0);
+        constexpr f32 dragCount = 3.0;
+        const auto dragSize = static_cast<f32>((m_SizeX - 3.0 * textboxSize.x - textSize.x) / dragCount - 20.0);
         if (ImGui::CollapsingHeader("Transform Component")) {
             // Translate
             {
@@ -220,7 +220,7 @@ namespace Real::UI {
                 ImVec2(16, 16)
             );
 
-            constexpr float dragSpeed = 0.005f;
+            constexpr f32 dragSpeed = 0.005f;
             const auto format = "%.3f";
 
             // Red channel
@@ -228,7 +228,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(100, 40, 40, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(120, 50, 50, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseR", &baseColor.x, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat3("##BaseR", &baseColor.x, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Green channel
@@ -236,7 +236,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 100, 40, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 120, 50, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseG", &baseColor.y, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat3("##BaseG", &baseColor.y, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Blue channel
@@ -244,7 +244,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(40, 40, 100, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(50, 50, 120, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseB", &baseColor.z, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat3("##BaseB", &baseColor.z, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Alpha channel
@@ -252,7 +252,7 @@ namespace Real::UI {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, IM_COL32(80, 80, 80, 128));
             ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, IM_COL32(100, 100, 100, 200));
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::DragFloat("##BaseA", &baseColor.w, dragSpeed, 0.0f, 1.0f, format);
+            ImGui::DragFloat3("##BaseA", &baseColor.w, dragSpeed, 0.0f, 1.0f, format);
             ImGui::PopStyleColor(2);
 
             // Surface Factors
@@ -264,19 +264,19 @@ namespace Real::UI {
             // AO
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::DragFloat("##AO", &factors.x, 0.005f, 0.0f, 1.0f, "AO: %.3f")) {
+            if (ImGui::DragFloat3("##AO", &factors.x, 0.005f, 0.0f, 1.0f, "AO: %.3f")) {
             }
 
             // Roughness
             ImGui::TableSetColumnIndex(2);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::DragFloat("##Roughness", &factors.y, 0.005f, 0.0f, 1.0f, "R: %.3f")) {
+            if (ImGui::DragFloat3("##Roughness", &factors.y, 0.005f, 0.0f, 1.0f, "R: %.3f")) {
             }
 
             // Metallic
             ImGui::TableSetColumnIndex(3);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::DragFloat("##Metallic", &factors.z, 0.005f, 0.0f, 1.0f, "M: %.3f")) {
+            if (ImGui::DragFloat3("##Metallic", &factors.z, 0.005f, 0.0f, 1.0f, "M: %.3f")) {
             }
 
             // Empty column for alignment
@@ -360,39 +360,38 @@ namespace Real::UI {
         ImGui::Separator();
 
         // Runtime debug info (read-only)
-        ImGui::TextDisabled("Actor:  %p", comp->actor);
-        ImGui::TextDisabled("Shape:  %p", comp->shapeHandle);
-        ImGui::TextDisabled("Attached: %s", comp->attached ? "Yes" : "No");
+        // ImGui::TextDisabled("Actor:  %p", comp->actor);
+        // ImGui::TextDisabled("Shape:  %p", comp->shapeHandle);
+        // ImGui::TextDisabled("Attached: %s", comp->attached ? "Yes" : "No");
+        //
+        // ImGui::SeparatorText("Debug");
+        // ImGui::Checkbox("Show Collider", &comp->debug.show);
+        // ImGui::Checkbox("Show Collider Bounds", &comp->debug.showBounds);
 
-        ImGui::SeparatorText("Debug");
-        ImGui::Checkbox("Show Collider", &comp->debug.show);
-        ImGui::Checkbox("Show Collider Bounds", &comp->debug.showBounds);
+        if (!rebuild && !dirty) return;
 
-        // Emit events (Rebuild dominates Dirty)
-        if (rebuild) {
-            scene->GetEvents().OnColliderChanged.Emit(entity, *comp, physics::ColliderChangeType::Rebuild);
-        }
-        else if (dirty) {
-            scene->GetEvents().OnColliderChanged.Emit(entity, *comp, physics::ColliderChangeType::Dirty);
-        }
+        scene->GetEvents().OnColliderChanged.Emit(
+            entity,
+            rebuild ? physics::ColliderChangeType::Rebuild : physics::ColliderChangeType::Dirty
+        );
     }
 
-    void InspectorPanel::DrawComponent(Entity &entity, PhysicsBodyComponent *comp, Scene *scene) {
-        if (entity.HasComponent<PhysicsBodyComponent>()) {
+    void InspectorPanel::DrawComponent(Entity &entity, RigidBodyComponent *comp, Scene *scene) {
+        if (entity.HasComponent<RigidBodyComponent>()) {
             if (ImGui::CollapsingHeader("Physics Body", ImGuiTreeNodeFlags_DefaultOpen)) {
 
                 const char* bodyTypes[] = { "Static", "Dynamic", "Kinematic" };
-                int current = static_cast<int>(comp->bodyType);
+                int current = static_cast<int>(comp->type);
 
                 if (ImGui::Combo("Body Type", &current, bodyTypes, IM_ARRAYSIZE(bodyTypes))) {
-                    comp->bodyType = static_cast<physics::BodyType>(current);
+                    comp->type = static_cast<physics::BodyType>(current);
 
                     // IMPORTANT: body type change requires actor recreation
                     scene->GetEvents().OnPhysicsBodyChanged.Emit(entity, *comp);
                 }
 
-                if (comp->bodyType == physics::BodyType::Dynamic) {
-                    if (ImGui::DragFloat("Mass", &comp->mass, 0.1f, 0.01f)) {
+                if (comp->type == physics::BodyType::Dynamic) {
+                    if (ImGui::DragFloat3("Mass", &comp->mass, 0.1f, 0.01f)) {
                         scene->GetEvents().OnPhysicsBodyChanged.Emit(entity, *comp);
                     }
                 }
@@ -417,25 +416,25 @@ namespace Real::UI {
             }
 
             // Attenuation Parameters
-            if (lightType == LightType::POINT) {
+            if (lightType == Light::Mode::POINT) {
                 ImGui::BeginGroup();
                 ImGui::TextColored(ImVec4(1.0, 1.0, 0.2, 1.0), "Attenuation Parameters");
-                if (ImGui::DragFloat("Constant", &constant, 0.001, 0.00001, 1.0)) {
+                if (ImGui::DragFloat3("Constant", &constant, 0.001, 0.00001, 1.0)) {
                     light.SetConstant(constant);
                 }
 
-                if (ImGui::DragFloat("Linear", &linear, 0.001, 0.00001, 1.0)) {
+                if (ImGui::DragFloat3("Linear", &linear, 0.001, 0.00001, 1.0)) {
                     light.SetLinear(linear);
                 }
 
-                if (ImGui::DragFloat("Quadratic", &quadratic, 0.1, 0.00001, 1000.0)) {
+                if (ImGui::DragFloat3("Quadratic", &quadratic, 0.1, 0.00001, 1000.0)) {
                     light.SetQuadratic(quadratic);
                 }
                 ImGui::EndGroup();
             }
 
             // Spot light parameters
-            if (lightType == LightType::SPOT) {
+            if (lightType == Light::Mode::SPOT) {
                 ImGui::SetNextItemOpen(true, ImGuiCond_Once);
                 if (ImGui::TreeNode("Spot Properties")) {
                     DrawCustomTextShape("Inner Angle (CutOff)", ImVec2(200,30), ImVec4(0.03954, 0.03914, 0.03934, 1.0), false, ImVec4(0.75, 0.75, 0.2, 1.0));
@@ -458,20 +457,20 @@ namespace Real::UI {
                 // TODO: Store the old light properties to be changed with a new one
                 // In this case we are creating a new one
                 if (ImGui::Selectable("Point")) {
-                    comp->m_Light = Light{LightType::POINT};
+                    comp->m_Light = Light{Light::Mode::POINT};
                 }
                 if (ImGui::Selectable("Directional")) {
-                    comp->m_Light = Light{LightType::DIRECTIONAL};
+                    comp->m_Light = Light{Light::Mode::DIRECTIONAL};
                 }
                 if (ImGui::Selectable("Spot")) {
-                    comp->m_Light = Light{LightType::SPOT};
+                    comp->m_Light = Light{Light::Mode::SPOT};
                 }
                 ImGui::EndCombo();
             }
         }
 
         if (ImGui::Selectable("Show Light Direction")) {
-            if (light.GetType() == LightType::DIRECTIONAL) {
+            if (light.GetType() == Light::Mode::DIRECTIONAL) {
             }
         }
     }
@@ -484,17 +483,17 @@ namespace Real::UI {
         auto aspect = camera.GetAspect();
 
         if (ImGui::CollapsingHeader("Camera Component")) {
-            // TODO: redesign drag floats with new values
-            if (ImGui::DragFloat("Near Plane", &near, 0.01, 0.001, 500.0)) {
+            // TODO: redesign drag f32s with new values
+            if (ImGui::DragFloat3("Near Plane", &near, 0.01, 0.001, 500.0)) {
                 camera.SetNear(near);
             }
-            if (ImGui::DragFloat("Far Plane", &far, 0.05, 0.001, 100000.0)) {
+            if (ImGui::DragFloat3("Far Plane", &far, 0.05, 0.001, 100000.0)) {
                 camera.SetFar(far);
             }
-            if (ImGui::DragFloat("FOV", &fov, 0.01, 0.001, 500.0)) { // Change the values
+            if (ImGui::DragFloat3("FOV", &fov, 0.01, 0.001, 500.0)) { // Change the values
                 camera.SetFOV(fov);
             }
-            if (ImGui::DragFloat("Aspect", &aspect, 0.01, 0.001, 500.0)) { // Change the values
+            if (ImGui::DragFloat3("Aspect", &aspect, 0.01, 0.001, 500.0)) { // Change the values
                 camera.SetFar(aspect);
             }
         }
@@ -517,7 +516,7 @@ namespace Real::UI {
         }
     }
 
-    void InspectorPanel::DrawCustomTextShape(const std::string &text, ImVec2 boxSize, ImVec4 color, bool textColorActive, ImVec4 textColor) {
+    void InspectorPanel::DrawCustomTextShape(const String &text, ImVec2 boxSize, ImVec4 color, bool textColorActive, ImVec4 textColor) {
         const ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
         ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
         ImGui::BeginChild(ConcatStr("##readonly", std::to_string(m_IDcounter++)).c_str(), boxSize);
@@ -528,10 +527,10 @@ namespace Real::UI {
         ImGui::PopStyleColor(1);
     }
 
-    void InspectorPanel::DrawCustomSizedDragger(float dragWidth, float& val, float speed, float v_min, float v_max, const char* format) {
+    void InspectorPanel::DrawCustomSizedDragger(f32 dragWidth, f32& val, f32 speed, f32 v_min, f32 v_max, const char* format) {
         ImGui::SetNextItemWidth(dragWidth);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 7));
-        ImGui::DragFloat(ConcatStr("##dragger", std::to_string(m_IDcounter++)).c_str(), &val, speed, v_min, v_max, format);
+        ImGui::DragFloat3(ConcatStr("##dragger", std::to_string(m_IDcounter++)).c_str(), &val, speed, v_min, v_max, format);
         ImGui::PopStyleVar();
     }
 

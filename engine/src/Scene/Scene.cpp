@@ -2,11 +2,9 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Scene/Scene.h"
-
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
-#include "Graphics/MeshManager.h"
 #include "Graphics/Model.h"
 #include "Graphics/Renderer.h"
 #include "Scene/Components.h"
@@ -23,6 +21,13 @@ namespace Real {
         static_assert(sizeof(T) == 0);
     }
 
+    template<typename T>
+    void Scene::OnComponentConstructed(entt::registry &registry, entt::entity entity) {
+        Entity e{ this, entity };
+        auto& component = registry.get<T>(entity);
+        OnComponentAdded(e, component);
+    }
+
     template<>
     void Scene::OnComponentAdded<IDComponent>(Entity& entity, IDComponent& component) {
     }
@@ -32,7 +37,7 @@ namespace Real {
     }
 
     template<>
-    void Scene::OnComponentAdded<PhysicsBodyComponent>(Entity& entity, PhysicsBodyComponent& component) {
+    void Scene::OnComponentAdded<RigidBodyComponent>(Entity& entity, RigidBodyComponent& component) {
         m_Events.OnPhysicsBodyAdded.Emit(entity, component);
     }
 
@@ -74,7 +79,7 @@ namespace Real {
         renderer->GetRenderContext()->CollectRenderables();
     }
 
-    Entity& Scene::CreateEntity(const std::string &tag) {
+    Entity& Scene::CreateEntity(const String &tag) {
         const Entity entity{ this, m_Registry.create() };
         auto uuid = UUID();
         m_Registry.emplace<TagComponent>(entity, tag);
@@ -90,9 +95,9 @@ namespace Real {
         m_Registry.destroy(entity);
     }
 
-    Entity& Scene::CreateLight(const std::string &entityTag, LightType type) {
+    Entity& Scene::CreateLight(const String &entityTag, Light::Mode mode) {
         auto& entity = CreateEntity(entityTag);
-        entity.AddComponent<LightComponent>().m_Light = Light{type};
+        entity.AddComponent<LightComponent>().m_Light = Light{mode};
         return entity;
     }
 
@@ -106,7 +111,7 @@ namespace Real {
     }
 
     void Scene::HandleModelAssigned(Entity& parent, const Ref<Model>& model) {
-        std::vector<UUID> matInstanceUUIDs;
+        Vector<UUID> matInstanceUUIDs;
 
         for (const auto& matUUID : model->m_MaterialAssetUUIDs) {
             const auto instanceUUID = Services::GetAssetManager()->CreateMaterialInstance(matUUID);

@@ -10,20 +10,20 @@
 
 namespace Real::fs {
 
-    std::string File::ReadFromFile(const std::string &path) {
+    String File::ReadFromFile(const String &path) {
         if (!Exists(path)) {
             Warn("Path doesn't exists: " + path);
             return {};
         }
 
-        std::string content;
+        String content;
         std::ifstream stream(path, std::ios::in);
         if (!stream.is_open()) {
             Warn("File can't opening!");
             return {};
         }
 
-        std::string line;
+        String line;
         while (getline(stream, line)) {
             content.append(line + "\n");
         }
@@ -32,11 +32,11 @@ namespace Real::fs {
         return content;
     }
 
-    bool File::Exists(const std::string &path) {
+    bool File::Exists(const String &path) {
         return std::filesystem::exists(path);
     }
 
-    bool File::Delete(const std::string &path) {
+    bool File::Delete(const String &path) {
         if (Exists(path)) {
             if (std::filesystem::remove(path)) {
                 return true;
@@ -48,8 +48,8 @@ namespace Real::fs {
         return false;
     }
 
-    std::vector<FileInfo> IterateDirectory(const std::string &folderPath) {
-        std::vector<FileInfo> files;
+    Vector<FileInfo> IterateDirectory(const String &folderPath) {
+        Vector<FileInfo> files;
         namespace fs = std::filesystem;
 
         if (!File::Exists(folderPath)) {
@@ -71,8 +71,8 @@ namespace Real::fs {
         return files;
     }
 
-    FileInfo CreateFileInfoFromPath(const std::string &rawPath) {
-        const std::string path = NormalizePath(rawPath);
+    FileInfo CreateFileInfoFromPath(const String &rawPath) {
+        const String path = NormalizePath(rawPath);
         const std::filesystem::path p(path);
 
         FileInfo info;
@@ -84,10 +84,10 @@ namespace Real::fs {
         return info;
     }
 
-    std::string NormalizePath(const std::string &path) {
+    String NormalizePath(const String &path) {
         const std::filesystem::path p = std::filesystem::weakly_canonical(path); // resolves '.', '..' etc.
 
-        std::string result = p.generic_string(); // Use always '/' for platform consistency
+        String result = p.generic_string(); // Use always '/' for platform consistency
 
 #ifdef _WIN32
         std::ranges::transform(result, result.begin(), ::tolower);

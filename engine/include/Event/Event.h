@@ -2,6 +2,7 @@
 // Created by pointerlost on 1/26/26.
 //
 #pragma once
+#include <Common/RealTypes.h>
 #include <functional>
 
 namespace Real::event {
@@ -22,6 +23,6 @@ namespace Real::event {
         }
 
     private:
-        std::vector<Callback> m_Listeners;
+        Vector<Callback> m_Listeners;
     };
 }

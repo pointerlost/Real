@@ -8,19 +8,9 @@ namespace Real::ecs {
     void MeshRendererSystem::Init() {
     }
 
-    void MeshRendererSystem::Update(Scene *scene, float deltaTime) {
+    void MeshRendererSystem::Update(Scene *scene, f32 deltaTime) {
     }
 
     void MeshRendererSystem::Shutdown() {
-    }
-
-    void MeshRendererSystem::SetRegistry(entt::registry &registry) {
-        m_Registry = &registry;
-    }
-
-    void MeshRendererSystem::OnSceneAttach(Scene *scene) {
-    }
-
-    void MeshRendererSystem::OnSceneDetach(Scene *scene) {
     }
 }

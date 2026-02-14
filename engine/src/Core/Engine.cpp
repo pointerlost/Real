@@ -2,18 +2,19 @@
 // Created by pointerlost on 10/3/25.
 //
 #include "Core/Engine.h"
-#include <Core/RealConfig.h>
-#include <Core/CMakeConfig.h>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
-
 #include "Core/Callback.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
+#include "Physics/Physx/PhysXBackend.h"
 #include "Scene/Components.h"
+#include "Scene/Systems/CameraSystem.h"
+#include "Scene/Systems/LightSystem.h"
+#include "Scene/Systems/MeshRendererSystem.h"
+#include "Scene/Systems/MovementSystem.h"
+#include "Scene/Systems/PhysicsSystem.h"
 
 namespace Real {
 
@@ -97,7 +98,7 @@ namespace Real {
         m_DebugRenderer->Render();
         m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
         // TODO: Should it be called from within m_EditorPanel->render?
-        // TODO: Requires double buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
+        // TODO: Requires f64 buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
     void Engine::EndPhase(GLFWwindow* window) {
@@ -126,8 +127,19 @@ namespace Real {
 
     void Engine::InitSystems() {
         m_Systems = CreateScope<Systems>();
-        // Init sub-systems
+
+        m_Systems->AddSystem(CreateScope<ecs::CameraSystem>());
+
+        auto backend = CreateScope<physics::PhysXBackend>();
+        auto physics = CreateScope<ecs::PhysicsSystem>(std::move(backend));
+        m_Systems->AddSystem(std::move(physics));
+
+        m_Systems->AddSystem(CreateScope<ecs::MovementSystem>());
+        m_Systems->AddSystem(CreateScope<ecs::MeshRendererSystem>());
+        m_Systems->AddSystem(CreateScope<ecs::LightSystem>());
+
         m_Systems->Init();
+
         Info("Systems initialized successfully!");
     }
 
@@ -218,12 +230,16 @@ namespace Real {
     }
 
     void Engine::AttachSceneToSystems() {
-        for (const auto& ss : m_Systems->GetSubSystems()) {
-            ss->SetRegistry(m_Scene->GetRegistry());
-            ss->OnSceneAttach(m_Scene.get());
-        }
+        m_Systems->OnSceneAttach(m_Scene.get());
 
         Info("AttachSceneToSystems initialized successfully!");
+    }
+
+    void Engine::SetActiveScene(Scene *scene) {
+        // TODO: fix it, scene is unique_ptr
+        // m_Scene = scene;
+
+        m_Systems->OnSceneAttach(scene);
     }
 
     void Engine::InitGameResources() {
@@ -247,7 +263,7 @@ namespace Real {
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
         cube3.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
-        cube3.AddComponent<PhysicsBodyComponent>().bodyType = physics::BodyType::Static;
+        cube3.AddComponent<RigidBodyComponent>().type = physics::BodyType::Static;
 
         auto& cube4 = m_Scene->CreateEntity("Roof");
         cube4.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 13.5, 0.0));
@@ -263,7 +279,7 @@ namespace Real {
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
         cube5.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
-        cube5.AddComponent<PhysicsBodyComponent>().bodyType = physics::BodyType::Static;
+        cube5.AddComponent<RigidBodyComponent>().type = physics::BodyType::Static;
 
         auto& fordCar = m_Scene->CreateEntity("FordCar");
         fordCar.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));
@@ -292,7 +308,7 @@ namespace Real {
 
         auto& light = m_Scene->CreateEntity("Light");
         light.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(-10.0, 10.0, -10.0));
-        (void)light.AddComponent<LightComponent>(LightType::DIRECTIONAL);
+        (void)light.AddComponent<LightComponent>(Light::Mode::DIRECTIONAL);
         (void)light.AddComponent<MeshRendererComponent>(Services::GetMeshManager()->GetPrimitiveUUID("cube"),
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );

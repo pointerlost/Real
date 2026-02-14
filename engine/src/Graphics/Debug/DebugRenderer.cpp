@@ -29,7 +29,7 @@ namespace Real::graphics::debug {
         glNamedBufferData(m_VBO, m_DebugVertices.size() * sizeof(DebugVertex), m_DebugVertices.data(), GL_STATIC_DRAW);
 
         glCreateBuffers(1, &m_EBO);
-        glNamedBufferData(m_EBO, m_DebugIndices.size() * sizeof(uint32_t), m_DebugIndices.data(), GL_STATIC_DRAW);
+        glNamedBufferData(m_EBO, m_DebugIndices.size() * sizeof(u32), m_DebugIndices.data(), GL_STATIC_DRAW);
 
         glCreateVertexArrays(1, &m_VAO);
 
@@ -44,13 +44,13 @@ namespace Real::graphics::debug {
 
         // Instance Buffer(SSBO)
         m_DebugInstanceBuffer.Create(
-            std::vector<DebugInstance>{},
+            Vector<DebugInstance>{},
             sizeof(DebugInstance) * MAX_DEBUG_INSTANCE_COUNT,
             BufferType::SSBO
         );
 
         m_DebugIndirectBuffer.Create(
-            std::vector<DrawElementsIndirectCommand>{},
+            Vector<DrawElementsIndirectCommand>{},
             sizeof(DrawElementsIndirectCommand) * MAX_DEBUG_INSTANCE_COUNT,
             BufferType::SSBO
         );
@@ -108,7 +108,7 @@ namespace Real::graphics::debug {
 
     void DebugRenderer::DrawLine(const math::Vec3 &a, const math::Vec3 &b, const math::Vec4 &color) {
         const math::Vec3 dir = b - a;
-        float len = math::Vec3::Length(dir);
+        f32 len = math::Vec3::Length(dir);
 
         const math::Mat4 model =
             math::Mat4::Translate(a) *
@@ -146,15 +146,18 @@ namespace Real::graphics::debug {
         });
     }
 
-    void DebugRenderer::DrawCapsule(const math::Vec3 &a, const math::Vec3 &b, float radius, const math::Vec4 &color) {
-        const math::Vec3 dir = b - a;
-        const float len = math::Vec3::Length(dir);
+    // a = First endpoint (center of one hemispherical end)
+    // b = Second endpoint (center of the other hemispherical end)
+    void DebugRenderer::DrawCapsule(const math::Vec3 &a, const math::Vec3 &b, f32 radius, const math::Vec4 &color) {
+        // Calculates direction and length between endpoints
+        const math::Vec3 dir = b - a; // Vector from a to b
+        const f32 len = math::Vec3::Length(dir); // Distance between endpoints
 
         if (len <= 0.0001f)
             return;
 
-        // Cylinder part
-        {
+        // Draws the cylindrical middle part
+        { // Places cylinder at midpoint between a and b, oriented along the axis
             const math::Vec3 axis = dir / len;
             const math::Mat4 model =
                 math::Mat4::Translate(a + axis * (len * 0.5f)) *
@@ -166,11 +169,13 @@ namespace Real::graphics::debug {
 
         // Sphere at A
         {
+            // Draws hemispherical end at point a
             const math::Mat4 model = math::Mat4::Translate(a) * math::Mat4::Scale({ radius, radius, radius });
             DrawSphere(model, color);
         }
         // Sphere at B
         {
+            // Draws hemispherical end at point b
             const math::Mat4 model = math::Mat4::Translate(b) * math::Mat4::Scale({ radius, radius, radius });
             DrawSphere(model, color);
         }
@@ -189,7 +194,7 @@ namespace Real::graphics::debug {
     void DebugRenderer::PrepareDrawCommands() {
         for (const auto shape : AllDebugShapes) {
             // Count how many instances of this shape exist
-            uint32_t count = 0;
+            u32 count = 0;
             for (const auto& inst : m_Instances) {
                 if (inst.shape == shape)  // store shape per instance
                     ++count;

@@ -23,7 +23,7 @@ namespace Real {
         CreateFromData(data, type);
     }
 
-    OpenGLTexture::OpenGLTexture(const std::vector<TextureData> &data, FileInfo info) : m_FileInfo(std::move(info)) {
+    OpenGLTexture::OpenGLTexture(const Vector<TextureData> &data, FileInfo info) : m_FileInfo(std::move(info)) {
         CreateMipmapsFromDDS(data);
     }
 
@@ -70,7 +70,7 @@ namespace Real {
         m_Type = type;
     }
 
-    void OpenGLTexture::SetIndex(uint32_t idx) {
+    void OpenGLTexture::SetIndex(u32 idx) {
         m_GPUIndex = idx;
     }
 
@@ -114,11 +114,11 @@ namespace Real {
         m_FilterMode = mode;
     }
 
-    void OpenGLTexture::SetMipLevelsData(const std::vector<TextureData> &mipLevels) {
+    void OpenGLTexture::SetMipLevelsData(const Vector<TextureData> &mipLevels) {
         CreateMipmapsFromDDS(mipLevels);
     }
 
-    void OpenGLTexture::SetUUID(uint64_t uuid) {
+    void OpenGLTexture::SetUUID(u64 uuid) {
         m_UUID = UUID(uuid);
     }
 
@@ -138,7 +138,7 @@ namespace Real {
         return m_MipLevelsData[mipLevel];
     }
 
-    TextureData OpenGLTexture::LoadFromFile(const std::string &path) {
+    TextureData OpenGLTexture::LoadFromFile(const String &path) {
         if (!fs::File::Exists(path)) {
             Warn("File path can't find! path: " + path);
             return {};
@@ -147,8 +147,8 @@ namespace Real {
         data.data = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, 0);
         if (data.channelCount == 3) {
             const auto pixelCount = data.width * data.height;
-            const auto* rawData = static_cast<uint8_t*>(data.data);
-            auto* rgbaRawData = new uint8_t[pixelCount * 4];
+            const auto* rawData = static_cast<u8*>(data.data);
+            auto* rgbaRawData = new u8[pixelCount * 4];
 
             for (size_t i = 0; i < pixelCount; i++) {
                 rgbaRawData[i * 4 + 0] = rawData[i * 3 + 0];
@@ -192,7 +192,7 @@ namespace Real {
                 if (m_IsSTBAllocated) {
                     stbi_image_free(level.data);
                 } else {
-                    delete[] static_cast<uint8_t*>(level.data);
+                    delete[] static_cast<u8*>(level.data);
                 }
                 level.data = nullptr;
             }
@@ -281,7 +281,7 @@ namespace Real {
         }
     }
 
-    void OpenGLTexture::CreateMipmapsFromDDS(const std::vector<TextureData> &levelsData) {
+    void OpenGLTexture::CreateMipmapsFromDDS(const Vector<TextureData> &levelsData) {
         if (levelsData.empty()) {
             Warn("Texture data empty!");
             return;
@@ -340,7 +340,7 @@ namespace Real {
 
         const auto& rawData = data.data;
 
-        auto* tempData = new uint8_t[data.dataSize];
+        auto* tempData = new u8[data.dataSize];
         memcpy(tempData, data.data, data.dataSize);
 
         if (srgbSpace) {

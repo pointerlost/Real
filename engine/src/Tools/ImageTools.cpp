@@ -14,16 +14,17 @@
 #include "Util/Util.h"
 #include <Tools/DDS.h>
 #include <algorithm>
+#include "Core/CMakeConfig.h"
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 
 namespace Real::tools {
 
     Ref<OpenGLTexture> PackTexturesToRGBChannels(const Ref<OpenGLTexture> &ao,
-        const Ref<OpenGLTexture> &rgh, const Ref<OpenGLTexture> &mtl, const std::string& materialName)
+        const Ref<OpenGLTexture> &rgh, const Ref<OpenGLTexture> &mtl, const String& materialName)
     {
         if (!ao || !rgh || !mtl) {
-            Warn("Texture nullptr! from: " + std::string(__FILE__));
+            Warn("Texture nullptr! from: " + String(__FILE__));
             return {};
         }
 
@@ -42,9 +43,9 @@ namespace Real::tools {
         const int width  = texture->GetLevelData(0).width;
         const int height = texture->GetLevelData(0).height;
 
-        const auto tex1RawData = static_cast<uint8_t *>(ao->GetLevelData(0).data);
-        const auto tex2RawData = static_cast<uint8_t *>(rgh->GetLevelData(0).data);
-        const auto tex3RawData = static_cast<uint8_t *>(mtl->GetLevelData(0).data);
+        const auto tex1RawData = static_cast<u8 *>(ao->GetLevelData(0).data);
+        const auto tex2RawData = static_cast<u8 *>(rgh->GetLevelData(0).data);
+        const auto tex3RawData = static_cast<u8 *>(mtl->GetLevelData(0).data);
 
         // All textures have the same resolution
         constexpr int channelCount = 4;
@@ -52,8 +53,8 @@ namespace Real::tools {
 
         // Create mixedTexture data
         TextureData mixedData;
-        mixedData.data = new uint8_t[dataSize]; // Still void ptr
-        auto* mixedTexRawData = static_cast<uint8_t*>(mixedData.data); // Cast to uint8_t*
+        mixedData.data = new u8[dataSize]; // Still void ptr
+        auto* mixedTexRawData = static_cast<u8*>(mixedData.data); // Cast to u8*
 
         constexpr int greyscaleChannelCount = 1;
         for (size_t i = 0; i < width * height; i++) {
@@ -74,7 +75,7 @@ namespace Real::tools {
         const auto& stateFolder = util::ImageFormatState_EnumToString(texture->GetImageFormatState());
         const auto ext = texture->GetImageFormatState() == ImageFormatState::DEFAULT ? ".png" : texture->GetExtension();
 
-        const auto& newPath = std::string(ASSETS_DIR) + "textures/" + stateFolder + '/' + materialName + "_ORM" + ext;
+        const auto& newPath = String(ASSETS_DIR) + "textures/" + stateFolder + '/' + materialName + "_ORM" + ext;
         mixedTexture->SetFileInfo(fs::CreateFileInfoFromPath(newPath));
 
         mixedTexture->SetImageFormatState(texture->GetImageFormatState());
@@ -97,7 +98,7 @@ namespace Real::tools {
     }
 
     Ref<OpenGLTexture> PackTexturesToRGBChannels(const std::array<Ref<OpenGLTexture>, 3> &orm,
-        const std::string &materialName)
+        const String &materialName)
     {
         return PackTexturesToRGBChannels(orm[0], orm[1], orm[2], materialName);
     }
@@ -130,14 +131,14 @@ namespace Real::tools {
         return true;
     }
 
-    bool CompressTextureToBCn(OpenGLTexture* texture, float fQuality) {
+    bool CompressTextureToBCn(OpenGLTexture* texture, f32 fQuality) {
         if (!texture) {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
         if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
-            const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
-            const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
+            const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
+            const String fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
             texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
             texture->SetImageFormatState(ImageFormatState::COMPRESSED);
             return true;
@@ -190,12 +191,12 @@ namespace Real::tools {
             return false;
         }
 
-        std::vector<TextureData> mipLevelsData;
+        Vector<TextureData> mipLevelsData;
         mipLevelsData.reserve(MipSetCmp.m_nMipLevels);
         for (size_t level = 0; level < MipSetCmp.m_nMipLevels; level++) {
             auto currLevel = MipSetCmp.m_pMipLevelTable[level];
             TextureData levelData;
-            levelData.data = new uint8_t[currLevel->m_dwLinearSize];
+            levelData.data = new u8[currLevel->m_dwLinearSize];
             memcpy(levelData.data, currLevel->m_pbData, currLevel->m_dwLinearSize);
             levelData.dataSize     = currLevel->m_dwLinearSize;
             levelData.width        = currLevel->m_nWidth;
@@ -208,8 +209,8 @@ namespace Real::tools {
         }
 
         // Save the result to compressed folder
-        const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
-        const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
+        const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
+        const String fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
         cmp_status = CMP_SaveTexture(fullName.c_str(), &MipSetCmp);
 
         // Clean up buffers
@@ -239,14 +240,14 @@ namespace Real::tools {
         }
     }
 
-    bool CompressCPUGeneratedTexture(OpenGLTexture *texture, float fQuality) {
+    bool CompressCPUGeneratedTexture(OpenGLTexture *texture, f32 fQuality) {
         if (!texture) {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
         if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
-            const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
-            const std::string fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
+            const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
+            const String fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
             texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
             texture->SetImageFormatState(ImageFormatState::COMPRESSED);
             return true;
@@ -312,11 +313,11 @@ namespace Real::tools {
             return false;
         }
 
-        std::vector<TextureData> mipLevelsData;
+        Vector<TextureData> mipLevelsData;
         for (size_t level = 0; level < MipSetCmp.m_nMipLevels; level++) {
             auto currLevel = MipSetCmp.m_pMipLevelTable[level];
             TextureData levelData;
-            levelData.data = new uint8_t[currLevel->m_dwLinearSize];
+            levelData.data = new u8[currLevel->m_dwLinearSize];
             memcpy(levelData.data, currLevel->m_pbData, currLevel->m_dwLinearSize);
             levelData.dataSize     = currLevel->m_dwLinearSize;
             levelData.width        = currLevel->m_nWidth;
@@ -328,8 +329,8 @@ namespace Real::tools {
         }
 
         // Save the result to compressed folder
-        const auto compressed_dir = std::string(ASSETS_DIR) + "textures/compressed/";
-        const std::string fullPath = compressed_dir + texture->GetFileInfo().stem + ".dds";
+        const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
+        const String fullPath = compressed_dir + texture->GetFileInfo().stem + ".dds";
         cmp_status = CMP_SaveTexture(fullPath.c_str(), &MipSetCmp);
 
         texture->SetFileInfo(fs::CreateFileInfoFromPath(fullPath));
@@ -347,9 +348,9 @@ namespace Real::tools {
         return true;
     }
 
-    Ref<OpenGLTexture> ReadCompressedDataFromDDSFile(const std::string& path) {
+    Ref<OpenGLTexture> ReadCompressedDataFromDDSFile(const String& path) {
         const auto& am = Services::GetAssetManager();
-        std::vector<TextureData> mipLevelsData;
+        Vector<TextureData> mipLevelsData;
 
         if (!fs::File::Exists(path)) {
             Warn("There is no DDS file with this name: " + path);
@@ -363,7 +364,7 @@ namespace Real::tools {
         }
 
         // Check that the file is a valid DDS file, DirectX::DDS_MAGIC = "DDS "
-        uint32_t magicNumber;
+        u32 magicNumber;
         file.read((char*)&magicNumber, sizeof(magicNumber));
         if (!file) {
             Warn("Failed to read magic number for DDS: " + path);
@@ -394,12 +395,12 @@ namespace Real::tools {
 
         auto [internalFormat, format, blockSize, channelCount] = GetDDSFormatInfo(header, &dx10Header);
 
-        uint32_t mipWidth  = header.dwWidth;
-        uint32_t mipHeight = header.dwHeight;
+        u32 mipWidth  = header.dwWidth;
+        u32 mipHeight = header.dwHeight;
         for (size_t level = 0; level < header.dwMipMapCount; level++) {
-            uint32_t blocksWide = (mipWidth + 3)  / 4;
-            uint32_t blocksHigh = (mipHeight + 3) / 4;
-            uint32_t dataSize   = blocksWide * blocksHigh * blockSize;
+            u32 blocksWide = (mipWidth + 3)  / 4;
+            u32 blocksHigh = (mipHeight + 3) / 4;
+            u32 dataSize   = blocksWide * blocksHigh * blockSize;
 
             TextureData data = {};
             data.width          = (int)mipWidth;
@@ -415,7 +416,7 @@ namespace Real::tools {
             }
 
             // Allocate and read
-            data.data = new uint8_t[dataSize];
+            data.data = new u8[dataSize];
             file.read((char*)data.data, dataSize);
 
             // Update dimensions for next mipmap level
@@ -437,7 +438,7 @@ namespace Real::tools {
 
     void ReadCompressedDataFromDDSFile(OpenGLTexture *texture) {
         const auto& path = texture->GetPath();
-        std::vector<TextureData> mipLevelsData;
+        Vector<TextureData> mipLevelsData;
 
         if (!fs::File::Exists(path)) {
             Warn("There is no DDS file with this name: " + path);
@@ -451,7 +452,7 @@ namespace Real::tools {
         }
 
         // Check that the file is a valid DDS file, DirectX::DDS_MAGIC = "DDS "
-        uint32_t magicNumber;
+        u32 magicNumber;
         file.read((char*)&magicNumber, sizeof(magicNumber));
         if (!file) {
             Warn("Failed to read magic number for DDS: " + path);
@@ -482,12 +483,12 @@ namespace Real::tools {
 
         auto [internalFormat, format, blockSize, channelCount] = GetDDSFormatInfo(header, &dx10Header);
 
-        uint32_t mipWidth  = header.dwWidth;
-        uint32_t mipHeight = header.dwHeight;
+        u32 mipWidth  = header.dwWidth;
+        u32 mipHeight = header.dwHeight;
         for (size_t level = 0; level < header.dwMipMapCount; level++) {
-            uint32_t blocksWide = (mipWidth + 3)  / 4;
-            uint32_t blocksHigh = (mipHeight + 3) / 4;
-            uint32_t dataSize   = blocksWide * blocksHigh * blockSize;
+            u32 blocksWide = (mipWidth + 3)  / 4;
+            u32 blocksHigh = (mipHeight + 3) / 4;
+            u32 dataSize   = blocksWide * blocksHigh * blockSize;
 
             TextureData data = {};
             data.width          = (int)mipWidth;
@@ -503,7 +504,7 @@ namespace Real::tools {
             }
 
             // Allocate and read
-            data.data = new uint8_t[dataSize];
+            data.data = new u8[dataSize];
             file.read((char*)data.data, dataSize);
 
             // Update dimensions for next mipmap level

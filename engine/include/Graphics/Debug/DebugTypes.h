@@ -2,14 +2,13 @@
 // Created by pointerlost on 2/9/26.
 //
 #pragma once
-#include <cstdint>
-
 #include "Math/Mat4.h"
 #include "Math/Vec3.h"
+#include "Math/Vec4.h"
 
 namespace Real::graphics::debug {
 
-    enum class DebugShapes : uint8_t {
+    enum class DebugShapes : u8 {
         Line,
         Box,
         Sphere,
@@ -26,8 +25,8 @@ namespace Real::graphics::debug {
     };
 
     struct DebugMesh {
-        uint32_t indexCount{};
-        uint32_t indexOffset{};
+        u32 indexCount{};
+        u32 indexOffset{};
     };
 
     struct DebugVertex {

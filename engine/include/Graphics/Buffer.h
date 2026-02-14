@@ -2,13 +2,11 @@
 // Created by pointerlost on 10/12/25.
 //
 #pragma once
-#include <cstring>
-#include <iostream>
-#include <vector>
-
-#include "Common/RealEnum.h"
-#include "Core/Logger.h"
 #include "glad/glad.h"
+#include <cstring>
+#include "Common/RealEnum.h"
+#include "Common/RealTypes.h"
+#include "Core/Logger.h"
 
 namespace Real::opengl {
 
@@ -18,13 +16,13 @@ namespace Real::opengl {
         ~Buffer();
 
         [[nodiscard]] const GLuint& GetHandle() const {
-            if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + std::string(__FILE__)); }
+            if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + String(__FILE__)); }
             return m_Buffer;
         }
 
         // Multiple data upload
         template <typename T>
-        void Create(const std::vector<T>& data, GLsizeiptr size, BufferType type) {
+        void Create(const Vector<T>& data, GLsizeiptr size, BufferType type) {
             CleanResources();
             m_Size = size;
             Create(data, type);
@@ -35,11 +33,11 @@ namespace Real::opengl {
         void Create(const T& data, GLsizeiptr size, BufferType type) {
             CleanResources();
             m_Size = size;
-            Create(std::vector{data}, type);
+            Create(Vector{data}, type);
         }
 
         template <typename T>
-        void UploadToGPU(const std::vector<T>& data, GLsizeiptr size, BufferType type) {
+        void UploadToGPU(const Vector<T>& data, GLsizeiptr size, BufferType type) {
             if (data.empty()) return;
             if (type == BufferType::SSBO) {
                 if (m_Size <= size) {
@@ -77,11 +75,11 @@ namespace Real::opengl {
 
     private:
         template <typename T>
-        void Create(const std::vector<T>& data, BufferType type) {
+        void Create(const Vector<T>& data, BufferType type) {
             if (type == BufferType::SSBO) {
                 glCreateBuffers(1, &m_Buffer);
                 if (m_Buffer == 0) {
-                    Warn("Buffer creation failed from: " + std::string(__FILE__));
+                    Warn("Buffer creation failed from: " + String(__FILE__));
                     return;
                 }
                 // Direct State Access
@@ -90,7 +88,7 @@ namespace Real::opengl {
                 );
                 m_Ptr = glMapNamedBufferRange(m_Buffer, 0, m_Size, m_Flags);
                 if (!m_Ptr) {
-                    Warn("Persistent mapping pointer nullptr from: " + std::string(__FILE__));
+                    Warn("Persistent mapping pointer nullptr from: " + String(__FILE__));
                     return;
                 }
                 glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);

@@ -2,9 +2,9 @@
 // Created by pointerlost on 10/3/25.
 //
 #pragma once
-#include <iostream>
-#include <glad/glad.h>
+#include <glad/include/glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "Common/RealTypes.h"
 
 namespace Real::Graphics {
 
@@ -22,7 +22,7 @@ namespace Real::Graphics {
     private:
         int m_Width = 720;
         int m_Height = 480;
-        std::string m_Title;
+        String m_Title;
 
         GLFWwindow* m_Window = nullptr;
         GLFWmonitor* m_GlfwMonitor = nullptr;

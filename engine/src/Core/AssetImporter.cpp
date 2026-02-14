@@ -3,6 +3,7 @@
 //
 #include <Core/AssetImporter.h>
 
+#include "Common/Macros.h"
 #include "Core/AssetManager.h"
 #include "Core/file_manager.h"
 #include "Core/Logger.h"
@@ -44,7 +45,7 @@ namespace Real {
         if (HasAssetWithPath(texture->GetPath()))
             return;
 
-        const std::string uuidStr = std::to_string(texture->GetUUID());
+        const String uuidStr = std::to_string(texture->GetUUID());
         nlohmann::json& tex = m_AssetDB["textures"][uuidStr];
 
         tex["name"]      = texture->GetName();
@@ -65,16 +66,16 @@ namespace Real {
         if (mat->m_UUID.IsNull()) {
             mat->m_UUID = UUID{};
         }
-        const std::string uuidStr = std::to_string(mat->m_UUID);
+        const String uuidStr = std::to_string(mat->m_UUID);
         nlohmann::json& material = m_AssetDB["materials"][uuidStr];
         material["name"] = mat->m_Name;
 
         material["textures"] = {
-            { "albedo",   static_cast<uint64_t>(mat->m_Albedo)   },
-            { "normal",   static_cast<uint64_t>(mat->m_Normal)   },
-            { "orm",      static_cast<uint64_t>(mat->m_ORM)      },
-            { "height",   static_cast<uint64_t>(mat->m_Height)   },
-            { "emissive", static_cast<uint64_t>(mat->m_Emissive) }
+            { "albedo",   static_cast<u64>(mat->m_Albedo)   },
+            { "normal",   static_cast<u64>(mat->m_Normal)   },
+            { "orm",      static_cast<u64>(mat->m_ORM)      },
+            { "height",   static_cast<u64>(mat->m_Height)   },
+            { "emissive", static_cast<u64>(mat->m_Emissive) }
         };
 
         CacheAssetWithName(mat->m_Name, mat->m_UUID);
@@ -85,11 +86,11 @@ namespace Real {
         if (HasAssetWithPath(model->m_FileInfo.path))
             return;
 
-        const std::string uuidStr = std::to_string(model->m_UUID);
+        const String uuidStr = std::to_string(model->m_UUID);
         nlohmann::json& m = m_AssetDB["models"][uuidStr];
 
         // Binary file path
-        m["binary"] = std::string(ASSETS_RUNTIME_DIR) + "models/" + model->m_Name + ".model";
+        m["binary"] = String(ASSETS_RUNTIME_DIR) + "models/" + model->m_Name + ".model";
         m["name"]   = model->m_Name; // Engine asset name
 
         // File info
@@ -103,12 +104,12 @@ namespace Real {
         Services::GetAssetManager()->SaveModelCPU(model);
     }
 
-    void AssetImporter::SaveMeshToAssetDB(const MeshBinaryHeader &header, const std::string &name) {
-        const auto binaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + name + ".mesh";
+    void AssetImporter::SaveMeshToAssetDB(const MeshBinaryHeader &header, const String &name) {
+        const auto binaryPath = String(ASSETS_RUNTIME_DIR) + "meshes/" + name + ".mesh";
         if (HasAssetWithPath(binaryPath))
             return;
 
-        const std::string uuidStr = std::to_string(header.uuid);
+        const String uuidStr = std::to_string(header.uuid);
         nlohmann::json& m = m_AssetDB["meshes"][uuidStr];
 
         // Binary file path
@@ -228,7 +229,7 @@ namespace Real {
                 Warn("Invalid UUID in Material DB");
                 continue;
             }
-            const std::string name = mat_data.value("name", "Material");
+            const String name = mat_data.value("name", "Material");
 
             const auto& mat = am->LoadMaterialBaseAsset(uuid, name);
 
@@ -262,7 +263,7 @@ namespace Real {
                 Warn("Invalid UUID in Material DB");
                 continue;
             }
-            const std::string name = material.value("name", "Material");
+            const String name = material.value("name", "Material");
             CacheAssetWithName(name, uuid);
         }
 
@@ -285,13 +286,13 @@ namespace Real {
         }
     }
 
-    void AssetImporter::CacheAssetWithName(const std::string &name, const UUID &uuid) {
+    void AssetImporter::CacheAssetWithName(const String &name, const UUID &uuid) {
         if (!HasAssetWithName(name)) {
             m_NameToUUID.emplace(name, uuid);
         }
     }
 
-    void AssetImporter::CacheAssetWithPath(const std::string &path, const UUID &uuid) {
+    void AssetImporter::CacheAssetWithPath(const String &path, const UUID &uuid) {
         if (!HasAssetWithPath(path)) {
             m_PathToUUID.emplace(path, uuid);
         }
@@ -308,7 +309,7 @@ namespace Real {
     }
 
     void AssetImporter::UpdateTextureInAssetDB(const OpenGLTexture *texture) {
-        const std::string uuidStr = std::to_string(texture->GetUUID());
+        const String uuidStr = std::to_string(texture->GetUUID());
         auto& tex = m_AssetDB["textures"][uuidStr];
 
         tex["name"]  = texture->GetName();
@@ -344,7 +345,7 @@ namespace Real {
 
     void AssetImporter::LoadTexturesFromFolder() {
         const auto& am = Services::GetAssetManager();
-        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
+        std::unordered_map<String, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
 
         const auto SaveTexture = [this, &m_ormPack, am](const FileInfo& file, ImageFormatState imageFormatState) {
             auto& stem = file.stem;
@@ -353,7 +354,7 @@ namespace Real {
 
             const auto dashPos = stem.find('_');
             const auto matName = stem.substr(0, dashPos);
-            const TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
+            TextureType type = util::TextureType_StringToEnum(stem.substr(dashPos + 1));
 
             const auto texData = am->LoadTextureFromFile(file.path, type);
             const auto texture = CreateRef<OpenGLTexture>(texData, true, type, imageFormatState, file);
@@ -418,11 +419,11 @@ namespace Real {
         UpdateAssetDB();
     }
 
-    bool AssetImporter::HasAssetWithName(const std::string &sourceName) const {
+    bool AssetImporter::HasAssetWithName(const String &sourceName) const {
         return m_NameToUUID.contains(sourceName);
     }
 
-    bool AssetImporter::HasAssetWithPath(const std::string &sourcePath) const {
+    bool AssetImporter::HasAssetWithPath(const String &sourcePath) const {
         return m_PathToUUID.contains(fs::NormalizePath(sourcePath));
     }
 }

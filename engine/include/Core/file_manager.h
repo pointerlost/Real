@@ -9,12 +9,12 @@ namespace Real::fs {
 
     class File {
     public:
-        [[nodiscard]] static std::string ReadFromFile(const std::string& path);
-        [[nodiscard]] static bool Exists(const std::string& path);
-        [[maybe_unused]] static bool Delete(const std::string& path);
+        [[nodiscard]] static String ReadFromFile(const String& path);
+        [[nodiscard]] static bool Exists(const String& path);
+        [[maybe_unused]] static bool Delete(const String& path);
     };
 
-    [[nodiscard]] std::vector<FileInfo> IterateDirectory(const std::string& folderPath);
-    FileInfo CreateFileInfoFromPath(const std::string& rawPath);
-    std::string NormalizePath(const std::string& path);
+    [[nodiscard]] Vector<FileInfo> IterateDirectory(const String& folderPath);
+    FileInfo CreateFileInfoFromPath(const String& rawPath);
+    String NormalizePath(const String& path);
 }

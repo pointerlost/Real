@@ -21,7 +21,7 @@
 
 namespace Real {
 
-    void ModelLoader::LoadAll(const std::string &rootDir) {
+    void ModelLoader::LoadAll(const String &rootDir) {
         namespace std_fs = std::filesystem;
         const auto& am = Services::GetAssetManager();
 
@@ -36,8 +36,8 @@ namespace Real {
             return;
         }
 
-        std::vector<std_fs::path> modelFolders;
-        static const std::unordered_set<std::string> extensions = {
+        Vector<std_fs::path> modelFolders;
+        static const std::unordered_set<String> extensions = {
             ".png",
             ".tga",
             ".jpg",
@@ -55,7 +55,7 @@ namespace Real {
         for (const auto& folder : modelFolders) {
             // Clear and rebuild texture index for this model folder
             m_TextureIndex.clear();
-            std::vector<std::string> modelsPath;
+            Vector<String> modelsPath;
             const auto& modelName = folder.filename().string();
 
             for (const auto& entry : std_fs::recursive_directory_iterator(folder)) {
@@ -99,7 +99,7 @@ namespace Real {
         }
     }
 
-    Ref<Model> ModelLoader::Load(const std::string &filePath, const std::string& name, const ImageFormatState state) {
+    Ref<Model> ModelLoader::Load(const String &filePath, const String& name, ImageFormatState state) {
         if (!fs::File::Exists(filePath)) {
             Warn("Model file not found: " + filePath);
             return nullptr;
@@ -141,7 +141,7 @@ namespace Real {
         const aiMatrix4x4 identity;
         ProcessNode(scene->mRootNode, scene, identity);
 
-        const auto& binary_path = std::string(ASSETS_RUNTIME_DIR) + "models/" + m_CurrentModel->m_Name + ".model";
+        const auto& binary_path = String(ASSETS_RUNTIME_DIR) + "models/" + m_CurrentModel->m_Name + ".model";
 
         // Create model binary file
         ModelBinaryHeader binary_file{};
@@ -180,8 +180,8 @@ namespace Real {
     void ModelLoader::ProcessMesh(const aiMesh *mesh, const aiScene *scene, const aiMatrix4x4& transform) {
         const auto& mm = Services::GetMeshManager();
         // Create containers for vertex data
-        std::vector<Vertex> vertices;
-        std::vector<uint32_t> indices;
+        Vector<Vertex> vertices;
+        Vector<u32> indices;
 
         auto materialUUID = UUID(0); // TODO: i need to create default material fallback
         if (mesh->mMaterialIndex >= 0) {
@@ -255,7 +255,7 @@ namespace Real {
         header.indexOffset  = indexOffset;
 
         const auto meshNameAsUUID = std::to_string(meshUUID);
-        const auto& mBinaryPath = std::string(ASSETS_RUNTIME_DIR) + "meshes/" + meshNameAsUUID + ".mesh";
+        const auto& mBinaryPath = String(ASSETS_RUNTIME_DIR) + "meshes/" + meshNameAsUUID + ".mesh";
         serialization::binary::WriteMesh(mBinaryPath, header, vertices, indices);
         Services::GetAssetImporter()->SaveMeshToAssetDB(header, meshNameAsUUID);
     }
@@ -264,7 +264,7 @@ namespace Real {
         const auto& am = Services::GetAssetManager();
 
         std::unordered_set<TextureType> processedTypes;
-        std::unordered_map<std::string, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
+        std::unordered_map<String, std::array<Ref<OpenGLTexture>, 3>> m_ormPack;
 
         // Material naming
         aiString matName;
@@ -273,7 +273,7 @@ namespace Real {
 
         const auto& material = am->CreateMaterialBase(m_CurrentModel->m_Name + "_" + baseName);
 
-        std::string destPath = std::string(ASSETS_DIR) + "textures/";
+        String destPath = String(ASSETS_DIR) + "textures/";
         m_CurrImageFormatState == ImageFormatState::UNCOMPRESSED ? destPath += "uncompressed/" : destPath += "compress_me/";
 
         static std::unordered_map<TextureType, std::string_view> suffix {
@@ -288,7 +288,7 @@ namespace Real {
             // Other special cases detecting in LoadTexture lambda
         };
 
-        auto Create = [&](TextureData& td, const std::string& path, const TextureType type) {
+        auto Create = [&](TextureData& td, const String& path, TextureType type) {
             FileInfo fi = fs::CreateFileInfoFromPath(path);
             const auto tex = CreateRef<OpenGLTexture>(td, true, type, ImageFormatState::COMPRESS_ME, fi);
             if (type == TextureType::AMBIENT_OCCLUSION) {
@@ -304,12 +304,12 @@ namespace Real {
         };
 
 
-        auto CacheProcessedTextures = [this](const std::string& path1, const std::string& path2, const Ref<OpenGLTexture>& tex) {
+        auto CacheProcessedTextures = [this](const String& path1, const String& path2, const Ref<OpenGLTexture>& tex) {
             m_CacheProcessedTextures.emplace(path1, tex->GetUUID());
             m_CacheProcessedTextures.emplace(path2, tex->GetUUID());
         };
 
-        auto CreateAndSave = [&](TextureData& td, const std::string& path, const TextureType type) -> Ref<OpenGLTexture>
+        auto CreateAndSave = [&](TextureData& td, const String& path, TextureType type) -> Ref<OpenGLTexture>
         {
             const auto tex = Create(td, path, type);
             AddTextureToMaterial(tex, material);
@@ -326,12 +326,12 @@ namespace Real {
             aiString texPath;
             if (mat->GetTexture(aiType, 0, &texPath) != AI_SUCCESS) return;
 
-            std::string pathStr = texPath.C_Str();
+            String pathStr = texPath.C_Str();
             pathStr = fs::NormalizePath(pathStr);
             const std::filesystem::path p(pathStr);
 
-            std::string path;
-            std::string ext = p.extension().string();
+            String path;
+            String ext = p.extension().string();
 
             if (!pathStr.empty() && pathStr.front() == '*') {
                 Warn("There are embedded textures!!" + pathStr);
@@ -385,7 +385,7 @@ namespace Real {
             }
 
             if (const auto it = suffix.find(realType); it != suffix.end()) {
-                const auto outPath = destPath + material->m_Name + std::string(it->second) + ext;
+                const auto outPath = destPath + material->m_Name + String(it->second) + ext;
                 if (realType == TextureType::AMBIENT_OCCLUSION ||
                     realType == TextureType::ROUGHNESS         ||
                     realType == TextureType::METALLIC)
@@ -454,7 +454,7 @@ namespace Real {
         }
     }
 
-    std::filesystem::path ModelLoader::ChooseBest(const std::vector<std::filesystem::path> &paths) {
+    std::filesystem::path ModelLoader::ChooseBest(const Vector<std::filesystem::path> &paths) {
         // Prefer by order
         static constexpr std::array<std::string_view, 7> priority = {
             ".png",

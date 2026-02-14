@@ -2,11 +2,9 @@
 // Created by pointerlost on 10/3/25.
 //
 #include "Core/Window.h"
-
 #include <cstring>
-
 #include "Core/Logger.h"
-#include "../../include/Core/RealConfig.h"
+#include "Core/RealConfig.h"
 
 namespace Real::Graphics {
 
@@ -56,8 +54,8 @@ namespace Real::Graphics {
         glGetIntegerv(GL_MINOR_VERSION, &minor);
 
         Info("OpenGL version: " + std::to_string(major) + "." + std::to_string(minor));
-        Info("OpenGL vendor: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
-        Info("OpenGL renderer: " + std::string(reinterpret_cast<const char*>(glGetString(GL_RENDERER))));
+        Info("OpenGL vendor: " + String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
+        Info("OpenGL renderer: " + String(reinterpret_cast<const char*>(glGetString(GL_RENDERER))));
 
         // Check if we have at least OpenGL 4.4
         if (major < 4 || (major == 4 && minor < 4)) {

@@ -3,6 +3,7 @@
 //
 #pragma once
 #include <vector>
+#include <glm/vec2.hpp>
 #include "Common/RealEnum.h"
 #include "Common/RealTypes.h"
 #include "Core/Utils.h"
@@ -16,7 +17,7 @@ namespace Real {
             ImageFormatState image_state = ImageFormatState::UNCOMPRESSED,
             FileInfo info = FileInfo(), UUID uuid = UUID{}
         );
-        explicit OpenGLTexture(const std::vector<TextureData>& data, FileInfo info); // Compressed textures
+        explicit OpenGLTexture(const Vector<TextureData>& data, FileInfo info); // Compressed textures
         explicit OpenGLTexture(FileInfo fileinfo, bool isSTBAllocated, ImageFormatState imagestate = ImageFormatState::UNCOMPRESSED);
         // Don't create handle for default textures!!!!
         explicit OpenGLTexture(bool isSTBAllocated = false, TextureType type = TextureType::UNDEFINED);
@@ -28,7 +29,7 @@ namespace Real {
         void SetLevelData(void* data, int mipLevel);
         void SetFileInfo(FileInfo info);
         void SetType(TextureType type);
-        void SetIndex(uint32_t idx);
+        void SetIndex(u32 idx);
         void SetFormat(int format, int mipLevel);
         void SetInternalFormat(int format, int mipLevel);
         void SetImageFormatState(ImageFormatState format);
@@ -38,21 +39,21 @@ namespace Real {
         void SetTextureParameters();
         void SetWrapMode(TextureWrapMode mode);
         void SetFilterMode(TextureFilterMode mode);
-        void SetMipLevelsData(const std::vector<TextureData>& mipLevels);
-        void SetUUID(uint64_t uuid);
+        void SetMipLevelsData(const Vector<TextureData>& mipLevels);
+        void SetUUID(u64 uuid);
         void SetUUID(const UUID& uuid);
 
         FileInfo& GetFileInfo() { return m_FileInfo; }
-        [[nodiscard]] const std::string& GetName() const { return m_FileInfo.name; }
-        [[nodiscard]] const std::string& GetStem() const { return m_FileInfo.stem; }
-        [[nodiscard]] const std::string& GetPath() const { return m_FileInfo.path; }
-        [[nodiscard]] const std::string& GetExtension() const { return m_FileInfo.ext; }
+        [[nodiscard]] const String& GetName() const { return m_FileInfo.name; }
+        [[nodiscard]] const String& GetStem() const { return m_FileInfo.stem; }
+        [[nodiscard]] const String& GetPath() const { return m_FileInfo.path; }
+        [[nodiscard]] const String& GetExtension() const { return m_FileInfo.ext; }
         [[nodiscard]] TextureType GetType() const { return m_Type; }
         [[nodiscard]] bool IsCompressed() const { return m_ImageFormatState == ImageFormatState::COMPRESSED; }
         [[nodiscard]] bool HasData(int mipLevel) const { return m_MipLevelsData[mipLevel].data != nullptr; }
         [[nodiscard]] bool HasBindlessHandle() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] std::pair<int, int> GetResolution(int mipLevel);
-        [[nodiscard]] uint32_t GetIndex() const { return m_GPUIndex; }
+        [[nodiscard]] u32 GetIndex() const { return m_GPUIndex; }
         [[nodiscard]] bool HasBindlessID() const { return m_BindlessHandleID != 0; }
         [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
@@ -65,7 +66,7 @@ namespace Real {
         [[nodiscard]] UUID GetUUID() const { return m_UUID; }
         [[nodiscard]] GLuint GetHandle() const { return m_Handle; }
 
-        [[maybe_unused]] TextureData LoadFromFile(const std::string& path);
+        [[maybe_unused]] TextureData LoadFromFile(const String& path);
         void Create();
         void CreateFromData(const TextureData &data, TextureType type);
         void CleanUpCPUData();
@@ -86,8 +87,8 @@ namespace Real {
         bool m_IsSTBAllocated = false;
         int m_BlockSize = 0;
         int m_MipLevelCount = 0;
-        uint32_t m_GPUIndex = 0;
-        std::vector<TextureData> m_MipLevelsData;
+        u32 m_GPUIndex = 0;
+        Vector<TextureData> m_MipLevelsData;
 
         ImageFormatState m_ImageFormatState = ImageFormatState::UNDEFINED;
         TextureType m_Type = TextureType::UNDEFINED;
@@ -98,7 +99,7 @@ namespace Real {
     private:
         void CreateHandle();
         void UploadMipLevels();
-        void CreateMipmapsFromDDS(const std::vector<TextureData> &levelsData);
+        void CreateMipmapsFromDDS(const Vector<TextureData> &levelsData);
         int CalculateMaxMipMapLevels(int width, int height);
         int CalculateMaxMipMapLevels(const glm::ivec2& res);
     };

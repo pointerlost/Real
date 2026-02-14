@@ -22,13 +22,13 @@ namespace Real {
 }
 
 namespace Real {
-    // TODO: Add dirty flags to manage components and avoid to unnecessary updates
+    // TODO: Add dirty flags to manage components and to avoid unnecessary updates
 
     struct TagComponent {
-        std::string m_Tag{};
+        String m_Tag{};
 
         TagComponent() = default;
-        explicit TagComponent(std::string tag) : m_Tag(std::move(tag)) {}
+        explicit TagComponent(String tag) : m_Tag(std::move(tag)) {}
         TagComponent(const TagComponent&) = default;
     };
 
@@ -46,9 +46,9 @@ namespace Real {
     };
 
     struct MeshRendererComponent {
-        std::vector<UUID> m_MeshUUIDs = {};
-        std::vector<UUID> m_MaterialInstanceUUIDs = {};
-        MeshRendererComponent(const std::vector<UUID>& meshUUIDs, const std::vector<UUID>& matInstanceUUIDs)
+        Vector<UUID> m_MeshUUIDs = {};
+        Vector<UUID> m_MaterialInstanceUUIDs = {};
+        MeshRendererComponent(const Vector<UUID>& meshUUIDs, const Vector<UUID>& matInstanceUUIDs)
             : m_MeshUUIDs(meshUUIDs), m_MaterialInstanceUUIDs(matInstanceUUIDs) {}
         MeshRendererComponent(const UUID& meshUUID, const UUID& matInstanceUUID)
             : m_MeshUUIDs{meshUUID}, m_MaterialInstanceUUIDs{matInstanceUUID} {}
@@ -57,46 +57,35 @@ namespace Real {
     };
 
     // This component is only for behavior. It's optional and not necessary for PhysX
-    struct PhysicsBodyComponent {
-        physics::BodyType bodyType = physics::BodyType::Static;
-        float mass = 1.0f;
+    struct RigidBodyComponent {
+        physics::BodyType type = physics::BodyType::Static;
+        f32 mass = 1.0f;
 
-        PhysicsBodyComponent() = default;
-        explicit PhysicsBodyComponent(const physics::BodyType bodyType, float mass = 1.0f)
-            : bodyType(bodyType), mass(mass) {}
+        physics::RigidBodyHandle handle = physics::InvalidRigidBodyHandle; // transient
     };
 
     struct ColliderComponent {
         physics::ColliderShape shape = physics::ColliderShape::Box;
 
         // Geometry
-        math::Vec3 size{ 0.5f };
-
+        math::Vec3 size{0.5f};
         // Local offset relative to actor
-        math::Vec3 localPosition{ 0.0f };
+        math::Vec3 localPosition{0.0f};
         math::Quat localRotation = math::Quat::Identity();
 
         bool isTrigger = false;
-
         // User intent
         bool enabled = true; // true = Attach shape, false = Detach shape
+        bool rebuildRequired = false;
 
-        // Runtime state (PhysX truth)
-        bool attached = false;
-
-        // Runtime (physics)
-        physx::PxRigidActor* actor = nullptr;
-        physx::PxShape* shapeHandle = nullptr;
-
-        // Editor-only debug mode
-        physics::ColliderDebug debug;
+        physics::PhysicsShapeHandle handle = physics::InvalidShapeHandle; // transient
     };
 
     struct MovementComponent {
         math::Vec3 moveInput = { 0.0, 0.0, 0.0 }; // normalized direction
-        float maxSpeed = 6.0f;
-        float acceleration = 20.0f;
-        float airControl = 0.4f;
+        f32 maxSpeed = 6.0f;
+        f32 acceleration = 20.0f;
+        f32 airControl = 0.4f;
 
         bool jumpRequested  = false;
     };
@@ -111,13 +100,13 @@ namespace Real {
     struct LightComponent {
         Light m_Light{};
         explicit LightComponent(const Light &light) : m_Light(light) {}
-        explicit LightComponent(const LightType type) : m_Light(Light{type}) {}
+        explicit LightComponent(Light::Mode mode) : m_Light(Light{mode}) {}
         LightComponent() = default;
         LightComponent(const LightComponent&) = default;
     };
 
     struct CameraComponent {
-        Camera m_Camera{CameraMode::Perspective};
+        Camera m_Camera{};
         explicit CameraComponent(Camera camera) : m_Camera(std::move(camera)) {}
         CameraComponent() = default;
         CameraComponent(const CameraComponent&) = default;

@@ -2,16 +2,18 @@
 // Created by pointerlost on 10/4/25.
 //
 #include "Graphics/Shader.h"
-
 #include <utility>
 #include "Core/Logger.h"
 #include "Math/Mat2.h"
 #include "Math/Mat3.h"
+#include "Math/Mat4.h"
+#include "Math/Vec2.h"
 #include "Math/Vec3.h"
+#include "Math/Vec4.h"
 
 namespace Real {
 
-    Shader::Shader(std::string vertexPath, std::string fragmentPath, std::string name)
+    Shader::Shader(String vertexPath, String fragmentPath, String name)
         : m_VertexPath(std::move(vertexPath)), m_FragmentPath(std::move(fragmentPath)), m_Name(std::move(name))
     {
         const char* vSource = m_VertexPath.c_str();
@@ -34,59 +36,63 @@ namespace Real {
         CheckCompileErrors(m_Program, "PROGRAM");
     }
 
-    void Shader::SetInt(const std::string &name, int value) const {
+    void Shader::SetInt(const String &name, int value) const {
         glUniform1i(GetULocation(name), (int)value);
     }
 
-    void Shader::SetBool(const std::string &name, bool value) const {
+    void Shader::SetBool(const String &name, bool value) const {
         glUniform1i(GetULocation(name), (int)value);
     }
 
-    void Shader::SetUint(const std::string &name, uint value) const {
+    void Shader::SetUint(const String &name, uint value) const {
         glUniform1f(GetULocation(name), (uint)value);
     }
 
-    void Shader::SetFloat(const std::string &name, float value) const {
+    void Shader::Setf32(const String &name, f32 value) const {
         glUniform1f(GetULocation(name), value);
     }
 
-    void Shader::SetVec2(const std::string &name, const math::Vec2& value) const {
+    void Shader::SetVec2(const String &name, const math::Vec2& value) const {
         glUniform2fv(GetULocation(name), 1, value.ValuePtr());
     }
 
-    void Shader::SetVec2(const std::string &name, float x, float y) const {
+    void Shader::SetVec2(const String &name, f32 x, f32 y) const {
         glUniform2f(GetULocation(name), x, y);
     }
 
-    void Shader::SetVec3(const std::string &name, const math::Vec3 &value) const {
+    void Shader::SetVec3(const String &name, const math::Vec3 &value) const {
         glUniform3fv(GetULocation(name), 1, value.ValuePtr());
     }
 
-    void Shader::SetVec3(const std::string &name, float x, float y, float z) const {
+    void Shader::SetVec3(const String &name, f32 x, f32 y, f32 z) const {
         glUniform3f(GetULocation(name), x, y, z);
     }
 
-    void Shader::SetVec4(const std::string &name, const math::Vec4& value) const {
+    void Shader::SetVec4(const String &name, const math::Vec4& value) const {
         glUniform4fv(GetULocation(name), 1, value.ValuePtr());
     }
 
-    void Shader::SetVec4(const std::string &name, float x, float y, float z, float w) const {
+    void Shader::SetVec4(const String &name, f32 x, f32 y, f32 z, f32 w) const {
         glUniform4f(GetULocation(name), x, y, z, w);
     }
 
-    void Shader::SetMat2(const std::string &name, const math::Mat2& mat) const {
+    void Shader::SetMat2(const String &name, const math::Mat2& mat) const {
         glUniformMatrix2fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
-    void Shader::SetMat3(const std::string &name, const math::Mat3& mat) const {
+    void Shader::SetMat3(const String &name, const math::Mat3& mat) const {
         glUniformMatrix3fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
-    void Shader::SetMat4(const std::string &name, const math::Mat4& mat) const {
+    void Shader::SetMat4(const String &name, const math::Mat4& mat) const {
         glUniformMatrix4fv(GetULocation(name), 1, GL_FALSE, mat.ValuePtr());
     }
 
-    int Shader::GetULocation(const std::string &name) const {
+    void Shader::Bind() const {
+        glUseProgram(m_Program);
+    }
+
+    int Shader::GetULocation(const String &name) const {
         if (m_CacheUniforms.contains(name)) {
             return m_CacheUniforms[name];
         }
@@ -95,7 +101,7 @@ namespace Real {
         return loc;
     }
 
-    void Shader::CheckCompileErrors(GLuint shader, const std::string& type) {
+    void Shader::CheckCompileErrors(GLuint shader, const String& type) {
         GLint success;
         GLchar infoLog[1024];
         if (type != "PROGRAM") {

@@ -3,6 +3,7 @@
 //
 #include "Resource/ResourceLoader.h"
 
+#include "Common/Macros.h"
 #include "Core/AssetImporter.h"
 #include "Core/AssetManager.h"
 #include "Core/Logger.h"
@@ -30,7 +31,7 @@ namespace Real {
         ai->ImportFromDatabase();
         mm->LoadPrimitiveTypes();
 
-        m_ModelLoader->LoadAll(std::string(ASSETS_SOURCE_DIR) + "models/");
+        m_ModelLoader->LoadAll(String(ASSETS_SOURCE_DIR) + "models/");
 
         // If there are new assets from the ModelLoader, upload them to the database!
         ai->LoadNewAssetsToDataBase();

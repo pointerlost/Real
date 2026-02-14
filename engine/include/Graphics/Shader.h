@@ -2,10 +2,9 @@
 // Created by pointerlost on 10/4/25.
 //
 #pragma once
-#include <iostream>
 #include <unordered_map>
-#include <glad/glad.h>
-#include <glm/ext.hpp>
+#include "Common/RealTypes.h"
+#include "glad/glad.h"
 
 namespace Real::math {
     struct Mat4;
@@ -20,42 +19,42 @@ namespace Real {
 
     class Shader {
     public:
-        Shader(std::string vertexPath, std::string fragmentPath, std::string name);
+        Shader(String vertexPath, String fragmentPath, String name);
         Shader() = default;
         Shader(Shader&&) = default;
         Shader& operator=(Shader&&) = default;
         Shader(const Shader& shader) = default;
         Shader& operator=(const Shader&) = default;
 
-        void SetInt(const std::string& name, int value) const;
-        void SetBool(const std::string& name, bool value) const;
-        void SetUint(const std::string& name, uint value) const;
-        void SetFloat(const std::string& name, float value) const;
-        void SetVec2(const std::string& name, const math::Vec2& value) const;
-        void SetVec2(const std::string& name, float x, float y) const;
-        void SetVec3(const std::string& name, const math::Vec3& value) const;
-        void SetVec3(const std::string& name, float x, float y, float z) const;
-        void SetVec4(const std::string& name, const math::Vec4& value) const;
-        void SetVec4(const std::string& name, float x, float y, float z, float w) const;
-        void SetMat2(const std::string& name, const math::Mat2& mat) const;
-        void SetMat3(const std::string& name, const math::Mat3& mat) const;
-        void SetMat4(const std::string& name, const math::Mat4& mat) const;
+        void SetInt(const String& name, int value) const;
+        void SetBool(const String& name, bool value) const;
+        void SetUint(const String& name, uint value) const;
+        void Setf32(const String& name, f32 value) const;
+        void SetVec2(const String& name, const math::Vec2& value) const;
+        void SetVec2(const String& name, f32 x, f32 y) const;
+        void SetVec3(const String& name, const math::Vec3& value) const;
+        void SetVec3(const String& name, f32 x, f32 y, f32 z) const;
+        void SetVec4(const String& name, const math::Vec4& value) const;
+        void SetVec4(const String& name, f32 x, f32 y, f32 z, f32 w) const;
+        void SetMat2(const String& name, const math::Mat2& mat) const;
+        void SetMat3(const String& name, const math::Mat3& mat) const;
+        void SetMat4(const String& name, const math::Mat4& mat) const;
 
-        [[nodiscard]] const std::string& GetName() const { return m_Name; }
+        [[nodiscard]] const String& GetName() const { return m_Name; }
         [[nodiscard]] const GLuint& GetProgram() const { return m_Program; }
-        void Bind() const { glUseProgram(m_Program); }
+        void Bind() const;
 
     private:
         GLuint m_Program{};
-        std::string m_VertexPath;
-        std::string m_FragmentPath;
-        std::string m_Name;
+        String m_VertexPath;
+        String m_FragmentPath;
+        String m_Name;
 
-        mutable std::unordered_map<std::string, int> m_CacheUniforms;
+        mutable std::unordered_map<String, int> m_CacheUniforms;
 
     private:
         /* Get uniform location */
-        [[nodiscard]] int GetULocation(const std::string& name) const;
-        void CheckCompileErrors(GLuint shader, const std::string& type);
+        [[nodiscard]] int GetULocation(const String& name) const;
+        void CheckCompileErrors(GLuint shader, const String& type);
     };
 }

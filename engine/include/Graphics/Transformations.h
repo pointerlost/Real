@@ -2,9 +2,9 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
-#include "foundation/PxTransform.h"
 #include "Math/Math.h"
 #include "Math/Quat.h"
+#include "Math/Vec3.h"
 
 namespace Real {
 
@@ -43,7 +43,7 @@ namespace Real {
         void SetRotation(const math::Quat& q) { rotation = q.Normalized(); }
         void Rotate(const math::Quat& delta)  { rotation = (rotation * delta).Normalized(); }
 
-        void RotateAxisAngle(const math::Vec3& axis, float radians) {
+        void RotateAxisAngle(const math::Vec3& axis, f32 radians) {
             Rotate(math::Quat::FromAxisAngle(axis, radians));
         }
 
@@ -58,12 +58,6 @@ namespace Real {
             scale.x *= factor.x;
             scale.y *= factor.y;
             scale.z *= factor.z;
-        }
-
-        void SetFromPhysics(const physx::PxTransform& px) {
-            position = { px.p.x, px.p.y, px.p.z };
-            // Don't trust external systems(like PhysX) for normalizing-ready
-            rotation = math::Quat{ px.q.x, px.q.y, px.q.z, px.q.w }.Normalized();
         }
     };
 

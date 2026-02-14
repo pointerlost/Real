@@ -3,15 +3,18 @@
 //
 #include <Serialization/Binary.h>
 #include <fstream>
+
+#include "Common/Macros.h"
 #include "Common/RealTypes.h"
 #include "Core/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Utils.h"
+#include "Graphics/MeshManager.h"
 
 namespace Real::serialization::binary {
 
-    void WriteModel(const std::string &path, ModelBinaryHeader binaryHeader,
-        const std::vector<UUID>& meshUUIDs, const std::vector<UUID>& materialUUIDs)
+    void WriteModel(const String &path, ModelBinaryHeader binaryHeader,
+        const Vector<UUID>& meshUUIDs, const Vector<UUID>& materialUUIDs)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
@@ -20,26 +23,26 @@ namespace Real::serialization::binary {
         }
 
         // Update the mesh count to ensure the size is correct
-        binaryHeader.meshCount = static_cast<uint32_t>(meshUUIDs.size());
+        binaryHeader.meshCount = static_cast<u32>(meshUUIDs.size());
 
         // Write entire header once
         file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
 
-        std::vector<uint64_t> raw_meshUUIDs;
+        Vector<u64> raw_meshUUIDs;
         raw_meshUUIDs.reserve(meshUUIDs.size());
         for (const auto& uuid : meshUUIDs) {
-            raw_meshUUIDs.push_back(static_cast<uint64_t>(uuid));
+            raw_meshUUIDs.push_back(static_cast<u64>(uuid));
         }
         // Bulk upload Mesh UUIDs
-        file.write(reinterpret_cast<const char*>(raw_meshUUIDs.data()), raw_meshUUIDs.size() * sizeof(uint64_t));
+        file.write(reinterpret_cast<const char*>(raw_meshUUIDs.data()), raw_meshUUIDs.size() * sizeof(u64));
 
-        std::vector<uint64_t> raw_matUUIDs;
+        Vector<u64> raw_matUUIDs;
         raw_matUUIDs.reserve(materialUUIDs.size());
         for (const auto& uuid : materialUUIDs) {
-            raw_matUUIDs.push_back(static_cast<uint64_t>(uuid));
+            raw_matUUIDs.push_back(static_cast<u64>(uuid));
         }
         // Bulk upload Mesh UUIDs
-        file.write(reinterpret_cast<const char*>(raw_matUUIDs.data()), raw_matUUIDs.size() * sizeof(uint64_t));
+        file.write(reinterpret_cast<const char*>(raw_matUUIDs.data()), raw_matUUIDs.size() * sizeof(u64));
 
         if (!file) {
             Warn("[WriteModel] Failed to write data!");
@@ -49,10 +52,10 @@ namespace Real::serialization::binary {
         file.close();
     }
 
-    std::tuple<ModelBinaryHeader, std::vector<UUID>, std::vector<UUID>> LoadModel(const std::string &path)
+    std::tuple<ModelBinaryHeader, Vector<UUID>, Vector<UUID>> LoadModel(const String &path)
     {
-        std::vector<Vertex> vertices;
-        std::vector<uint64_t> indices;
+        Vector<Vertex> vertices;
+        Vector<u64> indices;
 
         std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
@@ -71,26 +74,26 @@ namespace Real::serialization::binary {
             return{};
         }
 
-        std::vector<uint64_t> raw_MeshUUIDs(header.meshCount);
-        std::vector<uint64_t> raw_MatUUIDs(header.meshCount);
+        Vector<u64> raw_MeshUUIDs(header.meshCount);
+        Vector<u64> raw_MatUUIDs(header.meshCount);
 
-        std::vector<UUID> meshUUIDs;
+        Vector<UUID> meshUUIDs;
         meshUUIDs.reserve(header.meshCount);
 
         // per-mesh material so reserve with mesh count
-        std::vector<UUID> materialUUIDs;
+        Vector<UUID> materialUUIDs;
         materialUUIDs.reserve(header.meshCount);
 
         if (header.meshCount > 0) {
-            file.read(reinterpret_cast<char*>(raw_MeshUUIDs.data()), header.meshCount * sizeof(uint64_t));
-            file.read(reinterpret_cast<char*>(raw_MatUUIDs.data()),  header.meshCount * sizeof(uint64_t));
+            file.read(reinterpret_cast<char*>(raw_MeshUUIDs.data()), header.meshCount * sizeof(u64));
+            file.read(reinterpret_cast<char*>(raw_MatUUIDs.data()),  header.meshCount * sizeof(u64));
         }
 
-        for (uint64_t raw_id : raw_MeshUUIDs) {
+        for (u64 raw_id : raw_MeshUUIDs) {
             meshUUIDs.emplace_back(raw_id);
         }
 
-        for (uint64_t raw_id : raw_MatUUIDs) {
+        for (u64 raw_id : raw_MatUUIDs) {
             materialUUIDs.emplace_back(raw_id);
         }
 
@@ -105,8 +108,8 @@ namespace Real::serialization::binary {
         return std::make_tuple(header, meshUUIDs, materialUUIDs);
     }
 
-    void WriteMesh(const std::string &path, const MeshBinaryHeader &binaryHeader,
-        const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+    void WriteMesh(const String &path, const MeshBinaryHeader &binaryHeader,
+        const Vector<Vertex>& vertices, const Vector<u32>& indices)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
@@ -123,7 +126,7 @@ namespace Real::serialization::binary {
         }
 
         if (!indices.empty()) {
-            file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(uint32_t));
+            file.write(reinterpret_cast<const char*>(indices.data()), indices.size() * sizeof(u32));
         } else {
             Warn("[WriteMesh] Indices are empty!");
         }
@@ -133,7 +136,7 @@ namespace Real::serialization::binary {
         }
     }
 
-    MeshLoadResult LoadMesh(const std::string &path) {
+    MeshLoadResult LoadMesh(const String &path) {
         std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
             Warn("[Load] Mesh binary file can't opening: " + path);
@@ -159,7 +162,7 @@ namespace Real::serialization::binary {
         if (result.header.indexCount > 0) {
             result.indices.resize(result.header.indexCount);
             file.read(reinterpret_cast<char*>(result.indices.data()),
-                        result.header.indexCount * sizeof(uint32_t)
+                        result.header.indexCount * sizeof(u32)
             );
         }
 

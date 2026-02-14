@@ -25,7 +25,7 @@ namespace Real {
         void SaveTextureToAssetDB(const OpenGLTexture* texture);
         void SaveMaterialToAssetDB(const Ref<Material>& mat);
         void SaveModelToAssetDB(const Ref<Model>& model);
-        void SaveMeshToAssetDB(const MeshBinaryHeader &header, const std::string& name);
+        void SaveMeshToAssetDB(const MeshBinaryHeader &header, const String& name);
 
         void ImportFromDatabase();
 
@@ -37,8 +37,8 @@ namespace Real {
         void LoadTexturesFromFolder();
 
         void Update();
-        bool HasAssetWithName(const std::string& sourceName) const;
-        bool HasAssetWithPath(const std::string& sourcePath) const;
+        bool HasAssetWithName(const String& sourceName) const;
+        bool HasAssetWithPath(const String& sourcePath) const;
 
     private:
         static constexpr auto ASSET_DB_PATH = ASSETS_DIR "asset_database/asset_database.json";
@@ -46,9 +46,9 @@ namespace Real {
         bool m_AssetDBDirty  = false;
 
         // Cache paths with UUIDs to check when new assets are added (Textures, models etc.)
-        std::unordered_map<std::string, UUID> m_PathToUUID;
+        std::unordered_map<String, UUID> m_PathToUUID;
         // Cache paths with UUIDs to check when new assets are added (Materials, meshes etc.)
-        std::unordered_map<std::string, UUID> m_NameToUUID;
+        std::unordered_map<String, UUID> m_NameToUUID;
 
     private:
         void ImportTextures();
@@ -57,7 +57,7 @@ namespace Real {
         void ImportMaterials();
         void BuildCachesFromDB();
 
-        void CacheAssetWithName(const std::string& name, const UUID& uuid);
-        void CacheAssetWithPath(const std::string& path, const UUID& uuid);
+        void CacheAssetWithName(const String& name, const UUID& uuid);
+        void CacheAssetWithPath(const String& path, const UUID& uuid);
     };
 }

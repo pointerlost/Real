@@ -6,7 +6,6 @@
 #include <fstream>
 #include <GL/glext.h>
 #include <nlohmann/json.hpp>
-
 #include "PxMaterial.h"
 #include "PxPhysics.h"
 #include "Core/file_manager.h"
@@ -18,45 +17,21 @@
 
 namespace Real::util {
 
-    bool IsSubString(const std::string &subStr, const std::string &string) {
-        return string.find(subStr) != std::string::npos;
-    }
-
-    math::Vec3 PXToReal(const physx::PxVec3& v) {
-        return { v.x, v.y, v.z };
-    }
-
-    math::Quat PXToReal(const physx::PxQuat& q) {
-        return { q.x, q.y, q.z, q.w };
-    }
-
-    Transform PXToReal(const physx::PxTransform& t) {
-        return { PXToReal(t.p), PXToReal(t.q) };
-    }
-
-    physx::PxVec3 RealToPX(const math::Vec3 &v) {
-        return { v.x, v.y, v.z };
-    }
-
-    physx::PxQuat RealToPX(const math::Quat &q) {
-        return { q.x, q.y, q.z, q.w };
-    }
-
-    physx::PxTransform RealToPX(const Transform &t) {
-        return { RealToPX(t.position), RealToPX(t.rotation) };
+    bool IsSubString(const String &subStr, const String &string) {
+        return string.find(subStr) != String::npos;
     }
 
     physx::PxShape* CreatePhysXShapeFromReal(physx::PxPhysics& px, const physx::PxMaterial* mat, const physics::ColliderShape shape) {
         switch (shape) {
             case physics::ColliderShape::Box:
-                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat);
+                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat, true);
             case physics::ColliderShape::Capsule:
-                return px.createShape(physx::PxCapsuleGeometry(0.5f, 1.0f), *mat);
+                return px.createShape(physx::PxCapsuleGeometry(0.5f, 1.0f), *mat, true);
             case physics::ColliderShape::Sphere:
-                return px.createShape(physx::PxSphereGeometry(1.0f), *mat);
+                return px.createShape(physx::PxSphereGeometry(1.0f), *mat, true);
             default:
                 Info("There is no Collider Shape! returning a box!");
-                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat);
+                return px.createShape(physx::PxBoxGeometry(5.0f, 5.0f, 5.0f), *mat, true);
         }
     }
 
@@ -119,7 +94,7 @@ namespace Real::util {
         }
     }
 
-    std::string ImageFormatState_EnumToString(ImageFormatState state) {
+    String ImageFormatState_EnumToString(ImageFormatState state) {
         switch (state) {
             case ImageFormatState::COMPRESS_ME:  return "compress_me";
             case ImageFormatState::COMPRESSED:   return "compressed";
@@ -130,7 +105,7 @@ namespace Real::util {
         }
     }
 
-    ImageFormatState ImageFormatState_StringToEnum(std::string state) {
+    ImageFormatState ImageFormatState_StringToEnum(String state) {
         if (state == "compress_me")  return ImageFormatState::COMPRESS_ME;
         if (state == "compressed")   return ImageFormatState::COMPRESSED;
         if (state == "uncompressed") return ImageFormatState::UNCOMPRESSED;
@@ -139,7 +114,7 @@ namespace Real::util {
         return ImageFormatState::real_null;
     }
 
-    std::string FormatToString(int format) {
+    String FormatToString(int format) {
         switch (format) {
             case GL_R:    return "GL_R";
             case GL_RG:   return "GL_RG";
@@ -151,7 +126,7 @@ namespace Real::util {
         }
     }
 
-    std::string InternalFormatToString(int format) {
+    String InternalFormatToString(int format) {
         switch (format) {
             case GL_COMPRESSED_RGBA_BPTC_UNORM: return "GL_COMPRESSED_RGBA_BPTC_UNORM";
             case GL_COMPRESSED_RED_RGTC1_EXT:   return "GL_COMPRESSED_RED_RGTC1_EXT";
@@ -173,7 +148,7 @@ namespace Real::util {
         }
     }
 
-    std::string DebugCMPStatus(CMP_ERROR error) {
+    String DebugCMPStatus(CMP_ERROR error) {
         switch (error) {
             case CMP_ERR_CMP_DESTINATION:              return "CMP_ERR_CMP_DESTINATION";
             case CMP_ERR_FAILED_HOST_SETUP:            return "CMP_ERR_FAILED_HOST_SETUP";
@@ -224,7 +199,7 @@ namespace Real::util {
         }
     }
 
-    TextureType TextureType_StringToEnum(const std::string &type) {
+    TextureType TextureType_StringToEnum(const String &type) {
         if (type == "albedo" || type == "ALB")        return TextureType::ALBEDO;
         if (type == "normal" || type == "NRM")        return TextureType::NORMAL;
         if (type == "orm" || type == "ORM")           return TextureType::ORM;
@@ -242,7 +217,7 @@ namespace Real::util {
     }
 
     // This method returns the type as a suffix, not a full string
-    std::string TextureType_EnumToString(TextureType type) {
+    String TextureType_EnumToString(TextureType type) {
         switch (type) {
             case TextureType::ALBEDO:             return "ALB";
             case TextureType::NORMAL:             return "NRM";
@@ -262,8 +237,8 @@ namespace Real::util {
         }
     }
 
-    std::string GetDefaultTextureName(TextureType type, int width) {
-        return std::string("default_" + TextureType_EnumToString(type) + "_" + std::to_string(width));
+    String GetDefaultTextureName(TextureType type, int width) {
+        return String("default_" + TextureType_EnumToString(type) + "_" + std::to_string(width));
     }
 
     // Bit Per Pixel
@@ -312,7 +287,7 @@ namespace Real::util {
         }
     }
 
-    TextureType AssimpTextureTypeToRealType(const aiTextureType type) {
+    TextureType AssimpTextureTypeToRealType(aiTextureType type) {
         switch (type) {
             case aiTextureType_DIFFUSE:
             case aiTextureType_BASE_COLOR:
@@ -348,7 +323,7 @@ namespace Real::util {
         }
     }
 
-    bool TryParseUUID(const std::string& strUUID, UUID &uuid) {
+    bool TryParseUUID(const String& strUUID, UUID &uuid) {
         try {
             uuid = UUID(std::stoul(strUUID));
             return true;
@@ -370,10 +345,10 @@ namespace Real::util {
         d.format         = GetGLFormat(d.channelCount);
         d.internalFormat = GetGLInternalFormat(d.channelCount);
 
-        d.data = new uint8_t[d.dataSize];
+        d.data = new u8[d.dataSize];
 
-        const auto* src = static_cast<const uint8_t*>(data.data);
-        auto* dst = static_cast<uint8_t*>(d.data);
+        const auto* src = static_cast<const u8*>(data.data);
+        auto* dst = static_cast<u8*>(d.data);
 
         for (int i = 0; i < data.width * data.height; i++)
             dst[i] = src[i * data.channelCount + channelIndex];
@@ -381,7 +356,7 @@ namespace Real::util {
         return d;
     }
 
-    TextureData ExtractChannels(const TextureData& data, const std::vector<int> &wantedChannels) {
+    TextureData ExtractChannels(const TextureData& data, const Vector<int> &wantedChannels) {
         const int outC = wantedChannels.size();
 
         TextureData d;
@@ -392,10 +367,10 @@ namespace Real::util {
         d.format         = GetGLFormat(d.channelCount);
         d.internalFormat = GetGLInternalFormat(d.channelCount);
 
-        d.data = new uint8_t[d.dataSize];
+        d.data = new u8[d.dataSize];
 
-        const auto* src = static_cast<const uint8_t*>(data.data);
-        auto* dst = static_cast<uint8_t*>(d.data);
+        const auto* src = static_cast<const u8*>(data.data);
+        auto* dst = static_cast<u8*>(d.data);
 
         for (int i = 0; i < data.width * data.height; i++)
             for (int j = 0; j < outC; j++)

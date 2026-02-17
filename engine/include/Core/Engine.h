@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/3/25.
 //
 #pragma once
-#include <Core/Window.h>
 #include "AssetManager.h"
 #include "Timer.h"
 #include "Utils.h"
@@ -17,8 +16,9 @@
 #include "Resource/ResourceLoader.h"
 #include "Core/AssetImporter.h"
 #include "Scene/Scene.h"
-#include "Scene/Systems/Systems.h"
+#include "Scene/Systems/SystemsManager.h"
 #include "Graphics/Debug/DebugRenderer.h"
+#include "Window/IWindow.h"
 
 namespace Real {
 
@@ -32,20 +32,20 @@ namespace Real {
         void Running();
 
     private:
-        Scope<Timer> m_EditorTimer;
+        Scope<RealTimeTimer> m_EditorTimer;
         Scope<EditorState> m_EditorState;
-        Scope<Graphics::Window> m_Window;
+        Scope<core::IWindow> m_Window;
         Scope<ModelLoader> m_ModelLoader;
         Scope<MeshData> m_MeshManager;
         Scope<AssetManager> m_AssetManager;
-        Scope<opengl::Renderer> m_Renderer;
+        Scope<opengl::OpenGLRenderer> m_Renderer;
         Scope<graphics::debug::DebugRenderer> m_DebugRenderer;
         Scope<Scene> m_Scene;
         Scope<CameraInput> m_CameraInput;
         Scope<UI::EditorPanel> m_EditorPanel;
         Scope<UI::InspectorPanel> m_HierarchyPanel;
         Scope<UI::HierarchyPanel> m_InspectorPanel;
-        Scope<Systems> m_Systems;
+        Scope<SystemManager> m_Systems;
         Scope<ResourceLoader> m_ResourceLoader;
         Scope<AssetImporter> m_AssetImporter;
 
@@ -56,7 +56,7 @@ namespace Real {
         void StartPhase() const;
         void UpdatePhase() const;
         void RenderPhase() const;
-        void EndPhase(GLFWwindow* window);
+        void EndPhase();
 
         void InitWindow();
         void InitServices() const;

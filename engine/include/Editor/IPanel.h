@@ -4,7 +4,7 @@
 #pragma once
 
 namespace Real::opengl {
-    class Renderer;
+    class OpenGLRenderer;
 }
 
 namespace Real {
@@ -22,7 +22,7 @@ namespace Real::UI {
         virtual ~IPanel() = default;
         virtual void BeginFrame() = 0;
         virtual void Update() = 0;
-        virtual void Render(Scene* scene, opengl::Renderer* renderer) = 0;
+        virtual void Render(Scene*, opengl::OpenGLRenderer*) = 0;
         virtual void EndFrame() = 0;
         virtual void Shutdown() = 0;
     };

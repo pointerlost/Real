@@ -16,7 +16,7 @@ namespace Real::UI {
         explicit HierarchyPanel();
         void BeginFrame() override;
         void Update() override {}
-        void Render(Scene* scene, opengl::Renderer* renderer) override;
+        void Render(Scene* scene, opengl::OpenGLRenderer* renderer) override;
         void EndFrame() override {}
         void Shutdown() override;
 

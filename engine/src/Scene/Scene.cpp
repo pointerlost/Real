@@ -37,13 +37,13 @@ namespace Real {
     }
 
     template<>
-    void Scene::OnComponentAdded<RigidBodyComponent>(Entity& entity, RigidBodyComponent& component) {
-        m_Events.OnPhysicsBodyAdded.Emit(entity, component);
+    void Scene::OnComponentAdded<RigidbodyComponent>(Entity& entity, RigidbodyComponent& component) {
+        m_Events.OnPhysicsBodyAdded.Emit(entity.GetHandle(), component);
     }
 
     template<>
     void Scene::OnComponentAdded<ColliderComponent>(Entity& entity, ColliderComponent& component) {
-        m_Events.OnColliderAdded.Emit(entity, component);
+        m_Events.OnColliderAdded.Emit(entity.GetHandle(), component);
     }
 
     template<>
@@ -59,7 +59,7 @@ namespace Real {
         HandleModelAssigned(entity, component.m_Model);
 
         // Notify systems
-        m_Events.OnModelAssigned.Emit(entity, component);
+        m_Events.OnModelAssigned.Emit(entity.GetHandle(), component);
     }
 
     template<>
@@ -74,7 +74,7 @@ namespace Real {
     void Scene::OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component) {
     }
 
-    void Scene::Update(const opengl::Renderer* renderer) {
+    void Scene::Update(const opengl::OpenGLRenderer* renderer) {
         // Upload GPU data
         renderer->GetRenderContext()->CollectRenderables();
     }

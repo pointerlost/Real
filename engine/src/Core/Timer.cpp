@@ -6,19 +6,17 @@
 
 namespace Real {
 
-    Timer::Timer() {
-    }
-
-    void Timer::Start() {
+    void RealTimeTimer::Start() {
         m_Running = true;
+        m_LastTime = Clock::now();
     }
 
-    void Timer::Update() {
+    void RealTimeTimer::Update() {
         if (!m_Running) return;
 
         const TimePoint now = Clock::now();
 
-        std::chrono::duration<f64> delta = now - m_LastTime;
+        const std::chrono::duration<f64> delta = now - m_LastTime;
         m_DeltaTime = delta.count();
 
         if (m_DeltaTime < 0.0)
@@ -29,19 +27,19 @@ namespace Real {
         m_LastTime = now;
     }
 
-    void Timer::Stop() {
+    void RealTimeTimer::Stop() {
         m_Running = false;
     }
 
-    f64 Timer::GetDelta() const {
+    f64 RealTimeTimer::GetDelta() const {
         return m_DeltaTime;
     }
 
-    f64 Timer::GetElapsed() const {
+    f64 RealTimeTimer::GetElapsed() const {
         return m_ElapsedTime;
     }
 
-    int Timer::GetFPS() const {
-        return static_cast<int>(1.0 / m_DeltaTime);
+    int RealTimeTimer::GetFPS() const {
+        return m_DeltaTime > 0.0 ? static_cast<int>(1.0 / m_DeltaTime) : 0;
     }
 }

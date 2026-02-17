@@ -2,11 +2,17 @@
 // Created by pointerlost on 10/24/25.
 //
 #pragma once
-#include "Core/ISystemManager.h"
-
-namespace Real { class IScene; }
+#include "Core/ISystem.h"
+#include "Core/Utils.h"
 
 namespace Real {
+    namespace event {
+        class SceneEvents;
+    }
+
+    class Scene; }
+
+namespace Real::core {
 
     class SystemManager final {
     public:
@@ -18,11 +24,11 @@ namespace Real {
         void AddSystem(Scope<ISystem> system);
 
         void Init();
-        void Update(IScene* scene, f32 dt);
+        void Update(entt::registry& registry, f32 dt);
         void Shutdown();
 
-        void OnSceneAttach(IScene* scene);
-        void OnSceneDetach(IScene* scene);
+        void OnSceneAttach(entt::registry& registry, event::SceneEvents& events);
+        void OnSceneDetach(entt::registry& registry, event::SceneEvents& events);
 
     private:
         Vector<Scope<ISystem>> m_Systems;

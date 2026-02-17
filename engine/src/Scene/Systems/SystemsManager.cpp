@@ -1,22 +1,24 @@
 //
 // Created by pointerlost on 10/24/25.
 //
-#include "Scene/Systems/Systems.h"
+#include "Scene/Systems/SystemsManager.h"
 #include "Scene/ISceneListener.h"
 #include <cassert>
 
-namespace Real {
+#include "Event/SceneEvents.h"
 
-    void SystemManager::OnSceneAttach(IScene *scene) {
+namespace Real::core {
+
+    void SystemManager::OnSceneAttach(entt::registry& registry, event::SceneEvents& events) {
         for (auto& s : m_Systems)
             if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
-                listener->OnSceneAttach(scene);
+                listener->OnSceneAttach(registry, events);
     }
 
-    void SystemManager::OnSceneDetach(IScene *scene) {
+    void SystemManager::OnSceneDetach(entt::registry& registry, event::SceneEvents& events) {
         for (auto& s : m_Systems)
             if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
-                listener->OnSceneDetach(scene);
+                listener->OnSceneDetach(registry, events);
     }
 
     void SystemManager::Init() {
@@ -26,10 +28,10 @@ namespace Real {
         }
     }
 
-    void SystemManager::Update(IScene *scene, f32 dt) {
+    void SystemManager::Update(entt::registry& registry, f32 dt) {
         for (const auto& ss : m_Systems) {
             // Update sub-systems
-            ss->Update(scene, dt);
+            ss->Update(registry, dt);
         }
     }
 

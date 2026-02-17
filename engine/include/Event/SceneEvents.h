@@ -3,23 +3,26 @@
 //
 #pragma once
 #include "Event.h"
-#include "Physics/PhysicsTypes.h"
+#include <entt/entt.hpp>
 
 namespace Real {
-    struct RigidBodyComponent;
+    namespace physics {
+        enum class ColliderChangeType;
+    }
+
+    struct RigidbodyComponent;
     struct ColliderComponent;
     struct ModelComponent;
-    class Entity;
 }
 
 namespace Real::event {
 
     class SceneEvents {
     public:
-        Event<Entity&, ModelComponent&> OnModelAssigned;
-        Event<Entity&, ColliderComponent&> OnColliderAdded;
-        Event<Entity&, physics::ColliderChangeType> OnColliderChanged;
-        Event<Entity&, RigidBodyComponent&> OnPhysicsBodyAdded;
-        Event<Entity&, RigidBodyComponent&> OnPhysicsBodyChanged;
+        Event<entt::entity&, ModelComponent&> OnModelAssigned;
+        Event<entt::entity&, ColliderComponent&> OnColliderAdded;
+        Event<entt::entity&, physics::ColliderChangeType> OnColliderChanged;
+        Event<entt::entity&, RigidbodyComponent&> OnPhysicsBodyAdded;
+        Event<entt::entity&, RigidbodyComponent&> OnPhysicsBodyChanged;
     };
 }

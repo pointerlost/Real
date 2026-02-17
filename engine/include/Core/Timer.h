@@ -3,20 +3,18 @@
 //
 #pragma once
 #include <chrono>
-#include "Common/RealTypes.h"
+#include "ITimer.h"
 
 namespace Real {
 
-    class Timer {
+    class RealTimeTimer final : core::ITimer {
     public:
-        Timer();
+        void Start() override;
+        void Update() override;
+        void Stop() override;
 
-        void Start();
-        void Update();
-        void Stop();
-
-        [[nodiscard]] f64 GetDelta() const;
-        [[nodiscard]] f64 GetElapsed() const;
+        [[nodiscard]] f64 GetDelta() const override;
+        [[nodiscard]] f64 GetElapsed() const override;
         [[nodiscard]] int GetFPS() const;
 
     private:

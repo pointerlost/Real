@@ -77,7 +77,7 @@ namespace Real {
 
     private:
         void LoadDefaultTextures();
-        String PreprocessorForShaders(const String& filePath);
+        String LoadShadersWithPreprocessor(const String& filePath);
         String GenerateUniqueMaterialName(const String& desiredName);
         String NormalizeMaterialName(String name);
     };

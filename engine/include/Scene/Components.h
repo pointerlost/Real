@@ -57,7 +57,7 @@ namespace Real {
     };
 
     // This component is only for behavior. It's optional and not necessary for PhysX
-    struct RigidBodyComponent {
+    struct RigidbodyComponent {
         physics::BodyType type = physics::BodyType::Static;
         f32 mass = 1.0f;
 

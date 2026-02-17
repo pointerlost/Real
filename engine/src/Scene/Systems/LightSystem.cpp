@@ -10,8 +10,8 @@ namespace Real::ecs {
     void LightSystem::Init() {
     }
 
-    void LightSystem::Update(Scene *scene, f32 deltaTime) {
-        auto view = scene->GetRegistry().view<LightComponent, TransformComponent>();
+    void LightSystem::Update(entt::registry& registry, f32 deltaTime) {
+        auto view = registry.view<LightComponent, TransformComponent>();
 
         for (const auto entity : view) {
             auto& light     = view.get<LightComponent>(entity);

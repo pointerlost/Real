@@ -26,7 +26,7 @@ namespace Real::UI {
     void InspectorPanel::BeginFrame() {
     }
 
-    void InspectorPanel::Render(Scene* scene, opengl::Renderer* renderer) {
+    void InspectorPanel::Render(Scene* scene, opengl::OpenGLRenderer* renderer) {
         ImGui::SetNextWindowSize(ImVec2(m_SizeX, m_SizeY));
         ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH - m_SizeX, 25), ImGuiCond_Always);
         ImGui::Begin("Hierarchy", &m_Open, ImGuiWindowFlags_NoResize);
@@ -57,8 +57,8 @@ namespace Real::UI {
         if (entity->HasComponent<ColliderComponent>()) {
             DrawComponent(*entity, &entity->GetComponent<ColliderComponent>(), scene);
         }
-        if (entity->HasComponent<RigidBodyComponent>()) {
-            DrawComponent(*entity, &entity->GetComponent<RigidBodyComponent>(), scene);
+        if (entity->HasComponent<RigidbodyComponent>()) {
+            DrawComponent(*entity, &entity->GetComponent<RigidbodyComponent>(), scene);
         }
         if (entity->HasComponent<LightComponent>()) {
             DrawComponent(&entity->GetComponent<LightComponent>(), &entity->GetComponent<TransformComponent>(), scene);
@@ -376,8 +376,8 @@ namespace Real::UI {
         );
     }
 
-    void InspectorPanel::DrawComponent(Entity &entity, RigidBodyComponent *comp, Scene *scene) {
-        if (entity.HasComponent<RigidBodyComponent>()) {
+    void InspectorPanel::DrawComponent(Entity &entity, RigidbodyComponent *comp, Scene *scene) {
+        if (entity.HasComponent<RigidbodyComponent>()) {
             if (ImGui::CollapsingHeader("Physics Body", ImGuiTreeNodeFlags_DefaultOpen)) {
 
                 const char* bodyTypes[] = { "Static", "Dynamic", "Kinematic" };

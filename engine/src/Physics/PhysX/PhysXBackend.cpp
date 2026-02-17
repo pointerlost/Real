@@ -158,8 +158,7 @@ namespace Real::physics {
             default: ;
         }
 
-        if (sd.isTrigger)
-        {
+        if (sd.isTrigger) {
             // Disable physical collision response
             shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 

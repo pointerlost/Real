@@ -13,7 +13,7 @@ namespace Real {
     struct Model;
 
     namespace opengl {
-        class Renderer;
+        class OpenGLRenderer;
     }
 }
 
@@ -22,7 +22,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update(const opengl::Renderer* renderer);
+        void Update(const opengl::OpenGLRenderer* renderer);
 
         Entity& CreateEntity(const String& tag = String());
         void DestroyEntity(entt::entity entity);

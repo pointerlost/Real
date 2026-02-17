@@ -19,6 +19,7 @@ namespace Real {
 
 namespace Real {
 
+    // CPU-only data
     struct GPUData {
         Vector<TransformSSBO> transforms;
         Vector<MaterialSSBO> materials;

@@ -12,8 +12,8 @@ namespace Real::ecs {
     void CameraSystem::Init() {
     }
 
-    void CameraSystem::Update(Scene *scene, f32 deltaTime) {
-        auto view = scene->GetRegistry().view<CameraComponent, TransformComponent>();
+    void CameraSystem::Update(entt::registry& registry, f32 deltaTime) {
+        auto view = registry.view<CameraComponent, TransformComponent>();
 
         for (const auto entity : view) {
             auto& camera    = view.get<CameraComponent>(entity);

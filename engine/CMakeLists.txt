@@ -24,8 +24,6 @@ find_package(zstd CONFIG REQUIRED)
 add_executable(ENGINE_TARGET
     main/main.cpp
     src/Core/file_manager.cpp
-    include/Core/Window.h
-    src/Core/Window.cpp
     include/Core/Logger.h
     src/Core/Engine.cpp
     include/Core/Engine.h
@@ -87,10 +85,10 @@ add_executable(ENGINE_TARGET
     vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
-    include/Scene/Systems/Systems.h
-    src/Scene/Systems/Systems.cpp
-    include/API/OpenGL/Types/FrameBuffer.h
-    src/API/OpenGL/Types/FrameBuffer.cpp
+    include/Scene/Systems/SystemsManager.h
+    src/Scene/Systems/SystemsManager.cpp
+    include/Platform/opengl/FrameBuffer.h
+    src/Platform/opengl/FrameBuffer.cpp
     include/Util/Util.h
     src/Util/Util.cpp
     include/Tools/ImageTools.h
@@ -134,7 +132,7 @@ add_executable(ENGINE_TARGET
     include/Scene/Systems/PhysicsSystem.h
     include/Physics/PhysXContext.h
     src/Physics/PhysXContext.cpp
-        include/Physics/Physx/PhysXTypes.h
+    include/Physics/Physx/PhysXTypes.h
     src/Scene/Systems/PhysicsSystem.cpp
     include/Scene/Systems/MeshRendererSystem.h
     include/Scene/Systems/CameraSystem.h
@@ -167,8 +165,19 @@ add_executable(ENGINE_TARGET
     include/Physics/Physx/PhysXBackend.h
     src/Physics/PhysX/PhysXBackend.cpp
     include/Physics/PhysicsDescriptors.h
-        include/Scene/ISceneListener.h
-        include/Scene/Systems/ISystem.h
+    include/Scene/ISceneListener.h
+    include/Core/ISystem.h
+    include/Core/Window/IWindow.h
+    include/Core/Engine/EngineCore.h
+    src/Core/Engine/EngineCore.cpp
+    include/Platform/opengl/OpenGLRenderer.h
+    src/Platform/opengl/OpenGLRenderer.cpp
+    include/Core/IRenderer.h
+    include/Core/Engine/EngineBootstrap.h
+    include/Core/Window/GLFWwindow.h
+    src/Core/Window/GLFWwindow.cpp
+    include/Core/ITimer.h
+        include/Core/IGPUUploader.h
 )
 
 set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)

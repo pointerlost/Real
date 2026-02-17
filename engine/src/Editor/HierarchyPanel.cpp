@@ -25,7 +25,7 @@ namespace Real::UI {
     void HierarchyPanel::BeginFrame() {
     }
 
-    void HierarchyPanel::Render(Scene* scene, opengl::Renderer* renderer) {
+    void HierarchyPanel::Render(Scene* scene, opengl::OpenGLRenderer* renderer) {
         if (Input::IsKeyPressed(REAL_KEY_ENTER)) m_OpenRClickWindow = !m_OpenRClickWindow;
         ImGui::SetNextWindowSize(ImVec2(m_SizeX, m_SizeY));
         ImGui::SetNextWindowPos(ImVec2(0, 25), ImGuiCond_Always);

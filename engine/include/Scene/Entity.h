@@ -93,6 +93,9 @@ namespace Real {
             return m_Scene->GetRegistry().all_of<Args...>(m_Handle);
         }
 
+        [[nodiscard]] Scene& GetScene() const { return *m_Scene; }
+        [[nodiscard]] entt::entity& GetHandle() { return m_Handle; }
+
     private:
         entt::entity m_Handle;
         Scene* m_Scene;

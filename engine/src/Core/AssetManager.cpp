@@ -40,8 +40,8 @@ namespace Real {
     void AssetManager::LoadShader(const String &vertexPath, const String &fragmentPath,
                                   const String& name)
     {
-        const auto vertPath = PreprocessorForShaders(vertexPath);
-        const auto fragPath = PreprocessorForShaders(fragmentPath);
+        const auto vertPath = LoadShadersWithPreprocessor(vertexPath);
+        const auto fragPath = LoadShadersWithPreprocessor(fragmentPath);
         m_Shaders[name] = Shader{vertPath, fragPath, name};
 
         // Without preprocessors
@@ -50,7 +50,7 @@ namespace Real {
         // m_Shaders[name] = Shader{vert, frag, name};
     }
 
-    String AssetManager::PreprocessorForShaders(const String &filePath) {
+    String AssetManager::LoadShadersWithPreprocessor(const String &filePath) {
         std::unordered_set<String> includedFiles;
         String output;
         bool versionWritten = false;

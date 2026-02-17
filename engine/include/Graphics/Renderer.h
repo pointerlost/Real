@@ -12,9 +12,9 @@ namespace Real {
 
 namespace Real::opengl {
 
-    class Renderer {
+    class OpenGLRenderer {
     public:
-        explicit Renderer(Scene* scene);
+        explicit OpenGLRenderer(Scene* scene);
         void Render(Entity* camera);
 
         [[nodiscard]] RenderContext* GetRenderContext() const { return m_SceneRenderContext.get(); }

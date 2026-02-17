@@ -10,7 +10,6 @@
 #include "Core/file_manager.h"
 #include "Core/Services.h"
 #include "Core/Timer.h"
-#include "Core/Window.h"
 #include "Editor/EditorState.h"
 #include "Editor/InspectorPanel.h"
 #include "Editor/HierarchyPanel.h"
@@ -61,7 +60,7 @@ namespace Real::UI {
         UpdateGizmoLogic();
     }
 
-    void EditorPanel::Render(Scene* scene, opengl::Renderer* renderer) {
+    void EditorPanel::Render(Scene* scene, opengl::OpenGLRenderer* renderer) {
         // Scene window props
         // Hierarchy,Inspector width = SCREEN_WIDTH / 5 + 31.0
         // MenuBarPanel height = 25.0
@@ -300,13 +299,13 @@ namespace Real::UI {
         auto& camera = editorState->editorCamera->GetComponent<CameraComponent>().m_Camera;
 
         const bool hasCollider = entity.HasComponent<ColliderComponent>();
-        const bool hasPhysics  = entity.HasComponent<RigidBodyComponent>();
+        const bool hasPhysics  = entity.HasComponent<RigidbodyComponent>();
 
         // Decide whether ENTITY transform is editable
         bool canEditEntityTransform = true;
 
         if (hasPhysics) {
-            const auto& pb = entity.GetComponentUnchecked<RigidBodyComponent>();
+            const auto& pb = entity.GetComponentUnchecked<RigidbodyComponent>();
             if (pb.type == physics::BodyType::Dynamic) {
                 canEditEntityTransform = false;
             }

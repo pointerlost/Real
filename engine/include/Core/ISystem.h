@@ -3,17 +3,14 @@
 //
 #pragma once
 #include "Common/RealTypes.h"
-
-namespace Real {
-    class Scene;
-}
+#include "entt/entt.hpp"
 
 namespace Real {
 
     struct ISystem {
         virtual ~ISystem() = default;
         virtual void Init() = 0;
-        virtual void Update(Scene*, f32) = 0;
+        virtual void Update(entt::registry& /*registry(entt)*/, f32 /*delta time*/) = 0;
         virtual void Shutdown() = 0;
     };
 }

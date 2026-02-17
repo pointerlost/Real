@@ -2,6 +2,9 @@
 // Created by pointerlost on 10/3/25.
 //
 #include "Core/Engine.h"
+
+#include <GLFW/glfw3.h>
+
 #include "Core/Callback.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
@@ -101,15 +104,14 @@ namespace Real {
         // TODO: Requires f64 buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
-    void Engine::EndPhase(GLFWwindow* window) {
-        glfwSwapBuffers(window);
+    void Engine::EndPhase() {
         m_EditorPanel->EndFrame();
         m_DebugRenderer->EndFrame();
     }
 
     void Engine::InitWindow() {
-        m_Window = CreateScope<Graphics::Window>(SCREEN_WIDTH, SCREEN_HEIGHT, "Human consciousness");
-        m_Window->Init();
+        m_Window = CreateScope<platform::glfw::GLFWWindow>();
+        m_Window->Init("Human consciousness", SCREEN_WIDTH, SCREEN_HEIGHT);
         Info("Window initialized successfully!");
     }
 
@@ -126,7 +128,7 @@ namespace Real {
     }
 
     void Engine::InitSystems() {
-        m_Systems = CreateScope<Systems>();
+        m_Systems = CreateScope<SystemManager>();
 
         m_Systems->AddSystem(CreateScope<ecs::CameraSystem>());
 
@@ -149,7 +151,7 @@ namespace Real {
     }
 
     void Engine::InitEditorState() {
-        m_EditorTimer = CreateScope<Timer>();
+        m_EditorTimer = CreateScope<RealTimeTimer>();
         m_EditorTimer->Start();
         m_EditorState = CreateScope<EditorState>();
         Info("Editor State initialized successfully!");
@@ -161,7 +163,7 @@ namespace Real {
     }
 
     void Engine::InitEditorRenderer() {
-        m_Renderer = CreateScope<opengl::Renderer>(m_Scene.get());
+        m_Renderer = CreateScope<opengl::OpenGLRenderer>(m_Scene.get());
         Info("Editor Renderer initialized successfully!");
     }
 
@@ -263,7 +265,7 @@ namespace Real {
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
         cube3.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
-        cube3.AddComponent<RigidBodyComponent>().type = physics::BodyType::Static;
+        cube3.AddComponent<RigidbodyComponent>().type = physics::BodyType::Static;
 
         auto& cube4 = m_Scene->CreateEntity("Roof");
         cube4.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 13.5, 0.0));
@@ -279,7 +281,7 @@ namespace Real {
             Services::GetAssetManager()->CreateMaterialInstance("Marble009")
         );
         cube5.AddComponent<ColliderComponent>().shape = physics::ColliderShape::Box;
-        cube5.AddComponent<RigidBodyComponent>().type = physics::BodyType::Static;
+        cube5.AddComponent<RigidbodyComponent>().type = physics::BodyType::Static;
 
         auto& fordCar = m_Scene->CreateEntity("FordCar");
         fordCar.GetComponentForModification<TransformComponent>()->transform.SetPosition(math::Vec3(0.0, 10.0, 0.0));

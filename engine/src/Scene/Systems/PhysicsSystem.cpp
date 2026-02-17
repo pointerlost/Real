@@ -7,7 +7,6 @@
 #include "Graphics/Debug/DebugRenderer.h"
 #include "Physics/PhysicsDescriptors.h"
 #include "Scene/Components.h"
-#include "Scene/Entity.h"
 #include "Scene/Scene.h"
 
 namespace Real::ecs {
@@ -25,21 +24,22 @@ namespace Real::ecs {
         m_Backend->Init(desc);
     }
 
-    void PhysicsSystem::Update(Scene *scene, f32 deltaTime) {
+    void PhysicsSystem::Update(entt::registry& registry, f32 deltaTime) {
         if (deltaTime <= 0.0f)
             return;
 
         // Advance physics simulation
         m_Backend->Step(deltaTime);
 
-        auto& entities = scene->GetEntities();
+        auto view = registry.view<TransformComponent, RigidbodyComponent>();
 
         // Synchronize physics state with ECS
-        for (auto& entity : std::views::values(entities)) {
+        for (auto entity : view) {
             SyncTransform(entity);
             SyncCollider(entity);
             SubmitColliderDebug(entity);
         }
+
     }
 
     void PhysicsSystem::Shutdown() {
@@ -47,13 +47,13 @@ namespace Real::ecs {
         m_Backend->Shutdown();
     }
 
-    void PhysicsSystem::OnColliderAdded(const Entity &e) {
+    void PhysicsSystem::OnColliderAdded(const entt::entity &e) {
         // Collider requires rigid body
-        if (!e.HasComponent<RigidBodyComponent>())
+        if (!m_Registry->any_of<RigidbodyComponent>(e))
             return;
 
-        auto& rb = e.GetComponentUnchecked<RigidBodyComponent>();
-        auto& cc = e.GetComponentUnchecked<ColliderComponent>();
+        auto& rb = m_Registry->get<RigidbodyComponent>(e);
+        auto& cc = m_Registry->get<ColliderComponent>(e);
 
         physics::ShapeDesc sd;
         sd.shape = cc.shape;
@@ -66,25 +66,25 @@ namespace Real::ecs {
             m_Backend->AttachShape(rb.handle, cc.handle);
     }
 
-    void PhysicsSystem::OnColliderRemoved(Entity &e) {
-        if (!e.HasComponent<ColliderComponent>())
+    void PhysicsSystem::OnColliderRemoved(entt::entity &e) {
+        if (!m_Registry->any_of<ColliderComponent>(e))
             return;
 
-        auto& col = e.GetComponentUnchecked<ColliderComponent>();
+        auto& cc = m_Registry->get<ColliderComponent>(e);
 
-        if (col.handle != physics::InvalidShapeHandle) {
-            m_Backend->DestroyShape(col.handle);
-            col.handle = physics::InvalidShapeHandle;
+        if (cc.handle != physics::InvalidShapeHandle) {
+            m_Backend->DestroyShape(cc.handle);
+            cc.handle = physics::InvalidShapeHandle;
         }
     }
 
-    void PhysicsSystem::OnColliderChanged(const Entity &e) {
+    void PhysicsSystem::OnColliderChanged(const entt::entity &e) {
         // Require both body and collider
-        if (!e.HasComponent<RigidBodyComponent>() || !e.HasComponent<ColliderComponent>())
+        if (!m_Registry->any_of<RigidbodyComponent>(e) || !m_Registry->any_of<ColliderComponent>(e))
             return;
 
-        auto& rb = e.GetComponentUnchecked<RigidBodyComponent>();
-        auto& cc = e.GetComponentUnchecked<ColliderComponent>();
+        auto& rb = m_Registry->get<RigidbodyComponent>(e);
+        auto& cc = m_Registry->get<ColliderComponent>(e);
 
         if (rb.handle == physics::InvalidRigidBodyHandle)
             return;
@@ -95,9 +95,12 @@ namespace Real::ecs {
         }
     }
 
-    void PhysicsSystem::OnPhysicsBodyAdded(const Entity &e) {
-        auto& rb = e.GetComponentUnchecked<RigidBodyComponent>();
-        auto& tc = e.GetComponentUnchecked<TransformComponent>();
+    void PhysicsSystem::OnPhysicsBodyAdded(const entt::entity &e) {
+        if (!m_Registry->any_of<RigidbodyComponent>(e))
+            return;
+
+        auto& rb = m_Registry->get<RigidbodyComponent>(e);
+        auto& tc = m_Registry->get<TransformComponent>(e);
 
         physics::BodyDesc bd;
         bd.type = rb.type;
@@ -107,8 +110,8 @@ namespace Real::ecs {
         rb.handle = m_Backend->CreateBody(bd);
 
         // If collider exists, create and attach shape
-        if (e.HasComponent<ColliderComponent>()) {
-            auto& cc = e.GetComponentUnchecked<ColliderComponent>();
+        if (!m_Registry->any_of<ColliderComponent>(e)) {
+            auto& cc = m_Registry->get<ColliderComponent>(e);
 
             physics::ShapeDesc sd;
             sd.shape = cc.shape;
@@ -120,8 +123,11 @@ namespace Real::ecs {
         }
     }
 
-    void PhysicsSystem::OnPhysicsBodyChanged(const Entity &e) {
-        auto& rb = e.GetComponentUnchecked<RigidBodyComponent>();
+    void PhysicsSystem::OnPhysicsBodyChanged(const entt::entity &e) {
+        if (!m_Registry->any_of<RigidbodyComponent>(e))
+            return;
+
+        auto& rb = m_Registry->get<RigidbodyComponent>(e);
 
         // Destroy old body if exists
         if (rb.handle != physics::InvalidRigidBodyHandle)
@@ -131,12 +137,13 @@ namespace Real::ecs {
         OnPhysicsBodyAdded(e);
     }
 
-    void PhysicsSystem::SubmitColliderDebug(const Entity& e) {
-        if (!e.HasComponent<ColliderComponent>())
+    // TODO: Remove this function (BROKEN SRP, GLOBAL STATE)
+    void PhysicsSystem::SubmitColliderDebug(const entt::entity& e) {
+        if (!m_Registry->any_of<ColliderComponent>(e))
             return;
 
-        const auto& cc = e.GetComponentUnchecked<ColliderComponent>();
-        const auto& tc = e.GetComponentUnchecked<TransformComponent>();
+        auto& cc = m_Registry->get<ColliderComponent>(e);
+        auto& tc = m_Registry->get<TransformComponent>(e);
 
         auto* debugRenderer = Services::GetDebugRenderer();
         const auto& modelMatrix = tc.transform.GetModelMatrix();
@@ -151,29 +158,29 @@ namespace Real::ecs {
             debugRenderer->DrawSphere(modelMatrix, math::Vec4(0.0, 1.0, 0.0, 1.0));
         }
 
+        // TODO:
         // if (cc.debug.show) {
         // }
     }
 
-    void PhysicsSystem::OnSceneAttach(Scene *scene) {
+    void PhysicsSystem::OnSceneAttach(entt::registry& registry, event::SceneEvents& events) {
+        m_Registry = &registry;
         // Register physics-related ECS event callbacks
-        RegisterEventCallbacks(scene);
+        RegisterEventCallbacks(events);
     }
 
-    void PhysicsSystem::OnSceneDetach(Scene *scene) {
+    void PhysicsSystem::OnSceneDetach(entt::registry& registry, event::SceneEvents& events) {
     }
 
-    void PhysicsSystem::RegisterEventCallbacks(Scene *scene) {
-        auto& events = scene->GetEvents();
-
+    void PhysicsSystem::RegisterEventCallbacks(event::SceneEvents& events) {
         events.OnColliderAdded.Subscribe(
-            [this](const Entity e, ColliderComponent&) {
+            [this](const entt::entity& e, ColliderComponent&) {
                 OnColliderAdded(e);
             }
         );
 
         events.OnColliderChanged.Subscribe(
-            [this](const Entity& e, physics::ColliderChangeType type) {
+            [this](const entt::entity& e, physics::ColliderChangeType type) {
                 switch (type) {
                     case physics::ColliderChangeType::Dirty:
                         // TODO: Update collider stuff
@@ -188,24 +195,24 @@ namespace Real::ecs {
         );
 
         events.OnPhysicsBodyAdded.Subscribe(
-            [this](const Entity e, RigidBodyComponent&) {
+            [this](const entt::entity& e, RigidbodyComponent&) {
                 OnPhysicsBodyAdded(e);
             }
         );
 
         events.OnPhysicsBodyChanged.Subscribe(
-            [this](const Entity e, RigidBodyComponent&) {
+            [this](const entt::entity& e, RigidbodyComponent&) {
                 OnPhysicsBodyChanged(e);
             }
         );
     }
 
-    void PhysicsSystem::RebuildCollider(const Entity &e) {
-        if (!e.HasComponent<RigidBodyComponent>())
+    void PhysicsSystem::RebuildCollider(const entt::entity& e) {
+        if (!m_Registry->any_of<RigidbodyComponent>(e))
             return;
 
-        auto& rb = e.GetComponentUnchecked<RigidBodyComponent>();
-        auto& cc = e.GetComponentUnchecked<ColliderComponent>();
+        auto& rb = m_Registry->get<RigidbodyComponent>(e);
+        auto& cc = m_Registry->get<ColliderComponent>(e);
 
         if (cc.handle != physics::InvalidShapeHandle) {
             m_Backend->DetachShape(rb.handle, cc.handle);
@@ -220,12 +227,12 @@ namespace Real::ecs {
         m_Backend->AttachShape(rb.handle, cc.handle);
     }
 
-    void PhysicsSystem::SyncTransform(Entity &entity) {
-        if (!entity.HasComponent<RigidBodyComponent>())
+    void PhysicsSystem::SyncTransform(const entt::entity& entity) {
+        if (!m_Registry->any_of<RigidbodyComponent>(entity))
             return;
 
-        auto& rb = entity.GetComponentUnchecked<RigidBodyComponent>();
-        auto& tc = entity.GetComponentUnchecked<TransformComponent>();
+        auto& rb = m_Registry->get<RigidbodyComponent>(entity);
+        auto& tc = m_Registry->get<TransformComponent>(entity);
 
         if (rb.handle == physics::InvalidRigidBodyHandle)
             return;
@@ -238,12 +245,12 @@ namespace Real::ecs {
             m_Backend->SetBodyTransform(rb.handle, tc.transform);
     }
 
-    void PhysicsSystem::SyncCollider(Entity &entity) {
-        if (!entity.HasComponent<RigidBodyComponent>() || !entity.HasComponent<ColliderComponent>())
+    void PhysicsSystem::SyncCollider(entt::entity& entity) {
+        if (!m_Registry->any_of<RigidbodyComponent>(entity) || !m_Registry->any_of<ColliderComponent>(entity))
             return;
 
-        auto& rb = entity.GetComponentUnchecked<RigidBodyComponent>();
-        auto& cc = entity.GetComponentUnchecked<ColliderComponent>();
+        auto& rb = m_Registry->get<RigidbodyComponent>(entity);
+        auto& cc = m_Registry->get<ColliderComponent>(entity);
 
         if (rb.handle == physics::InvalidRigidBodyHandle || cc.handle == physics::InvalidShapeHandle)
             return;

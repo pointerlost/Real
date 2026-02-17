@@ -6,7 +6,7 @@
 namespace {
     Real::AssetManager *s_AssetManager;
     Real::MeshData *s_MeshManager;
-    Real::Timer *s_EditorTimer;
+    Real::RealTimeTimer *s_EditorTimer;
     Real::EditorState* s_EditorState;
     Real::AssetImporter* s_AssetImporter;
     Real::graphics::debug::DebugRenderer* s_DebugRenderer;
@@ -21,7 +21,7 @@ namespace Real::Services {
         s_MeshManager = manager;
     }
 
-    void SetEditorTimer(Timer* timer) {
+    void SetEditorTimer(RealTimeTimer* timer) {
         s_EditorTimer = timer;
     }
 
@@ -47,7 +47,7 @@ namespace Real::Services {
         return s_MeshManager;
     }
 
-    Timer* GetEditorTimer() {
+    RealTimeTimer* GetEditorTimer() {
         return s_EditorTimer;
     }
 

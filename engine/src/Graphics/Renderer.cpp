@@ -11,12 +11,12 @@
 
 namespace Real::opengl {
 
-    Renderer::Renderer(Scene* scene) : m_Scene(scene),
+    OpenGLRenderer::OpenGLRenderer(Scene* scene) : m_Scene(scene),
         m_SceneRenderContext(CreateScope<RenderContext>(m_Scene))
     {
     }
 
-    void Renderer::Render(Entity* camera) {
+    void OpenGLRenderer::Render(Entity* camera) {
         const auto& meshManager  = Services::GetMeshManager();
         const auto& assetManager = Services::GetAssetManager();
         const auto shader = assetManager->GetShader("main");
@@ -40,7 +40,7 @@ namespace Real::opengl {
         meshManager->UnbindCurrVAO();
     }
 
-    void Renderer::BindGPUBuffers() const {
+    void OpenGLRenderer::BindGPUBuffers() const {
         m_SceneRenderContext->BindGPUBuffers();
     }
 }

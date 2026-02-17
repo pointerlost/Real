@@ -2,7 +2,7 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include "Core/Window.h"
+#include "Core/Window/GLFWwindow.h"
 
 namespace Real {
 

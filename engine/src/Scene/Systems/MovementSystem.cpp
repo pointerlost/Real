@@ -11,14 +11,12 @@ namespace Real::ecs {
     void MovementSystem::Init() {
     }
 
-    void MovementSystem::Update(Scene *scene, f32 deltaTime) {
+    void MovementSystem::Update(entt::registry& registry, f32 deltaTime) {
         /*
          * MovementSystem JOB:
             - Non-physics movement (editor camera, debug objects)
         */
-        const auto view = scene->GetRegistry().view<
-            TransformComponent, MovementComponent>(entt::exclude<RigidBodyComponent>
-        );
+        const auto view = registry.view<TransformComponent, MovementComponent>(entt::exclude<RigidbodyComponent>);
 
         for (const auto entity : view) {
             auto& tc = view.get<TransformComponent>(entity);

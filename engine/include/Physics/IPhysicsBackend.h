@@ -26,24 +26,22 @@ namespace Real::physics {
     class IPhysicsBackend {
     public:
         virtual ~IPhysicsBackend() = default;
-        virtual void Init(const PhysicsWorldDesc& desc) = 0;
+        virtual void Init(const PhysicsWorldDesc&) = 0;
         virtual void Shutdown() = 0;
-        virtual void Step(float dt) = 0;
+        virtual void Step(float) = 0;
 
-        virtual RigidBodyHandle CreateBody(const BodyDesc& bd) = 0;
-        virtual void DestroyBody(RigidBodyHandle handle) = 0;
+        virtual RigidBodyHandle CreateBody(const BodyDesc&) = 0;
+        virtual void DestroyBody(RigidBodyHandle) = 0;
 
-        virtual PhysicsShapeHandle CreateShape(const ShapeDesc& sd) = 0;
-        virtual void DestroyShape(PhysicsShapeHandle handle) = 0;
+        virtual PhysicsShapeHandle CreateShape(const ShapeDesc&) = 0;
+        virtual void DestroyShape(PhysicsShapeHandle) = 0;
 
-        virtual void AttachShape(RigidBodyHandle rb, PhysicsShapeHandle ps) = 0;
-        virtual void DetachShape(RigidBodyHandle rb, PhysicsShapeHandle ps) = 0;
-        virtual void SetShapeLocalTransform(PhysicsShapeHandle handle,
-            const math::Vec3& position, const math::Quat& rotation
-        ) = 0;
-        virtual void SetShapeEnabled(PhysicsShapeHandle handle, bool enabled) = 0;
+        virtual void AttachShape(RigidBodyHandle, PhysicsShapeHandle) = 0;
+        virtual void DetachShape(RigidBodyHandle, PhysicsShapeHandle) = 0;
+        virtual void SetShapeLocalTransform(PhysicsShapeHandle, const math::Vec3&, const math::Quat&) = 0;
+        virtual void SetShapeEnabled(PhysicsShapeHandle, bool) = 0;
 
-        virtual void SetBodyTransform(RigidBodyHandle handle, const Transform& t) = 0;
-        virtual Transform GetBodyTransform(RigidBodyHandle handle) const = 0;
+        virtual void SetBodyTransform(RigidBodyHandle, const Transform&) = 0;
+        virtual Transform GetBodyTransform(RigidBodyHandle) const = 0;
     };
 }

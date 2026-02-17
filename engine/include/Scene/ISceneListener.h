@@ -3,8 +3,8 @@
 //
 #pragma once
 
-namespace Real {
-    class Scene;
+namespace Real::event {
+    class SceneEvents;
 }
 
 namespace Real {
@@ -12,7 +12,7 @@ namespace Real {
     class ISceneListener {
     public:
         virtual ~ISceneListener() = default;
-        virtual void OnSceneAttach(Scene* scene) = 0;
-        virtual void OnSceneDetach(Scene* scene) = 0;
+        virtual void OnSceneAttach(entt::registry& /*registry*/, event::SceneEvents& /*events*/) = 0;
+        virtual void OnSceneDetach(entt::registry& /*registry*/, event::SceneEvents& /*events*/) = 0;
     };
 }

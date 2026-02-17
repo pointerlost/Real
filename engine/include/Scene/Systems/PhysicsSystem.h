@@ -2,11 +2,16 @@
 // Created by pointerlost on 1/13/26.
 //
 #pragma once
-#include "ISystem.h"
-#include "Core/Utils.h"
+#include "Core/ISystem.h"
 #include "Scene/ISceneListener.h"
+#include "Core/Utils.h"
 
 namespace Real {
+    namespace event {
+        class SceneEvents;
+    }
+
+    class Scene;
     class Entity;
 
     namespace physics {
@@ -20,30 +25,31 @@ namespace Real::ecs {
     public:
         explicit PhysicsSystem(Scope<physics::IPhysicsBackend> backend);
         void Init() override;
-        void Update(Scene *scene, f32 deltaTime) override;
+        void Update(entt::registry& registry, f32 deltaTime) override;
         void Shutdown() override;
 
-        void OnSceneAttach(Scene *scene) override;
-        void OnSceneDetach(Scene *scene) override;
+        void OnSceneAttach(entt::registry& registry, event::SceneEvents& events) override;
+        void OnSceneDetach(entt::registry& registry, event::SceneEvents& events) override;
 
     private:
-        void OnColliderAdded(const Entity& e);
-        void OnColliderRemoved(Entity& e);
-        void OnColliderChanged(const Entity& e);
-        void OnPhysicsBodyAdded(const Entity& e);
-        void OnPhysicsBodyChanged(const Entity& e);
+        void OnColliderAdded(const entt::entity& e);
+        void OnColliderRemoved(entt::entity& e);
+        void OnColliderChanged(const entt::entity& e);
+        void OnPhysicsBodyAdded(const entt::entity& e);
+        void OnPhysicsBodyChanged(const entt::entity& e);
 
-        void RebuildCollider(const Entity &e);
+        void RebuildCollider(const entt::entity &e);
 
-        void SubmitColliderDebug(const Entity& e);
+        void SubmitColliderDebug(const entt::entity& e);
 
-        void RegisterEventCallbacks(Scene* scene);
+        void RegisterEventCallbacks(event::SceneEvents& events);
 
-        void SyncTransform(Entity& entity);
-        void SyncCollider(Entity& entity);
+        void SyncTransform(const entt::entity& entity);
+        void SyncCollider(entt::entity& entity);
 
     private:
         Scope<physics::IPhysicsBackend> m_Backend;
+        entt::registry* m_Registry = nullptr;
     };
 
 }

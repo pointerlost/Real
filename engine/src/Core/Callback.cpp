@@ -2,6 +2,8 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Core/Callback.h"
+#include <glad/include/glad/glad.h>
+#include <GLFW/glfw3.h>
 #include "Core/Services.h"
 #include "Editor/EditorState.h"
 #include "Input/Input.h"

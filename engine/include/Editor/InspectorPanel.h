@@ -20,7 +20,7 @@ namespace Real::UI {
         explicit InspectorPanel();
         void BeginFrame() override;
         void Update() override {}
-        void Render(Scene* scene, opengl::Renderer* renderer) override;
+        void Render(Scene* scene, opengl::OpenGLRenderer* renderer) override;
         void EndFrame() override {}
         void Shutdown() override;
 
@@ -36,7 +36,7 @@ namespace Real::UI {
         void DrawComponent(TransformComponent* comp, Scene* scene);
         void DrawComponent(const MeshRendererComponent* comp, Scene* scene);
         void DrawComponent(Entity& entity, ColliderComponent *comp, Scene *scene);
-        void DrawComponent(Entity& entity, RigidBodyComponent *comp, Scene *scene);
+        void DrawComponent(Entity& entity, RigidbodyComponent *comp, Scene *scene);
         void DrawComponent(LightComponent* comp, TransformComponent* tc, Scene* scene);
         void DrawComponent(CameraComponent* comp, Scene* scene);
 

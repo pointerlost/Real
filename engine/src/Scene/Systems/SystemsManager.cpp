@@ -7,41 +7,41 @@
 
 namespace Real {
 
-    void Systems::OnSceneAttach(Scene *scene) {
-        for (auto& s : m_SubSystems)
+    void SystemManager::OnSceneAttach(IScene *scene) {
+        for (auto& s : m_Systems)
             if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
                 listener->OnSceneAttach(scene);
     }
 
-    void Systems::OnSceneDetach(Scene *scene) {
-        for (auto& s : m_SubSystems)
+    void SystemManager::OnSceneDetach(IScene *scene) {
+        for (auto& s : m_Systems)
             if (auto* listener = dynamic_cast<ISceneListener*>(s.get()))
                 listener->OnSceneDetach(scene);
     }
 
-    void Systems::Init() {
+    void SystemManager::Init() {
         // Init sub-systems resources
-        for (const auto& ss : m_SubSystems) {
+        for (const auto& ss : m_Systems) {
             ss->Init();
         }
     }
 
-    void Systems::Update(Scene *scene, f32 deltaTime) {
-        for (const auto& ss : m_SubSystems) {
+    void SystemManager::Update(IScene *scene, f32 dt) {
+        for (const auto& ss : m_Systems) {
             // Update sub-systems
-            ss->Update(scene, deltaTime);
+            ss->Update(scene, dt);
         }
     }
 
-    void Systems::Shutdown() {
-        for (const auto& ss : m_SubSystems) {
+    void SystemManager::Shutdown() {
+        for (const auto& ss : m_Systems) {
             ss->Shutdown();
         }
     }
 
-    void Systems::AddSystem(Scope<ISystem> system) {
+    void SystemManager::AddSystem(Scope<ISystem> system) {
         // only non-null systems
         assert(system);
-        m_SubSystems.push_back(std::move(system));
+        m_Systems.push_back(std::move(system));
     }
 }

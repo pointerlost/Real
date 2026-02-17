@@ -1,7 +1,7 @@
 //
 // Created by pointerlost on 10/29/25.
 //
-#include "API/OpenGL/Types/FrameBuffer.h"
+#include "../../../include/Platform/opengl/FrameBuffer.h"
 
 #include <utility>
 

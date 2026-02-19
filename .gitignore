@@ -1,34 +1,34 @@
-/engine/build/
-/engine/cmake-build-*/
-/engine/out/
-/engine/bin/
-/engine/lib/
+/build/
+/cmake-build-*/
+/out/
+/bin/
+/lib/
 
-/engine/vcpkg_installed/
-/engine/vcpkg/
-/engine/vcpkg-downloads/
-/engine/vcpkg-buildtrees/
+/vcpkg_installed/
+/vcpkg/
+/vcpkg-downloads/
+/vcpkg-buildtrees/
 
-/engine/CMakeCache.txt
-/engine/CMakeFiles/
-/engine/CMakeScripts/
-/engine/Makefile
-/engine/cmake_install.cmake
-/engine/install_manifest.txt
-/engine/compile_commands.json
-/engine/*.cmake
-/engine/CTestTestfile.cmake
-/engine/Testing/
+/CMakeCache.txt
+/CMakeFiles/
+/CMakeScripts/
+/Makefile
+/cmake_install.cmake
+/install_manifest.txt
+/compile_commands.json
+/*.cmake
+/CTestTestfile.cmake
+/Testing/
 
-/engine/*.o
-/engine/*.obj
-/engine/*.pch
-/engine/*.slo
-/engine/*.lo
-/engine/*.a
-/engine/*.lib
-/engine/*.la
-/engine/*.lai
+/*.o
+/*.obj
+/*.pch
+/*.slo
+/*.lo
+/*.a
+/*.lib
+/*.la
+/*.lai
 
 *.log
 *.exe
@@ -55,16 +55,16 @@ Desktop.ini
 *.bak
 *.backup
 
-/engine/vendor/**/build/
-/engine/vendor/**/CMakeCache.txt
-/engine/vendor/**/CMakeFiles/
-/engine/vendor/**/release/
-/engine/vendor/**/debug/
-/engine/vendor/**/lib/
+/vendor/**/build/
+/vendor/**/CMakeCache.txt
+/vendor/**/CMakeFiles/
+/vendor/**/release/
+/vendor/**/debug/
+/vendor/**/lib/
 
-/engine/*.gch
-/engine/**/*.gch
+/*.gch
+/**/*.gch
 
-/engine/.tmp/
-/engine/temp/
+/.tmp/
+/temp/
 

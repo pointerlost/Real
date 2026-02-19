@@ -2,25 +2,9 @@
 // Created by pointerlost on 10/3/25.
 //
 #pragma once
-#include "AssetManager.h"
-#include "Timer.h"
-#include "Utils.h"
-#include "Editor/EditorPanel.h"
-#include "Editor/EditorState.h"
-#include "Editor/InspectorPanel.h"
-#include "Editor/HierarchyPanel.h"
-#include "Graphics/MeshManager.h"
-#include "Graphics/ModelLoader.h"
-#include "Graphics/Renderer.h"
-#include "Input/CameraInput.h"
-#include "Resource/ResourceLoader.h"
-#include "Core/AssetImporter.h"
-#include "Scene/Scene.h"
-#include "Scene/Systems/SystemsManager.h"
-#include "Graphics/Debug/DebugRenderer.h"
-#include "Window/IWindow.h"
 
 namespace Real {
+    class Scene;
 
     class Engine {
     public:
@@ -32,22 +16,6 @@ namespace Real {
         void Running();
 
     private:
-        Scope<RealTimeTimer> m_EditorTimer;
-        Scope<EditorState> m_EditorState;
-        Scope<core::IWindow> m_Window;
-        Scope<ModelLoader> m_ModelLoader;
-        Scope<MeshData> m_MeshManager;
-        Scope<AssetManager> m_AssetManager;
-        Scope<opengl::OpenGLRenderer> m_Renderer;
-        Scope<graphics::debug::DebugRenderer> m_DebugRenderer;
-        Scope<Scene> m_Scene;
-        Scope<CameraInput> m_CameraInput;
-        Scope<UI::EditorPanel> m_EditorPanel;
-        Scope<UI::InspectorPanel> m_HierarchyPanel;
-        Scope<UI::HierarchyPanel> m_InspectorPanel;
-        Scope<SystemManager> m_Systems;
-        Scope<ResourceLoader> m_ResourceLoader;
-        Scope<AssetImporter> m_AssetImporter;
 
         // Scope<Timer> m_GameTimer;
     private:

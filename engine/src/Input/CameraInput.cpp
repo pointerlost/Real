@@ -9,8 +9,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 #include "Core/Services.h"
-#include "Core/Timer.h"
-#include "Editor/EditorState.h"
+#include "../../include/Timer/Timer.h"
+#include "../../../apps/editor/include/EditorState.h"
 
 namespace Real {
 

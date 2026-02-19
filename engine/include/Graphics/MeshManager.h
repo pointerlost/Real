@@ -22,7 +22,7 @@ namespace Real {
     };
 
     // TODO: MeshManager vs MeshData wrong naming fix it this shit
-    class MeshData {
+    class MeshManager {
     public:
         void InitResources();
 
@@ -54,7 +54,7 @@ namespace Real {
         unsigned int m_UniversalVAO = 0, m_VBO = 0, m_EBO = 0;
     };
 
-    class MeshData3D final : public MeshData {
+    class MeshData3D final : public MeshManager {
         void AddMesh3DToMeshData(Vector<Vertex> v, const Vector<u32>& i, const UUID& meshUUID);
 
         [[nodiscard]] u32 GetIndexCount(const UUID& uuid) const {

@@ -6,7 +6,6 @@
 #include "Core/Services.h"
 #include "Graphics/Material.h"
 #include "Graphics/Model.h"
-#include "Graphics/Renderer.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
 

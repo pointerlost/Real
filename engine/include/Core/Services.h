@@ -4,7 +4,7 @@
 #pragma once
 
 namespace Real {
-    class MeshData;
+    class MeshManager;
     class AssetManager;
     class RealTimeTimer;
     struct EditorState;
@@ -17,7 +17,7 @@ namespace Real {
 
 namespace Real::Services {
     void SetAssetManager(AssetManager* manager);
-    void SetMeshManager(MeshData* manager);
+    void SetMeshManager(MeshManager* manager);
     void SetEditorTimer(RealTimeTimer* timer);
     void SetEditorState(EditorState* state);
     void SetAssetImporter(AssetImporter* importer);
@@ -26,7 +26,7 @@ namespace Real::Services {
 
 namespace Real::Services {
     AssetManager *GetAssetManager();
-    MeshData *GetMeshManager();
+    MeshManager *GetMeshManager();
     RealTimeTimer *GetEditorTimer();
     EditorState* GetEditorState();
     AssetImporter* GetAssetImporter();

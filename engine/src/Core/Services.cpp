@@ -5,7 +5,7 @@
 
 namespace {
     Real::AssetManager *s_AssetManager;
-    Real::MeshData *s_MeshManager;
+    Real::MeshManager *s_MeshManager;
     Real::RealTimeTimer *s_EditorTimer;
     Real::EditorState* s_EditorState;
     Real::AssetImporter* s_AssetImporter;
@@ -17,7 +17,7 @@ namespace Real::Services {
         s_AssetManager = manager;
     }
 
-    void SetMeshManager(MeshData *manager) {
+    void SetMeshManager(MeshManager *manager) {
         s_MeshManager = manager;
     }
 
@@ -43,7 +43,7 @@ namespace Real::Services {
         return s_AssetManager;
     }
 
-    MeshData* GetMeshManager() {
+    MeshManager* GetMeshManager() {
         return s_MeshManager;
     }
 

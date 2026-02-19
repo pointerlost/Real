@@ -8,10 +8,9 @@ namespace Real::core {
     class IWindow {
     public:
         virtual ~IWindow() = default;
-        virtual void Init(const char* title, int width, int height) = 0;
         virtual void PollEvents() = 0;
         virtual void SwapBuffers() = 0;
-        virtual bool ShouldClose() const = 0;
+        [[nodiscard]] virtual bool ShouldClose() const = 0;
         virtual void Close() = 0;
 
         virtual void Resize(int width, int height) = 0;

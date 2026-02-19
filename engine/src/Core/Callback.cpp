@@ -5,7 +5,7 @@
 #include <glad/include/glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "Core/Services.h"
-#include "Editor/EditorState.h"
+#include "../../../apps/editor/include/EditorState.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 

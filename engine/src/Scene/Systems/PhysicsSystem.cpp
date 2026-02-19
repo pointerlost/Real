@@ -11,7 +11,8 @@
 
 namespace Real::ecs {
 
-    PhysicsSystem::PhysicsSystem(Scope<physics::IPhysicsBackend> backend) : m_Backend(std::move(backend))
+    PhysicsSystem::PhysicsSystem(Scope<physics::IPhysicsBackend> backend)
+        : m_Backend(std::move(backend))
     {
     }
 

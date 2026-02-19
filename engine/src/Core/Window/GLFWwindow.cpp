@@ -7,44 +7,34 @@
 #include <GLFW/glfw3.h>
 #include <cstring>
 
+#include "Core/Window/WindowConfig.h"
+
 namespace Real::platform::glfw {
 
-    void GLFWWindow::Init(const char *title, int width, int height) {
-        m_Title = title;
-        m_Width = width;
-        m_Height = height;
+    GLFWWindow::GLFWWindow(const core::WindowConfig &cfg, const RendererConfig& renderConfig)
+        : m_Width(cfg.width), m_Height(cfg.height), m_Title(cfg.title), type(cfg.type)
+    {
+        if (renderConfig.type == RendererType::OpenGL)
+        {
+            const auto& glCfg = renderConfig.opengl;
 
-        if (!glfwInit()) {
-            Error("glfwInit failed!");
-            return;
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glCfg.major);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glCfg.minor);
+
+            if (glCfg.coreProfile)
+                glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+            if (glCfg.debugContext)
+                glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
         }
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-        glfwWindowHint(GLFW_OPENGL_PROFILE,        GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT,  GL_TRUE);
+        m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);
 
-        m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), m_GLFWMonitor, m_GLFWShare);
-        if (!m_Window) {
-            Error("glfwCreateWindow failed!");
-            glfwTerminate();
-            return;
-        }
-
-        glfwMakeContextCurrent(m_Window);
-
-        if (!gladLoadGL()) {
-            Error("Failed to load GLAD!");
-            return;
-        }
-
-        if (!CheckOpenGLVersion()) {
-            Warn("Opengl version fucked up!");
-        }
+        if (!m_Window)
+            throw std::runtime_error("glfwCreateWindow failed");
 
         // Center the cursor when the program start
-        glfwSetCursorPos(m_Window, static_cast<double>(width) / 2, static_cast<double>(height) / 2);
+        glfwSetCursorPos(m_Window, static_cast<double>(m_Width) / 2, static_cast<double>(m_Height) / 2);
     }
 
     void GLFWWindow::PollEvents() {
@@ -73,35 +63,5 @@ namespace Real::platform::glfw {
 
     void* GLFWWindow::GetNativeHandle() const {
         return m_Window;
-    }
-
-    bool GLFWWindow::CheckOpenGLVersion() {
-        // Get version info
-        GLint major, minor;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
-
-        Info("OpenGL version: " + std::to_string(major) + "." + std::to_string(minor));
-        Info("OpenGL vendor: " + String(reinterpret_cast<const char*>(glGetString(GL_VENDOR))));
-        Info("OpenGL renderer: " + String(reinterpret_cast<const char*>(glGetString(GL_RENDERER))));
-
-        // Check if we have at least OpenGL 4.4
-        if (major < 4 || (major == 4 && minor < 4)) {
-            Warn("OpenGL 4.4 is not supported! Your version: "
-                + std::to_string(major) + "." + std::to_string(minor));
-            return false;
-        }
-
-        GLint n = 0;
-        glGetIntegerv(GL_NUM_EXTENSIONS, &n);
-
-        for (GLint i = 0; i < n; i++) {
-            if (const auto ext = reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i)); strcmp(ext, "GL_ARB_bindless_texture") == 0) {
-                Info("Bindless textures supported!");
-                return true;
-            }
-        }
-        Warn("GL_ARB_bindless_texture is not supported!");
-        return false;
     }
 }

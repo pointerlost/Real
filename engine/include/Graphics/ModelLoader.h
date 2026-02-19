@@ -3,10 +3,9 @@
 //
 #pragma once
 #include <filesystem>
-#include <set>
 #include <assimp/scene.h>
 #include <string>
-#include "MeshManager.h"
+#include <unordered_map>
 #include "Texture.h"
 #include "Common/RealTypes.h"
 

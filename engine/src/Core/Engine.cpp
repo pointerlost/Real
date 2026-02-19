@@ -8,16 +8,10 @@
 #include "Core/Callback.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
-#include "Graphics/Transformations.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Physics/Physx/PhysXBackend.h"
 #include "Scene/Components.h"
-#include "Scene/Systems/CameraSystem.h"
-#include "Scene/Systems/LightSystem.h"
-#include "Scene/Systems/MeshRendererSystem.h"
-#include "Scene/Systems/MovementSystem.h"
-#include "Scene/Systems/PhysicsSystem.h"
 
 namespace Real {
 
@@ -60,16 +54,10 @@ namespace Real {
         // Load all the resources with the ResourceLoader
         InitResourceLoader();
 
-        AttachSceneToSystems();
-
-        // We need to create shaders(from ResourceLoader) before init DebugRenderer
-        m_DebugRenderer->Init();
-
         Info("Engine Resources loaded successfully!");
     }
 
     void Engine::ShutDown() {
-        glfwTerminate();
         // Cleanup Dear ImGui context
         m_EditorPanel->Shutdown();
     }
@@ -81,13 +69,13 @@ namespace Real {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Init UI
-        m_EditorPanel->BeginFrame();
+        m_EditorPanel->BeginFrame(m_EditorTimer->GetDelta());
         m_DebugRenderer->BeginFrame();
     }
 
     void Engine::UpdatePhase() const {
         m_EditorTimer->Update();
-        m_EditorPanel->Update();
+        m_EditorPanel->Update(m_EditorTimer->GetDelta());
         Input::Update(m_CameraInput.get());
         m_AssetImporter->Update();
         m_AssetManager->Update();
@@ -99,116 +87,16 @@ namespace Real {
     void Engine::RenderPhase() const {
         // Draw OpenGL stuff
         m_DebugRenderer->Render();
-        m_EditorPanel->Render(m_Scene.get(), m_Renderer.get());
-        // TODO: Should it be called from within m_EditorPanel->render?
-        // TODO: Requires f64 buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
+        // Main Scene window
+        m_Renderer->Render(Services::GetEditorState()->editorCamera);
+        m_EditorPanel->RenderUI();
+
+        // TODO: Requires double buffering to switch between each other (Thread-safe rendering and to keep sync CPU-GPU)
     }
 
     void Engine::EndPhase() {
         m_EditorPanel->EndFrame();
         m_DebugRenderer->EndFrame();
-    }
-
-    void Engine::InitWindow() {
-        m_Window = CreateScope<platform::glfw::GLFWWindow>();
-        m_Window->Init("Human consciousness", SCREEN_WIDTH, SCREEN_HEIGHT);
-        Info("Window initialized successfully!");
-    }
-
-    void Engine::InitServices() const {
-        Services::SetAssetManager(m_AssetManager.get());
-        Services::SetMeshManager(m_MeshManager.get());
-        Services::SetEditorTimer(m_EditorTimer.get());
-        Services::SetEditorState(m_EditorState.get());
-        Services::SetAssetImporter(m_AssetImporter.get());
-        Services::SetDebugRenderer(m_DebugRenderer.get());
-        // TODO: Need Shader manager?
-
-        Info("Services initialized successfully!");
-    }
-
-    void Engine::InitSystems() {
-        m_Systems = CreateScope<SystemManager>();
-
-        m_Systems->AddSystem(CreateScope<ecs::CameraSystem>());
-
-        auto backend = CreateScope<physics::PhysXBackend>();
-        auto physics = CreateScope<ecs::PhysicsSystem>(std::move(backend));
-        m_Systems->AddSystem(std::move(physics));
-
-        m_Systems->AddSystem(CreateScope<ecs::MovementSystem>());
-        m_Systems->AddSystem(CreateScope<ecs::MeshRendererSystem>());
-        m_Systems->AddSystem(CreateScope<ecs::LightSystem>());
-
-        m_Systems->Init();
-
-        Info("Systems initialized successfully!");
-    }
-
-    void Engine::InitAssetImporter() {
-        m_AssetImporter = CreateScope<AssetImporter>();
-        Info("Asset Importer initialized successfully!");
-    }
-
-    void Engine::InitEditorState() {
-        m_EditorTimer = CreateScope<RealTimeTimer>();
-        m_EditorTimer->Start();
-        m_EditorState = CreateScope<EditorState>();
-        Info("Editor State initialized successfully!");
-    }
-
-    void Engine::InitEditorScene() {
-        m_Scene = CreateScope<Scene>();
-        Info("Editor Scene initialized successfully!");
-    }
-
-    void Engine::InitEditorRenderer() {
-        m_Renderer = CreateScope<opengl::OpenGLRenderer>(m_Scene.get());
-        Info("Editor Renderer initialized successfully!");
-    }
-
-    void Engine::InitEditorUIState() {
-        // The order is matter!!!
-        m_HierarchyPanel = CreateScope<UI::InspectorPanel>();
-        m_InspectorPanel = CreateScope<UI::HierarchyPanel>();
-        m_EditorPanel    = CreateScope<UI::EditorPanel>(m_Window.get(), m_HierarchyPanel.get(), m_InspectorPanel.get());
-        Info("EditorPanel initialized successfully!");
-    }
-
-    void Engine::InitEditorCamera() {
-        // Editor camera
-        m_EditorState->editorCamera = &m_Scene->CreateEntity("Editor Camera");
-        (void)m_EditorState->editorCamera->AddComponent<CameraComponent>();
-        (void)m_EditorState->editorCamera->AddComponent<MovementComponent>();
-        m_EditorState->editorCamera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
-
-        if (m_EditorState->editorCamera) {
-            m_CameraInput = CreateScope<CameraInput>(m_EditorState->editorCamera);
-        } else {
-            Warn("There is no camera in editor state!!!");
-        }
-        Info("Editor Camera and Camera input initialized successfully!");
-    }
-
-    void Engine::InitDebugRenderer() {
-        m_DebugRenderer = CreateScope<graphics::debug::DebugRenderer>();
-        Info("Debug Renderer initialized successfully!");
-    }
-
-    void Engine::InitResourceLoader() {
-        m_ResourceLoader = CreateScope<ResourceLoader>(m_Renderer->GetRenderContext());
-        m_ResourceLoader->Load();
-        Info("Resource loader initialized successfully!");
-    }
-
-    void Engine::InitAssetManager() {
-        m_AssetManager = CreateScope<AssetManager>();
-        Info("AssetManager initialized successfully!");
-    }
-
-    void Engine::InitMeshManager() {
-        m_MeshManager = CreateScope<MeshData>();
-        Info("MeshManager initialized successfully!");
     }
 
     void Engine::SetOpenGLStateFunctions() {
@@ -232,7 +120,6 @@ namespace Real {
     }
 
     void Engine::AttachSceneToSystems() {
-        m_Systems->OnSceneAttach(m_Scene.get());
 
         Info("AttachSceneToSystems initialized successfully!");
     }

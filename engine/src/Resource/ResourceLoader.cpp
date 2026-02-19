@@ -2,12 +2,12 @@
 // Created by pointerlost on 12/7/25.
 //
 #include "Resource/ResourceLoader.h"
-
 #include "Common/Macros.h"
 #include "Core/AssetImporter.h"
 #include "Core/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
+#include "Graphics/MeshManager.h"
 #include "Graphics/RenderContext.h"
 
 

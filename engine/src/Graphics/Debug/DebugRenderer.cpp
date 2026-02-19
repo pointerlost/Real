@@ -194,7 +194,7 @@ namespace Real::graphics::debug {
     void DebugRenderer::PrepareDrawCommands() {
         for (const auto shape : AllDebugShapes) {
             // Count how many instances of this shape exist
-            u32 count = 0;
+            int count = 0;
             for (const auto& inst : m_Instances) {
                 if (inst.shape == shape)  // store shape per instance
                     ++count;

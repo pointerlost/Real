@@ -11,7 +11,7 @@
 
 namespace Real {
 
-    const MeshAsset* MeshData::GetMeshData(const UUID& uuid) const {
+    const MeshAsset* MeshManager::GetMeshData(const UUID& uuid) const {
         const auto it = m_MeshAssets.find(uuid);
         if (it == m_MeshAssets.end()) {
             Warn("Mesh doesn't exist! UUID: " + std::to_string(uuid));
@@ -20,7 +20,7 @@ namespace Real {
         return &it->second;
     }
 
-    const MeshAsset& MeshData::CreateSingleMesh(Vector<Vertex> vertices,
+    const MeshAsset& MeshManager::CreateSingleMesh(Vector<Vertex> vertices,
         const Vector<u32>& indices, const UUID& meshUUID)
     {
         if (m_MeshAssets.contains(meshUUID))
@@ -42,7 +42,7 @@ namespace Real {
         return m_MeshAssets[meshUUID] = info;
     }
 
-    std::span<const Vertex> MeshData::ViewVertices(const UUID& uuid) const {
+    std::span<const Vertex> MeshManager::ViewVertices(const UUID& uuid) const {
         if (!m_MeshAssets.contains(uuid)) return {};
 
         const auto& info = m_MeshAssets.at(uuid);
@@ -52,7 +52,7 @@ namespace Real {
         };
     }
 
-    std::span<const u32> MeshData::ViewIndices(const UUID& uuid) const {
+    std::span<const u32> MeshManager::ViewIndices(const UUID& uuid) const {
         if (!m_MeshAssets.contains(uuid)) return {};
 
         const auto& info = m_MeshAssets.at(uuid);
@@ -62,7 +62,7 @@ namespace Real {
         };
     }
 
-    const MeshAsset& MeshData::GetPrimitiveMeshData(const String &name) {
+    const MeshAsset& MeshManager::GetPrimitiveMeshData(const String &name) {
         if (m_PrimitiveTypesUUIDs.contains(name)) {
             Warn("There is no primitive type with this name: " + name);
             return m_MeshAssets[m_PrimitiveTypesUUIDs["triangle"]];
@@ -70,19 +70,19 @@ namespace Real {
         return m_MeshAssets[m_PrimitiveTypesUUIDs[name]];
     }
 
-    const UUID& MeshData::GetPrimitiveUUID(const String &name) {
+    const UUID& MeshManager::GetPrimitiveUUID(const String &name) {
         return m_PrimitiveTypesUUIDs[name];
     }
 
-    void MeshData::BindUniversalVAO() const {
+    void MeshManager::BindUniversalVAO() const {
         glBindVertexArray(m_UniversalVAO);
     }
 
-    void MeshData::UnbindCurrVAO() const {
+    void MeshManager::UnbindCurrVAO() const {
         glBindVertexArray(0);
     }
 
-    void MeshData::LoadPrimitiveTypes() {
+    void MeshManager::LoadPrimitiveTypes() {
         auto [triFirst, triSecond] = MeshFactory::CreateTriangle();
         m_PrimitiveTypesUUIDs["triangle"] = UUID();
         CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs["triangle"]);
@@ -97,7 +97,7 @@ namespace Real {
         CreateSingleMesh(std::move(v), i, meshUUID);
     }
 
-    void MeshData::InitResources() {
+    void MeshManager::InitResources() {
         glCreateBuffers(1, &m_VBO);
         glNamedBufferData(m_VBO, m_AllVertices.size() * sizeof(Vertex), m_AllVertices.data(), GL_STATIC_DRAW);
 

@@ -1,35 +1,31 @@
-cmake_minimum_required(VERSION 3.21)
-
-# manifest mode
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE
-        "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file"
-    )
-endif()
-
-project(real)
-set(ENGINE_TARGET engine)
-set(CMAKE_CXX_STANDARD 20)
+project(engine)
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
-
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
-add_executable(ENGINE_TARGET
-    main/main.cpp
+# Must create the library first
+add_library(engine STATIC)
+
+target_sources(engine PRIVATE
+    include/Core/IGraphicsBackend.h
+    src/Platform/vulkan/VkRenderer.cpp
+    include/Platform/vulkan/VkRenderer.h
+    src/Platform/vulkan/VkBackend.cpp
+    include/Platform/vulkan/VkBackend.h
+        ../apps/editor/include/EditorApplication.h
+        ../apps/editor/src/EditorApplication.cpp
     src/Core/file_manager.cpp
     include/Core/Logger.h
     src/Core/Engine.cpp
     include/Core/Engine.h
     include/Core/Utils.h
-    include/Core/Timer.h
-    src/Core/Timer.cpp
+    include/Timer/Timer.h
+    src/Timer/Timer.cpp
     include/Graphics/Shader.h
     src/Graphics/Shader.cpp
     include/Core/AssetManager.h
@@ -45,8 +41,6 @@ add_executable(ENGINE_TARGET
     include/Graphics/Camera.h
     src/Graphics/Camera.cpp
     include/Core/RealConfig.h
-    include/Graphics/Renderer.h
-    src/Graphics/Renderer.cpp
     include/Scene/Scene.h
     src/Scene/Scene.cpp
     include/Input/Input.h
@@ -61,8 +55,8 @@ add_executable(ENGINE_TARGET
     include/Core/UUID.h
     src/Core/UUID.cpp
     src/Scene/Entity.cpp
-    include/Editor/EditorState.h
-    src/Editor/EditorState.cpp
+        ../apps/editor/include/EditorState.h
+        ../apps/editor/src/EditorState.cpp
     src/Graphics/Transformations.cpp
     include/Graphics/Light.h
     src/Graphics/Light.cpp
@@ -75,14 +69,14 @@ add_executable(ENGINE_TARGET
     src/Graphics/RenderContext.cpp
     include/Graphics/RenderCommand.h
     src/Graphics/Material.cpp
-    src/Editor/EditorPanel.cpp
-    include/Editor/EditorPanel.h
-    include/Editor/InspectorPanel.h
-    include/Editor/HierarchyPanel.h
-    include/Editor/IPanel.h
-    src/Editor/InspectorPanel.cpp
-    src/Editor/HierarchyPanel.cpp
-    vendor/ImGuizmo/ImGuizmo.cpp
+        ../apps/editor/src/Editor.cpp
+        ../apps/editor/include/Editor.h
+        ../apps/editor/include/InspectorPanel.h
+        ../apps/editor/include/HierarchyPanel.h
+        ../apps/editor/include/IPanel.h
+        ../apps/editor/src/InspectorPanel.cpp
+        ../apps/editor/src/HierarchyPanel.cpp
+    ../vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
     include/Scene/Systems/SystemsManager.h
@@ -156,8 +150,8 @@ add_executable(ENGINE_TARGET
     src/Graphics/Debug/DebugRenderer.cpp
     include/Graphics/Debug/DebugMeshFactory.h
     src/Graphics/Debug/DebugMeshFactory.cpp
-    src/Editor/ViewportPanel.cpp
-    include/Editor/ViewportPanel.h
+        ../apps/editor/src/ViewportPanel.cpp
+        ../apps/editor/include/ViewportPanel.h
     include/Graphics/Debug/DebugTypes.h
     include/Math/Conversions/GLMConvertions.h
     src/Math/Convertions/GLMConvertions.cpp
@@ -177,39 +171,45 @@ add_executable(ENGINE_TARGET
     include/Core/Window/GLFWwindow.h
     src/Core/Window/GLFWwindow.cpp
     include/Core/ITimer.h
-        include/Core/IGPUUploader.h
+    include/Core/IGPUUploader.h
+        ../apps/editor/include/IEditor.h
+    include/Core/IGPUUploader.h
+    src/Core/Engine/EngineBootstrap.cpp
+    include/Core/Window/WindowConfig.h
+    include/Core/IPlatform.h
+    include/Core/Window/GLFWPlatform.h
+    src/Core/Window/GLFWPlatform.cpp
+    include/Platform/opengl/OpenGLBackend.h
+    src/Platform/opengl/OpenGLBackend.cpp
 )
 
-set(SHADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
-set(ASSETS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
+set(SHADERS_DIR shaders)
+set(ASSETS_DIR assets)
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/Core/Config.h.in
+    include/Core/Config.h.in
     ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
     @ONLY
 )
 
-target_sources(ENGINE_TARGET
+target_sources(engine
     PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
 )
 
-add_library(glad_local STATIC vendor/glad/src/glad.c)
+add_library(glad_local STATIC ../vendor/glad/src/glad.c)
+target_include_directories(glad_local PUBLIC ../vendor/glad/include)
 
-target_include_directories(glad_local PUBLIC vendor/glad/include)
-
-target_include_directories(ENGINE_TARGET
-    PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(engine PUBLIC
+    include
     ${CMAKE_CURRENT_BINARY_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/physx/include
+    ../vendor
+    ../vendor/physx/include
 )
 
-set(PHYSX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vendor/physx)
+set(PHYSX_DIR ../vendor/physx)
 
-target_link_libraries(ENGINE_TARGET
-    PRIVATE
+target_link_libraries(engine PRIVATE
     glad_local
     glfw
     glm::glm
@@ -243,5 +243,5 @@ target_link_libraries(ENGINE_TARGET
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXFoundation_static_64.a>
 )
 if(UNIX AND NOT APPLE)
-    target_link_libraries(ENGINE_TARGET PRIVATE pthread dl)
+    target_link_libraries(engine PRIVATE pthread dl)
 endif()

@@ -29,6 +29,45 @@ namespace Real {
 
     constexpr u32 REAL_MAGIC = 0x4C414552; // Little endian
 
+    enum struct WindowType {
+        glfw,
+        sdl,
+    };
+
+    enum struct RendererType {
+        OpenGL,
+        Vulkan
+    };
+
+    enum struct API {
+        OpenGL,
+        Vulkan
+    };
+
+    struct OpenGLConfig {
+        int major = 4;
+        int minor = 5;
+
+        bool coreProfile  = true;
+        bool debugContext = false;
+        bool vsync = true;
+    };
+
+    struct VkConfig {
+    };
+
+    struct RendererConfig {
+        RendererType type = RendererType::OpenGL;
+
+        OpenGLConfig opengl;
+        VkConfig vulkan;
+    };
+
+    enum struct PhysicsBackendType {
+        PhysX,
+        Bullet,
+    };
+
     struct TextureData {
         void* data = nullptr;
         int channelCount = 0;

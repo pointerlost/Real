@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "Texture.h"
 #include "Common/RealTypes.h"
+#include "Core/Utils.h"
 
 namespace Real {
     struct Model;

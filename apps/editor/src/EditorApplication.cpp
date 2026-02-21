@@ -1,7 +1,7 @@
 //
 // Created by pointerlost on 2/19/26.
 //
-#include "../include/EditorApplication.h"
+#include "../apps/editor/include/EditorApplication.h"
 
 #include "Core/Services.h"
 #include "Core/Engine/EngineCore.h"
@@ -13,15 +13,12 @@ namespace Real::editor::app {
         AssetManager& assetManager,
         AssetImporter& assetImporter,
         MeshManager& meshManager,
-        RealTimeTimer& timer,
-        Scene* scene
-    ) noexcept
+        Scene* scene) noexcept
     {
         m_Scene = scene;
         Services::SetAssetManager(&assetManager);
         Services::SetAssetImporter(&assetImporter);
         Services::SetMeshManager(&meshManager);
-        Services::SetEditorTimer(&timer);
 
         m_State = CreateScope<EditorState>();
         Services::SetEditorState(m_State.get());
@@ -49,8 +46,28 @@ namespace Real::editor::app {
     }
 
     void EditorApplication::Update(float dt) {
+        m_CameraInput->Update();
+        m_Editor->Update(dt);
+        m_CameraInput->Update();
+    }
+
+    void EditorApplication::Render() {
+        m_Editor->RenderUI();
     }
 
     void EditorApplication::Shutdown() {
+        m_CameraInput.reset();
+        m_DebugRenderer.reset();
+        m_Timer.reset();
+        m_State.reset();
     }
 }
+
+/*
+    void EditorApplication::BeginFrame() {
+        m_Editor->BeginFrame(m_Timer.GetDelta());
+    }
+    void EditorApplication::EndFrame() {
+        m_Editor->EndFrame();
+    }
+*/

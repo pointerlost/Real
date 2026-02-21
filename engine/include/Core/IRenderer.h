@@ -16,5 +16,8 @@ namespace Real::core {
         virtual void Init() = 0;
         virtual void Render(Scene* scene, Entity* camera) = 0;
         virtual void Shutdown() = 0;
+
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
     };
 }

@@ -36,7 +36,7 @@ namespace Real::Input {
     extern bool g_KeyReleased[REAL_KEY_COUNT];
 
     extern f32 GetScroll();
-    extern void Update(CameraInput* cameraInput);
+    extern void Update();
 
     extern bool IsKeyPressed(int key);
     extern bool IsKeyHeld(int key);

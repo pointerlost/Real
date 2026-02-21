@@ -2,7 +2,7 @@
 // Created by pointerlost on 2/12/26.
 //
 #pragma once
-#include "PhysicsTypes.h"
+#include "../Physics/PhysicsTypes.h"
 
 namespace Real {
     namespace math {

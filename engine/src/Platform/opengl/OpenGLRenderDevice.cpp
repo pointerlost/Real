@@ -2,15 +2,16 @@
 // Created by pointerlost on 2/17/26.
 //
 #include <cstring>
-#include <Platform/opengl/OpenGLBackend.h>
+#include <Platform/opengl/OpenGLRenderDevice.h>
 #include "glad/include/glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "Common/RealTypes.h"
 #include "Core/Logger.h"
+#include "Graphics/RenderTypes.h"
 
 namespace Real::platform::opengl {
 
-    void OpenGLBackend::Initialize(void *nativeWindow, const RendererConfig& cfg)
+    void OpenGLRenderDevice::Initialize(void *nativeWindow, const RendererConfig& cfg)
     {
         const auto window = static_cast<GLFWwindow*>(nativeWindow);
 
@@ -26,13 +27,40 @@ namespace Real::platform::opengl {
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         }
 
+        if (cfg.opengl.depthTesting) {
+            // TODO: need an update for drawing opengl lines (depth testing etc.)
+            glEnable(GL_DEPTH_TEST);
+            // glDepthFunc(GL_LEQUAL);
+            // glDepthFunc(GL_EQUAL);
+            // glEnable(GL_STENCIL_TEST);
+            // This only has affect if depth testing is enabled
+            // glDepthMask(GL_FALSE);
+        }
+
         CheckOpenGLVersion(cfg.opengl);
     }
 
-    void OpenGLBackend::Shutdown() {
+    void OpenGLRenderDevice::Shutdown() {
     }
 
-    void OpenGLBackend::CheckOpenGLVersion(const OpenGLConfig& cfg) {
+    void OpenGLRenderDevice::SwapBuffers() {
+    }
+
+    void OpenGLRenderDevice::ClearColor(const graphics::Color& color) {
+        glClearColor(color.r, color.g, color.b, color.a);
+    }
+
+    void OpenGLRenderDevice::Clear(graphics::ClearFlags clearFlags) {
+        GLbitfield mask = 0;
+
+        if (HasFlag(clearFlags, graphics::ClearFlags::Color)) mask |= GL_COLOR_BUFFER_BIT;
+        if (HasFlag(clearFlags, graphics::ClearFlags::Depth)) mask |= GL_DEPTH_BUFFER_BIT;
+        if (HasFlag(clearFlags, graphics::ClearFlags::Stencil)) mask |= GL_STENCIL_BUFFER_BIT;
+
+        glClear(mask);
+    }
+
+    void OpenGLRenderDevice::CheckOpenGLVersion(const OpenGLConfig& cfg) {
         // Get version info
         GLint major, minor;
         glGetIntegerv(GL_MAJOR_VERSION, &major);

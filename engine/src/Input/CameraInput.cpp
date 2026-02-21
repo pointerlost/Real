@@ -20,7 +20,6 @@ namespace Real {
     void CameraInput::Update() {
         if (!Services::GetEditorState()->FpsMode) return;
 
-        // TODO: add GetAllComponentsWithEntity function to manage easily
         auto& camera   = m_Camera->GetComponent<CameraComponent>().m_Camera;
         auto& movement = m_Camera->GetComponent<MovementComponent>();
 

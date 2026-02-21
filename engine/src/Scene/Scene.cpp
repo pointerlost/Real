@@ -3,6 +3,8 @@
 //
 #include "Scene/Scene.h"
 #include "Core/AssetManager.h"
+#include "Core/IRenderer.h"
+#include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
 #include "Graphics/Model.h"
@@ -73,7 +75,7 @@ namespace Real {
     void Scene::OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component) {
     }
 
-    void Scene::Update(const opengl::OpenGLRenderer* renderer) {
+    void Scene::Update(const core::IRenderer* renderer) {
         // Upload GPU data
         renderer->GetRenderContext()->CollectRenderables();
     }

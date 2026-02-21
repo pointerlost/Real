@@ -13,8 +13,8 @@
 
 namespace Real {
 
-    ResourceLoader::ResourceLoader(RenderContext *context)
-        : m_RenderContext(context), m_ModelLoader(CreateScope<ModelLoader>())
+    ResourceLoader::ResourceLoader()
+        : m_ModelLoader(CreateScope<ModelLoader>())
     {
     }
 
@@ -60,7 +60,7 @@ namespace Real {
         Info("[ResourceLoader] Shaders loaded successfully!");
     }
 
-    void ResourceLoader::LoaderRenderContext() {
+    void ResourceLoader::LoaderRenderContext() const {
         m_RenderContext->InitResources();
     }
 }

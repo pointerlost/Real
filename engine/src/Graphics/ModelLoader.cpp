@@ -3,6 +3,7 @@
 //
 #include <Graphics/ModelLoader.h>
 #include <fstream>
+#include <ranges>
 #include <utility>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -14,6 +15,7 @@
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
+#include "Graphics/MeshManager.h"
 #include "Graphics/Model.h"
 #include "Serialization/Binary.h"
 #include "Tools/ImageTools.h"

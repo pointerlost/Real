@@ -3,7 +3,8 @@
 //
 #pragma once
 #include "Editor.h"
-#include "../../../engine/include/EditorApplication/EditorState.h"
+#include "EditorState.h"
+#include "Core/IApplication.h"
 #include "Core/Utils.h"
 #include "Graphics/Debug/DebugRenderer.h"
 #include "Input/CameraInput.h"
@@ -22,19 +23,19 @@ namespace Real {
 
 namespace Real::editor::app {
 
-    class EditorApplication {
+    class EditorApplication final : core::IApplication {
     public:
         EditorApplication(
             AssetManager& assetManager,
             AssetImporter& assetImporter,
             MeshManager& meshManager,
-            RealTimeTimer& timer,
             Scene* scene
         ) noexcept;
 
-        void Init();
-        void Update(float dt);
-        void Shutdown();
+        void Init() override;
+        void Update(float dt) override;
+        void Render() override;
+        void Shutdown() override;
 
     private:
         Scope<UI::Editor> m_Editor;

@@ -41,11 +41,11 @@ namespace Real {
         void SetMat4(const String& name, const math::Mat4& mat) const;
 
         [[nodiscard]] const String& GetName() const { return m_Name; }
-        [[nodiscard]] const GLuint& GetProgram() const { return m_Program; }
+        [[nodiscard]] const ShaderHandle& GetProgram() const { return m_Program; }
         void Bind() const;
 
     private:
-        GLuint m_Program{};
+        ShaderHandle m_Program{};
         String m_VertexPath;
         String m_FragmentPath;
         String m_Name;
@@ -55,6 +55,6 @@ namespace Real {
     private:
         /* Get uniform location */
         [[nodiscard]] int GetULocation(const String& name) const;
-        void CheckCompileErrors(GLuint shader, const String& type);
+        void CheckCompileErrors(ShaderHandle shader, const String& type);
     };
 }

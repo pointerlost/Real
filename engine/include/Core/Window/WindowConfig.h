@@ -4,6 +4,10 @@
 #pragma once
 #include <string>
 
+namespace Real {
+    enum struct WindowType;
+}
+
 namespace Real::core {
 
     struct WindowConfig {

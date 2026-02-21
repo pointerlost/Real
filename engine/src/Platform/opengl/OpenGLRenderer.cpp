@@ -5,8 +5,15 @@
 
 #include "Core/AssetManager.h"
 #include "Core/Services.h"
+#include "Graphics/MeshManager.h"
+#include "Graphics/RenderContext.h"
 
 namespace Real::platform::opengl {
+
+    OpenGLRenderer::OpenGLRenderer(Scope<core::IRenderDevice> device)
+        : m_Device(std::move(device))
+    {
+    }
 
     void OpenGLRenderer::Init() {
         m_RenderContext(CreateScope<RenderContext>());
@@ -29,7 +36,7 @@ namespace Real::platform::opengl {
         // Draw indirect
         const auto& gpuData = m_RenderContext->GetGPURenderData();
         if (!gpuData.drawCommands.empty()) {
-            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetRenderContext()->GetBuffers().drawCommand.GetHandle());
+            glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_RenderContext->GetBuffers().drawCommand.GetHandle());
             glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(gpuData.drawCommands.size()), 0);
         }
 
@@ -37,6 +44,14 @@ namespace Real::platform::opengl {
     }
 
     void OpenGLRenderer::Shutdown() {
+    }
+
+    void OpenGLRenderer::BeginFrame() {
+        m_Device->ClearColor(0.07f, 0.07f, 0.07f, 1.0f);
+        m_Device->Clear(config.opengl->color ,config.opengl.depthTesting);
+    }
+
+    void OpenGLRenderer::EndFrame() {
     }
 
     void OpenGLRenderer::BindGPUBuffers() {

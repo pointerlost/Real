@@ -2,6 +2,8 @@
 // Created by pointerlost on 2/16/26.
 //
 #pragma once
+#include <GLFW/glfw3.h>
+
 #include "IWindow.h"
 #include "Common/RealTypes.h"
 
@@ -33,5 +35,15 @@ namespace Real::platform::glfw {
         int m_Height   = 840;
         String m_Title = "Real";
         WindowType type = WindowType::glfw;
+
+    private:
+        static void set_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void set_mouse_callback(GLFWwindow *window, f64 xpos, f64 ypos);
+        static void set_mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+        static void set_mouse_scroll_callback(GLFWwindow *window, f64 xoffset, f64 yoffset);
+        static void set_framebuffer_size_callback(GLFWwindow *window, int width, int height);
+        void InitCallbacks(GLFWwindow *window);
+
+        bool m_FirstMouse = true;
     };
 }

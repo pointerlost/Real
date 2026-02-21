@@ -2,7 +2,7 @@
 // Created by pointerlost on 2/12/26.
 //
 #pragma once
-#include "Physics/IPhysicsBackend.h"
+#include "../../Core/IPhysicsBackend.h"
 #include "Physics/PhysicsTypes.h"
 #include "Physics/PhysXContext.h"
 #include <unordered_map>

@@ -7,6 +7,7 @@
 #include "RenderCommand.h"
 #include <vector>
 #include "Buffer.h"
+#include "RenderTypes.h"
 #include "Core/UUID.h"
 
 namespace Real {
@@ -23,7 +24,7 @@ namespace Real {
     struct GPUData {
         Vector<TransformSSBO> transforms;
         Vector<MaterialSSBO> materials;
-        Vector<GLuint64> textures;
+        Vector<graphics::BindlessHandle> textures;
         Vector<LightSSBO> lights;
         Vector<DrawElementsIndirectCommand> drawCommands;
         Vector<EntityMetadata> entityData;

@@ -9,7 +9,7 @@ namespace Real::opengl {
         CleanResources();
     }
 
-    void Buffer::Bind(GLenum target, BufferType type, GLuint bindingPoint) const {
+    void Buffer::Bind(uint32_t target, BufferType type, graphics::BindingPoint bindingPoint) const {
         if (type == BufferType::SSBO) {
             glBindBufferBase(target, bindingPoint, m_Buffer);
         } else if (type == BufferType::UBO) {

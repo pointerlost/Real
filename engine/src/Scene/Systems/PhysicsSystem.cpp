@@ -11,8 +11,8 @@
 
 namespace Real::ecs {
 
-    PhysicsSystem::PhysicsSystem(Scope<physics::IPhysicsBackend> backend)
-        : m_Backend(std::move(backend))
+    PhysicsSystem::PhysicsSystem(physics::IPhysicsBackend& backend)
+        : m_Backend(backend)
     {
     }
 
@@ -22,7 +22,7 @@ namespace Real::ecs {
         desc.gravity = { 0.f, -9.81f, 0.f };
 
         // Initialize backend with world configuration
-        m_Backend->Init(desc);
+        m_Backend.Init(desc);
     }
 
     void PhysicsSystem::Update(entt::registry& registry, f32 deltaTime) {
@@ -30,7 +30,7 @@ namespace Real::ecs {
             return;
 
         // Advance physics simulation
-        m_Backend->Step(deltaTime);
+        m_Backend.Step(deltaTime);
 
         auto view = registry.view<TransformComponent, RigidbodyComponent>();
 
@@ -45,7 +45,7 @@ namespace Real::ecs {
 
     void PhysicsSystem::Shutdown() {
         // Shutdown physics backend
-        m_Backend->Shutdown();
+        m_Backend.Shutdown();
     }
 
     void PhysicsSystem::OnColliderAdded(const entt::entity &e) {
@@ -60,11 +60,11 @@ namespace Real::ecs {
         sd.shape = cc.shape;
         sd.isTrigger = cc.isTrigger;
 
-        cc.handle = m_Backend->CreateShape(sd);
+        cc.handle = m_Backend.CreateShape(sd);
 
         // Attach shape if body already exists
         if (rb.handle != physics::InvalidRigidBodyHandle)
-            m_Backend->AttachShape(rb.handle, cc.handle);
+            m_Backend.AttachShape(rb.handle, cc.handle);
     }
 
     void PhysicsSystem::OnColliderRemoved(entt::entity &e) {
@@ -74,7 +74,7 @@ namespace Real::ecs {
         auto& cc = m_Registry->get<ColliderComponent>(e);
 
         if (cc.handle != physics::InvalidShapeHandle) {
-            m_Backend->DestroyShape(cc.handle);
+            m_Backend.DestroyShape(cc.handle);
             cc.handle = physics::InvalidShapeHandle;
         }
     }
@@ -108,7 +108,7 @@ namespace Real::ecs {
         bd.worldTransform = tc.transform;
         bd.mass = rb.mass;
 
-        rb.handle = m_Backend->CreateBody(bd);
+        rb.handle = m_Backend.CreateBody(bd);
 
         // If collider exists, create and attach shape
         if (!m_Registry->any_of<ColliderComponent>(e)) {
@@ -118,9 +118,9 @@ namespace Real::ecs {
             sd.shape = cc.shape;
             sd.isTrigger = cc.isTrigger;
 
-            cc.handle = m_Backend->CreateShape(sd);
+            cc.handle = m_Backend.CreateShape(sd);
 
-            m_Backend->AttachShape(rb.handle, cc.handle);
+            m_Backend.AttachShape(rb.handle, cc.handle);
         }
     }
 
@@ -132,7 +132,7 @@ namespace Real::ecs {
 
         // Destroy old body if exists
         if (rb.handle != physics::InvalidRigidBodyHandle)
-            m_Backend->DestroyBody(rb.handle);
+            m_Backend.DestroyBody(rb.handle);
 
         // Recreate body with new settings
         OnPhysicsBodyAdded(e);
@@ -216,16 +216,16 @@ namespace Real::ecs {
         auto& cc = m_Registry->get<ColliderComponent>(e);
 
         if (cc.handle != physics::InvalidShapeHandle) {
-            m_Backend->DetachShape(rb.handle, cc.handle);
-            m_Backend->DestroyShape(cc.handle);
+            m_Backend.DetachShape(rb.handle, cc.handle);
+            m_Backend.DestroyShape(cc.handle);
         }
 
         physics::ShapeDesc sd;
         sd.shape = cc.shape;
         sd.isTrigger = cc.isTrigger;
 
-        cc.handle = m_Backend->CreateShape(sd);
-        m_Backend->AttachShape(rb.handle, cc.handle);
+        cc.handle = m_Backend.CreateShape(sd);
+        m_Backend.AttachShape(rb.handle, cc.handle);
     }
 
     void PhysicsSystem::SyncTransform(const entt::entity& entity) {
@@ -240,10 +240,10 @@ namespace Real::ecs {
 
         // Dynamic bodies update transform from physics
         if (rb.type == physics::BodyType::Dynamic)
-            tc.transform = m_Backend->GetBodyTransform(rb.handle);
+            tc.transform = m_Backend.GetBodyTransform(rb.handle);
         else
             // Static and kinematic bodies push transform to physics
-            m_Backend->SetBodyTransform(rb.handle, tc.transform);
+            m_Backend.SetBodyTransform(rb.handle, tc.transform);
     }
 
     void PhysicsSystem::SyncCollider(entt::entity& entity) {
@@ -256,10 +256,10 @@ namespace Real::ecs {
         if (rb.handle == physics::InvalidRigidBodyHandle || cc.handle == physics::InvalidShapeHandle)
             return;
 
-        m_Backend->SetShapeLocalTransform(cc.handle, cc.localPosition, cc.localRotation);
+        m_Backend.SetShapeLocalTransform(cc.handle, cc.localPosition, cc.localRotation);
 
         // Update collider enabled state
-        m_Backend->SetShapeEnabled(cc.handle, cc.enabled);
+        m_Backend.SetShapeEnabled(cc.handle, cc.enabled);
 
         // Rebuild only if explicitly requested
         if (cc.rebuildRequired) {

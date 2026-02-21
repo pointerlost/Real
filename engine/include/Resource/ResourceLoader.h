@@ -13,18 +13,17 @@ namespace Real {
 
     class ResourceLoader {
     public:
-        explicit ResourceLoader(RenderContext* context);
+        ResourceLoader();
 
         void Load();
 
     private:
-        RenderContext* m_RenderContext;
         Scope<ModelLoader> m_ModelLoader;
 
     private:
         void LoadAssets();
         void LoadShaders();
-        void LoaderRenderContext();
+        void LoaderRenderContext() const;
     };
 
 }

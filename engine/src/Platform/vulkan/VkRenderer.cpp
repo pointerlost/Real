@@ -5,6 +5,11 @@
 
 namespace Real::platform::vk {
 
+    VkRenderer::VkRenderer(Scope<core::IRenderDevice> device)
+        :m_Device(std::move(device))
+    {
+    }
+
     void VkRenderer::Init() {
     }
 
@@ -12,5 +17,11 @@ namespace Real::platform::vk {
     }
 
     void VkRenderer::Shutdown() {
+    }
+
+    void VkRenderer::BeginFrame() {
+    }
+
+    void VkRenderer::EndFrame() {
     }
 }

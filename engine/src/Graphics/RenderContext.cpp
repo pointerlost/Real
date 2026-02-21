@@ -31,10 +31,10 @@ namespace Real {
         );
 
         m_Buffers.texture.Create(m_GPUDatas.textures,
-            MAX_ENTITIES * sizeof(GLuint64), BufferType::SSBO
+            MAX_ENTITIES * sizeof(graphics::BindlessHandle), BufferType::SSBO
         );
         m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
-            m_GPUDatas.textures.size() * sizeof(GLuint64), BufferType::SSBO
+            m_GPUDatas.textures.size() * sizeof(graphics::BindlessHandle), BufferType::SSBO
         );
 
         m_Buffers.material.Create(m_GPUDatas.materials,

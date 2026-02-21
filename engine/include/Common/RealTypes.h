@@ -3,11 +3,41 @@
 //
 #pragma once
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 #include <Core/UUID.h>
 
+#include "Core/Window/WindowConfig.h"
+
 namespace Real {
+    class RealTimeTimer;
+    class AssetImporter;
+    class ResourceLoader;
+    class MeshManager;
+    class AssetManager;
+    class ModelLoader;
+    class Scene;
+
+    namespace physics {
+        class IPhysicsBackend;
+    }
+
+    namespace graphics::debug {
+        class DebugRenderer;
+    }
+
+    namespace core {
+        class SystemManager;
+        class IRenderer;
+        class IPlatform;
+        class IWindow;
+        class IRenderDevice;
+    }
+}
+
+namespace Real {
+
     struct Vertex;
     using i8  = int8_t;
     using i16 = int16_t;
@@ -50,6 +80,7 @@ namespace Real {
 
         bool coreProfile  = true;
         bool debugContext = false;
+        bool depthTesting = true;
         bool vsync = true;
     };
 
@@ -66,6 +97,33 @@ namespace Real {
     enum struct PhysicsBackendType {
         PhysX,
         Bullet,
+    };
+
+    struct EngineConfig {
+        bool editorMode = true;
+        core::WindowConfig windowConfig;
+        RendererConfig rendererConfig;
+        API apiType;
+        RendererType rendererType;
+        PhysicsBackendType physicsBackendType;
+    };
+
+    struct CoreSystems {
+        std::unique_ptr<core::IWindow> window;
+        std::unique_ptr<core::IPlatform> platform;
+        std::unique_ptr<core::IRenderer> renderer;
+        std::unique_ptr<physics::IPhysicsBackend> physicsBackend;
+        std::unique_ptr<graphics::debug::DebugRenderer> debugRenderer;
+        std::unique_ptr<Scene> scene;
+        std::unique_ptr<core::SystemManager> systems;
+        std::unique_ptr<RealTimeTimer> timer;
+    };
+
+    struct AssetSystems {
+        std::unique_ptr<AssetManager> assetManager;
+        std::unique_ptr<MeshManager> meshManager;
+        std::unique_ptr<ResourceLoader> resourceLoader;
+        std::unique_ptr<AssetImporter> assetImporter;
     };
 
     struct TextureData {

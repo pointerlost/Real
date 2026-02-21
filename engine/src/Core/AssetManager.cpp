@@ -313,8 +313,8 @@ namespace Real {
         return name;
     }
 
-    Vector<GLuint64> AssetManager::UploadTexturesToGPU() {
-        Vector<GLuint64> bindlessIDs;
+    Vector<graphics::BindlessHandle> AssetManager::UploadTexturesToGPU() {
+        Vector<graphics::BindlessHandle> bindlessIDs;
         for (const auto& tex : std::views::values(m_Textures)) {
             if (tex->GetImageFormatState() == ImageFormatState::DEFAULT) continue;
             tex->PrepareOptionsAndUploadToGPU();

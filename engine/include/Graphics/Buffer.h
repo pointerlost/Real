@@ -2,11 +2,19 @@
 // Created by pointerlost on 10/12/25.
 //
 #pragma once
-#include "glad/glad.h"
-#include <cstring>
+#include "RenderTypes.h"
 #include "Common/RealEnum.h"
 #include "Common/RealTypes.h"
 #include "Core/Logger.h"
+
+/*
+ *
+ *
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * GLAD INCLUDES SHOULD REMOVED FROM THIS FILE!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *
+ */
 
 namespace Real::opengl {
 
@@ -15,14 +23,14 @@ namespace Real::opengl {
         Buffer(const Buffer&) = default;
         ~Buffer();
 
-        [[nodiscard]] const GLuint& GetHandle() const {
+        [[nodiscard]] const graphics::BufferHandle& GetHandle() const {
             if (m_Buffer == 0) { Warn("Buffer doesn't exists! from: " + String(__FILE__)); }
             return m_Buffer;
         }
 
         // Multiple data upload
         template <typename T>
-        void Create(const Vector<T>& data, GLsizeiptr size, BufferType type) {
+        void Create(const Vector<T>& data, size_t size, BufferType type) {
             CleanResources();
             m_Size = size;
             Create(data, type);
@@ -30,14 +38,14 @@ namespace Real::opengl {
 
         // Single data upload
         template <typename T>
-        void Create(const T& data, GLsizeiptr size, BufferType type) {
+        void Create(const T& data, size_t size, BufferType type) {
             CleanResources();
             m_Size = size;
             Create(Vector{data}, type);
         }
 
         template <typename T>
-        void UploadToGPU(const Vector<T>& data, GLsizeiptr size, BufferType type) {
+        void UploadToGPU(const Vector<T>& data, size_t size, BufferType type) {
             if (data.empty()) return;
             if (type == BufferType::SSBO) {
                 if (m_Size <= size) {
@@ -65,13 +73,13 @@ namespace Real::opengl {
             }
         }
 
-        void Bind(GLenum target, BufferType type, GLuint bindingPoint) const;
+        void Bind(uint32_t target, BufferType type, graphics::BindingPoint bindingPoint) const;
 
     private:
-        GLuint m_Buffer = 0;
+        graphics::BufferHandle m_Buffer = 0;
         void* m_Ptr = nullptr;
-        GLsizeiptr m_Size = 0;
-        GLbitfield m_Flags = GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
+        size_t m_Size = 0;
+        uint32_t m_Flags = GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
 
     private:
         template <typename T>

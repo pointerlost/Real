@@ -4,11 +4,10 @@
 #pragma once
 #include <vector>
 #include <glm/vec2.hpp>
+#include "RenderTypes.h"
 #include "Common/RealEnum.h"
 #include "Common/RealTypes.h"
-#include "Core/Utils.h"
 #include "Core/UUID.h"
-#include "glad/glad.h"
 
 namespace Real {
 
@@ -55,7 +54,7 @@ namespace Real {
         [[nodiscard]] std::pair<int, int> GetResolution(int mipLevel);
         [[nodiscard]] u32 GetIndex() const { return m_GPUIndex; }
         [[nodiscard]] bool HasBindlessID() const { return m_BindlessHandleID != 0; }
-        [[nodiscard]] GLuint64 GetBindlessHandle() const { return m_BindlessHandleID; }
+        [[nodiscard]] graphics::BindlessHandle GetBindlessHandle() const { return m_BindlessHandleID; }
         [[nodiscard]] TextureData& GetLevelData(int mipLevel);
         [[nodiscard]] ImageFormatState GetImageFormatState() const { return m_ImageFormatState; }
         [[nodiscard]] int GetInternalFormat(int mipLevel) const { return m_MipLevelsData[mipLevel].internalFormat; }
@@ -64,7 +63,7 @@ namespace Real {
         [[nodiscard]] int GetChannelCount(int mipLevel) const { return m_MipLevelsData[mipLevel].channelCount; }
         int& GetChannelCount(int mipLevel) { return m_MipLevelsData[mipLevel].channelCount; }
         [[nodiscard]] UUID GetUUID() const { return m_UUID; }
-        [[nodiscard]] GLuint GetHandle() const { return m_Handle; }
+        [[nodiscard]] graphics::TextureHandle GetHandle() const { return m_Handle; }
 
         [[maybe_unused]] TextureData LoadFromFile(const String& path);
         void Create();
@@ -80,8 +79,8 @@ namespace Real {
         [[nodiscard]] bool IsHandleExist() const;
 
     private:
-        GLuint m_Handle = 0;
-        GLuint64 m_BindlessHandleID = 0;
+        graphics::TextureHandle m_Handle = 0;
+        graphics::BindlessHandle m_BindlessHandleID = 0;
         UUID m_UUID{};
 
         bool m_IsSTBAllocated = false;

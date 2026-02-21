@@ -5,11 +5,15 @@
 
 #include "Core/Window/GLFWwindow.h"
 #include "../../../../apps/editor/include/Editor.h"
+#include "Core/Services.h"
+#include "Core/Window/GLFWPlatform.h"
+#include "Graphics/ModelLoader.h"
 #include "Physics/Physx/PhysXBackend.h"
-#include "Platform/opengl/OpenGLBackend.h"
+#include "Platform/opengl/OpenGLRenderDevice.h"
 #include "Platform/opengl/OpenGLRenderer.h"
-#include "Platform/vulkan/VkBackend.h"
+#include "Platform/vulkan/VkRenderDevice.h"
 #include "Platform/vulkan/VkRenderer.h"
+#include "Resource/ResourceLoader.h"
 #include "Scene/Scene.h"
 #include "Scene/Systems/CameraSystem.h"
 #include "Scene/Systems/LightSystem.h"
@@ -21,30 +25,47 @@
 
 namespace Real::core {
 
-    Scope<EngineCore> EngineBootstrap::Build(const EngineConfig &cfg) {
-        auto window = CreateWindow(cfg);
-        auto graphicsBackend = CreateGraphicsBackend(cfg, *window);
-        auto physicsBackend = CreatePhysicsBackend(cfg);
-        auto scene = CreateScope<Scene>();
+    Scope<EngineCore> EngineBootstrap::Build(const EngineConfig &cfg)
+    {
+        auto cs = BuildCoreSystems(cfg);
+        auto as = BuildAssetSystems();
 
-        auto systems = CreateScope<SystemManager>();
-        RegisterSystems(systems.get(), std::move(physicsBackend));
-        systems->OnSceneAttach(scene->GetRegistry(), scene->GetEvents());
+        return CreateScope<EngineCore>(cs, as);
+    }
 
-        auto editorTimer = CreateScope<RealTimeTimer>();
-        auto editor = CreateScope<UI::Editor>(window.get());
+    CoreSystems EngineBootstrap::BuildCoreSystems(const EngineConfig &cfg) {
+        CoreSystems cs;
 
-        auto renderer = CreateRenderer(cfg, *window);
+        cs.window = CreateWindow(cfg);
+        cs.platform = CreatePlatform(cfg);
 
-        return CreateScope<EngineCore>(
-            std::move(window),
-            std::move(graphicsBackend),
-            std::move(renderer),
-            std::move(scene),
-            std::move(systems),
-            cfg.editorMode ? std::move(editor) : nullptr,
-            std::move(editorTimer)
-        );
+        auto renderDevice = CreateRenderDevice(cfg, *cs.window);
+        cs.renderer = CreateRenderer(std::move(renderDevice), cfg);
+
+        cs.physicsBackend = CreatePhysicsBackend(cfg);
+
+        cs.scene = CreateScope<Scene>();
+
+        cs.systems = CreateScope<SystemManager>();
+        RegisterSystems(cs.systems.get(), *cs.physicsBackend);
+        cs.systems->OnSceneAttach(cs.scene->GetRegistry(), cs.scene->GetEvents());
+
+        cs.timer = CreateScope<RealTimeTimer>();
+
+        cs.debugRenderer = CreateScope<graphics::debug::DebugRenderer>();
+
+        return cs;
+    }
+
+    AssetSystems EngineBootstrap::BuildAssetSystems() {
+        AssetSystems as;
+
+        as.assetManager   = CreateScope<AssetManager>();
+        as.meshManager    = CreateScope<MeshManager>();
+        as.resourceLoader = CreateScope<ResourceLoader>();
+        as.assetImporter  = CreateScope<AssetImporter>();
+
+        return as;
     }
 
     Scope<IWindow> EngineBootstrap::CreateWindow(const EngineConfig &cfg) {
@@ -53,21 +74,32 @@ namespace Real::core {
             case WindowType::glfw:
                 return CreateScope<platform::glfw::GLFWWindow>(cfg);
             case WindowType::sdl:
-                throw std::runtime_error("SDL unsupported for now!");
+                throw std::runtime_error("SDL unsupported for now! Window can't initialized, change to GLFW");
 
             default:
                 throw std::runtime_error("Unsupported Window library!");
         }
     }
 
-    Scope<IGraphicsBackend> EngineBootstrap::CreateGraphicsBackend(const EngineConfig &cfg, IWindow &window) {
+    Scope<IPlatform> EngineBootstrap::CreatePlatform(const EngineConfig &cfg) {
+        switch (cfg.windowConfig.type) {
+            case WindowType::glfw:
+                return CreateScope<platform::GLFWPlatform>();
+            case WindowType::sdl:
+                throw std::runtime_error("SDL unsupported for now! Platform can't initialized, change to GLFW");
+                // return CreateScope<platform::GLFWPlatform>();
+            default: ;
+        }
+    }
+
+    Scope<IRenderDevice> EngineBootstrap::CreateRenderDevice(const EngineConfig &cfg, IWindow &window) {
         switch (cfg.apiType)
         {
             case API::OpenGL:
-                return CreateScope<platform::opengl::OpenGLBackend>(window.GetNativeHandle(), cfg.rendererConfig);
+                return CreateScope<platform::opengl::OpenGLRenderDevice>(window.GetNativeHandle(), cfg.rendererConfig);
 
             case API::Vulkan:
-                return CreateScope<platform::vk::VkBackend>(window.GetNativeHandle(), cfg.rendererConfig);
+                return CreateScope<platform::vk::VkRenderDevice>(window.GetNativeHandle(), cfg.rendererConfig);
 
             default:
                 throw std::runtime_error("Unsupported graphics API!");
@@ -88,23 +120,23 @@ namespace Real::core {
         }
     }
 
-    Scope<IRenderer> EngineBootstrap::CreateRenderer(const EngineConfig &cfg, IWindow &window) {
+    Scope<IRenderer> EngineBootstrap::CreateRenderer(Scope<IRenderDevice> graphicsBackend, const EngineConfig &cfg) {
         switch (cfg.rendererType)
         {
             case RendererType::OpenGL:
-                return CreateScope<platform::opengl::OpenGLRenderer>();
+                return CreateScope<platform::opengl::OpenGLRenderer>(graphicsBackend);
 
             case RendererType::Vulkan:
-                return CreateScope<platform::vk::VkRenderer>();
+                return CreateScope<platform::vk::VkRenderer>(graphicsBackend);
 
             default:
                 throw std::runtime_error("Unsupported renderer type");
         }
     }
 
-    void EngineBootstrap::RegisterSystems(SystemManager *sysMngr, Scope<physics::IPhysicsBackend> physicsBackend) {
+    void EngineBootstrap::RegisterSystems(SystemManager *sysMngr, physics::IPhysicsBackend& physicsBackend) {
         sysMngr->AddSystem(CreateScope<ecs::CameraSystem>());
-        sysMngr->AddSystem(CreateScope<ecs::PhysicsSystem>(std::move(physicsBackend)));
+        sysMngr->AddSystem(CreateScope<ecs::PhysicsSystem>(physicsBackend));
         sysMngr->AddSystem(CreateScope<ecs::MovementSystem>());
         sysMngr->AddSystem(CreateScope<ecs::MeshRendererSystem>());
         sysMngr->AddSystem(CreateScope<ecs::LightSystem>());

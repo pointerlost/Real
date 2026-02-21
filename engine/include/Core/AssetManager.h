@@ -7,9 +7,10 @@
 #include "UUID.h"
 #include "Common/RealEnum.h"
 #include "Common/RealTypes.h"
-#include "Graphics/Shader.h"
+#include "Graphics/RenderTypes.h"
 
 namespace Real {
+    class Shader;
     struct OpenGLTexture;
     struct Model;
     struct Material;
@@ -62,7 +63,7 @@ namespace Real {
         /* ********************************** LOADING STATE ************************************ */
         void Update();
         void LoadShader(const String& vertexPath, const String& fragmentPath, const String& name);
-        [[nodiscard]] Vector<GLuint64> UploadTexturesToGPU();
+        [[nodiscard]] Vector<graphics::BindlessHandle> UploadTexturesToGPU();
 
     private:
         std::unordered_map<String, Shader> m_Shaders; // TODO: Use UUIDs to store shaders??

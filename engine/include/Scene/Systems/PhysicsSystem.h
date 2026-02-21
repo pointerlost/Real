@@ -23,7 +23,7 @@ namespace Real::ecs {
 
     class PhysicsSystem final : public ISystem, public ISceneListener {
     public:
-        explicit PhysicsSystem(Scope<physics::IPhysicsBackend> backend);
+        explicit PhysicsSystem(physics::IPhysicsBackend& backend);
         void Init() override;
         void Update(entt::registry& registry, f32 deltaTime) override;
         void Shutdown() override;
@@ -48,7 +48,7 @@ namespace Real::ecs {
         void SyncCollider(entt::entity& entity);
 
     private:
-        Scope<physics::IPhysicsBackend> m_Backend;
+        physics::IPhysicsBackend& m_Backend;
         entt::registry* m_Registry = nullptr;
     };
 

@@ -3,10 +3,13 @@
 //
 #pragma once
 #include "Core/Utils.h"
-#include "entt/entt.hpp"
 #include "Core/UUID.h"
 #include "Event/SceneEvents.h"
 #include "Graphics/Light.h"
+
+namespace Real::core {
+    class IRenderer;
+}
 
 namespace Real {
     class Entity;
@@ -22,7 +25,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update(const opengl::OpenGLRenderer* renderer);
+        void Update(const core::IRenderer* renderer);
 
         Entity& CreateEntity(const String& tag = String());
         void DestroyEntity(entt::entity entity);

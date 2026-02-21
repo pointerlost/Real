@@ -31,8 +31,7 @@ namespace Real::Input {
 
     f32 GetScroll() { return static_cast<f32>(g_Scroll); }
 
-    void Update(CameraInput* cameraInput) {
-
+    void Update() {
         for (int i = 0; i < REAL_KEY_COUNT; i++) {
             // Reset keyboard state
             g_KeyPressed[i] = false;
@@ -52,9 +51,6 @@ namespace Real::Input {
             }
             g_KeyLastDown[i] = g_KeyCurrDown[i];
         }
-
-        // Update Camera movement
-        cameraInput->Update();
     }
 
     bool IsKeyPressed(int key) {

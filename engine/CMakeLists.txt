@@ -9,20 +9,18 @@ find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
 # Must create the library first
-add_library(engine STATIC)
+add_library(engine STATIC
+        include/Core/IApplication.h
+        include/Graphics/RenderTypes.h)
 
 target_sources(engine PRIVATE
-    include/Core/IGraphicsBackend.h
+        include/Core/IRenderDevice.h
     src/Platform/vulkan/VkRenderer.cpp
     include/Platform/vulkan/VkRenderer.h
-    src/Platform/vulkan/VkBackend.cpp
-    include/Platform/vulkan/VkBackend.h
-        ../apps/editor/include/EditorApplication.h
-        ../apps/editor/src/EditorApplication.cpp
+        src/Platform/vulkan/VkRenderDevice.cpp
+        include/Platform/vulkan/VkRenderDevice.h
     src/Core/file_manager.cpp
     include/Core/Logger.h
-    src/Core/Engine.cpp
-    include/Core/Engine.h
     include/Core/Utils.h
     include/Timer/Timer.h
     src/Timer/Timer.cpp
@@ -45,8 +43,6 @@ target_sources(engine PRIVATE
     src/Scene/Scene.cpp
     include/Input/Input.h
     src/Input/Input.cpp
-    include/Core/Callback.h
-    src/Core/Callback.cpp
     include/Input/Keycodes.h
     include/Input/CameraInput.h
     src/Input/CameraInput.cpp
@@ -55,8 +51,6 @@ target_sources(engine PRIVATE
     include/Core/UUID.h
     src/Core/UUID.cpp
     src/Scene/Entity.cpp
-        ../apps/editor/include/EditorState.h
-        ../apps/editor/src/EditorState.cpp
     src/Graphics/Transformations.cpp
     include/Graphics/Light.h
     src/Graphics/Light.cpp
@@ -69,13 +63,6 @@ target_sources(engine PRIVATE
     src/Graphics/RenderContext.cpp
     include/Graphics/RenderCommand.h
     src/Graphics/Material.cpp
-        ../apps/editor/src/Editor.cpp
-        ../apps/editor/include/Editor.h
-        ../apps/editor/include/InspectorPanel.h
-        ../apps/editor/include/HierarchyPanel.h
-        ../apps/editor/include/IPanel.h
-        ../apps/editor/src/InspectorPanel.cpp
-        ../apps/editor/src/HierarchyPanel.cpp
     ../vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
@@ -150,12 +137,10 @@ target_sources(engine PRIVATE
     src/Graphics/Debug/DebugRenderer.cpp
     include/Graphics/Debug/DebugMeshFactory.h
     src/Graphics/Debug/DebugMeshFactory.cpp
-        ../apps/editor/src/ViewportPanel.cpp
-        ../apps/editor/include/ViewportPanel.h
     include/Graphics/Debug/DebugTypes.h
     include/Math/Conversions/GLMConvertions.h
     src/Math/Convertions/GLMConvertions.cpp
-    include/Physics/IPhysicsBackend.h
+        include/Core/IPhysicsBackend.h
     include/Physics/Physx/PhysXBackend.h
     src/Physics/PhysX/PhysXBackend.cpp
     include/Physics/PhysicsDescriptors.h
@@ -164,23 +149,20 @@ target_sources(engine PRIVATE
     include/Core/Window/IWindow.h
     include/Core/Engine/EngineCore.h
     src/Core/Engine/EngineCore.cpp
-    include/Platform/opengl/OpenGLRenderer.h
+        include/Platform/opengl/OpenGLRenderer.h
     src/Platform/opengl/OpenGLRenderer.cpp
     include/Core/IRenderer.h
     include/Core/Engine/EngineBootstrap.h
     include/Core/Window/GLFWwindow.h
     src/Core/Window/GLFWwindow.cpp
     include/Core/ITimer.h
-    include/Core/IGPUUploader.h
-        ../apps/editor/include/IEditor.h
-    include/Core/IGPUUploader.h
     src/Core/Engine/EngineBootstrap.cpp
     include/Core/Window/WindowConfig.h
     include/Core/IPlatform.h
     include/Core/Window/GLFWPlatform.h
     src/Core/Window/GLFWPlatform.cpp
-    include/Platform/opengl/OpenGLBackend.h
-    src/Platform/opengl/OpenGLBackend.cpp
+        include/Platform/opengl/OpenGLRenderDevice.h
+        src/Platform/opengl/OpenGLRenderDevice.cpp
 )
 
 set(SHADERS_DIR shaders)

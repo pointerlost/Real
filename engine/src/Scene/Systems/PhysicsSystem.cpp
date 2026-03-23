@@ -2,6 +2,8 @@
 // Created by pointerlost on 1/14/26.
 //
 #include <Scene/Systems/PhysicsSystem.h>
+#include "Core/IPhysicsBackend.h"
+#include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Physics/Physx/PhysXBackend.h"
 #include "Graphics/Debug/DebugRenderer.h"
@@ -11,7 +13,7 @@
 
 namespace Real::ecs {
 
-    PhysicsSystem::PhysicsSystem(physics::IPhysicsBackend& backend)
+    PhysicsSystem::PhysicsSystem(core::IPhysicsBackend& backend)
         : m_Backend(backend)
     {
     }

@@ -2,6 +2,8 @@
 // Created by pointerlost on 10/10/25.
 //
 #include "Graphics/Light.h"
+
+#include "Graphics/GPUBuffers.h"
 #include "Graphics/Transformations.h"
 
 namespace Real {
@@ -12,15 +14,13 @@ namespace Real {
     void Light::Update(Transform& transform) {
     }
 
-    LightSSBO Light::ConvertToGPUFormat(const Transform& transform) {
-        LightSSBO gpuData{};                                // Convert angles to cosine
-        gpuData.pos_cutoff = math::Vec4(transform.position,  math::cos(math::DegreesToRadians(m_CutOff)));      // Inner cone
-        gpuData.dir_outer  = math::Vec4(transform.Forward(), math::cos(math::DegreesToRadians(m_OuterCutOff))); // Outer cone
-        gpuData.radiance   = math::Vec4(m_Radiance, 1.0); // w unused
-        gpuData.constant   = m_Constant;
-        gpuData.linear     = m_Linear;
-        gpuData.quadratic  = m_Quadratic;
-        gpuData.type       = static_cast<int>(m_Type);
-        return gpuData;
+    void Light::ConvertToGPUFormat(const Transform& transform, LightSSBO& outData) {
+        outData.pos_cutoff = math::Vec4(transform.position,  math::cos(math::DegreesToRadians(m_CutOff)));      // Inner cone
+        outData.dir_outer  = math::Vec4(transform.Forward(), math::cos(math::DegreesToRadians(m_OuterCutOff))); // Outer cone
+        outData.radiance   = math::Vec4(m_Radiance, 1.0); // w unused
+        outData.constant   = m_Constant;
+        outData.linear     = m_Linear;
+        outData.quadratic  = m_Quadratic;
+        outData.type       = static_cast<int>(m_Type);
     }
 }

@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <thread>
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real {
 

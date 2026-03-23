@@ -2,40 +2,53 @@
 // Created by pointerlost on 2/16/26.
 //
 #include <Core/Engine/EngineCore.h>
-#include "Core/IApplication.h"
-#include "Core/IRenderer.h"
-#include "Core/IPlatform.h"
-#include "Core/IPhysicsBackend.h"
-#include "Core/Window/IWindow.h"
+#include "Scene/Scene.h"
+#include "Graphics/Shader.h"
 #include "Input/Input.h"
+#include <stdexcept>
+
+#include "Core/Logger.h"
 
 namespace Real::core {
 
-    EngineCore::EngineCore(CoreSystems& cs, AssetSystems& as)
-        : m_Window(std::move(cs.window)),
-        m_Platform(std::move(cs.platform)),
-        m_Renderer(std::move(cs.renderer)),
-        m_PhysicsBackend(std::move(cs.physicsBackend)),
-        m_DebugRenderer(std::move(cs.debugRenderer)),
-        m_Scene(std::move(cs.scene)),
-        m_Systems(std::move(cs.systems)),
-        m_Timer(std::move(cs.timer)),
-        m_AssetManager(std::move(as.assetManager)),
-        m_MeshManager(std::move(as.meshManager)),
-        m_ResourceLoader(std::move(as.resourceLoader)),
-        m_AssetImporter(std::move(as.assetImporter))
+    EngineCore::EngineCore(Scope<CoreSystems> cs, Scope<AssetSystems> as, Scope<IApplication> application)
+        : m_Application(std::move(application)),
+          m_Core(std::move(cs)),
+          m_Assets(std::move(as))
     {
     }
 
     void EngineCore::Start() {
-        m_Timer->Start();
+        Timer().Start();
+
+        m_Core->systems->Init();
+
+        // systems attach to the active scene before the loop begins
+        Systems().OnSceneAttach(
+            ActiveScene().GetRegistry(),
+            ActiveScene().GetEvents()
+        );
+
+        m_Assets->meshManager->InitResources();
+
+        m_Core->renderer->Init();
+        Info("Shit");
+
+        m_Assets->resourceLoader->Load();
+        Info("Shit");
+
+        m_Core->debugRenderer->Init();
+
+        m_Assets->assetManager->UploadTexturesToGPU();
+        Info("Shit");
     }
 
     void EngineCore::RunLoop() {
         if (!m_Application)
             throw std::runtime_error("Application not set");
 
-        m_Application->Init();
+        InitApplication();
+        InitRendererBackend();
 
         while (!ShouldClose()) {
             StartPhase();
@@ -44,42 +57,61 @@ namespace Real::core {
             EndPhase();
         }
 
-        m_Application->Shutdown();
+        ShutdownApplication();
+        ShutdownRendererBackend();
     }
 
     void EngineCore::Stop() {
     }
 
-    void EngineCore::SetApplication(Scope<IApplication> application) {
-        m_Application = std::move(application);
+    Scene& EngineCore::ActiveScene() const noexcept {
+        auto* scene = Scenes().GetActiveScene();
+        assert(scene && "No active scene");
+        return *scene;
     }
 
     void EngineCore::StartPhase() const {
-        m_Window->PollEvents();
-        m_Renderer->BeginFrame();
+        Window().PollEvents();
+        Renderer().BeginFrame();
     }
 
     void EngineCore::UpdatePhase() const {
-        const auto dt = static_cast<float>(m_Timer->GetDelta());
+        const auto dt = static_cast<f32>(Timer().GetDelta());
 
         Input::Update();
-        m_AssetImporter->Update();
-        m_AssetManager->Update();
-        m_Systems->Update(m_Scene->GetRegistry(), dt);
+        Importer().Update();
+        Assets().Update();
+        Systems().Update(ActiveScene().GetRegistry(), dt);
 
         m_Application->Update(dt);
 
-        m_Scene->Update(m_Renderer.get());
-        Services::GetDebugRenderer()->Update();
+        ActiveScene().Update(&Renderer());
     }
 
     void EngineCore::RenderPhase() const {
+        Renderer().Render(&ActiveScene(), ActiveScene().GetActiveCamera());
     }
 
     void EngineCore::EndPhase() {
+        Renderer().EndFrame();
     }
 
-    bool EngineCore::ShouldClose() const {
-        return m_ShouldStop || m_Window->ShouldClose();
+    void EngineCore::InitApplication() {
+        m_Application->Init();
+    }
+
+    void EngineCore::ShutdownApplication() {
+        m_Application->Shutdown();
+    }
+
+    void EngineCore::InitRendererBackend() {
+        Renderer().Init();
+    }
+
+    void EngineCore::ShutdownRendererBackend() {
+    }
+
+    bool EngineCore::ShouldClose() {
+        return m_ShouldStop || Window().ShouldClose();
     }
 }

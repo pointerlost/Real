@@ -3,16 +3,8 @@
 //
 #pragma once
 
-namespace Real::opengl {
-    class OpenGLRenderer;
-}
-
 namespace Real {
     class Scene;
-}
-
-namespace Real::Graphics {
-    class Window;
 }
 
 namespace Real::UI {

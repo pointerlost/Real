@@ -5,12 +5,9 @@
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Scene/Components.h"
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/string_cast.hpp>
-
 #include "Core/Services.h"
-#include "../../include/Timer/Timer.h"
-#include "../../../apps/editor/include/EditorState.h"
+#include "../apps/editor/include/EditorState.h"
+#include "Scene/Entity.h"
 
 namespace Real {
 
@@ -18,6 +15,7 @@ namespace Real {
     }
 
     void CameraInput::Update() {
+        // TODO: Remove this shit because the engine is tightly coupled with the editor.
         if (!Services::GetEditorState()->FpsMode) return;
 
         auto& camera   = m_Camera->GetComponent<CameraComponent>().m_Camera;

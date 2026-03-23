@@ -6,8 +6,8 @@
 #include <assimp/scene.h>
 #include <string>
 #include <unordered_map>
-#include "Texture.h"
-#include "Common/RealTypes.h"
+#include "Texture/Texture.h"
+#include "Common/Types.h"
 #include "Core/Utils.h"
 
 namespace Real {

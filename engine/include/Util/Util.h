@@ -6,13 +6,12 @@
 #include "compressonator/include/cmp_compressonatorlib/compressonator.h"
 #include "glad/include/glad/glad.h"
 #include <assimp/material.h>
-#include "Graphics/Texture.h"
+#include "Graphics/Texture/Texture.h"
 #include <PxActor.h>
 
 namespace Real {
     struct Transform;
 
-    struct TextureData;
     enum class TextureFilterMode;
     enum class TextureResolution;
     enum class TextureType;
@@ -27,8 +26,6 @@ namespace Real {
         enum class ColliderShape;
     }
 }
-
-namespace Real { struct FileInfo; }
 
 namespace Real::util {
     /* ***************************************** TEXTURE STATE  ************************************** */
@@ -49,10 +46,14 @@ namespace Real::util {
     int GetGLFormat(int channelCount, bool srgb = false);
     int GetCompressedInternalFormat(int channelCount);
     int GetGLInternalFormat(int channelCount, bool srgb = false);
-    TextureData ExtractChannel(const TextureData& data, int channelIndex);
-    TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex);
-    TextureData ExtractChannels(const TextureData& data, const Vector<int>& wantedChannels);
-    TextureData ExtractChannels(void* data, int width, int height, int channels, const Vector<int>& wantedChannels);
+
+    graphics::TextureData ExtractChannel(const graphics::TextureData& data, int channelIndex);
+
+    graphics::TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex);
+
+    graphics::TextureData ExtractChannels(const graphics::TextureData& data, const Vector<int>& wantedChannels);
+
+    graphics::TextureData ExtractChannels(void* data, int width, int height, int channels, const Vector<int>& wantedChannels);
 
     /* ***************************************** APIs DEBUG STATE  ************************************** */
     void DebugGLError();

@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <nlohmann/json.hpp>
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real::serialization::json {
     void Save(const String& path, const nlohmann::json& j);

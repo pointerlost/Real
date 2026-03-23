@@ -4,7 +4,7 @@
 #include "../include/InspectorPanel.h"
 #include <imgui.h>
 // TODO: Removed GLM_ENABLE_EXPERIMENTAL if i get error come back!
-#include "Core/AssetManager.h"
+#include "../../../engine/include/Assets/AssetManager.h"
 #include "Core/Services.h"
 #include "../include/Editor.h"
 #include "../include/EditorState.h"
@@ -14,6 +14,9 @@
 #include "Scene/Scene.h"
 
 namespace Real::UI {
+
+    InspectorPanel::InspectorPanel() {
+    }
 
     void InspectorPanel::OnImGuiRender() {
         ImGui::SetNextWindowSize(ImVec2(m_SizeX, m_SizeY));

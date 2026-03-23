@@ -4,7 +4,7 @@
 #pragma once
 #include "IPanel.h"
 #include "Core/RealConfig.h"
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real::UI {
     class Editor;
@@ -14,7 +14,7 @@ namespace Real::UI {
 
     class HierarchyPanel final : public IPanel {
     public:
-        explicit HierarchyPanel();
+        HierarchyPanel();
         void OnImGuiRender() override;
         void OnSceneAttached(Scene *scene) override;
 

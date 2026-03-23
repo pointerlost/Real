@@ -2,8 +2,8 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Scene/Scene.h"
-#include "Core/AssetManager.h"
-#include "Core/IRenderer.h"
+#include "../../include/Assets/AssetManager.h"
+#include "../../include/RHI/IRenderer.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
@@ -76,8 +76,6 @@ namespace Real {
     }
 
     void Scene::Update(const core::IRenderer* renderer) {
-        // Upload GPU data
-        renderer->GetRenderContext()->CollectRenderables();
     }
 
     Entity& Scene::CreateEntity(const String &tag) {

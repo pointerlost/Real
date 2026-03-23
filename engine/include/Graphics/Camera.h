@@ -2,13 +2,12 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include <glm/ext.hpp>
-#include "../Core/RealConfig.h"
-#include "GPUBuffers.h"
+#include "Core/RealConfig.h"
 #include "Math/Mat4.h"
 #include "Math/Vec3.h"
 
 namespace Real {
+    struct FrameUBO;
     struct Transform;
 }
 
@@ -47,7 +46,7 @@ namespace Real {
         [[nodiscard]] math::Mat4 GetViewProjection() const { return m_Projection * m_View; }
 
         void Update(Transform& transform);
-        [[nodiscard]] FrameUBO ConvertToGPUFormat(const Transform& transform);
+        void ConvertToGPUFormat(const Transform& transform, FrameUBO& outData);
 
     private:
         f32 m_Near = 0.1;

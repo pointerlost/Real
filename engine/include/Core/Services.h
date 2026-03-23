@@ -23,9 +23,9 @@ namespace Real::Services {
 }
 
 namespace Real::Services {
-    AssetManager *GetAssetManager();
-    MeshManager *GetMeshManager();
-    EditorState* GetEditorState();
-    AssetImporter* GetAssetImporter();
+    AssetManager  *GetAssetManager();
+    MeshManager   *GetMeshManager();
+    EditorState   *GetEditorState();
+    AssetImporter *GetAssetImporter();
     graphics::debug::DebugRenderer* GetDebugRenderer();
 }

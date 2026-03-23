@@ -3,6 +3,8 @@
 //
 #pragma once
 
+namespace Real::core { class IApplicationContext; }
+
 namespace Real::core {
 
     class IApplication {
@@ -13,5 +15,6 @@ namespace Real::core {
         virtual void Update(float /* dt */) = 0;
         virtual void Render() = 0;
         virtual void Shutdown() = 0;
+        virtual IApplicationContext& GetContext() = 0;
     };
 }

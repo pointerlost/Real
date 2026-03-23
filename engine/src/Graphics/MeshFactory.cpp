@@ -2,15 +2,14 @@
 // Created by pointerlost on 10/4/25.
 //
 #include "Graphics/MeshFactory.h"
-#include <Graphics/MeshManager.h>
-
+#include "Graphics/RenderTypes.h"
 #include "Math/Vec2.h"
 #include "Math/Vec3.h"
 
 namespace Real {
 
-    std::pair<Vector<Vertex>, Vector<u32>> MeshFactory::CreateTriangle() {
-        Vector<Vertex> vertices = {
+    std::pair<Vector<graphics::Vertex>, Vector<u32>> MeshFactory::CreateTriangle() {
+        Vector<graphics::Vertex> vertices = {
             { math::Vec3(-0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.0f, 0.0f) },
             { math::Vec3( 0.5f, -0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(1.0f, 0.0f) },
             { math::Vec3( 0.0f,  0.5f, 0.0f), math::Vec3(0.0f, 0.0f, 1.0f), math::Vec2(0.5f, 1.0f) }
@@ -21,8 +20,8 @@ namespace Real {
         return std::make_pair(vertices, indices);
     }
 
-    std::pair<Vector<Vertex>, Vector<u32>> MeshFactory::CreateCube() {
-        Vector<Vertex> vertices =
+    std::pair<Vector<graphics::Vertex>, Vector<u32>> MeshFactory::CreateCube() {
+        Vector<graphics::Vertex> vertices =
 		{	// Vertices, Normal, UV
 
 			// Front face (+Z)

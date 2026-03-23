@@ -2,10 +2,12 @@
 // Created by pointerlost on 10/10/25.
 //
 #pragma once
-#include "GPUBuffers.h"
 #include "Math/Vec3.h"
 
-namespace Real { struct Transform; }
+namespace Real {
+    struct LightSSBO;
+    struct Transform;
+}
 
 namespace Real {
 
@@ -41,7 +43,7 @@ namespace Real {
         [[nodiscard]] Mode GetType() const { return m_Type; }
 
         void Update(Transform& transform);
-        [[nodiscard]] LightSSBO ConvertToGPUFormat(const Transform& transform);
+        void ConvertToGPUFormat(const Transform& transform, LightSSBO& outData);
 
     private:
         math::Vec3 m_Radiance = math::Vec3(1.0);

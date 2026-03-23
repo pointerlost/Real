@@ -12,11 +12,6 @@ namespace Real {
     class Camera;
 }
 
-namespace Real::math {
-    struct Mat4;
-    struct Vec3;
-}
-
 namespace Real::graphics::debug {
 
     class DebugRenderer {
@@ -46,9 +41,10 @@ namespace Real::graphics::debug {
         DebugMesh m_SphereMesh;
         DebugMesh m_CylinderMesh;
 
-        GLuint m_VAO = 0;
-        GLuint m_VBO = 0;
-        GLuint m_EBO = 0;
+        BufferHandle m_VAO = 0;
+        BufferHandle m_VBO = 0;
+        BufferHandle m_EBO = 0;
+
         int m_BaseInstance = 0;
         opengl::Buffer m_DebugInstanceBuffer;
         opengl::Buffer m_DebugIndirectBuffer;

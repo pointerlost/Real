@@ -2,6 +2,8 @@
 // Created by pointerlost on 2/12/26.
 //
 #include <Physics/Physx/PhysXBackend.h>
+
+#include "Core/Logger.h"
 #include "Graphics/Debug/DebugRenderer.h"
 #include "Math/Vec2.h"
 #include "Physics/PhysicsDescriptors.h"

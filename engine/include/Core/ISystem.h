@@ -2,7 +2,7 @@
 // Created by pointerlost on 2/14/26.
 //
 #pragma once
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 #include "entt/entt.hpp"
 
 namespace Real {

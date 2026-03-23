@@ -2,7 +2,7 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 constexpr int REAL_KEY_COUNT = 349;
 namespace Real { class CameraInput; }

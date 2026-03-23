@@ -21,7 +21,13 @@ namespace Real::core {
         SystemManager& operator=(const SystemManager&) = delete;
 
     public:
-        void AddSystem(Scope<ISystem> system);
+        template <typename T, typename... Args>
+        T* AddSystem(Args&&... args) {
+            auto system = CreateScope<T>(std::forward<Args>(args)...);
+            T* raw = system.get(); // typed as T* before erasure
+            m_Systems.push_back(std::move(system));
+            return raw;
+        }
 
         void Init();
         void Update(entt::registry& registry, f32 dt);

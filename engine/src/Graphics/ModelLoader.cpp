@@ -8,10 +8,10 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Common/Macros.h"
-#include "Core/AssetImporter.h"
-#include "Core/AssetManager.h"
+#include "Assets/AssetImporter.h"
+#include "Assets/AssetManager.h"
 #include "Core/CMakeConfig.h"
-#include "Core/file_manager.h"
+#include "Assets/FileManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
@@ -316,6 +316,7 @@ namespace Real {
             const auto tex = Create(td, path, type);
             AddTextureToMaterial(tex, material);
             SaveModelTextureAsFile(tex);
+            Services::GetAssetImporter()->SaveTextureToAssetDB(tex.get());
             return tex;
         };
 

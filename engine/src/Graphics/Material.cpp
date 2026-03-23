@@ -2,9 +2,9 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/Material.h"
-#include "Core/AssetManager.h"
+#include "../../include/Assets/AssetManager.h"
 #include "Core/Services.h"
-#include "Graphics/Texture.h"
+#include "../../include/Graphics/Texture/Texture.h"
 
 namespace Real {
 
@@ -13,9 +13,8 @@ namespace Real {
     {
     }
 
-    MaterialSSBO MaterialInstance::ConvertToGPUFormat() const {
+    void MaterialInstance::ConvertToGPUFormat(MaterialSSBO& outData) const {
         const auto& am = Services::GetAssetManager();
-        MaterialSSBO gpuData{};
 
         const auto& GetIndex = [&](const UUID& uuid, TextureType type) {
             return am->GetTexture(uuid, type)->GetIndex();
@@ -27,17 +26,15 @@ namespace Real {
         const UUID heightUUID   = m_HeightOverride.value_or(m_Base->m_Height);
         const UUID emissiveUUID = m_EmissiveOverride.value_or(m_Base->m_Emissive);
 
-        gpuData.m_BindlessAlbedoIdx   = static_cast<int>(GetIndex(albedoUUID,   TextureType::ALBEDO));
-        gpuData.m_BindlessNormalIdx   = static_cast<int>(GetIndex(normalUUID,   TextureType::NORMAL));
-        gpuData.m_BindlessORMIdx      = static_cast<int>(GetIndex(ormUUID,      TextureType::ORM));
-        gpuData.m_BindlessHeightIdx   = static_cast<int>(GetIndex(heightUUID,   TextureType::HEIGHT));
-        gpuData.m_BindlessEmissiveIdx = static_cast<int>(GetIndex(emissiveUUID, TextureType::EMISSIVE));
+        outData.m_BindlessAlbedoIdx   = static_cast<int>(GetIndex(albedoUUID,   TextureType::ALBEDO));
+        outData.m_BindlessNormalIdx   = static_cast<int>(GetIndex(normalUUID,   TextureType::NORMAL));
+        outData.m_BindlessORMIdx      = static_cast<int>(GetIndex(ormUUID,      TextureType::ORM));
+        outData.m_BindlessHeightIdx   = static_cast<int>(GetIndex(heightUUID,   TextureType::HEIGHT));
+        outData.m_BindlessEmissiveIdx = static_cast<int>(GetIndex(emissiveUUID, TextureType::EMISSIVE));
 
         // Override colors
-        gpuData.m_BaseColorFactor = m_BaseColorFactor;
-        gpuData.m_ORMFactor = m_ORMFactor;
-
-        return gpuData;
+        outData.m_BaseColorFactor = m_BaseColorFactor;
+        outData.m_ORMFactor = m_ORMFactor;
     }
 
 }

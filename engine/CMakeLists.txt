@@ -8,33 +8,52 @@ find_package(assimp CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(zstd CONFIG REQUIRED)
 
-# Must create the library first
 add_library(engine STATIC
-        include/Core/IApplication.h
-        include/Graphics/RenderTypes.h)
+    include/Core/IApplication.h
+    include/Graphics/RenderTypes.h
+    include/Math/iVec2.h
+    src/Math/iVec2.cpp
+    include/Graphics/FrameBuilder.h
+    src/Graphics/FrameBuilder.cpp
+    include/Graphics/Texture/TextureTypes.h
+    include/Scene/SceneManager.h
+    src/Scene/SceneManager.cpp
+    include/Core/IApplicationContext.h
+        include/RHI/RHITypes.h
+        include/Assets/TextureManager.h
+        include/Assets/ShaderManager.h
+        include/Assets/MaterialFactory.h
+        src/Assets/TextureManager.cpp
+        src/Assets/MaterialFactory.cpp
+        src/Assets/ShaderManager.cpp
+        include/Assets/AssetSystem.h
+        include/Assets/AssetTypes.h
+        include/Platform/OpenGL/OpenGLTypes.h
+        include/RHI/ITexture.h
+)
 
 target_sources(engine PRIVATE
-        include/Core/IRenderDevice.h
-    src/Platform/vulkan/VkRenderer.cpp
-    include/Platform/vulkan/VkRenderer.h
-        src/Platform/vulkan/VkRenderDevice.cpp
-        include/Platform/vulkan/VkRenderDevice.h
-    src/Core/file_manager.cpp
+    include/RHI/IRenderDevice.h
+    src/Platform/Vulkan/VkRenderer.cpp
+    include/Platform/Vulkan/VkRenderer.h
+    src/Platform/Vulkan/VkRenderDevice.cpp
+    include/Platform/Vulkan/VkRenderDevice.h
+    src/Assets/FileManager.cpp
     include/Core/Logger.h
     include/Core/Utils.h
     include/Timer/Timer.h
     src/Timer/Timer.cpp
     include/Graphics/Shader.h
     src/Graphics/Shader.cpp
-    include/Core/AssetManager.h
-    src/Core/AssetManager.cpp
+    include/Assets/AssetManager.h
+    src/Assets/AssetManager.cpp
     include/Graphics/MeshManager.h
     src/Graphics/MeshManager.cpp
     include/Core/Services.h
     src/Core/Services.cpp
     include/Graphics/MeshFactory.h
     src/Graphics/MeshFactory.cpp
-    include/Graphics/Texture.h
+    include/Graphics/Texture/Texture.h
     include/Graphics/Transformations.h
     include/Graphics/Camera.h
     src/Graphics/Camera.cpp
@@ -55,7 +74,7 @@ target_sources(engine PRIVATE
     include/Graphics/Light.h
     src/Graphics/Light.cpp
     include/Graphics/Material.h
-    src/Graphics/Texture.cpp
+    src/Graphics/Texture/Texture.cpp
     include/Graphics/Buffer.h
     src/Graphics/Buffer.cpp
     include/Graphics/GPUBuffers.h
@@ -63,37 +82,36 @@ target_sources(engine PRIVATE
     src/Graphics/RenderContext.cpp
     include/Graphics/RenderCommand.h
     src/Graphics/Material.cpp
-    ../vendor/ImGuizmo/ImGuizmo.cpp
+    ${CMAKE_SOURCE_DIR}/vendor/ImGuizmo/ImGuizmo.cpp
     include/Math/Math.h
     src/Math/Math.cpp
     include/Scene/Systems/SystemsManager.h
     src/Scene/Systems/SystemsManager.cpp
-    include/Platform/opengl/FrameBuffer.h
-    src/Platform/opengl/FrameBuffer.cpp
+    include/Platform/OpenGL/FrameBuffer.h
+    src/Platform/OpenGL/FrameBuffer.cpp
     include/Util/Util.h
     src/Util/Util.cpp
     include/Tools/ImageTools.h
     src/Tools/ImageTools.cpp
-    include/Graphics/TextureArrays.h
-    src/Graphics/TextureArrays.cpp
+    include/Graphics/Texture/TextureArrays.h
+    src/Graphics/Texture/TextureArrays.cpp
     include/Common/Scheduling/Threads.h
     src/Common/Scheduling/Threads.cpp
     include/Common/Macros.h
-    include/Core/Types.h
     include/Common/Scheduling/TaskManager.h
     src/Graphics/ModelLoader.cpp
     include/Graphics/ModelLoader.h
     include/Common/RealEnum.h
     include/Graphics/Model.h
-    include/Resource/ResourceLoader.h
-    include/Common/RealTypes.h
-    src/Resource/ResourceLoader.cpp
+    include/Assets/ResourceLoader.h
+    include/Common/Types.h
+    src/Assets/ResourceLoader.cpp
     include/Serialization/Json.h
     src/Serialization/Json.cpp
     include/Serialization/Binary.h
     src/Serialization/Binary.cpp
-    include/Core/AssetImporter.h
-    src/Core/AssetImporter.cpp
+    include/Assets/AssetImporter.h
+    src/Assets/AssetImporter.cpp
     src/Graphics/Model.cpp
     include/Core/CMakeConfig.h
     include/Math/Vec3.h
@@ -138,31 +156,31 @@ target_sources(engine PRIVATE
     include/Graphics/Debug/DebugMeshFactory.h
     src/Graphics/Debug/DebugMeshFactory.cpp
     include/Graphics/Debug/DebugTypes.h
-    include/Math/Conversions/GLMConvertions.h
-    src/Math/Convertions/GLMConvertions.cpp
-        include/Core/IPhysicsBackend.h
+    include/Math/Conversions/GLMConversions.h
+    src/Math/Conversions/GLMConversions.cpp
+    include/Core/IPhysicsBackend.h
     include/Physics/Physx/PhysXBackend.h
     src/Physics/PhysX/PhysXBackend.cpp
     include/Physics/PhysicsDescriptors.h
     include/Scene/ISceneListener.h
     include/Core/ISystem.h
-    include/Core/Window/IWindow.h
+    include/Window/IWindow.h
     include/Core/Engine/EngineCore.h
     src/Core/Engine/EngineCore.cpp
-        include/Platform/opengl/OpenGLRenderer.h
-    src/Platform/opengl/OpenGLRenderer.cpp
-    include/Core/IRenderer.h
+    include/Platform/OpenGL/OpenGLRenderer.h
+    src/Platform/OpenGL/OpenGLRenderer.cpp
+    include/RHI/IRenderer.h
     include/Core/Engine/EngineBootstrap.h
-    include/Core/Window/GLFWwindow.h
-    src/Core/Window/GLFWwindow.cpp
+    include/Platform/GLFW/GLFWwindow.h
+    src/Platform/GLFW/GLFWwindow.cpp
     include/Core/ITimer.h
     src/Core/Engine/EngineBootstrap.cpp
-    include/Core/Window/WindowConfig.h
+    include/Window/WindowConfig.h
     include/Core/IPlatform.h
-    include/Core/Window/GLFWPlatform.h
-    src/Core/Window/GLFWPlatform.cpp
-        include/Platform/opengl/OpenGLRenderDevice.h
-        src/Platform/opengl/OpenGLRenderDevice.cpp
+    include/Platform/GLFW/GLFWPlatform.h
+    src/Platform/GLFW/GLFWPlatform.cpp
+    include/Platform/OpenGL/OpenGLRenderDevice.h
+    src/Platform/OpenGL/OpenGLRenderDevice.cpp
 )
 
 set(SHADERS_DIR shaders)
@@ -174,46 +192,50 @@ configure_file(
     @ONLY
 )
 
-target_sources(engine
-    PRIVATE
+target_sources(engine PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
 )
 
-add_library(glad_local STATIC ../vendor/glad/src/glad.c)
-target_include_directories(glad_local PUBLIC ../vendor/glad/include)
+add_library(glad_local STATIC ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c)
+target_include_directories(glad_local PUBLIC ${CMAKE_SOURCE_DIR}/vendor/glad/include)
 
 target_include_directories(engine PUBLIC
     include
     ${CMAKE_CURRENT_BINARY_DIR}/include
-    ../vendor
-    ../vendor/physx/include
+    ${CMAKE_SOURCE_DIR}/vendor
+    ${CMAKE_SOURCE_DIR}/vendor/physx/include
 )
 
-set(PHYSX_DIR ../vendor/physx)
+set(PHYSX_DIR ${CMAKE_SOURCE_DIR}/vendor/physx)
+set(CMP_DIR   ${CMAKE_SOURCE_DIR}/vendor/compressonator/lib)
 
-target_link_libraries(engine PRIVATE
+target_link_directories(engine PUBLIC
+    ${CMP_DIR}
+)
+
+target_link_libraries(engine
+    PUBLIC
     glad_local
     glfw
     glm::glm
-    nlohmann_json::nlohmann_json
     imgui::imgui
+    nlohmann_json::nlohmann_json
     assimp::assimp
+    OpenGL::GL
     zstd::libzstd
+    -lCMP_Compressonator
+    -lCMP_Framework
+    -lCMP_Core
+    -lCMP_Common
+    -lImage_DDS
+    -lImage_KTX
+    -lImage_EXR
+    -lImage_TGA
+    -lCMP_Core_SSE
+    -lCMP_Core_AVX
+    -lCMP_Core_AVX512
 
-    # AMD Compressonator lib
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Compressonator.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Framework.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Common.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_DDS.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_KTX.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_EXR.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libImage_TGA.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_SSE.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX.a
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/compressonator/lib/libCMP_Core_AVX512.a
-
-    # PhysX
+    PRIVATE
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysX_static_64.a>
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXPvdSDK_static_64.a>
     $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
@@ -224,6 +246,7 @@ target_link_libraries(engine PRIVATE
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXCommon_static_64.a>
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXFoundation_static_64.a>
 )
+
 if(UNIX AND NOT APPLE)
     target_link_libraries(engine PRIVATE pthread dl)
 endif()

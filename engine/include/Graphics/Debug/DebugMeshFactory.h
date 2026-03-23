@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "DebugTypes.h"
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real::graphics::debug {
 

@@ -6,18 +6,12 @@
 #include "Core/UUID.h"
 #include "Event/SceneEvents.h"
 #include "Graphics/Light.h"
-
-namespace Real::core {
-    class IRenderer;
-}
+#include "Entity.h"
 
 namespace Real {
-    class Entity;
     struct Model;
-
-    namespace opengl {
-        class OpenGLRenderer;
-    }
+    namespace core   { class IRenderer;      }
+    namespace opengl { class OpenGLRenderer; }
 }
 
 namespace Real {
@@ -26,6 +20,9 @@ namespace Real {
     public:
         Scene();
         void Update(const core::IRenderer* renderer);
+
+        void SetActiveCamera(Entity* camera) { m_EditorCamera = camera; }
+        [[nodiscard]] Entity* GetActiveCamera() const { return m_EditorCamera; }
 
         Entity& CreateEntity(const String& tag = String());
         void DestroyEntity(entt::entity entity);
@@ -56,6 +53,8 @@ namespace Real {
     private:
         entt::registry m_Registry;
         std::unordered_map<UUID, Entity> m_Entities;
+
+        Entity* m_EditorCamera = nullptr;
 
     private:
         event::SceneEvents m_Events;

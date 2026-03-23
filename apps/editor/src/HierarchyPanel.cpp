@@ -1,14 +1,13 @@
 //
 // Created by pointerlost on 10/17/25.
 //
-#include "EditorApplication/HierarchyPanel.h"
-#include <imgui.h>
+#include "HierarchyPanel.h"
+#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "Core/AssetManager.h"
+#include "Assets/AssetManager.h"
 #include "Core/Services.h"
-#include "../include/EditorState.h"
-#include "../../../engine/include/Core/RealConfig.h"
+#include "EditorState.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Scene/Components.h"

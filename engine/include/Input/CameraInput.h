@@ -2,9 +2,9 @@
 // Created by pointerlost on 10/8/25.
 //
 #pragma once
-#include "Scene/Entity.h"
 
 namespace Real {
+    class Entity;
 
     class CameraInput {
     public:

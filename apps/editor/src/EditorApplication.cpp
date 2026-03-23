@@ -1,31 +1,30 @@
 //
 // Created by pointerlost on 2/19/26.
 //
-#include "../apps/editor/include/EditorApplication.h"
-
-#include "Core/Services.h"
+#include "EditorApplication.h"
+#include "IPanel.h"
 #include "Core/Engine/EngineCore.h"
+#include "Core/Logger.h"
+#include "Core/Services.h"
 #include "Scene/Components.h"
 
-namespace Real::editor::app {
+namespace Real::app::editor {
 
-    EditorApplication::EditorApplication(
-        AssetManager& assetManager,
-        AssetImporter& assetImporter,
-        MeshManager& meshManager,
-        Scene* scene) noexcept
+    EditorApplication::EditorApplication(EditorContext ctx) noexcept
+        : m_Ctx(std::move(ctx)), m_Editor(CreateScope<UI::Editor>())
     {
-        m_Scene = scene;
-        Services::SetAssetManager(&assetManager);
-        Services::SetAssetImporter(&assetImporter);
-        Services::SetMeshManager(&meshManager);
+        Services::SetAssetManager(m_Ctx.assetManager);
+        Services::SetAssetImporter(m_Ctx.assetImporter);
+        Services::SetMeshManager(m_Ctx.meshManager);
 
         m_State = CreateScope<EditorState>();
         Services::SetEditorState(m_State.get());
     }
 
     void EditorApplication::Init() {
-        m_State->editorCamera = &m_Scene->CreateEntity("Editor Camera");
+        auto* scene = m_Ctx.sceneManager->GetActiveScene();
+
+        m_State->editorCamera = &scene->CreateEntity("Editor Camera");
         (void)m_State->editorCamera->AddComponent<CameraComponent>();
         (void)m_State->editorCamera->AddComponent<MovementComponent>();
         m_State->editorCamera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
@@ -36,19 +35,16 @@ namespace Real::editor::app {
             Warn("There is no camera in editor state!!!");
         }
 
-        m_ResourceLoader = CreateScope<ResourceLoader>(m_Renderer->GetRenderContext());
-        m_ResourceLoader->Load();
+        scene->SetActiveCamera(m_State->editorCamera);
 
-        m_DebugRenderer = CreateScope<graphics::debug::DebugRenderer>();
-        m_DebugRenderer->Init();
-
-        Services::SetDebugRenderer(m_DebugRenderer.get());
+        m_Editor->Init(m_Ctx.window);
     }
 
     void EditorApplication::Update(float dt) {
         m_CameraInput->Update();
         m_Editor->Update(dt);
         m_CameraInput->Update();
+        m_Ctx.debugRenderer->Update();
     }
 
     void EditorApplication::Render() {
@@ -56,10 +52,6 @@ namespace Real::editor::app {
     }
 
     void EditorApplication::Shutdown() {
-        m_CameraInput.reset();
-        m_DebugRenderer.reset();
-        m_Timer.reset();
-        m_State.reset();
     }
 }
 

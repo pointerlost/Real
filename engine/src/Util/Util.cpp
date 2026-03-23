@@ -2,17 +2,13 @@
 // Created by pointerlost on 10/30/25.
 //
 #include "Util/Util.h"
-
 #include <fstream>
 #include <GL/glext.h>
 #include <nlohmann/json.hpp>
 #include "PxMaterial.h"
 #include "PxPhysics.h"
-#include "Core/file_manager.h"
 #include "Core/Logger.h"
-#include "Graphics/Texture.h"
-#include "Graphics/Transformations.h"
-#include "Math/Quat.h"
+#include "Graphics/Texture/Texture.h"
 #include "Physics/PhysicsTypes.h"
 
 namespace Real::util {
@@ -332,12 +328,12 @@ namespace Real::util {
         }
     }
 
-    TextureData ExtractChannel(const TextureData& data, int channelIndex) {
+    graphics::TextureData ExtractChannel(const graphics::TextureData& data, int channelIndex) {
         if (channelIndex < 0 || channelIndex >= data.channelCount) {
             Warn("[Util::ExtractChannel] Invalid channel index! Fix it!");
             return{};
         }
-        TextureData d;
+        graphics::TextureData d;
         d.width          = data.width;
         d.height         = data.height;
         d.channelCount   = 1; // We are extracting '1' channel
@@ -356,10 +352,10 @@ namespace Real::util {
         return d;
     }
 
-    TextureData ExtractChannels(const TextureData& data, const Vector<int> &wantedChannels) {
+    graphics::TextureData ExtractChannels(const graphics::TextureData& data, const Vector<int> &wantedChannels) {
         const int outC = wantedChannels.size();
 
-        TextureData d;
+        graphics::TextureData d;
         d.width          = data.width;
         d.height         = data.height;
         d.channelCount   = outC;

@@ -14,13 +14,13 @@ namespace Real::math {
         // Column-major: m[column][row]
         f32 m[2][2]{};
 
-        constexpr Mat2(f32 diagonal = 1.0f) noexcept {
+        constexpr explicit Mat2(f32 diagonal = 1.0f) noexcept {
             for (int c = 0; c < 2; ++c)
                 for (int r = 0; r < 2; ++r)
                     m[c][r] = (c == r) ? diagonal : 0.0f;
         }
 
-        static constexpr Mat2 Identity() noexcept { return { 1.0f }; }
+        static constexpr Mat2 Identity() noexcept { return { Mat2(1.0f) }; }
         Mat2 operator*(const Mat2& rhs) const noexcept;
 
         static Mat2 Rotate(f32 rad)  noexcept;

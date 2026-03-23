@@ -6,10 +6,11 @@
 #include "Core/Utils.h"
 #include "Graphics/MeshFactory.h"
 #include <span>
-#include "Core/AssetManager.h"
+#include "Assets/AssetManager.h"
+#include "Assets/AssetTypes.h"
 #include "Graphics/Material.h"
 
-namespace Real {
+namespace Real::assets {
 
     const MeshAsset* MeshManager::GetMeshData(const UUID& uuid) const {
         const auto it = m_MeshAssets.find(uuid);
@@ -20,13 +21,13 @@ namespace Real {
         return &it->second;
     }
 
-    const MeshAsset& MeshManager::CreateSingleMesh(Vector<Vertex> vertices,
+    const MeshAsset& MeshManager::CreateSingleMesh(Vector<graphics::Vertex> vertices,
         const Vector<u32>& indices, const UUID& meshUUID)
     {
         if (m_MeshAssets.contains(meshUUID))
             return m_MeshAssets[meshUUID]; // Skip if mesh already exists
         MeshAsset info{};
-        info.meshUUID     = meshUUID;
+        info.uuid = meshUUID;
 
         info.vertexCount  = vertices.size();
         info.indexCount   = indices.size();
@@ -42,7 +43,7 @@ namespace Real {
         return m_MeshAssets[meshUUID] = info;
     }
 
-    std::span<const Vertex> MeshManager::ViewVertices(const UUID& uuid) const {
+    std::span<const graphics::Vertex> MeshManager::ViewVertices(const UUID& uuid) const {
         if (!m_MeshAssets.contains(uuid)) return {};
 
         const auto& info = m_MeshAssets.at(uuid);
@@ -92,12 +93,22 @@ namespace Real {
         CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs["cube"]);
     }
 
-    void MeshData3D::AddMesh3DToMeshData(Vector<Vertex> v, const Vector<u32>& i, const UUID& meshUUID)
+    u32 MeshData3D::GetIndexCount(const UUID &uuid) const {
+        return GetMeshData(uuid)->indexCount;
+    }
+
+    u32 MeshData3D::GetIndexOffSet(const UUID &uuid) const {
+        return GetMeshData(uuid)->indexOffset;
+    }
+
+    void MeshData3D::AddMesh3DToMeshData(Vector<graphics::Vertex> v, const Vector<u32>& i, const UUID& meshUUID)
     {
         CreateSingleMesh(std::move(v), i, meshUUID);
     }
 
     void MeshManager::InitResources() {
+        LoadPrimitiveTypes();
+
         glCreateBuffers(1, &m_VBO);
         glNamedBufferData(m_VBO, m_AllVertices.size() * sizeof(Vertex), m_AllVertices.data(), GL_STATIC_DRAW);
 
@@ -129,4 +140,11 @@ namespace Real {
         glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
     }
 
+    size_t MeshManager::GetVerticesCount() const {
+        return m_AllVertices.size();
+    }
+
+    size_t MeshManager::GetIndicesCount() const {
+        return m_AllIndices.size();
+    }
 }

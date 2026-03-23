@@ -3,42 +3,38 @@
 //
 #pragma once
 #include <imgui.h>
-
-#include "Common/RealTypes.h"
+#include "IPanel.h"
 #include "ImGuizmo/ImGuizmo.h"
-#include "IEditor.h"
+#include "Common/Types.h"
 #include "Core/RealConfig.h"
 #include "Core/Utils.h"
-
-namespace Real::UI {
-    class IPanel;
-}
+#include "Math/Vec2.h"
 
 namespace Real {
+    class Scene;
 
     namespace UI {
         class InspectorPanel;
         class HierarchyPanel;
     }
 
-    namespace opengl { class OpenGLRenderer; }
     namespace core   { class IWindow; }
 }
 
 namespace Real::UI {
 
-    class Editor final : public core::IEditor {
+    class Editor {
     public:
-        explicit Editor(core::IWindow* window);
+        Editor();
 
-        void Init() override;
-        void BeginFrame(float dt) override;
-        void Update(float dt) override;
-        void RenderUI() override;
-        void EndFrame() override;
+        void Init(core::IWindow* window);
+        void BeginFrame(float dt);
+        void Update(float dt);
+        void RenderUI();
+        void EndFrame();
 
-        void OnAttachScene(Scene *scene) override;
-        void Shutdown() override;
+        void OnAttachScene(Scene *scene);
+        void Shutdown();
 
     private:
         Scene* m_Scene = nullptr;
@@ -50,7 +46,8 @@ namespace Real::UI {
         bool m_EditEntityTransform = true;
 
         // Screen height can wrong for editor-time, because of main menu panel has some height
-        ImVec2 m_SceneWindowSize = ImVec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
+        // TODO: remove hardcoded stuff
+        math::Vec2 m_SceneWindowSize = math::Vec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
 
     private:
         void Render();

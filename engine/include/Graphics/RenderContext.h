@@ -4,61 +4,34 @@
 #pragma once
 #include <unordered_map>
 #include "GPUBuffers.h"
-#include "RenderCommand.h"
-#include <vector>
-#include "Buffer.h"
-#include "RenderTypes.h"
 #include "Core/UUID.h"
 
 namespace Real {
-    struct RenderableData;
     struct MeshAsset;
     struct TransformComponent;
     class Entity;
     class Scene;
 }
 
-namespace Real {
+namespace Real::graphics {
 
-    // CPU-only data
-    struct GPUData {
-        Vector<TransformSSBO> transforms;
-        Vector<MaterialSSBO> materials;
-        Vector<graphics::BindlessHandle> textures;
-        Vector<LightSSBO> lights;
-        Vector<DrawElementsIndirectCommand> drawCommands;
-        Vector<EntityMetadata> entityData;
-        FrameUBO camera;
-        GlobalUBO globalData;
-    };
-
-    struct GPUBuffers {
-        opengl::Buffer transform;
-        opengl::Buffer material;
-        opengl::Buffer texture;
-        opengl::Buffer light;
-        opengl::Buffer drawCommand;
-        opengl::Buffer entityData;
-        opengl::Buffer camera;
-        opengl::Buffer globalData;
+    struct RenderableData {
+        const MeshAsset* mesh = nullptr;
+        UUID             materialUUID{};
+        // TODO: transform per mesh
     };
 
     class RenderContext {
     public:
-        explicit RenderContext(Scene* scene);
         void InitResources();
-        void BindGPUBuffers() const;
-        void CollectRenderables();
+        void CollectRenderables(Scene* scene);
 
-        GPUData& GetGPURenderData() { return m_GPUDatas; }
-        [[nodiscard]] const GPUData& GetGPURenderData() const { return m_GPUDatas; }
-        [[nodiscard]] const GPUBuffers& GetBuffers() const { return m_Buffers; }
+        FrameRenderData& GetGPURenderData() { return m_FrameRenderData; }
+        [[nodiscard]] const FrameRenderData& GetGPURenderData() const { return m_FrameRenderData; }
 
     private:
-        GPUData m_GPUDatas{};
-        GPUBuffers m_Buffers{};
-        Scene* m_Scene;
-        std::unordered_map<UUID, int> m_MaterialIdxCache;
+        FrameRenderData m_FrameRenderData;
+        std::unordered_map<UUID, int> m_MaterialIdxCache; // TODO: This shouldn't be here (remove it)
 
     private:
         void CollectLight(const Entity* entity);
@@ -69,6 +42,5 @@ namespace Real {
         Vector<RenderableData> CollectRenderables(const Entity* entity);
         void CollectGlobalData();
         void CleanPrevFrame();
-        void UploadToGPU();
     };
 }

@@ -4,39 +4,31 @@
 #include <memory>
 
 #include "Core/Engine/EngineBootstrap.h"
+#include "Window/WindowConfig.h"
+#include "EditorApplication.h"
 #include "Core/Engine/EngineCore.h"
-#include "Core/Window/GLFWPlatform.h"
-#include "Core/Window/GLFWwindow.h"
-#include "Core/Window/WindowConfig.h"
-#include "Editor/Editor.h"
-#include "Physics/Physx/PhysXBackend.h"
-#include "Platform/opengl/OpenGLAPI.h"
-#include "Scene/Systems/CameraSystem.h"
-#include "Scene/Systems/LightSystem.h"
-#include "Scene/Systems/MeshRendererSystem.h"
-#include "Scene/Systems/MovementSystem.h"
-#include "Scene/Systems/PhysicsSystem.h"
-#include "Platform/opengl/OpenGLRenderer.h"
-#include "Scene/Scene.h"
-#include "Scene/Systems/SystemsManager.h"
-#include "Timer/Timer.h"
+#include "include/ApplicationBuilder.h"
+#include "Graphics/Shader.h"
 
 int main() {
 
     try
     {
-        Real::core::EngineConfig cfg;
-        cfg.editorMode = true;
-        cfg.windowConfig.width  = 1520;
-        cfg.windowConfig.height = 840;
-        cfg.windowConfig.title  = "Real";
-        cfg.apiType = Real::API::OpenGL;
-        cfg.physicsBackendType = Real::PhysicsBackendType::PhysX;
+        Real::EngineConfig cfg;
+        cfg.mode            = Real::EngineMode::Editor;
+        cfg.window.width    = 1520;
+        cfg.window.height   = 840;
+        cfg.window.title    = "Real";
+        cfg.window.backend  = Real::core::WindowBackend::GLFW;
+        cfg.graphicsAPI     = Real::graphics::GraphicsAPI::OpenGL;
+        cfg.physicsBackend  = Real::physics::PhysicsBackend::PhysX;
 
-        Real::core::EngineCore engine(cfg);
-        engine.Start();
-        engine.RunLoop();
-        engine.Stop();
+        auto app = Real::ApplicationBuilder::Build(Real::ApplicationMode::Editor);
+        auto engineCore = Real::core::EngineBootstrap::Build(cfg, std::move(app));
+
+        engineCore->Start();
+        engineCore->RunLoop();
+        engineCore->Stop();
     }
     catch (const std::exception& e)
     {

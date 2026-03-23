@@ -18,6 +18,8 @@ namespace Real::UI {
 
     class InspectorPanel final : public IPanel {
     public:
+        InspectorPanel();
+
         void OnImGuiRender() override;
         void OnSceneAttached(Scene *scene) override;
 

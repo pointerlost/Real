@@ -3,7 +3,7 @@
 //
 #pragma once
 #include <cmath>
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real::math {
     struct Quat;

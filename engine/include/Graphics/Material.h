@@ -5,7 +5,7 @@
 #include <glm/ext.hpp>
 #include <utility>
 #include "GPUBuffers.h"
-#include "Core/AssetManager.h"
+#include "../Assets/AssetManager.h"
 #include "Core/Services.h"
 #include "Core/Utils.h"
 #include "Core/UUID.h"
@@ -51,6 +51,6 @@ namespace Real {
         std::optional<UUID> m_EmissiveOverride;
         // TODO: add other types like emissive, shininess etc.
 
-        [[nodiscard]] MaterialSSBO ConvertToGPUFormat() const;
+        void ConvertToGPUFormat(MaterialSSBO& outData) const;
     };
 }

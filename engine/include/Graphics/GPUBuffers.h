@@ -2,8 +2,15 @@
 // Created by pointerlost on 10/13/25.
 //
 #pragma once
+#include "Buffer.h"
+#include "RenderTypes.h"
 #include "Math/Mat4.h"
 #include "Math/Vec4.h"
+
+namespace Real {
+    struct EntityMetadata;
+    struct DrawElementsIndirectCommand;
+}
 
 namespace Real {
 
@@ -47,6 +54,32 @@ namespace Real {
     struct GlobalUBO {
         math::Vec4 GlobalAmbient{0.1};
         int lightCount[4]{}; // 0 = light count, other indices padding
+    };
+
+    // CPU-only data
+    struct FrameRenderData {
+        Vector<TransformSSBO> transforms;
+        Vector<MaterialSSBO> materials;
+        Vector<graphics::BindlessHandle> textures;
+        Vector<LightSSBO> lights;
+        Vector<DrawElementsIndirectCommand> drawCommands;
+        Vector<EntityMetadata> entityData;
+        FrameUBO camera;
+        GlobalUBO globalData;
+    };
+
+    struct OpenGLBuffers {
+        opengl::Buffer transform;
+        opengl::Buffer material;
+        opengl::Buffer texture;
+        opengl::Buffer light;
+        opengl::Buffer drawCommand;
+        opengl::Buffer entityData;
+        opengl::Buffer camera;
+        opengl::Buffer globalData;
+    };
+
+    struct VkBuffers {
     };
 
 }

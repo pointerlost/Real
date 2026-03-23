@@ -5,6 +5,7 @@
 #include "Scene/ISceneListener.h"
 #include <cassert>
 
+#include "Core/Logger.h"
 #include "Event/SceneEvents.h"
 
 namespace Real::core {
@@ -41,9 +42,4 @@ namespace Real::core {
         }
     }
 
-    void SystemManager::AddSystem(Scope<ISystem> system) {
-        // only non-null systems
-        assert(system);
-        m_Systems.push_back(std::move(system));
-    }
 }

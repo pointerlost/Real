@@ -4,7 +4,8 @@
 #include <Graphics/Debug/DebugRenderer.h>
 #include "Graphics/Debug/DebugMeshFactory.h"
 #include <glad/include/glad/glad.h>
-#include "Core/AssetManager.h"
+#include "../../../include/Assets/AssetManager.h"
+#include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Shader.h"
@@ -44,18 +45,18 @@ namespace Real::graphics::debug {
 
         // Instance Buffer(SSBO)
         m_DebugInstanceBuffer.Create(
-            Vector<DebugInstance>{},
+            {},
             sizeof(DebugInstance) * MAX_DEBUG_INSTANCE_COUNT,
             BufferType::SSBO
         );
 
         m_DebugIndirectBuffer.Create(
-            Vector<DrawElementsIndirectCommand>{},
+            {},
             sizeof(DrawElementsIndirectCommand) * MAX_DEBUG_INSTANCE_COUNT,
             BufferType::SSBO
         );
 
-        // Get debug shader
+        // Get debug shader (TODO: remove hardcoded string)
         m_DebugShader = &Services::GetAssetManager()->GetShader("debug");
     }
 
@@ -69,17 +70,15 @@ namespace Real::graphics::debug {
         PrepareDrawCommands();
 
         if (!m_Instances.empty()) {
-            m_DebugInstanceBuffer.UploadToGPU(
-                m_Instances,
-                m_Instances.size() * sizeof(DebugInstance),
-                BufferType::SSBO
+            m_DebugInstanceBuffer.Upload(
+                m_Instances.data(),
+                m_Instances.size() * sizeof(DebugInstance)
             );
         }
         if (!m_DebugIndirectCommands.empty()) {
-            m_DebugIndirectBuffer.UploadToGPU(
-                m_DebugIndirectCommands,
-                m_DebugIndirectCommands.size() * sizeof(DrawElementsIndirectCommand),
-                BufferType::SSBO
+            m_DebugIndirectBuffer.Upload(
+                m_DebugIndirectCommands.data(),
+                m_DebugIndirectCommands.size() * sizeof(DrawElementsIndirectCommand)
             );
         }
     }
@@ -92,8 +91,8 @@ namespace Real::graphics::debug {
             return;
 
         m_DebugShader->Bind();
-        m_DebugIndirectBuffer.Bind(GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, DEBUG_INDIRECT_COMMANDS_BINDING_POINT);
-        m_DebugInstanceBuffer.Bind(GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, DEBUG_INSTANCES_BINDING_POINT);
+        m_DebugIndirectBuffer.Bind(GL_SHADER_STORAGE_BUFFER, DEBUG_INDIRECT_COMMANDS_BINDING_POINT);
+        m_DebugInstanceBuffer.Bind(GL_SHADER_STORAGE_BUFFER, DEBUG_INSTANCES_BINDING_POINT);
 
         glBindVertexArray(m_VAO);
         glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DebugIndirectBuffer.GetHandle());

@@ -2,114 +2,31 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/RenderContext.h"
-#include "Core/AssetManager.h"
+#include "../../include/Assets/AssetManager.h"
 #include "Core/Services.h"
-#include "Graphics/Buffer.h"
 #include "Graphics/Material.h"
 #include "Graphics/MeshManager.h"
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
 #include "Util/Util.h"
-#include "Common/RealEnum.h"
-#include "Math/Conversions/GLMConvertions.h"
+#include "Core/Logger.h"
+#include "Graphics/RenderCommand.h"
+#include "Math/Conversions/GLMConversions.h"
 #include "Scene/Entity.h"
 
-namespace {
-    constexpr int MAX_ENTITIES = 16384;
-    constexpr int MAX_LIGHTS = 512;
-}
-
-namespace Real {
-
-    RenderContext::RenderContext(Scene *scene) : m_Scene(scene)
-    {
-    }
+namespace Real::graphics {
 
     void RenderContext::InitResources() {
-        m_Buffers.transform.Create(m_GPUDatas.transforms,
-            MAX_ENTITIES * sizeof(TransformSSBO), BufferType::SSBO
-        );
-
-        m_Buffers.texture.Create(m_GPUDatas.textures,
-            MAX_ENTITIES * sizeof(graphics::BindlessHandle), BufferType::SSBO
-        );
-        m_Buffers.texture.UploadToGPU(m_GPUDatas.textures,
-            m_GPUDatas.textures.size() * sizeof(graphics::BindlessHandle), BufferType::SSBO
-        );
-
-        m_Buffers.material.Create(m_GPUDatas.materials,
-            MAX_ENTITIES * sizeof(MaterialSSBO), BufferType::SSBO
-        );
-
-        m_Buffers.light.Create(m_GPUDatas.lights,
-            MAX_LIGHTS * sizeof(LightSSBO), BufferType::SSBO
-        );
-
-        m_Buffers.entityData.Create(m_GPUDatas.entityData,
-            MAX_ENTITIES * sizeof(EntityMetadata), BufferType::SSBO
-        );
-
-        m_Buffers.drawCommand.Create(m_GPUDatas.drawCommands,
-            MAX_ENTITIES * sizeof(DrawElementsIndirectCommand), BufferType::SSBO
-        );
-
-        m_Buffers.camera.Create(m_GPUDatas.camera, 1 * sizeof(FrameUBO), BufferType::UBO);
-
-        m_Buffers.globalData.Create(m_GPUDatas.globalData, 1 * sizeof(GlobalUBO), BufferType::UBO);
     }
 
-    void RenderContext::BindGPUBuffers() const {
-        m_Buffers.drawCommand.Bind(GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 0);
-        m_Buffers.entityData.Bind( GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 1);
-        m_Buffers.transform.Bind(  GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 2);
-        m_Buffers.camera.Bind(     GL_UNIFORM_BUFFER,        BufferType::UBO,  3);
-        m_Buffers.material.Bind(   GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 4);
-        m_Buffers.texture.Bind(    GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 5);
-        m_Buffers.light.Bind(      GL_SHADER_STORAGE_BUFFER, BufferType::SSBO, 6);
-        m_Buffers.globalData.Bind( GL_UNIFORM_BUFFER,        BufferType::UBO,  7);
-    }
-
-    void RenderContext::UploadToGPU() {
-        // Update per EntityMetadata
-        m_Buffers.entityData.UploadToGPU(m_GPUDatas.entityData,
-            m_GPUDatas.entityData.size() * sizeof(EntityMetadata), BufferType::SSBO
-        );
-
-        // Update Draw commands
-        m_Buffers.drawCommand.UploadToGPU(m_GPUDatas.drawCommands,
-            m_GPUDatas.drawCommands.size() * sizeof(DrawElementsIndirectCommand), BufferType::SSBO
-        );
-
-        // Update Transforms
-        m_Buffers.transform.UploadToGPU(m_GPUDatas.transforms,
-            m_GPUDatas.transforms.size() * sizeof(TransformSSBO), BufferType::SSBO
-        );
-
-        // Update Materials
-        m_Buffers.material.UploadToGPU(m_GPUDatas.materials,
-            m_GPUDatas.materials.size() * sizeof(MaterialSSBO), BufferType::SSBO
-        );
-
-        // Update Lights
-        m_Buffers.light.UploadToGPU(m_GPUDatas.lights,
-            m_GPUDatas.lights.size() * sizeof(LightSSBO), BufferType::SSBO
-        );
-
-        // Update Camera
-        m_Buffers.camera.UploadToGPU(Vector{m_GPUDatas.camera}, 1 * sizeof(FrameUBO), BufferType::UBO);
-
-        // Update Global Data
-        m_Buffers.globalData.UploadToGPU(Vector{m_GPUDatas.globalData}, 1 * sizeof(GlobalUBO), BufferType::UBO);
-    }
-
-    void RenderContext::CollectRenderables() {
+    void RenderContext::CollectRenderables(Scene* scene) {
         CleanPrevFrame();
 
-        const auto view = m_Scene->GetAllEntitiesWith<TransformComponent, IDComponent>();
+        const auto view = scene->GetAllEntitiesWith<TransformComponent, IDComponent>();
         uint baseInstance = 0;
 
         for (auto [entity, transform, id] : view.each()) {
-            const auto e = m_Scene->GetEntityWithUUID(id.m_UUID);
+            const auto e = scene->GetEntityWithUUID(id.m_UUID);
             if (!e) continue;
 
             const int transformIndex = BuildTransform(transform);
@@ -125,8 +42,6 @@ namespace Real {
 
         // Collect others
         CollectGlobalData();
-
-        UploadToGPU();
     }
 
     void RenderContext::CollectCamera(const Entity* entity) {
@@ -138,19 +53,19 @@ namespace Real {
         if (entity->HasComponent<CameraComponent>()) {
             auto& cc = entity->GetComponentUnchecked<CameraComponent>();
             auto& tc = entity->GetComponentUnchecked<TransformComponent>();
-            m_GPUDatas.camera = cc.m_Camera.ConvertToGPUFormat(tc.transform);
+            cc.m_Camera.ConvertToGPUFormat(tc.transform, m_FrameRenderData.camera);
         }
     }
 
     int RenderContext::BuildTransform(const TransformComponent& tc) {
         TransformSSBO gpu{};
-        const int index = static_cast<int>(m_GPUDatas.transforms.size());
+        const int index = static_cast<int>(m_FrameRenderData.transforms.size());
         const auto& model = tc.transform.GetModelMatrix();
         gpu.modelMatrix   = model;
         gpu.normalMatrix  = interop::glm::From(
             glm::mat4(glm::transpose(glm::inverse(glm::mat3(interop::glm::To(model)))))
         );
-        m_GPUDatas.transforms.push_back(gpu);
+        m_FrameRenderData.transforms.push_back(gpu);
         return index;
     }
 
@@ -162,8 +77,12 @@ namespace Real {
         const auto& am = Services::GetAssetManager();
         const auto mat = am->GetMaterialInstance(materialUUID);
 
-        const int index = m_GPUDatas.materials.size();
-        m_GPUDatas.materials.push_back(mat->ConvertToGPUFormat());
+        const int index = m_FrameRenderData.materials.size();
+
+        MaterialSSBO gpuData{};
+        mat->ConvertToGPUFormat(gpuData);
+        m_FrameRenderData.materials.push_back(gpuData);
+
         m_MaterialIdxCache[materialUUID] = index;
 
         return index;
@@ -179,7 +98,7 @@ namespace Real {
             cmd.baseVertex    = 0;
             cmd.baseInstance  = baseInstance;
 
-            m_GPUDatas.drawCommands.push_back(cmd);
+            m_FrameRenderData.drawCommands.push_back(cmd);
         }
 
         EntityMetadata em{};
@@ -190,7 +109,7 @@ namespace Real {
             em.indexOffset = static_cast<int>(mesh->indexOffset);
         }
 
-        m_GPUDatas.entityData.push_back(em);
+        m_FrameRenderData.entityData.push_back(em);
     }
 
     Vector<RenderableData> RenderContext::CollectRenderables(const Entity* entity) {
@@ -219,22 +138,26 @@ namespace Real {
     void RenderContext::CollectLight(const Entity* entity) {
         if (entity->HasComponent<LightComponent>()) {
             auto& lc = entity->GetComponentUnchecked<LightComponent>();
-            auto& tc = entity->GetComponentUnchecked<TransformComponent>();
-            m_GPUDatas.lights.push_back(lc.m_Light.ConvertToGPUFormat(tc.transform));
+            const auto& tc = entity->GetComponentUnchecked<TransformComponent>();
+
+            LightSSBO gpuData{};
+            lc.m_Light.ConvertToGPUFormat(tc.transform, gpuData);
+            m_FrameRenderData.lights.push_back(gpuData);
         }
     }
 
     void RenderContext::CollectGlobalData() {
-        m_GPUDatas.globalData.GlobalAmbient = math::Vec4(0.1);
-        m_GPUDatas.globalData.lightCount[0] = 1; // TODO: remove the hardcoded value for multiple lighting!!!
+        m_FrameRenderData.globalData.GlobalAmbient = math::Vec4(0.1);
+        m_FrameRenderData.globalData.lightCount[0] = 1; // TODO: remove the hardcoded value for multiple lighting!!!
     }
 
     void RenderContext::CleanPrevFrame() {
         // TODO: need dirty tracking system to avoid unnecessary uploads
-        m_GPUDatas.drawCommands.clear();
-        m_GPUDatas.entityData.clear();
-        m_GPUDatas.lights.clear();
-        m_GPUDatas.transforms.clear();
+        m_FrameRenderData.drawCommands.clear();
+        m_FrameRenderData.entityData.clear();
+        m_FrameRenderData.lights.clear();
+        m_FrameRenderData.transforms.clear();
         // TODO: add material dirty tracker or you can't update the buffer with 'additional data'?
     }
+
 }

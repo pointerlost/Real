@@ -5,15 +5,16 @@
 #include <fstream>
 
 #include "Common/Macros.h"
-#include "Common/RealTypes.h"
-#include "Core/AssetManager.h"
+#include "Common/Types.h"
+#include "../../include/Assets/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Utils.h"
 #include "Graphics/MeshManager.h"
+#include "Graphics/RenderTypes.h"
 
 namespace Real::serialization::binary {
 
-    void WriteModel(const String &path, ModelBinaryHeader binaryHeader,
+    void WriteModel(const String &path, assets::ModelBinaryHeader binaryHeader,
         const Vector<UUID>& meshUUIDs, const Vector<UUID>& materialUUIDs)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
@@ -52,9 +53,9 @@ namespace Real::serialization::binary {
         file.close();
     }
 
-    std::tuple<ModelBinaryHeader, Vector<UUID>, Vector<UUID>> LoadModel(const String &path)
+    std::tuple<assets::ModelBinaryHeader, Vector<UUID>, Vector<UUID>> LoadModel(const String &path)
     {
-        Vector<Vertex> vertices;
+        Vector<graphics::Vertex> vertices;
         Vector<u64> indices;
 
         std::ifstream file(path, std::ios::binary | std::ios::in);
@@ -63,7 +64,7 @@ namespace Real::serialization::binary {
             return{};
         }
 
-        ModelBinaryHeader header;
+        assets::ModelBinaryHeader header;
 
         // Read entire header
         file.read(reinterpret_cast<char*>(&header), sizeof(header));
@@ -108,7 +109,7 @@ namespace Real::serialization::binary {
         return std::make_tuple(header, meshUUIDs, materialUUIDs);
     }
 
-    void WriteMesh(const String &path, const MeshBinaryHeader &binaryHeader,
+    void WriteMesh(const String &path, const assets::MeshBinaryHeader &binaryHeader,
         const Vector<Vertex>& vertices, const Vector<u32>& indices)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
@@ -136,15 +137,15 @@ namespace Real::serialization::binary {
         }
     }
 
-    MeshLoadResult LoadMesh(const String &path) {
+    assets::MeshLoadResult LoadMesh(const String &path) {
         std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
             Warn("[Load] Mesh binary file can't opening: " + path);
             return {};
         }
 
-        MeshLoadResult result{};
-        file.read(reinterpret_cast<char*>(&result.header), sizeof(MeshBinaryHeader));
+        assets::MeshLoadResult result{};
+        file.read(reinterpret_cast<char*>(&result.header), sizeof(assets::MeshBinaryHeader));
 
         // Validate REAL magic numbers
         if (result.header.magic != MakeFourCC('R', 'E', 'A', 'L')) {
@@ -154,16 +155,15 @@ namespace Real::serialization::binary {
 
         if (result.header.vertexCount > 0) {
             result.vertices.resize(result.header.vertexCount);
-            file.read(reinterpret_cast<char*>(result.vertices.data()),
-                        result.header.vertexCount * sizeof(Vertex)
+            file.read(reinterpret_cast<char*>(
+                result.vertices.data()),
+                result.header.vertexCount * sizeof(graphics::Vertex)
             );
         }
 
         if (result.header.indexCount > 0) {
             result.indices.resize(result.header.indexCount);
-            file.read(reinterpret_cast<char*>(result.indices.data()),
-                        result.header.indexCount * sizeof(u32)
-            );
+            file.read(reinterpret_cast<char*>(result.indices.data()), result.header.indexCount * sizeof(u32));
         }
 
         if (!file) {

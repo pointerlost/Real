@@ -2,6 +2,8 @@
 // Created by pointerlost on 1/14/26.
 //
 #include <Scene/Systems/LightSystem.h>
+
+#include "Core/Logger.h"
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
 

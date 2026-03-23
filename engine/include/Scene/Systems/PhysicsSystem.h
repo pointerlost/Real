@@ -4,26 +4,25 @@
 #pragma once
 #include "Core/ISystem.h"
 #include "Scene/ISceneListener.h"
-#include "Core/Utils.h"
 
 namespace Real {
+    namespace core {
+        class IPhysicsBackend;
+    }
+
     namespace event {
         class SceneEvents;
     }
 
     class Scene;
     class Entity;
-
-    namespace physics {
-        class IPhysicsBackend;
-    }
 }
 
 namespace Real::ecs {
 
     class PhysicsSystem final : public ISystem, public ISceneListener {
     public:
-        explicit PhysicsSystem(physics::IPhysicsBackend& backend);
+        explicit PhysicsSystem(core::IPhysicsBackend& backend);
         void Init() override;
         void Update(entt::registry& registry, f32 deltaTime) override;
         void Shutdown() override;
@@ -48,7 +47,7 @@ namespace Real::ecs {
         void SyncCollider(entt::entity& entity);
 
     private:
-        physics::IPhysicsBackend& m_Backend;
+        core::IPhysicsBackend& m_Backend;
         entt::registry* m_Registry = nullptr;
     };
 

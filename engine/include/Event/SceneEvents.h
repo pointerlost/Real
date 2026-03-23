@@ -3,8 +3,10 @@
 //
 #pragma once
 #include "Event.h"
-#include "entt/entt.hpp"
 
+namespace entt {
+    enum class entity : std::uint32_t;
+}
 
 namespace Real {
     namespace physics {

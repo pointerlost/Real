@@ -18,7 +18,7 @@ namespace Real {
 
 namespace Real::physics {
 
-    class PhysXBackend final : public IPhysicsBackend {
+    class PhysXBackend final : public core::IPhysicsBackend {
     public:
         void Init(const PhysicsWorldDesc &desc) override;
         void Shutdown() override;

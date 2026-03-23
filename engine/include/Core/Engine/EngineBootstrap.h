@@ -2,20 +2,29 @@
 // Created by pointerlost on 2/16/26.
 //
 #pragma once
-#include "Common/RealTypes.h"
 #include "Core/Utils.h"
-#include "Core/Window/WindowConfig.h"
 
 namespace Real {
-    namespace physics {
-        class IPhysicsBackend;
-    }
-    namespace core {
-        class IPlatform;
-        class IRenderDevice;
-        class SystemManager;
+    namespace rhi {
         class IRenderer;
+        class IRenderDevice;
+    }
+
+    struct EngineConfig;
+
+    namespace ecs {
+        class CameraSystem;
+    }
+
+    namespace core {
+        class IApplicationContext;
+        class IPlatform;
         class IWindow;
+        struct AssetSystems;
+        struct CoreSystems;
+        class SystemManager;
+        class IPhysicsBackend;
+        class IApplication;
         class EngineCore;
     }
 }
@@ -24,17 +33,24 @@ namespace Real::core {
 
     class EngineBootstrap {
     public:
-        static Scope<EngineCore> Build(const EngineConfig& cfg);
+        static Scope<EngineCore> Build(const EngineConfig& cfg, Scope<IApplication> app);
 
     private:
-        static CoreSystems   BuildCoreSystems(const EngineConfig& cfg);
-        static AssetSystems  BuildAssetSystems();
+        struct RegisteredSystems {
+            ecs::CameraSystem* cameraSystem = nullptr;
+        };
+
+    private:
+        static Scope<CoreSystems>  BuildCoreSystems(const EngineConfig& cfg);
+        static Scope<AssetSystems> BuildAssetSystems();
+
+        static RegisteredSystems RegisterSystems(SystemManager* sysMngr, IPhysicsBackend& physicsBackend);
+        static void PopulateContext(IApplicationContext& ctx, CoreSystems& cs, AssetSystems& as, RegisteredSystems& rs);
 
         static Scope<IWindow> CreateWindow(const EngineConfig& cfg);
         static Scope<IPlatform> CreatePlatform(const EngineConfig& cfg);
-        static Scope<IRenderDevice> CreateRenderDevice(const EngineConfig& cfg, IWindow& window);
-        static Scope<physics::IPhysicsBackend> CreatePhysicsBackend(const EngineConfig& cfg);
-        static Scope<IRenderer> CreateRenderer(Scope<IRenderDevice> graphicsBackend ,const EngineConfig& cfg);
-        static void RegisterSystems(SystemManager* sysMngr, physics::IPhysicsBackend& physicsBackend);
+        static Scope<rhi::IRenderDevice> CreateRenderDevice(const EngineConfig& cfg);
+        static Scope<IPhysicsBackend> CreatePhysicsBackend(const EngineConfig& cfg);
+        static Scope<rhi::IRenderer> CreateRenderer(Scope<rhi::IRenderDevice> graphicsBackend ,const EngineConfig& cfg);
     };
 }

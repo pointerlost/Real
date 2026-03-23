@@ -1,34 +1,32 @@
 //
 // Created by pointerlost on 10/17/25.
 //
-#include "../include/Editor.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-#include "Core/AssetManager.h"
+#include "Editor.h"
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include "EditorState.h"
+#include "InspectorPanel.h"
+#include "HierarchyPanel.h"
+#include "Assets/AssetManager.h"
 #include "Core/CMakeConfig.h"
-#include "Core/file_manager.h"
+#include "Assets/FileManager.h"
 #include "Core/Services.h"
-#include "Timer/Timer.h"
-#include "Core/Window/GLFWwindow.h"
-#include "../include/EditorState.h"
-#include "../include/InspectorPanel.h"
-#include "../include/HierarchyPanel.h"
-#include "Graphics/Debug/DebugRenderer.h"
-#include "Input/Keycodes.h"
-#include "ImGuizmo/GraphEditor.h"
+#include "Platform/GLFW/GLFWwindow.h"
 #include "Input/Input.h"
-#include "Math/Math.h"
-#include "Scene/Components.h"
+#include "Input/Keycodes.h"
 #include "Scene/Entity.h"
+
 
 namespace Real::UI {
 
-    Editor::Editor(core::IWindow* window)
+    Editor::Editor()
     {
         m_Panels.push_back(CreateScope<InspectorPanel>());
         m_Panels.push_back(CreateScope<HierarchyPanel>());
+    }
 
-        // TODO: need an ImGui backend interface, because we need specific library like GLFW
+    void Editor::Init(core::IWindow* window) {
+        // TODO: need an ImGui backend interface, because we need specific library like GLFW??????
         m_Window = dynamic_cast<platform::glfw::GLFWWindow*>(window);
         if (!m_Window) {
             throw std::runtime_error("Editor requires GLFWWindow");
@@ -50,9 +48,6 @@ namespace Real::UI {
         InitFontStyle();
     }
 
-    void Editor::Init() {
-    }
-
     void Editor::BeginFrame(float dt) {
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -64,7 +59,7 @@ namespace Real::UI {
         // Hierarchy,Inspector width = SCREEN_WIDTH / 5 + 31.0
         // MenuBarPanel height = 25.0
         ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 5 + 31.0, 25.0));
-        ImGui::SetNextWindowSize(m_SceneWindowSize);
+        ImGui::SetNextWindowSize(ImVec2(m_SceneWindowSize.x, m_SceneWindowSize.y));
 
         constexpr auto windowFlags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize |
                                      ImGuiWindowFlags_NoCollapse   | ImGuiWindowFlags_NoTitleBar;
@@ -222,8 +217,8 @@ namespace Real::UI {
     void Editor::DrawPerformanceProfile() {
         if (Input::IsKeyPressed(REAL_KEY_F11)) m_OpenPerformanceProfile = !m_OpenPerformanceProfile;
         if (m_OpenPerformanceProfile) return;
-        const auto fps = "FPS: " + std::to_string(Services::GetEditorTimer()->GetFPS());
-        ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), fps.c_str());
+        // const auto fps = "FPS: " + std::to_string(Services::GetEditorTimer()->GetFPS());
+        // ImGui::TextColored(ImVec4(1.0, 1.0, 1.0, 1.0), fps.c_str());
     }
 
     void Editor::UpdateInputUI() {
@@ -239,12 +234,12 @@ namespace Real::UI {
     void Editor::InitFontStyle() {
         // Font style
         // Hardcoded for now!!
-        const auto& assetManager = Services::GetAssetManager();
+        const auto& am = Services::GetAssetManager();
         const auto assets_dir = String(ASSETS_DIR);
 
         const ImGuiIO& io = ImGui::GetIO();
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular",
+            am->AddFontStyle("Ubuntu-Regular",
                 io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
                 16.5f,
                 nullptr,
@@ -252,7 +247,7 @@ namespace Real::UI {
             );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Regular-Big",
+            am->AddFontStyle("Ubuntu-Regular-Big",
                 io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
                 17.5f,
                 nullptr,
@@ -260,7 +255,7 @@ namespace Real::UI {
             );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold",
+            am->AddFontStyle("Ubuntu-Bold",
                 io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
                 16.5f,
                 nullptr,
@@ -268,7 +263,7 @@ namespace Real::UI {
             );
         }
         if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
-            assetManager->AddFontStyle("Ubuntu-Bold-Big",
+            am->AddFontStyle("Ubuntu-Bold-Big",
                 io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
                 17.5f,
                 nullptr,

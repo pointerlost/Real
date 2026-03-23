@@ -1,0 +1,28 @@
+//
+// Created by pointerlost on 12/6/25.
+//
+#pragma once
+#include "Core/Utils.h"
+#include "Graphics/ModelLoader.h"
+
+namespace Real {
+    class RenderContext;
+}
+
+namespace Real {
+
+    class ResourceLoader {
+    public:
+        ResourceLoader();
+
+        void Load();
+
+    private:
+        Scope<ModelLoader> m_ModelLoader;
+
+    private:
+        void LoadAssets();
+        void LoadShaders();
+    };
+
+}

@@ -2,7 +2,7 @@
 // Created by pointerlost on 1/11/26.
 //
 #pragma once
-#include "Common/RealTypes.h"
+#include "Common/Types.h"
 
 namespace Real::math {
 

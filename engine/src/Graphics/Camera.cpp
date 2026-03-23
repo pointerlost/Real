@@ -2,9 +2,11 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Graphics/Camera.h"
+
+#include "Graphics/GPUBuffers.h"
 #include "Graphics/Transformations.h"
 #include "Input/Input.h"
-#include "Math/Conversions/GLMConvertions.h"
+#include "Math/Conversions/GLMConversions.h"
 
 namespace Real {
 
@@ -41,12 +43,10 @@ namespace Real {
         // TODO: Add orthographic camera
     }
 
-    FrameUBO Camera::ConvertToGPUFormat(const Transform& transform) {
-        FrameUBO gpuData{};
-        gpuData.position = math::Vec4(transform.position, 0.0f); // w unused (padding)
-        gpuData.view = m_View;
-        gpuData.projection = m_Projection;
-        gpuData.viewProjection = m_Projection * m_View;
-        return gpuData;
+    void Camera::ConvertToGPUFormat(const Transform& transform, FrameUBO& outData) {
+        outData.position = math::Vec4(transform.position, 0.0f); // w unused (padding)
+        outData.view = m_View;
+        outData.projection = m_Projection;
+        outData.viewProjection = m_Projection * m_View;
     }
 }

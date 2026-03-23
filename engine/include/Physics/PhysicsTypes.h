@@ -2,9 +2,13 @@
 // Created by pointerlost on 1/25/26.
 //
 #pragma once
-#include <Common/RealTypes.h>
+#include <Common/Types.h>
 
 namespace Real::physics {
+
+    enum class PhysicsBackend {
+        PhysX,
+    };
 
     using RigidBodyHandle  = f32;
     using PhysicsShapeHandle = f32;

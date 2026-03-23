@@ -1,9 +1,9 @@
 //
 // Created by pointerlost on 2/20/26.
 //
-#include "../apps/editor/include/scenes/SandboxScene.h"
+#include "scenes/SandboxScene.h"
 
-#include "Core/AssetManager.h"
+#include "Assets/AssetManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/MeshManager.h"

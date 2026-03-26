@@ -3,27 +3,25 @@
 //
 #include "Core/Engine/EngineBootstrap.h"
 #include "Core/Engine/EngineCore.h"
+#include "Graphics/Shader.h"
+#include <cassert>
 #include "Core/IApplicationContext.h"
-#include "../../../include/RHI/IRenderDevice.h"
-#include "Core/Logger.h"
 #include "Core/RealConfig.h"
 #include "Core/Services.h"
-#include "Core/Window/GLFWPlatform.h"
-#include "Core/Window/GLFWwindow.h"
-#include "Physics/Physx/PhysXBackend.h"
+#include "Physics/PhysX/PhysXBackend.h"
+#include "Platform/GLFW/GLFWPlatform.h"
+#include "Platform/GLFW/GLFWwindow.h"
 #include "Platform/OpenGL/OpenGLRenderDevice.h"
 #include "Platform/OpenGL/OpenGLRenderer.h"
 #include "Platform/Vulkan/VkRenderDevice.h"
 #include "Platform/Vulkan/VkRenderer.h"
+#include "RHI/IRenderDevice.h"
 #include "Scene/Systems/LightSystem.h"
 #include "Scene/Systems/MeshRendererSystem.h"
 #include "Scene/Systems/MovementSystem.h"
 #include "Scene/Systems/PhysicsSystem.h"
 #include "Scene/Systems/CameraSystem.h"
-#include "Graphics/Shader.h"
-#include "Platform/GLFW/GLFWPlatform.h"
-#include "Platform/GLFW/GLFWwindow.h"
-#include "Window/IWindow.h"
+
 
 namespace Real::core {
 
@@ -48,7 +46,7 @@ namespace Real::core {
         cs->window   = CreateWindow(cfg);
 
         auto renderDevice = CreateRenderDevice(cfg);
-        renderDevice->Initialize(cs->window->GetNativeHandle(), cfg.rendererConfig);
+        renderDevice->Initialize(cs->window->GetNativeHandle(), cfg.renderer);
 
         cs->renderer = CreateRenderer(std::move(renderDevice), cfg);
 
@@ -58,7 +56,7 @@ namespace Real::core {
 
         cs->systems = CreateScope<SystemManager>();
 
-        cs->timer = CreateScope<RealTimeTimer>();
+        cs->timer = CreateScope<RealTimer>();
 
         cs->debugRenderer = CreateScope<graphics::debug::DebugRenderer>();
         Services::SetDebugRenderer(cs->debugRenderer.get());
@@ -70,10 +68,11 @@ namespace Real::core {
         Scope<AssetSystems> as = CreateScope<AssetSystems>();
 
         // The order matters, because resourceLoader needs importer stuff
-        as->assetManager   = CreateScope<AssetManager>();
-        as->meshManager    = CreateScope<MeshManager>();
-        as->assetImporter  = CreateScope<AssetImporter>();
-        as->resourceLoader = CreateScope<ResourceLoader>();
+        as->assetManager    = CreateScope<assets::AssetManager>();
+        as->assetImporter   = CreateScope<assets::AssetImporter>();
+        as->materialManager = CreateScope<assets::MaterialManager>();
+        as->meshManager     = CreateScope<assets::MeshManager>();
+        as->resourceManager = CreateScope<assets::ResourceManager>();
 
         return as;
     }
@@ -84,7 +83,7 @@ namespace Real::core {
         ctx.SetAssetManager  (as.assetManager.get());
         ctx.SetAssetImporter (as.assetImporter.get());
         ctx.SetMeshManager   (as.meshManager.get());
-        ctx.SetResourceLoader(as.resourceLoader.get());
+        ctx.SetResourceLoader(as.resourceManager.get());
         ctx.SetSceneManager  (cs.sceneManager.get());
         ctx.SetDebugRenderer (cs.debugRenderer.get());
     }
@@ -123,7 +122,7 @@ namespace Real::core {
                 return CreateScope<platform::opengl::OpenGLRenderDevice>();
 
             case rhi::GraphicsAPI::Vulkan:
-                return CreateScope<platform::Vk::VkRenderDevice>();
+                return CreateScope<platform::vk::VkRenderDevice>();
 
             default:
                 throw std::runtime_error("Unsupported graphics API!");
@@ -144,14 +143,14 @@ namespace Real::core {
         }
     }
 
-    Scope<IRenderer> EngineBootstrap::CreateRenderer(Scope<rhi::IRenderDevice> graphicsBackend, const EngineConfig &cfg) {
+    Scope<rhi::IRenderer> EngineBootstrap::CreateRenderer(Scope<rhi::IRenderDevice> graphicsBackend, const EngineConfig &cfg) {
         switch (cfg.graphicsAPI)
         {
-            case graphics::GraphicsAPI::OpenGL:
+            case rhi::GraphicsAPI::OpenGL:
                 return CreateScope<platform::opengl::OpenGLRenderer>(std::move(graphicsBackend));
 
-            case graphics::GraphicsAPI::Vulkan:
-                return CreateScope<platform::Vk::VkRenderer>(std::move(graphicsBackend));
+            case rhi::GraphicsAPI::Vulkan:
+                return CreateScope<platform::vk::VkRenderer>(std::move(graphicsBackend));
 
             default:
                 throw std::runtime_error("Unsupported renderer type");

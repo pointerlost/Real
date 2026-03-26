@@ -3,29 +3,43 @@
 //
 #pragma once
 
+namespace Real::assets {
+    class ResourceManager;
+}
+
 namespace Real {
-    class MeshManager;
-    class AssetManager;
     struct EditorState;
-    class AssetImporter;
+    namespace core { struct AssetSystems; }
 
     namespace graphics::debug {
         class DebugRenderer;
     }
+    namespace assets {
+        class ShaderManager;
+        class MaterialManager;
+        class TextureManager;
+        class AssetImporter;
+        class MeshManager;
+        class AssetManager;
+    }
 }
 
 namespace Real::Services {
-    void SetAssetManager(AssetManager* manager);
-    void SetMeshManager(MeshManager* manager);
-    void SetEditorState(EditorState* state);
-    void SetAssetImporter(AssetImporter* importer);
+    void SetAssetSystems (core::AssetSystems* as);
+    void SetEditorState  (EditorState* state);
     void SetDebugRenderer(graphics::debug::DebugRenderer* dr);
 }
 
 namespace Real::Services {
-    AssetManager  *GetAssetManager();
-    MeshManager   *GetMeshManager();
-    EditorState   *GetEditorState();
-    AssetImporter *GetAssetImporter();
-    graphics::debug::DebugRenderer* GetDebugRenderer();
+    core::AssetSystems             *GetAssetSystems();
+    EditorState                    *GetEditorState();
+    graphics::debug::DebugRenderer *GetDebugRenderer();
+
+    [[nodiscard]] assets::AssetImporter   &GetAssetImporter();
+    [[nodiscard]] assets::AssetManager    &GetAssetManager();
+    [[nodiscard]] assets::MaterialManager &GetMaterialManager();
+    [[nodiscard]] assets::MeshManager     &GetMeshManager();
+    [[nodiscard]] assets::ResourceManager  &GetResourceLoader();
+    [[nodiscard]] assets::ShaderManager   &GetShaderManager();
+    [[nodiscard]] assets::TextureManager  &GetTextureManager();
 }

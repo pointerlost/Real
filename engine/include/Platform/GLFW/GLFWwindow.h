@@ -2,14 +2,14 @@
 // Created by pointerlost on 2/16/26.
 //
 #pragma once
-#include <GLFW/glfw3.h>
-#include "../../Window/IWindow.h"
 #include "Common/Types.h"
+#include "Window/IWindow.h"
+#include "Window/WindowConfig.h"
 
-namespace Real::core {
-    struct WindowConfig;
+namespace Real {
+    struct RendererConfig;
+    namespace rhi { enum class GraphicsAPI; }
 }
-
 struct GLFWwindow;
 struct GLFWmonitor;
 
@@ -17,7 +17,7 @@ namespace Real::platform::glfw {
 
     class GLFWWindow final : public core::IWindow {
     public:
-        explicit GLFWWindow(const core::WindowConfig& cfg, const RendererConfig& renderConfig);
+        explicit GLFWWindow(const core::WindowConfig& cfg, const RendererConfig& rc);
         void PollEvents() override;
         void SwapBuffers() override;
         [[nodiscard]] bool ShouldClose() const override;
@@ -30,10 +30,10 @@ namespace Real::platform::glfw {
         GLFWmonitor* m_GLFWMonitor = nullptr;
         GLFWwindow*  m_GLFWShare   = nullptr;
 
-        int m_Width    = 1520;
-        int m_Height   = 840;
-        String m_Title = "Real";
-        WindowType type = WindowType::glfw;
+        int m_Width         = 1520;
+        int m_Height        = 840;
+        std::string m_Title = "Real";
+        core::WindowConfig m_Config{};
 
     private:
         static void set_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);

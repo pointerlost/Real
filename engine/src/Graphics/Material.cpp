@@ -5,8 +5,9 @@
 #include "../../include/Assets/AssetManager.h"
 #include "Core/Services.h"
 #include "../../include/Graphics/Texture/Texture.h"
+#include "Assets/TextureManager.h"
 
-namespace Real {
+namespace Real::graphics {
 
     MaterialInstance::MaterialInstance(const Ref<Material> &assetMaterial)
         : m_UUID(UUID{}), m_Base(assetMaterial)
@@ -14,10 +15,10 @@ namespace Real {
     }
 
     void MaterialInstance::ConvertToGPUFormat(MaterialSSBO& outData) const {
-        const auto& am = Services::GetAssetManager();
+        auto& tm = Services::GetTextureManager();
 
         const auto& GetIndex = [&](const UUID& uuid, TextureType type) {
-            return am->GetTexture(uuid, type)->GetIndex();
+            return tm.GetTexture(uuid, type)->GetIndex();
         };
 
         const UUID albedoUUID   = m_AlbedoOverride.value_or(m_Base->m_Albedo);

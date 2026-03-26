@@ -2,9 +2,7 @@
 // Created by pointerlost on 1/25/26.
 //
 #include <Scene/Systems/MovementSystem.h>
-
 #include "Scene/Components.h"
-#include "Scene/Scene.h"
 
 namespace Real::ecs {
 
@@ -19,7 +17,7 @@ namespace Real::ecs {
         const auto view = registry.view<TransformComponent, MovementComponent>(entt::exclude<RigidbodyComponent>);
 
         for (const auto entity : view) {
-            auto& tc = view.get<TransformComponent>(entity);
+            auto& tc       = view.get<TransformComponent>(entity);
             const auto& mc = view.get<MovementComponent>(entity);
 
             // MovementSystem takes the normalized input(moveInput) and converts it to World-Space using Entity rotation
@@ -30,7 +28,7 @@ namespace Real::ecs {
             if (math::Vec3::LengthSq(moveDir) > 0.0f)
                 moveDir = moveDir.Normalized();
 
-            tc.transform.Translate(moveDir * mc.maxSpeed * deltaTime);
+            tc.transform.TranslateLocal(moveDir * mc.maxSpeed * deltaTime);
         }
     }
 

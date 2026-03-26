@@ -2,13 +2,14 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/RenderContext.h"
-#include "../../include/Assets/AssetManager.h"
+#include "Assets/AssetManager.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
-#include "Graphics/MeshManager.h"
+#include "Assets/MeshManager.h"
+#include "Assets/AssetTypes.h"
+#include "Assets/MaterialManager.h"
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
-#include "Util/Util.h"
 #include "Core/Logger.h"
 #include "Graphics/RenderCommand.h"
 #include "Math/Conversions/GLMConversions.h"
@@ -26,14 +27,14 @@ namespace Real::graphics {
         uint baseInstance = 0;
 
         for (auto [entity, transform, id] : view.each()) {
-            const auto e = scene->GetEntityWithUUID(id.m_UUID);
+            const auto e = scene->GetEntityWithUUID(id.id);
             if (!e) continue;
 
             const int transformIndex = BuildTransform(transform);
             CollectCamera(e);
             CollectLight(e);
 
-            for (const auto& [meshData, matUUID] : CollectRenderables(e)) {
+            for (const auto [meshData, matUUID] : CollectRenderable(e)) {
                 const int materialIndex = matUUID != 0 ? BuildMaterial(matUUID) : 0;
                 PushDrawCommand(meshData, transformIndex, materialIndex, baseInstance);
                 ++baseInstance;
@@ -53,14 +54,14 @@ namespace Real::graphics {
         if (entity->HasComponent<CameraComponent>()) {
             auto& cc = entity->GetComponentUnchecked<CameraComponent>();
             auto& tc = entity->GetComponentUnchecked<TransformComponent>();
-            cc.m_Camera.ConvertToGPUFormat(tc.transform, m_FrameRenderData.camera);
+            cc.camera.ConvertToGPUFormat(tc.transform, m_FrameRenderData.camera);
         }
     }
 
     int RenderContext::BuildTransform(const TransformComponent& tc) {
         TransformSSBO gpu{};
         const int index = static_cast<int>(m_FrameRenderData.transforms.size());
-        const auto& model = tc.transform.GetModelMatrix();
+        const auto& model = tc.transform.GetWorldMatrix();
         gpu.modelMatrix   = model;
         gpu.normalMatrix  = interop::glm::From(
             glm::mat4(glm::transpose(glm::inverse(glm::mat3(interop::glm::To(model)))))
@@ -74,8 +75,8 @@ namespace Real::graphics {
         if (it != m_MaterialIdxCache.end())
             return it->second;
 
-        const auto& am = Services::GetAssetManager();
-        const auto mat = am->GetMaterialInstance(materialUUID);
+        auto& mm = Services::GetMaterialManager();
+        const auto mat = mm.GetInstance(materialUUID);
 
         const int index = m_FrameRenderData.materials.size();
 
@@ -88,8 +89,12 @@ namespace Real::graphics {
         return index;
     }
 
-    void RenderContext::PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex,uint baseInstance)
-    {
+    void RenderContext::PushDrawCommand(
+        const assets::MeshAsset* mesh,
+        int transformIndex,
+        int materialIndex,
+        uint baseInstance
+    ) {
         if (mesh) {
             DrawElementsIndirectCommand cmd{};
             cmd.count         = mesh->indexCount;
@@ -112,36 +117,13 @@ namespace Real::graphics {
         m_FrameRenderData.entityData.push_back(em);
     }
 
-    Vector<RenderableData> RenderContext::CollectRenderables(const Entity* entity) {
-        Vector<RenderableData> result;
-
-        if (entity->HasComponent<MeshRendererComponent>()) {
-            const auto& mrc = entity->GetComponentUnchecked<MeshRendererComponent>();
-
-            // Using same count for meshes and materials since each mesh has one material
-            if (mrc.m_MeshUUIDs.size() != mrc.m_MaterialInstanceUUIDs.size()) {
-                Warn("[RenderContext::CollectMeshes] MeshUUID count does not match MaterialInstanceUUIDs, Fix it!!");
-                return result;
-            }
-            const size_t size = mrc.m_MeshUUIDs.size();
-            for (size_t i = 0; i < size; i++) {
-                RenderableData data;
-                data.mesh = Services::GetMeshManager()->GetMeshData(mrc.m_MeshUUIDs[i]);
-                data.materialUUID = mrc.m_MaterialInstanceUUIDs[i];
-                result.push_back(data);
-            }
-        }
-
-        return result;
-    }
-
     void RenderContext::CollectLight(const Entity* entity) {
         if (entity->HasComponent<LightComponent>()) {
             auto& lc = entity->GetComponentUnchecked<LightComponent>();
             const auto& tc = entity->GetComponentUnchecked<TransformComponent>();
 
             LightSSBO gpuData{};
-            lc.m_Light.ConvertToGPUFormat(tc.transform, gpuData);
+            lc.light.ConvertToGPUFormat(tc.transform, gpuData);
             m_FrameRenderData.lights.push_back(gpuData);
         }
     }
@@ -158,6 +140,29 @@ namespace Real::graphics {
         m_FrameRenderData.lights.clear();
         m_FrameRenderData.transforms.clear();
         // TODO: add material dirty tracker or you can't update the buffer with 'additional data'?
+    }
+
+    Vector<RenderableData> RenderContext::CollectRenderable(const Entity* entity) {
+        Vector<RenderableData> result;
+
+        if (entity->HasComponent<MeshRendererComponent>()) {
+            const auto& mrc = entity->GetComponentUnchecked<MeshRendererComponent>();
+
+            // Using same count for meshes and materials since each mesh has one material
+            if (mrc.meshIDs.size() != mrc.matInstanceIDs.size()) {
+                Warn("[RenderContext::CollectMeshes] MeshUUID count does not match MaterialInstanceUUIDs, Fix it!!");
+                return result;
+            }
+            const size_t size = mrc.meshIDs.size();
+            for (size_t i = 0; i < size; i++) {
+                RenderableData data;
+                data.mesh = Services::GetMeshManager().GetMeshData(mrc.meshIDs[i]);
+                data.materialUUID = mrc.matInstanceIDs[i];
+                result.push_back(data);
+            }
+        }
+
+        return std::move(result);
     }
 
 }

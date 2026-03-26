@@ -13,31 +13,31 @@
 #include "Math/Vec3.h"
 #include "Math/Vec4.h"
 
-namespace Real {
+namespace Real::graphics {
 
-    Shader::Shader(String vertexPath, String fragmentPath, String name) noexcept
-        : m_VertexPath(std::move(vertexPath)),
-          m_FragmentPath(std::move(fragmentPath)),
-          m_Name(std::move(name))
+    Shader::Shader(String vertexPath, String fragmentPath, const ShaderType& type) noexcept
+        : m_Type(type),
+          m_VertexPath(std::move(vertexPath)),
+          m_FragmentPath(std::move(fragmentPath))
     {
         const char* vSource = m_VertexPath.c_str();
         const char* fSource = m_FragmentPath.c_str();
 
-        const graphics::ShaderHandle vertex{glCreateShader(GL_VERTEX_SHADER)};
+        const ShaderHandle vertex{glCreateShader(GL_VERTEX_SHADER)};
         glShaderSource(vertex.value, 1, &vSource, nullptr);
         glCompileShader(vertex.value);
-        CheckCompileErrors(vertex, graphics::ShaderStage::Vertex);
+        CheckCompileErrors(vertex, ShaderStage::Vertex);
 
-        const graphics::ShaderHandle fragment{glCreateShader(GL_FRAGMENT_SHADER)};
+        const ShaderHandle fragment{glCreateShader(GL_FRAGMENT_SHADER)};
         glShaderSource(fragment.value, 1, &fSource, nullptr);
         glCompileShader(fragment.value);
-        CheckCompileErrors(fragment, graphics::ShaderStage::Fragment);
+        CheckCompileErrors(fragment, ShaderStage::Fragment);
 
         m_Program.value = glCreateProgram();
         glAttachShader(m_Program.value, vertex.value);
         glAttachShader(m_Program.value, fragment.value);
         glLinkProgram(m_Program.value);
-        CheckCompileErrors(m_Program, graphics::ShaderStage::Program);
+        CheckCompileErrors(m_Program, ShaderStage::Program);
     }
 
     void Shader::SetInt(const String &name, int value) const noexcept {
@@ -105,11 +105,11 @@ namespace Real {
         return loc;
     }
 
-    void Shader::CheckCompileErrors(graphics::ShaderHandle shader, const graphics::ShaderStage& stage) noexcept {
+    void Shader::CheckCompileErrors(ShaderHandle shader, const ShaderStage& stage) noexcept {
         GLint success;
         GLchar infoLog[1024];
         switch (stage) {
-            case graphics::ShaderStage::Program: {
+            case ShaderStage::Program: {
                 glGetShaderiv(shader.value, GL_COMPILE_STATUS, &success);
                 if (!success) {
                     glGetShaderInfoLog(shader.value, 1024, nullptr, infoLog);

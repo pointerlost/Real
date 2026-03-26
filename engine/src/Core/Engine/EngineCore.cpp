@@ -6,8 +6,7 @@
 #include "Graphics/Shader.h"
 #include "Input/Input.h"
 #include <stdexcept>
-
-#include "Core/Logger.h"
+#include "Graphics/RenderContext.h"
 
 namespace Real::core {
 
@@ -32,15 +31,12 @@ namespace Real::core {
         m_Assets->meshManager->InitResources();
 
         m_Core->renderer->Init();
-        Info("Shit");
 
-        m_Assets->resourceLoader->Load();
-        Info("Shit");
+        m_Assets->resourceManager->Load();
 
         m_Core->debugRenderer->Init();
 
-        m_Assets->assetManager->UploadTexturesToGPU();
-        Info("Shit");
+        m_Core->renderer->GetRenderContext().GetGPURenderData().textures =  m_Assets->textureManager->UploadToGPU();
     }
 
     void EngineCore::RunLoop() {
@@ -79,8 +75,8 @@ namespace Real::core {
         const auto dt = static_cast<f32>(Timer().GetDelta());
 
         Input::Update();
-        Importer().Update();
-        Assets().Update();
+        m_Assets->assetImporter->Update();
+        m_Assets->assetManager->Update();
         Systems().Update(ActiveScene().GetRegistry(), dt);
 
         m_Application->Update(dt);

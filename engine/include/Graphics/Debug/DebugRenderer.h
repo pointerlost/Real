@@ -8,7 +8,10 @@
 #include "Graphics/RenderCommand.h"
 
 namespace Real {
-    class Shader;
+    namespace graphics {
+        class Shader;
+    }
+
     class Camera;
 }
 
@@ -41,9 +44,9 @@ namespace Real::graphics::debug {
         DebugMesh m_SphereMesh;
         DebugMesh m_CylinderMesh;
 
-        BufferHandle m_VAO = 0;
-        BufferHandle m_VBO = 0;
-        BufferHandle m_EBO = 0;
+        BufferHandle m_VAO{};
+        BufferHandle m_VBO{};
+        BufferHandle m_EBO{};
 
         int m_BaseInstance = 0;
         opengl::Buffer m_DebugInstanceBuffer;

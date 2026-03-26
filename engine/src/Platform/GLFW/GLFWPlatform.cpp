@@ -1,7 +1,7 @@
 //
 // Created by pointerlost on 2/17/26.
 //
-#include "Core/Window/GLFWPlatform.h"
+#include "Platform/GLFW/GLFWPlatform.h"
 #include <stdexcept>
 #include <GLFW/glfw3.h>
 

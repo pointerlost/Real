@@ -5,18 +5,21 @@
 #include <unordered_map>
 #include "Common/Types.h"
 
-namespace Real { class Shader; }
+namespace Real::graphics {
+    class Shader;
+    enum class ShaderType;
+}
 
-namespace Real {
+namespace Real::assets {
 
     class ShaderManager {
     public:
-        void                  Load(const String& vertPath, const String& fragPath, const String& name);
-        [[nodiscard]] Shader& Get(const String& name);
-        [[nodiscard]] bool    Exists(const String& name) const;
+        void Load(const String& vertPath, const String& fragPath, const graphics::ShaderType& type);
+        [[nodiscard]] graphics::Shader& Get(const graphics::ShaderType& type);
+        [[nodiscard]] bool              Exists(const graphics::ShaderType& type) const;
 
     private:
-        std::unordered_map<String, Shader> m_Shaders;
+        std::unordered_map<graphics::ShaderType, graphics::Shader> m_Shaders;
 
     private:
         [[nodiscard]] String PreprocessFile(const String& filePath) const;

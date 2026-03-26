@@ -1,13 +1,13 @@
 //
 // Created by pointerlost on 10/4/25.
 //
-#include "Graphics/MeshManager.h"
+#include "Assets/MeshManager.h"
 #include "Core/Logger.h"
-#include "Core/Utils.h"
 #include "Graphics/MeshFactory.h"
 #include <span>
 #include "Assets/AssetManager.h"
 #include "Assets/AssetTypes.h"
+#include "glad/glad.h"
 #include "Graphics/Material.h"
 
 namespace Real::assets {
@@ -21,8 +21,10 @@ namespace Real::assets {
         return &it->second;
     }
 
-    const MeshAsset& MeshManager::CreateSingleMesh(Vector<graphics::Vertex> vertices,
-        const Vector<u32>& indices, const UUID& meshUUID)
+    const MeshAsset& MeshManager::CreateSingleMesh(
+        Vector<graphics::Vertex> vertices,
+        const Vector<u32>& indices,
+        const UUID& meshUUID)
     {
         if (m_MeshAssets.contains(meshUUID))
             return m_MeshAssets[meshUUID]; // Skip if mesh already exists
@@ -63,34 +65,35 @@ namespace Real::assets {
         };
     }
 
-    const MeshAsset& MeshManager::GetPrimitiveMeshData(const String &name) {
-        if (m_PrimitiveTypesUUIDs.contains(name)) {
-            Warn("There is no primitive type with this name: " + name);
-            return m_MeshAssets[m_PrimitiveTypesUUIDs["triangle"]];
+    const MeshAsset& MeshManager::GetPrimitiveMeshData(const graphics::PrimitiveType& type) {
+        if (m_PrimitiveTypesUUIDs.contains(type)) {
+            Warn("There is no primitive type with this type enum id: " + std::to_string((int)type));
+            return m_MeshAssets[m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]];
         }
-        return m_MeshAssets[m_PrimitiveTypesUUIDs[name]];
+        return m_MeshAssets[m_PrimitiveTypesUUIDs[type]];
     }
 
-    const UUID& MeshManager::GetPrimitiveUUID(const String &name) {
-        return m_PrimitiveTypesUUIDs[name];
+    const UUID& MeshManager::GetPrimitiveUUID(const graphics::PrimitiveType& type) {
+        return m_PrimitiveTypesUUIDs[type];
     }
 
     void MeshManager::BindUniversalVAO() const {
-        glBindVertexArray(m_UniversalVAO);
+        glBindVertexArray(m_UniversalVAO.value);
     }
 
     void MeshManager::UnbindCurrVAO() const {
         glBindVertexArray(0);
     }
 
-    void MeshManager::LoadPrimitiveTypes() {
+    void MeshManager::LoadPrimitiveTypes()
+    {
         auto [triFirst, triSecond] = MeshFactory::CreateTriangle();
-        m_PrimitiveTypesUUIDs["triangle"] = UUID();
-        CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs["triangle"]);
+        m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle] = UUID();
+        CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]);
 
-        m_PrimitiveTypesUUIDs["cube"] = UUID();
         auto [cubeFirst, cubeSecond] = MeshFactory::CreateCube();
-        CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs["cube"]);
+        m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Cube] = UUID();
+        CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]);
     }
 
     u32 MeshData3D::GetIndexCount(const UUID &uuid) const {
@@ -109,35 +112,65 @@ namespace Real::assets {
     void MeshManager::InitResources() {
         LoadPrimitiveTypes();
 
-        glCreateBuffers(1, &m_VBO);
-        glNamedBufferData(m_VBO, m_AllVertices.size() * sizeof(Vertex), m_AllVertices.data(), GL_STATIC_DRAW);
+        glCreateBuffers(1, &m_VBO.value);
+        glNamedBufferData(
+            m_VBO.value,
+            m_AllVertices.size() * sizeof(graphics::Vertex),
+            m_AllVertices.data(),
+            GL_STATIC_DRAW
+        );
 
-        glCreateBuffers(1, &m_EBO);
-        glNamedBufferData(m_EBO, m_AllIndices.size() * sizeof(u32), m_AllIndices.data(), GL_STATIC_DRAW);
+        glCreateBuffers(1, &m_EBO.value);
+        glNamedBufferData(
+            m_EBO.value,
+            m_AllIndices.size() * sizeof(u32),
+            m_AllIndices.data(),
+            GL_STATIC_DRAW
+        );
 
         // Create and bind global vao
-        glCreateVertexArrays(1, &m_UniversalVAO);
+        glCreateVertexArrays(1, &m_UniversalVAO.value);
 
         // Bind VBO to Current VAO
-        glVertexArrayVertexBuffer(m_UniversalVAO, 0, m_VBO, 0, sizeof(Vertex));
+        glVertexArrayVertexBuffer(m_UniversalVAO.value, 0, m_VBO.value, 0, sizeof(graphics::Vertex));
 
         // Bind EBO to VAO
-        glVertexArrayElementBuffer(m_UniversalVAO, m_EBO);
+        glVertexArrayElementBuffer(m_UniversalVAO.value, m_EBO.value);
 
         // Position attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 0);
-        glVertexArrayAttribFormat(m_UniversalVAO, 0, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-        glVertexArrayAttribBinding(m_UniversalVAO, 0, 0);
+        glEnableVertexArrayAttrib(m_UniversalVAO.value, 0);
+        glVertexArrayAttribFormat(m_UniversalVAO.value,
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            offsetof(graphics::Vertex, position)
+        );
+        glVertexArrayAttribBinding(m_UniversalVAO.value, 0, 0);
 
         // Normal attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 1);
-        glVertexArrayAttribFormat(m_UniversalVAO, 1, 3, GL_FLOAT, GL_FALSE, offsetof(Vertex, normal));
-        glVertexArrayAttribBinding(m_UniversalVAO, 1, 0);
+        glEnableVertexArrayAttrib(m_UniversalVAO.value, 1);
+        glVertexArrayAttribFormat(
+            m_UniversalVAO.value,
+            1,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            offsetof(graphics::Vertex, normal)
+        );
+        glVertexArrayAttribBinding(m_UniversalVAO.value, 1, 0);
 
         // UV attribute
-        glEnableVertexArrayAttrib(m_UniversalVAO, 2);
-        glVertexArrayAttribFormat(m_UniversalVAO, 2, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, UV));
-        glVertexArrayAttribBinding(m_UniversalVAO, 2, 0);
+        glEnableVertexArrayAttrib(m_UniversalVAO.value, 2);
+        glVertexArrayAttribFormat(
+            m_UniversalVAO.value,
+            2,
+            2,
+            GL_FLOAT,
+            GL_FALSE,
+            offsetof(graphics::Vertex, UV)
+        );
+        glVertexArrayAttribBinding(m_UniversalVAO.value, 2, 0);
     }
 
     size_t MeshManager::GetVerticesCount() const {

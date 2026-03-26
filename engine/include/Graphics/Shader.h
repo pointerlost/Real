@@ -15,11 +15,11 @@ namespace Real::math {
     struct Mat3;
 }
 
-namespace Real {
+namespace Real::graphics {
 
     class Shader {
     public:
-        Shader(String vertexPath, String fragmentPath, String name) noexcept;
+        Shader(String vertexPath, String fragmentPath, const ShaderType& type) noexcept;
         Shader() = default;
         Shader(Shader&&) = default;
         Shader& operator=(Shader&&) = default;
@@ -40,15 +40,15 @@ namespace Real {
         void SetMat3(const String& name, const math::Mat3& mat) const noexcept ;
         void SetMat4(const String& name, const math::Mat4& mat) const noexcept ;
 
-        [[nodiscard]] const String& GetName() const noexcept { return m_Name; }
+        [[nodiscard]] const graphics::ShaderType&   GetType()    const noexcept { return m_Type; }
         [[nodiscard]] const graphics::ShaderHandle& GetProgram() const noexcept { return m_Program; }
         void Bind() const noexcept;
 
     private:
         graphics::ShaderHandle m_Program{};
+        graphics::ShaderType m_Type{};
         String m_VertexPath;
         String m_FragmentPath;
-        String m_Name;
 
         mutable std::unordered_map<String, int> m_CacheUniforms;
 

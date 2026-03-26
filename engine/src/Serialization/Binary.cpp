@@ -8,14 +8,17 @@
 #include "Common/Types.h"
 #include "../../include/Assets/AssetManager.h"
 #include "Core/Logger.h"
-#include "Core/Utils.h"
-#include "Graphics/MeshManager.h"
+#include "../../include/Common/Utils.h"
+#include "../../include/Assets/MeshManager.h"
 #include "Graphics/RenderTypes.h"
 
 namespace Real::serialization::binary {
 
-    void WriteModel(const String &path, assets::ModelBinaryHeader binaryHeader,
-        const Vector<UUID>& meshUUIDs, const Vector<UUID>& materialUUIDs)
+    void WriteModel(
+        const String &path,
+        assets::ModelBinaryHeader binaryHeader,
+        const Vector<UUID>& meshUUIDs,
+        const Vector<UUID>& materialUUIDs)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
@@ -109,8 +112,11 @@ namespace Real::serialization::binary {
         return std::make_tuple(header, meshUUIDs, materialUUIDs);
     }
 
-    void WriteMesh(const String &path, const assets::MeshBinaryHeader &binaryHeader,
-        const Vector<Vertex>& vertices, const Vector<u32>& indices)
+    void WriteMesh(
+        const String &path,
+        const assets::MeshBinaryHeader &binaryHeader,
+        const Vector<graphics::Vertex>& vertices,
+        const Vector<u32>& indices)
     {
         std::ofstream file(path, std::ios::binary | std::ios::out | std::ios::trunc);
         if (!file) {
@@ -121,7 +127,7 @@ namespace Real::serialization::binary {
         file.write(reinterpret_cast<const char*>(&binaryHeader), sizeof(binaryHeader));
 
         if (!vertices.empty()) {
-            file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(Vertex));
+            file.write(reinterpret_cast<const char*>(vertices.data()), vertices.size() * sizeof(graphics::Vertex));
         } else {
             Warn("[WriteMesh] Vertices are empty!");
         }
@@ -137,7 +143,8 @@ namespace Real::serialization::binary {
         }
     }
 
-    assets::MeshLoadResult LoadMesh(const String &path) {
+    assets::MeshLoadResult LoadMesh(const String &path)
+    {
         std::ifstream file(path, std::ios::binary | std::ios::in);
         if (!file) {
             Warn("[Load] Mesh binary file can't opening: " + path);

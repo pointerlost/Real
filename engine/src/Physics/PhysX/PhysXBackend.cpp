@@ -1,15 +1,14 @@
 //
 // Created by pointerlost on 2/12/26.
 //
-#include <Physics/Physx/PhysXBackend.h>
-
+#include <Physics/PhysX/PhysXBackend.h>
+#include "PxPhysicsAPI.h"
 #include "Core/Logger.h"
 #include "Graphics/Debug/DebugRenderer.h"
 #include "Math/Vec2.h"
-#include "Physics/PhysicsDescriptors.h"
+#include "Physics/PhysicsUtils.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
-#include "Util/Util.h"
 
 namespace {
     // PhysX-Real conversions
@@ -41,18 +40,21 @@ namespace {
         return { q.x, q.y, q.z, q.w };
     }
 
-    Transform FromPxTransform(const physx::PxTransform& t) noexcept {
+    core::LocalPose FromPxTransform(const physx::PxTransform& t) noexcept {
         return { { FromPxVec(t.p) }, { FromPxQuat(t.q) } };
     }
 
-    physx::PxTransform ToPxTransform(const Transform& t) noexcept {
+    physx::PxTransform ToPxTransform(const core::LocalPose& t) noexcept {
         return { ToPxVec(t.position), ToPxQuat(t.rotation) };
     }
 }
 
 namespace Real::physics {
 
-    void PhysXBackend::Init(const PhysicsWorldDesc &desc) {
+    void PhysXBackend::Init(const core::PhysicsWorldDesc &desc) {
+        m_NextBodyHandle.id = 1.f;
+        m_NextBodyHandle.id = 1.f;
+
         m_Context = CreateScope<PhysXContext>();
         // Initialize PhysX Foundation, Physics, Scene, etc.
         m_Context->Init();
@@ -64,43 +66,46 @@ namespace Real::physics {
         m_Context->Shutdown(); // Shutdown PhysX systems and release low-level resources
     }
 
-    void PhysXBackend::Step(float deltaTime) {
+    void PhysXBackend::Step(float dt) {
         auto& physXScene = m_Context->GetScene();
 
         // Start simulation step
-        physXScene.simulate(deltaTime);
+        physXScene.simulate(dt);
         // Wait for simulation to finish and fetch results
         physXScene.fetchResults(true);
     }
 
-    RigidBodyHandle PhysXBackend::CreateBody(const BodyDesc &bd) {
+    core::RigidBodyHandle PhysXBackend::CreateBody(const core::BodyDesc& bd)
+    {
         // Generate unique body handle
-        RigidBodyHandle handle = m_NextBodyHandle++;
+        core::RigidBodyHandle handle = { m_NextBodyHandle.id++ };
 
         physx::PxRigidActor* actor = nullptr;
 
         switch (bd.type)
         {
-            case BodyType::Static:
+            case core::BodyDesc::Type::Static:
                 // Create non-movable rigid body
-                actor = m_Context->GetPhysics().createRigidStatic(ToPxTransform(bd.worldTransform));
+                actor = m_Context->GetPhysics().createRigidStatic(ToPxTransform(bd.localTransform));
                 break;
 
-            case BodyType::Dynamic:
+            case core::BodyDesc::Type::Dynamic:
             {
-                auto* dynamic = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(bd.worldTransform));
+                auto* dynamic = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(bd.localTransform));
                 dynamic->setAngularDamping(0.5f);
                 actor = dynamic;
                 break;
             }
 
-            case BodyType::Kinematic:
+            case core::BodyDesc::Type::Kinematic:
             {
-                auto* dynamic = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(bd.worldTransform));
+                auto* dynamic = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(bd.localTransform));
                 dynamic->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
                 actor = dynamic;
                 break;
             }
+
+            default: Warn("Actor is fucking nullptr! damnit");
         }
 
         // Add actor to PhysX scene
@@ -111,53 +116,55 @@ namespace Real::physics {
         return handle;
     }
 
-    void PhysXBackend::DestroyBody(RigidBodyHandle handle) {
-        if (!m_bodies.contains(handle))
+    void PhysXBackend::DestroyBody(core::RigidBodyHandle rbh) {
+        if (!m_bodies.contains(rbh))
             return;
 
-        auto& body = m_bodies[handle];
+        auto& body = m_bodies[rbh];
 
         m_Context->GetScene().removeActor(*body.actor);
         body.actor->release();
 
-        m_bodies.erase(handle);
+        m_bodies.erase(rbh);
     }
 
-    PhysicsShapeHandle PhysXBackend::CreateShape(const ShapeDesc &sd) {
+    core::ShapeHandle PhysXBackend::CreateShape(const core::ShapeDesc &sd) {
         // Generate unique shape handle
-        PhysicsShapeHandle handle = m_NextShapeHandle++;
+        core::ShapeHandle handle = { m_NextShapeHandle.id++ };
 
         physx::PxShape* shape = nullptr;
-        auto& physics = m_Context->GetPhysics();
+        auto& physics           = m_Context->GetPhysics();
         auto& defaultPxMaterial = m_Context->GetDefaultMaterial();
 
         switch (sd.shape)
         {
-            case ColliderShape::Box:
-                shape = util::CreatePhysXShapeFromReal(
+            case core::ShapeDesc::Shape::Box:
+                shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
-                    ColliderShape::Box
+                    core::ShapeDesc::Shape::Box
                 );
                 break;
 
-            case ColliderShape::Sphere:
-                shape = util::CreatePhysXShapeFromReal(
+            case core::ShapeDesc::Shape::Sphere:
+                shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
-                    ColliderShape::Sphere
+                    core::ShapeDesc::Shape::Sphere
                 );
                 break;
 
-            case ColliderShape::Capsule:
-                shape = util::CreatePhysXShapeFromReal(
+            case core::ShapeDesc::Shape::Capsule:
+                shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
-                    ColliderShape::Capsule
+                    core::ShapeDesc::Shape::Capsule
                 );
                 break;
 
-            default: ;
+            default: {
+                Warn("[PhysXBackend::CreateShape] There is no shape with this type damnit!");
+            }
         }
 
         if (sd.isTrigger) {
@@ -169,48 +176,50 @@ namespace Real::physics {
         }
 
         if (!shape)
-            return InvalidShapeHandle;
+            return core::ShapeHandle{}; // returning 0 which is
 
         m_shapes.emplace(handle, PhysXShape{ shape });
         return handle;
     }
 
-    void PhysXBackend::DestroyShape(PhysicsShapeHandle handle) {
-        if (!m_shapes.contains(handle))
+    void PhysXBackend::DestroyShape(core::ShapeHandle sh) {
+        if (!m_shapes.contains(sh))
             return;
 
-        auto& shape = m_shapes[handle];
+        auto& shape = m_shapes[sh];
 
         // Release PhysX shape
         shape.shape->release();
 
-        m_shapes.erase(handle);
+        m_shapes.erase(sh);
     }
 
-    void PhysXBackend::AttachShape(RigidBodyHandle rb, PhysicsShapeHandle ps) {
-        if (!m_bodies.contains(rb) || !m_shapes.contains(ps))
+    void PhysXBackend::AttachShape(core::RigidBodyHandle rbh, core::ShapeHandle sh) {
+        if (!m_bodies.contains(rbh) || !m_shapes.contains(sh))
             return;
 
-        auto* actor = m_bodies[rb].actor;
-        auto* shape = m_shapes[ps].shape;
+        auto* actor = m_bodies[rbh].actor;
+        auto* shape = m_shapes[sh].shape;
 
         // Attach shape to actor
         actor->attachShape(*shape);
     }
 
-    void PhysXBackend::DetachShape(RigidBodyHandle rb, PhysicsShapeHandle ps) {
-        if (!m_bodies.contains(rb) || !m_shapes.contains(ps))
+    void PhysXBackend::DetachShape(core::RigidBodyHandle rbh, core::ShapeHandle sh) {
+        if (!m_bodies.contains(rbh) || !m_shapes.contains(sh))
             return;
 
-        auto* actor = m_bodies[rb].actor;
-        auto* shape = m_shapes[ps].shape;
+        auto* actor = m_bodies[rbh].actor;
+        auto* shape = m_shapes[sh].shape;
 
         // Detach shape from actor
         actor->detachShape(*shape);
     }
 
-    void PhysXBackend::SetShapeLocalTransform(PhysicsShapeHandle handle,
-        const math::Vec3 &position, const math::Quat &rotation)
+    void PhysXBackend::SetShapeLocalTransform(
+        core::ShapeHandle handle,
+        const math::Vec3 &position,
+        const math::Quat &rotation)
     {
         if (!m_shapes.contains(handle))
             return;
@@ -221,7 +230,7 @@ namespace Real::physics {
         shape->setLocalPose(physx::PxTransform(ToPxVec(position), ToPxQuat(rotation)));
     }
 
-    void PhysXBackend::SetShapeEnabled(PhysicsShapeHandle handle, bool enabled) {
+    void PhysXBackend::SetShapeEnabled(core::ShapeHandle handle, bool enabled) {
         if (!m_shapes.contains(handle))
             return;
 
@@ -238,7 +247,7 @@ namespace Real::physics {
         shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, enabled);
     }
 
-    void PhysXBackend::SetBodyTransform(RigidBodyHandle handle, const Transform &t) {
+    void PhysXBackend::SetBodyTransform(core::RigidBodyHandle handle, const core::LocalPose &t) {
         if (!m_bodies.contains(handle))
             return;
 
@@ -246,7 +255,7 @@ namespace Real::physics {
         m_bodies[handle].actor->setGlobalPose(ToPxTransform(t));
     }
 
-    Transform PhysXBackend::GetBodyTransform(RigidBodyHandle handle) const {
+    core::LocalPose PhysXBackend::GetBodyTransform(core::RigidBodyHandle handle) const {
         if (!m_bodies.contains(handle))
             return {};
 
@@ -254,29 +263,29 @@ namespace Real::physics {
         return FromPxTransform(m_bodies.at(handle).actor->getGlobalPose());
     }
 
-    physx::PxRigidStatic* PhysXBackend::CreateStaticActor(const Transform &t) {
+    physx::PxRigidStatic* PhysXBackend::CreateStaticActor(const core::LocalPose& t) const {
         auto* sActor = m_Context->GetPhysics().createRigidStatic(ToPxTransform(t));
         return sActor;
     }
 
-    physx::PxRigidDynamic* PhysXBackend::CreateDynamicActor(const Transform &t) {
+    physx::PxRigidDynamic* PhysXBackend::CreateDynamicActor(const core::LocalPose& t) const {
         auto* dynamic = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(t));
         // set object's rotation speed (angular damping)
         dynamic->setAngularDamping(0.5f);
         return dynamic;
     }
 
-    physx::PxRigidDynamic* PhysXBackend::CreateKinematicActor(const Transform &t) {
+    physx::PxRigidDynamic* PhysXBackend::CreateKinematicActor(const core::LocalPose& t) const {
         auto* kinematicBody = m_Context->GetPhysics().createRigidDynamic(ToPxTransform(t));
         kinematicBody->setRigidBodyFlag(physx::PxRigidBodyFlag::eKINEMATIC, true);
         return kinematicBody;
     }
 
-    PhysXBody PhysXBackend::GetPxRigidActor(RigidBodyHandle rbHandle) {
+    PhysXBody PhysXBackend::GetPxRigidActor(core::RigidBodyHandle rbHandle) {
         return m_bodies.contains(rbHandle) ? m_bodies[rbHandle] : PhysXBody{};
     }
 
-    PhysXShape PhysXBackend::GetPxShape(PhysicsShapeHandle shapeHandle) {
+    PhysXShape PhysXBackend::GetPxShape(core::ShapeHandle shapeHandle) {
         return m_shapes.contains(shapeHandle) ? m_shapes[shapeHandle] : PhysXShape{};
     }
 }

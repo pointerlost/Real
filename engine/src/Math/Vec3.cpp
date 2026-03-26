@@ -20,4 +20,8 @@ namespace Real::math {
     f32 Vec3::Length(const Vec3 &v) noexcept {
         return sqrt(LengthSq(v));
     }
+
+    f32 Vec3::Length() const noexcept {
+        return sqrt(LengthSq({x,y,z}));
+    }
 }

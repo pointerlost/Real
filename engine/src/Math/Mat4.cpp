@@ -67,6 +67,14 @@ namespace Real::math {
         return result;
     }
 
+    Vec3 Mat4::TransformPoint(const Vec3 &v) const noexcept {
+        return {
+            m[0][0] * v.x + m[1][0] * v.y + m[2][0] * v.z + m[3][0],
+            m[0][1] * v.x + m[1][1] * v.y + m[2][1] * v.z + m[3][1],
+            m[0][2] * v.x + m[1][2] * v.y + m[2][2] * v.z + m[3][2]
+        };
+    }
+
     Mat4 Mat4::Inverted() const noexcept {
         // Let GLM handle the inverse
         const glm::mat4 inv = glm::inverse(interop::glm::To(*this));

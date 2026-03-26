@@ -5,8 +5,6 @@
 #include "Math/Vec2.h"
 #include "Math/Vec3.h"
 
-namespace Real { struct MeshAsset; }
-
 namespace Real::graphics {
 
     // Flags
@@ -37,21 +35,36 @@ namespace Real::graphics {
     };
 
     struct TextureData {
-        void* data         = nullptr;
-        int   width        = 0;
-        int   height       = 0;
-        int   channelCount = 0;
-        int   dataSize     = 0;
+        void* data           = nullptr;
+        int   width          = 0;
+        int   height         = 0;
+        int   channelCount   = 0;
+        int   dataSize       = 0;
+        int   format         = 0;
+        int   internalFormat = 0;
     };
 
     // Typed handles - prevent accidental mixing
     template<typename Tag>
     struct Handle {
         u32 value = 0;
-        Handle() = default;
-        Handle(const Handle&) = default;
-        explicit Handle(u32 val) { value = val; }
+
+        explicit Handle(u32 val) : value(val) {}
+                 Handle()              = default;
+                 Handle(const Handle&) = default;
+
         [[nodiscard]] bool IsValid() const { return value != 0; }
+
+        Handle& operator=(const Handle& other) {
+            value = other.value;
+            return *this;
+        }
+
+        bool operator==(const Handle& other) const { return value == other.value; }
+        bool operator!=(const Handle& other) const { return value != other.value; }
+        // Comparison with number like: (handle != 0)
+        bool operator==(u32 raw) const { return value == raw; }
+        bool operator!=(u32 raw) const { return value != raw; }
     };
 
     using TextureHandle  = Handle<struct TextureTag>;
@@ -69,10 +82,21 @@ namespace Real::graphics {
         Program, // linked program, not a stage - used only for error checking
     };
 
-    // Shader
+    // Shader types
     enum class ShaderType {
         Main,
         Debug,
+    };
+
+    enum class PrimitiveType {
+        Triangle,
+        Cube,
+        Sphere,
+    };
+
+    struct FrameConfig {
+        Color      clearColor = { 0, 0, 0, 1 };
+        ClearFlags clearFlags = ClearFlags::Color | ClearFlags::Depth;
     };
 
 }

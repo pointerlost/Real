@@ -8,7 +8,7 @@
 #include "Assets/FileManager.h"
 #include "Common/Types.h"
 
-namespace Real {
+namespace Real::graphics {
 
     struct Model {
         UUID m_UUID{};

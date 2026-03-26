@@ -7,7 +7,10 @@
 #include "Core/UUID.h"
 
 namespace Real {
-    struct MeshAsset;
+    namespace assets {
+        struct MeshAsset;
+    }
+
     struct TransformComponent;
     class Entity;
     class Scene;
@@ -16,8 +19,8 @@ namespace Real {
 namespace Real::graphics {
 
     struct RenderableData {
-        const MeshAsset* mesh = nullptr;
-        UUID             materialUUID{};
+        const assets::MeshAsset* mesh = nullptr;
+        UUID                     materialUUID{};
         // TODO: transform per mesh
     };
 
@@ -26,7 +29,7 @@ namespace Real::graphics {
         void InitResources();
         void CollectRenderables(Scene* scene);
 
-        FrameRenderData& GetGPURenderData() { return m_FrameRenderData; }
+        [[nodiscard]] FrameRenderData& GetGPURenderData() { return m_FrameRenderData; }
         [[nodiscard]] const FrameRenderData& GetGPURenderData() const { return m_FrameRenderData; }
 
     private:
@@ -36,11 +39,11 @@ namespace Real::graphics {
     private:
         void CollectLight(const Entity* entity);
         void CollectCamera(const Entity* entity);
-        int BuildTransform(const TransformComponent& tc);
-        int BuildMaterial(const UUID& materialUUID);
-        void PushDrawCommand(const MeshAsset* mesh, int transformIndex, int materialIndex, uint baseInstance);
-        Vector<RenderableData> CollectRenderables(const Entity* entity);
+        int  BuildTransform(const TransformComponent& tc);
+        int  BuildMaterial(const UUID& materialUUID);
+        void PushDrawCommand(const assets::MeshAsset* mesh, int transformIndex, int materialIndex, uint baseInstance);
         void CollectGlobalData();
         void CleanPrevFrame();
+        Vector<RenderableData> CollectRenderable(const Entity* entity);
     };
 }

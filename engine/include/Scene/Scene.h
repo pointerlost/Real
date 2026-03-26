@@ -2,16 +2,19 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include "Core/Utils.h"
+#include "Entity.h"
+#include "Common/Utils.h"
 #include "Core/UUID.h"
 #include "Event/SceneEvents.h"
 #include "Graphics/Light.h"
-#include "Entity.h"
 
 namespace Real {
-    struct Model;
-    namespace core   { class IRenderer;      }
+    namespace graphics {
+        struct Model;
+    }
+
     namespace opengl { class OpenGLRenderer; }
+    namespace rhi    { class IRenderer;      }
 }
 
 namespace Real {
@@ -19,7 +22,7 @@ namespace Real {
     class Scene {
     public:
         Scene();
-        void Update(const core::IRenderer* renderer);
+        void Update(const rhi::IRenderer* renderer);
 
         void SetActiveCamera(Entity* camera) { m_EditorCamera = camera; }
         [[nodiscard]] Entity* GetActiveCamera() const { return m_EditorCamera; }
@@ -40,7 +43,7 @@ namespace Real {
         Entity& CreateLight(const String& entityTag, Light::Mode mode = Light::Mode::POINT);
 
         Entity* GetEntityWithUUID(UUID uuid);
-        void HandleModelAssigned(Entity& parent, const Ref<Model>& model);
+        void HandleModelAssigned(Entity& parent, const Ref<graphics::Model>& model);
 
         template <typename T>
         void OnComponentAdded(Entity& entity, T& component);

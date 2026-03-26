@@ -4,10 +4,10 @@
 #include "Platform/Vulkan/VkRenderer.h"
 #include "RHI/IRenderDevice.h"
 
-namespace Real::platform::Vk {
+namespace Real::platform::vk {
 
     VkRenderer::VkRenderer(Scope<rhi::IRenderDevice> device)
-        : m_Device(std::move(device))
+        : m_Device(std::move(device)), m_RenderContext(CreateScope<graphics::RenderContext>())
     {
     }
 
@@ -20,9 +20,18 @@ namespace Real::platform::Vk {
     void VkRenderer::Shutdown() {
     }
 
-    void VkRenderer::BeginFrame() {
+    void VkRenderer::BeginFrame(const graphics::FrameConfig& fc) {
     }
 
     void VkRenderer::EndFrame() {
+    }
+
+    void VkRenderer::SwapBuffers() {
+    }
+
+    void VkRenderer::ClearColor(const graphics::Color &color) {
+    }
+
+    void VkRenderer::Clear(const graphics::ClearFlags &clearFlags) {
     }
 }

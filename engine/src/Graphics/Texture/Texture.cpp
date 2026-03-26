@@ -1,6 +1,7 @@
 //
 // Created by pointerlost on 10/12/25.
 //
+#include "glad/glad.h"
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -12,9 +13,8 @@
 #include "Assets/FileManager.h"
 #include "Graphics/Texture/TextureTypes.h"
 #include "Math/iVec2.h"
-#include "Platform/OpenGL/OpenGLTypes.h"
+#include "Platform/OpenGL/OpenGLUtils.h"
 #include "Tools/ImageTools.h"
-#include "Util/Util.h"
 
 namespace Real::platform::opengl {
 
@@ -47,8 +47,8 @@ namespace Real::platform::opengl {
     OpenGLTexture::~OpenGLTexture() {
         CleanUpCPUData(); // Clean if it has not already been cleaned
 
-        if (m_Handle != 0) {
-            glDeleteTextures(1, &m_Handle);
+        if (m_Handle.IsValid()) {
+            glDeleteTextures(1, &m_Handle.value);
         }
     }
 
@@ -109,22 +109,22 @@ namespace Real::platform::opengl {
         glTextureParameteri(
             m_Handle.value,
             GL_TEXTURE_MIN_FILTER,
-            static_cast<int>(util::TextureFilterModeToGLEnum(m_FilterMode))
+            static_cast<int>(util::opengl::TextureFilterModeToGLEnum(m_FilterMode))
         );
         glTextureParameteri(
             m_Handle.value,
             GL_TEXTURE_MAG_FILTER,
-            static_cast<int>(util::TextureFilterModeToGLEnum(m_FilterMode))
+            static_cast<int>(util::opengl::TextureFilterModeToGLEnum(m_FilterMode))
         );
         glTextureParameteri(
             m_Handle.value,
             GL_TEXTURE_WRAP_S,
-            static_cast<int>(util::TextureWrapModeToGLEnum(m_WrapMode))
+            static_cast<int>(util::opengl::TextureWrapModeToGLEnum(m_WrapMode))
         );
         glTextureParameteri(
             m_Handle.value,
             GL_TEXTURE_WRAP_T,
-            static_cast<int>(util::TextureWrapModeToGLEnum(m_WrapMode))
+            static_cast<int>(util::opengl::TextureWrapModeToGLEnum(m_WrapMode))
         );
     }
 
@@ -184,10 +184,11 @@ namespace Real::platform::opengl {
             data.channelCount = 4;
         }
         // DataSize = TexPixelCount * ChannelCount * Byte-Per-Channel
-        data.dataSize = data.width * data.height * data.channelCount * 1;
-        data.format   = util::GetGLFormat(data.channelCount);
-        data.internalFormat = util::GetGLInternalFormat(data.channelCount);
-        m_IsSTBAllocated = true;
+        data.dataSize       = data.width * data.height * data.channelCount * 1;
+        data.format         = util::opengl::GetGLFormat(data.channelCount);
+        data.internalFormat = util::opengl::GetGLInternalFormat(data.channelCount);
+        m_IsSTBAllocated    = true;
+
         return data;
     }
 
@@ -201,11 +202,11 @@ namespace Real::platform::opengl {
         // One mip level is enough for CPU-generated textures
         m_MipLevelsData.push_back(data);
         if (m_ImageFormatState == ImageFormatState::COMPRESS_ME || m_ImageFormatState == ImageFormatState::COMPRESSED) {
-            m_MipLevelsData[0].internalFormat = util::GetCompressedInternalFormat(m_MipLevelsData[0].channelCount);
+            m_MipLevelsData[0].internalFormat = util::opengl::GetCompressedInternalFormat(m_MipLevelsData[0].channelCount);
         } else {
-            m_MipLevelsData[0].internalFormat = util::GetGLInternalFormat(m_MipLevelsData[0].channelCount);
+            m_MipLevelsData[0].internalFormat = util::opengl::GetGLInternalFormat(m_MipLevelsData[0].channelCount);
         }
-        m_MipLevelsData[0].format = util::GetGLFormat(m_MipLevelsData[0].channelCount);
+        m_MipLevelsData[0].format = util::opengl::GetGLFormat(m_MipLevelsData[0].channelCount);
     }
 
     void OpenGLTexture::CleanUpCPUData() {

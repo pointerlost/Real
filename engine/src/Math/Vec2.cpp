@@ -14,6 +14,10 @@ namespace Real::math {
     }
 
     f32 Vec2::Length(const Vec2 &v) noexcept {
-        return sqrt(LengthSq(v));
+        return sqrt( LengthSq(v) );
+    }
+
+    f32 Vec2::Length() const noexcept {
+        return sqrt( LengthSq( {x,y} ) );
     }
 }

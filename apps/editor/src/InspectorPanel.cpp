@@ -68,7 +68,7 @@ namespace Real::UI {
     void InspectorPanel::DrawComponent(TagComponent *comp) {
         if (ImGui::CollapsingHeader("Tag Component")) {
             // Max 21 character
-            ImGui::InputText("Tag" ,comp->m_Tag.data(), 21);
+            ImGui::InputText("Tag" ,comp->tag.data(), 21);
         }
     }
 
@@ -118,7 +118,7 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, rotate.z, 0.1, -360.0, 360.0, "%.2f");
 
-                transform.SetRotation(rotate);
+                transform.SetLocalRotation(rotate);
             }
 
             // Scale
@@ -137,7 +137,7 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, scale.z, 0.1, 0.01, 360.0, "%.2f");
 
-                transform.SetScale(scale);
+                transform.SetLocalScale(scale);
             }
         }
     }
@@ -152,7 +152,7 @@ namespace Real::UI {
         if (!ImGui::CollapsingHeader("Mesh Component", ImGuiTreeNodeFlags_DefaultOpen))
             return;
 
-        const auto mat = am->GetMaterialInstance(comp->m_MaterialInstanceUUIDs[0]);
+        const auto mat = am->GetMaterialInstance(comp->matInstanceIDs[0]);
         if (!mat)
             return;
 
@@ -393,7 +393,7 @@ namespace Real::UI {
     }
 
     void InspectorPanel::DrawComponent(LightComponent *comp, TransformComponent* transform) {
-        auto& light = comp->m_Light;
+        auto& light = comp->light;
         auto radiance    = light.GetRadiance();
         auto constant    = light.GetConstant();
         auto linear      = light.GetLinear();
@@ -450,13 +450,13 @@ namespace Real::UI {
                 // TODO: Store the old light properties to be changed with a new one
                 // In this case we are creating a new one
                 if (ImGui::Selectable("Point")) {
-                    comp->m_Light = Light{Light::Mode::POINT};
+                    comp->light = Light{Light::Mode::POINT};
                 }
                 if (ImGui::Selectable("Directional")) {
-                    comp->m_Light = Light{Light::Mode::DIRECTIONAL};
+                    comp->light = Light{Light::Mode::DIRECTIONAL};
                 }
                 if (ImGui::Selectable("Spot")) {
-                    comp->m_Light = Light{Light::Mode::SPOT};
+                    comp->light = Light{Light::Mode::SPOT};
                 }
                 ImGui::EndCombo();
             }
@@ -469,7 +469,7 @@ namespace Real::UI {
     }
 
     void InspectorPanel::DrawComponent(CameraComponent *comp) {
-        auto& camera = comp->m_Camera;
+        auto& camera = comp->camera;
         auto near   = camera.GetNear();
         auto far    = camera.GetFar();
         auto fov    = camera.GetFOV();
@@ -496,12 +496,12 @@ namespace Real::UI {
 
             ImGui::BeginListBox("##Cameras");
             for (auto [entity, id, tagComp, cc] : view.each()) {
-                auto tag = tagComp.m_Tag;
-                if (m_Scene->GetEntityWithUUID(id.m_UUID) == Services::GetEditorState()->editorCamera) {
+                auto tag = tagComp.tag;
+                if (m_Scene->GetEntityWithUUID(id.id) == Services::GetEditorState()->editorCamera) {
                     tag += " (Current)";
                 }
                 if (ImGui::Selectable(tag.c_str())) {
-                    Services::GetEditorState()->editorCamera = m_Scene->GetEntityWithUUID(id.m_UUID);
+                    Services::GetEditorState()->editorCamera = m_Scene->GetEntityWithUUID(id.id);
                     break;
                 }
             }

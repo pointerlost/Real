@@ -1,21 +1,24 @@
 //
 // Created by pointerlost on 2/16/26.
 //
-#include "Core/Window/GLFWwindow.h"
-#include "Core/Logger.h"
+#include "Platform/GLFW/GLFWwindow.h"
+
+#include <stdexcept>
 #include <GLFW/glfw3.h>
-#include "Core/Window/WindowConfig.h"
+
+#include "Core/RealConfig.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
+#include "RHI/RHITypes.h"
 
 namespace Real::platform::glfw {
 
-    GLFWWindow::GLFWWindow(const core::WindowConfig &cfg, const RendererConfig& renderConfig)
-        : m_Width(cfg.width), m_Height(cfg.height), m_Title(cfg.title), type(cfg.type)
+    GLFWWindow::GLFWWindow(const core::WindowConfig &cfg, const RendererConfig& rc)
+        : m_Width(cfg.width), m_Height(cfg.height), m_Title(cfg.title), m_Config(cfg)
     {
-        if (renderConfig.type == RendererType::OpenGL)
+        if constexpr (rhi::ACTIVE_RENDER_BACKEND == rhi::GraphicsAPI::OpenGL)
         {
-            const auto& glCfg = renderConfig.opengl;
+            const auto& glCfg = rc.opengl;
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glCfg.major);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glCfg.minor);
@@ -25,6 +28,10 @@ namespace Real::platform::glfw {
 
             if (glCfg.debugContext)
                 glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        }
+        else if constexpr (rhi::ACTIVE_RENDER_BACKEND == rhi::GraphicsAPI::Vulkan)
+        {
+            // Do something
         }
 
         m_Window = glfwCreateWindow(m_Width, m_Height, m_Title.c_str(), nullptr, nullptr);

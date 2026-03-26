@@ -5,6 +5,7 @@
 
 #include "Graphics/GPUBuffers.h"
 #include "Graphics/Transformations.h"
+#include "Math/Math.h"
 
 namespace Real {
 
@@ -15,8 +16,15 @@ namespace Real {
     }
 
     void Light::ConvertToGPUFormat(const Transform& transform, LightSSBO& outData) {
-        outData.pos_cutoff = math::Vec4(transform.position,  math::cos(math::DegreesToRadians(m_CutOff)));      // Inner cone
-        outData.dir_outer  = math::Vec4(transform.Forward(), math::cos(math::DegreesToRadians(m_OuterCutOff))); // Outer cone
+        outData.pos_cutoff = math::Vec4(
+            transform.GetWorldPosition(),
+            math::cos(math::DegreesToRadians(m_CutOff))
+        ); // Inner cone
+        outData.dir_outer  = math::Vec4(
+            transform.Forward(),
+            math::cos(math::DegreesToRadians(m_OuterCutOff))
+        ); // Outer cone
+
         outData.radiance   = math::Vec4(m_Radiance, 1.0); // w unused
         outData.constant   = m_Constant;
         outData.linear     = m_Linear;

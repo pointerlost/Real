@@ -2,18 +2,18 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include "Core/Utils.h"
+#include "../Common/Utils.h"
 #include "Graphics/ModelLoader.h"
 
 namespace Real {
     class RenderContext;
 }
 
-namespace Real {
+namespace Real::assets {
 
-    class ResourceLoader {
+    class ResourceManager {
     public:
-        ResourceLoader();
+        ResourceManager();
 
         void Load();
 

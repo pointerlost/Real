@@ -13,9 +13,6 @@ namespace Real {
     namespace event {
         class SceneEvents;
     }
-
-    class Scene;
-    class Entity;
 }
 
 namespace Real::ecs {
@@ -31,24 +28,24 @@ namespace Real::ecs {
         void OnSceneDetach(entt::registry& registry, event::SceneEvents& events) override;
 
     private:
-        void OnColliderAdded(const entt::entity& e);
-        void OnColliderRemoved(entt::entity& e);
-        void OnColliderChanged(const entt::entity& e);
-        void OnPhysicsBodyAdded(const entt::entity& e);
-        void OnPhysicsBodyChanged(const entt::entity& e);
+        void OnColliderAdded(const entt::entity& e)      const;
+        void OnColliderRemoved(entt::entity& e)          const;
+        void OnColliderChanged(const entt::entity& e)    const;
+        void OnPhysicsBodyAdded(const entt::entity& e)   const;
+        void OnPhysicsBodyChanged(const entt::entity& e) const;
 
-        void RebuildCollider(const entt::entity &e);
+        void RebuildCollider(const entt::entity &e) const;
 
-        void SubmitColliderDebug(const entt::entity& e);
+        void SubmitColliderDebug(const entt::entity& e) const;
 
         void RegisterEventCallbacks(event::SceneEvents& events);
 
-        void SyncTransform(const entt::entity& entity);
+        void SyncTransform(const entt::entity& entity) const;
         void SyncCollider(entt::entity& entity);
 
     private:
         core::IPhysicsBackend& m_Backend;
-        entt::registry* m_Registry = nullptr;
+        entt::registry*        m_Registry = nullptr;
     };
 
 }

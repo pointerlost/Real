@@ -6,26 +6,27 @@
 #include <fstream>
 #include <functional>
 #include <unordered_set>
+
+#include "Common/Utils.h"
 #include "Core/CMakeConfig.h"
 #include "Core/Logger.h"
-#include "Core/Utils.h"
 
-namespace Real {
+namespace Real::assets {
 
-    void ShaderManager::Load(const String& vertPath, const String& fragPath, const String& name) {
+    void ShaderManager::Load(const String& vertPath, const String& fragPath, const graphics::ShaderType& type) {
         const auto vert = PreprocessFile(vertPath);
         const auto frag = PreprocessFile(fragPath);
-        m_Shaders[name] = Shader{vert, frag, name};
+        m_Shaders[type] = graphics::Shader{vert, frag, type};
     }
 
-    Shader& ShaderManager::Get(const String& name) {
-        if (!m_Shaders.contains(name))
+    graphics::Shader& ShaderManager::Get(const graphics::ShaderType& type) {
+        if (!m_Shaders.contains(type))
             Warn(ConcatStr("Shader doesn't exist! from: ", __FILE__));
-        return m_Shaders.at(name);
+        return m_Shaders.at(type);
     }
 
-    bool ShaderManager::Exists(const String& name) const {
-        return m_Shaders.contains(name);
+    bool ShaderManager::Exists(const graphics::ShaderType& type) const {
+        return m_Shaders.contains(type);
     }
 
     String ShaderManager::PreprocessFile(const String& filePath) const {

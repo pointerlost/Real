@@ -5,8 +5,6 @@
 #include "Input/Input.h"
 #include "Input/Keycodes.h"
 #include "Scene/Components.h"
-#include "Core/Services.h"
-#include "../apps/editor/include/EditorState.h"
 #include "Scene/Entity.h"
 
 namespace Real {
@@ -16,9 +14,9 @@ namespace Real {
 
     void CameraInput::Update() {
         // TODO: Remove this shit because the engine is tightly coupled with the editor.
-        if (!Services::GetEditorState()->FpsMode) return;
+        // if (!Services::GetEditorState()->FpsMode) return;
 
-        auto& camera   = m_Camera->GetComponent<CameraComponent>().m_Camera;
+        auto& camera   = m_Camera->GetComponent<CameraComponent>().camera;
         auto& movement = m_Camera->GetComponent<MovementComponent>();
 
         // Reset velocity speed

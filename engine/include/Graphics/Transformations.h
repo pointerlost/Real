@@ -2,63 +2,236 @@
 // Created by pointerlost on 10/6/25.
 //
 #pragma once
-#include "Math/Math.h"
 #include "Math/Quat.h"
 #include "Math/Vec3.h"
 
 namespace Real {
 
-    // NOTE: This is a WORLD transform (no hierarchy yet)
-    struct Transform {
+    class Transform {
+    public:
         Transform() = default;
-        Transform(const Transform&) = default;
-        Transform(const math::Vec3& pos, const math::Quat& quat, const math::Vec3& scale = math::Vec3{ 1.0f });
-        explicit Transform(const math::Vec3& pos);
-        explicit Transform(const math::Quat& quat);
+        Transform(const Transform&) = delete;
+        Transform& operator=(const Transform&) = delete;
+        Transform(Transform&&) noexcept;
 
-        // Local transform data
-        math::Vec3 position{ 0.0f }; // World
-        math::Quat rotation = math::Quat::Identity(); // World
-        math::Vec3 scale{ 1.0f }; // World
+        explicit Transform(const math::Vec3& localPosition)
+            : m_LocalPosition(localPosition) {}
 
-        [[nodiscard]] math::Mat4 GetModelMatrix() const {
-            // Scale and rotate in Local-Space, then move in World-Space
-            // Don't change the order, changing the order can break the system
-            // TRANSLATE * ROTATE * SCALE
-            return  math::Mat4::Translate(position) * rotation.ToMat4() * math::Mat4::Scale(scale);
+        explicit Transform(const math::Quat& localRotation)
+            : m_LocalRotation(localRotation.Normalized()) {}
+
+        Transform(const math::Vec3& localPosition, const math::Quat& localRotation)
+            : m_LocalPosition(localPosition),
+              m_LocalRotation(localRotation.Normalized()) {}
+
+        ~Transform() {
+            DetachFromParent();
+            DetachChildren();
         }
 
-        // Directions (World-space)
-        // REAL engine convention: +Z is forward
-        // converts local-space direction (0,0,1) (forward in object space) into world-space,
-        // using the entity’s quaternion rotation.
-        [[nodiscard]] math::Vec3 Forward() const { return rotation.Rotate({ 0.0f, 0.0f, 1.0f }); }
-        [[nodiscard]] math::Vec3 Up()      const { return rotation.Rotate({ 0.0f, 1.0f, 0.0f }); }
-        [[nodiscard]] math::Vec3 Right()   const { return rotation.Rotate({ 1.0f, 0.0f, 0.0f }); }
+        // =====================================================
+        // Hierarchy
+        // =====================================================
 
-        void SetPosition(const math::Vec3& p) { position = p; }
-        void Translate(const math::Vec3& delta) { position += delta; }
+        void SetParent(Transform* newParent) {
+            if (m_Parent == newParent)
+                return;
 
-        // default -> rotate in object space (expected by users)
-        void SetRotation(const math::Quat& q) { rotation = q.Normalized(); }
-        void Rotate(const math::Quat& delta)  { rotation = (rotation * delta).Normalized(); }
+            DetachFromParent();
 
-        void RotateAxisAngle(const math::Vec3& axis, f32 radians) {
-            Rotate(math::Quat::FromAxisAngle(axis, radians));
+            m_Parent = newParent;
+
+            if (m_Parent)
+                m_Parent->m_Children.push_back(this);
+
+            MarkDirty();
         }
 
-        void LookAt(const math::Vec3& target, const math::Vec3& worldUp = { 0, 1, 0 }) {
-            const math::Vec3 forward = (target - position).Normalized();
-            rotation = math::LookRotation(forward, worldUp);
+        void DetachFromParent() {
+            if (!m_Parent)
+                return;
+
+            std::erase(m_Parent->m_Children, this);
+            m_Parent = nullptr;
         }
 
-        void SetScale(const math::Vec3& s) { scale = s; }
+        void DetachChildren() {
+            for (auto* child : m_Children)
+                child->m_Parent = nullptr;
 
-        void MultiplyScale(const math::Vec3& factor) {
-            scale.x *= factor.x;
-            scale.y *= factor.y;
-            scale.z *= factor.z;
+            m_Children.clear();
         }
+
+        [[nodiscard]] Transform* GetParent() const { return m_Parent; }
+        [[nodiscard]] const std::vector<Transform*>& GetChildren() const { return m_Children; }
+
+        // =====================================================
+        // Local Transform
+        // =====================================================
+
+        void SetLocalPosition(const math::Vec3& value) {
+            m_LocalPosition = value;
+            MarkDirty();
+        }
+
+        void TranslateLocal(const math::Vec3& delta) {
+            m_LocalPosition += delta;
+            MarkDirty();
+        }
+
+        void SetLocalRotation(const math::Quat& value) {
+            m_LocalRotation = value.Normalized();
+            MarkDirty();
+        }
+
+        void RotateLocal(const math::Quat& delta) {
+            m_LocalRotation = (m_LocalRotation * delta).Normalized();
+            MarkDirty();
+        }
+
+        void SetLocalScale(const math::Vec3& value) {
+            m_LocalScale = value;
+            MarkDirty();
+        }
+
+        void ScaleLocal(const math::Vec3& delta) {
+            m_LocalScale += delta;
+            MarkDirty();
+        }
+
+        [[nodiscard]] const math::Vec3& GetLocalPosition() const { return m_LocalPosition; }
+        [[nodiscard]] const math::Quat& GetLocalRotation() const { return m_LocalRotation; }
+        [[nodiscard]] const math::Vec3& GetLocalScale()    const { return m_LocalScale; }
+
+        // =====================================================
+        // World Transform
+        // =====================================================
+
+        [[nodiscard]] math::Vec3 GetWorldPosition() const {
+            const auto& m = GetWorldMatrix();
+            return { m[0][3], m[1][3], m[2][3] };
+        }
+
+        void SetWorldPosition(const math::Vec3& worldPos) {
+            if (m_Parent) {
+                m_LocalPosition =
+                    m_Parent->GetWorldMatrix()
+                            .Inverted()
+                            .TransformPoint(worldPos);
+            } else {
+                m_LocalPosition = worldPos;
+            }
+            MarkDirty();
+        }
+
+        void TranslateWorld(const math::Vec3& delta) {
+            if (m_Parent) {
+                m_LocalPosition +=
+                    m_Parent->GetWorldRotation()
+                            .Inverted()
+                            .Rotate(delta);
+            } else {
+                m_LocalPosition += delta;
+            }
+            MarkDirty();
+        }
+
+        [[nodiscard]] math::Quat GetWorldRotation() const {
+            if (m_Parent)
+                return (m_Parent->GetWorldRotation() * m_LocalRotation).Normalized();
+
+            return m_LocalRotation;
+        }
+
+        void SetWorldRotation(const math::Quat& worldRot) {
+            if (m_Parent) {
+                m_LocalRotation =
+                    (m_Parent->GetWorldRotation().Inverted() * worldRot).Normalized();
+            } else {
+                m_LocalRotation = worldRot.Normalized();
+            }
+            MarkDirty();
+        }
+
+        void RotateWorld(const math::Quat& delta) {
+            SetWorldRotation((delta * GetWorldRotation()).Normalized());
+        }
+
+        [[nodiscard]] math::Vec3 GetWorldScale() const {
+            const auto& m = GetWorldMatrix();
+
+            return {
+                math::Vec3{ m[0][0], m[1][0], m[2][0] }.Length(),
+                math::Vec3{ m[0][1], m[1][1], m[2][1] }.Length(),
+                math::Vec3{ m[0][2], m[1][2], m[2][2] }.Length()
+            };
+        }
+
+        // =====================================================
+        // Matrices
+        // =====================================================
+
+        [[nodiscard]] math::Mat4 GetLocalMatrix() const {
+            return math::Mat4::Translate(m_LocalPosition)
+                 * m_LocalRotation.ToMat4()
+                 * math::Mat4::Scale(m_LocalScale);
+        }
+
+        [[nodiscard]] const math::Mat4& GetWorldMatrix() const {
+            if (m_Dirty) {
+                m_CachedWorldMatrix =
+                    m_Parent
+                    ? m_Parent->GetWorldMatrix() * GetLocalMatrix()
+                    : GetLocalMatrix();
+
+                m_Dirty = false;
+            }
+            return m_CachedWorldMatrix;
+        }
+
+        // =====================================================
+        // Directions (World Space)
+        // =====================================================
+
+        [[nodiscard]] math::Vec3 Forward() const {
+            const auto& m = GetWorldMatrix();
+            return math::Vec3{ m[0][2], m[1][2], m[2][2] }.Normalized();
+        }
+
+        [[nodiscard]] math::Vec3 Up() const {
+            const auto& m = GetWorldMatrix();
+            return math::Vec3{ m[0][1], m[1][1], m[2][1] }.Normalized();
+        }
+
+        [[nodiscard]] math::Vec3 Right() const {
+            const auto& m = GetWorldMatrix();
+            return math::Vec3{ m[0][0], m[1][0], m[2][0] }.Normalized();
+        }
+
+        // =====================================================
+        // Dirty state
+        // =====================================================
+
+        void MarkDirty() const {
+            if (m_Dirty) // whole subtree already stale, skip
+                return;
+
+            m_Dirty = true;
+
+            for (auto* child : m_Children)
+                child->MarkDirty();
+        }
+
+    private:
+        mutable math::Mat4 m_CachedWorldMatrix = math::Mat4::Identity();
+        mutable bool       m_Dirty             = true;
+
+        math::Vec3 m_LocalPosition { 0.0f };
+        math::Vec3 m_LocalScale    { 1.0f };
+        math::Quat m_LocalRotation = math::Quat::Identity();
+
+        Transform*              m_Parent   = nullptr;
+        std::vector<Transform*> m_Children;
     };
 
 }

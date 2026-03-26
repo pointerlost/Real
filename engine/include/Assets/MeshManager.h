@@ -7,7 +7,7 @@
 #include <vector>
 #include "Common/Types.h"
 #include "Core/UUID.h"
-#include "glad/glad.h"
+#include "Graphics/RenderTypes.h"
 
 namespace Real {
     struct OpenGLTexture;
@@ -17,7 +17,6 @@ namespace Real {
 
 namespace Real::assets {
 
-    // TODO: MeshManager vs MeshData wrong naming fix it this shit
     class MeshManager {
     public:
         void InitResources();
@@ -30,12 +29,13 @@ namespace Real::assets {
         std::span<const u32> ViewIndices(const UUID& uuid) const;
 
         const std::unordered_map<UUID, MeshAsset>& GetAllMeshes() { return m_MeshAssets; }
-        [[nodiscard]] const MeshAsset* GetMeshData(const UUID& uuid) const;
-        [[maybe_unused]] const MeshAsset &GetPrimitiveMeshData(const String& name);
-        [[maybe_unused]] const UUID& GetPrimitiveUUID(const String& name);
-        [[nodiscard]] GLuint GetUniversalVAO() const { return m_UniversalVAO; }
-        void BindUniversalVAO() const;
-        void UnbindCurrVAO() const;
+        [[nodiscard]]    const MeshAsset *GetMeshData         (const UUID& uuid) const;
+        [[maybe_unused]] const MeshAsset &GetPrimitiveMeshData(const graphics::PrimitiveType& type);
+        [[maybe_unused]] const UUID      &GetPrimitiveUUID    (const graphics::PrimitiveType& type);
+
+        [[nodiscard]] u32 GetUniversalVAO () const { return m_UniversalVAO.value; }
+        void              BindUniversalVAO() const;
+        void              UnbindCurrVAO   () const;
 
         [[nodiscard]] size_t GetVerticesCount() const;
         [[nodiscard]] size_t GetIndicesCount()  const;
@@ -44,12 +44,13 @@ namespace Real::assets {
         void LoadPrimitiveTypes();
 
     private:
-        std::unordered_map<UUID, MeshAsset> m_MeshAssets;
-        std::unordered_map<String, UUID> m_PrimitiveTypesUUIDs;
-        Vector<graphics::Vertex> m_AllVertices;
-        Vector<u32> m_AllIndices;
+        std::unordered_map<UUID, MeshAsset>               m_MeshAssets;
+        std::unordered_map<graphics::PrimitiveType, UUID> m_PrimitiveTypesUUIDs;
 
-        unsigned int m_UniversalVAO = 0, m_VBO = 0, m_EBO = 0;
+        Vector<graphics::Vertex> m_AllVertices;
+        Vector<u32>              m_AllIndices;
+
+        graphics::BufferHandle m_UniversalVAO{}, m_VBO{}, m_EBO{};
     };
 
     class MeshData3D final : public MeshManager {

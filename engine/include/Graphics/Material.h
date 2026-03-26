@@ -2,17 +2,12 @@
 // Created by pointerlost on 10/12/25.
 //
 #pragma once
-#include <glm/ext.hpp>
 #include <utility>
 #include "GPUBuffers.h"
-#include "../Assets/AssetManager.h"
-#include "Core/Services.h"
-#include "Core/Utils.h"
+#include "Common/Utils.h"
 #include "Core/UUID.h"
 
-namespace Real { struct OpenGLTexture; }
-
-namespace Real {
+namespace Real::graphics {
 
     // TODO: Need material baking system to optimize run-time
     struct Material {

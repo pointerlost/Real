@@ -1,7 +1,7 @@
 //
 // Created by pointerlost on 1/15/26.
 //
-#include <Physics/PhysXAllocator.h>
+#include "Physics/PhysX/PhysXAllocator.h"
 
 namespace Real::physics {
     void* PhysXAllocator::allocate(size_t size, const char *typeName, const char *filename, int line) {

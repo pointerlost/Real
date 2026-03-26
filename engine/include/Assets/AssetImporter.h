@@ -3,19 +3,24 @@
 //
 #pragma once
 #include <Core/CMakeConfig.h>
-#include "Core/Utils.h"
+#include "Common/Utils.h"
 #include <nlohmann/json.hpp>
 #include "Core/UUID.h"
 
 namespace Real {
-    struct Model;
-    struct Material;
-    struct OpenGLTexture;
+    namespace graphics {
+        struct Material;
+        struct Model;
+    }
+
+    namespace platform::opengl {
+        struct OpenGLTexture;
+    }
 
     namespace assets { struct MeshBinaryHeader; }
 }
 
-namespace Real {
+namespace Real::assets {
 
     // This is a COMPILE-TIME class to bring files from disk
     class AssetImporter {
@@ -23,16 +28,16 @@ namespace Real {
         AssetImporter();
 
         [[maybe_unused]] nlohmann::json& GetAssetDB();
-        void SaveTextureToAssetDB(const OpenGLTexture* texture);
-        void SaveMaterialToAssetDB(const Ref<Material>& mat);
-        void SaveModelToAssetDB(const Ref<Model>& model);
-        void SaveMeshToAssetDB(const assets::MeshBinaryHeader &header, const String& name);
+        void SaveTextureToAssetDB(const platform::opengl::OpenGLTexture* texture);
+        void SaveMaterialToAssetDB(const Ref<graphics::Material>& mat);
+        void SaveModelToAssetDB(const Ref<graphics::Model>& model);
+        void SaveMeshToAssetDB(const MeshBinaryHeader &header, const String& name);
 
         void ImportFromDatabase();
 
         void MarkDirtyAssetDB();
         void UpdateAssetDB();
-        void UpdateTextureInAssetDB(const OpenGLTexture* texture);
+        void UpdateTextureInAssetDB(const platform::opengl::OpenGLTexture* texture);
 
         void LoadTexturesFromFolder();
 

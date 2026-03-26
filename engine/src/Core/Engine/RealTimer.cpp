@@ -1,17 +1,17 @@
 //
 // Created by pointerlost on 10/3/25.
 //
-#include "../../include/Timer/Timer.h"
+#include "../../../include/Core/Engine/RealTimer.h"
 #include <chrono>
 
 namespace Real {
 
-    void RealTimeTimer::Start() {
+    void RealTimer::Start() {
         m_Running = true;
         m_LastTime = Clock::now();
     }
 
-    void RealTimeTimer::Update() {
+    void RealTimer::Update() {
         if (!m_Running) return;
 
         const TimePoint now = Clock::now();
@@ -27,19 +27,19 @@ namespace Real {
         m_LastTime = now;
     }
 
-    void RealTimeTimer::Stop() {
+    void RealTimer::Stop() {
         m_Running = false;
     }
 
-    f64 RealTimeTimer::GetDelta() const {
+    f64 RealTimer::GetDelta() const {
         return m_DeltaTime;
     }
 
-    f64 RealTimeTimer::GetElapsed() const {
+    f64 RealTimer::GetElapsed() const {
         return m_ElapsedTime;
     }
 
-    int RealTimeTimer::GetFPS() const {
+    int RealTimer::GetFPS() const {
         return m_DeltaTime > 0.0 ? static_cast<int>(1.0 / m_DeltaTime) : 0;
     }
 }

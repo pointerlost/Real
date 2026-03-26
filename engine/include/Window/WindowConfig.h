@@ -4,8 +4,8 @@
 #pragma once
 #include <string>
 
-namespace Real {
-    enum struct WindowType;
+namespace Real::core {
+    enum class WindowBackend;
 }
 
 namespace Real::core {
@@ -14,7 +14,7 @@ namespace Real::core {
         int width = 1520;
         int height = 840;
         std::string title = "Real";
-        WindowType type;
+        WindowBackend backend;
     };
 
     enum class WindowBackend {

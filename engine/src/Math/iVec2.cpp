@@ -9,4 +9,8 @@ namespace Real::math {
     i32 iVec2::Length(const iVec2& v) noexcept {
         return static_cast<i32>(sqrtf(static_cast<float>(v.x*v.x + v.y*v.y)));
     }
+
+    i32 iVec2::Length() const noexcept {
+        return static_cast<i32>(sqrtf(static_cast<float>(x*x + y*y)));
+    }
 }

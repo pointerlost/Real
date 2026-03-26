@@ -1,14 +1,14 @@
 //
 // Created by pointerlost on 1/13/26.
 //
-#include <Physics/PhysXContext.h>
-#include <physx/include/PxPhysicsAPI.h>
+#include "Physics/PhysX/PhysXContext.h"
+#include <PxPhysicsAPI.h>
 
 namespace Real::physics {
     using namespace physx;
 
-    void PhysXContext::Init() {
-
+    void PhysXContext::Init()
+    {
         // Create PhysX allocator and error callback (must init for Backend)
         m_Allocator     = CreateScope<PhysXAllocator>();
         m_ErrorCallback = CreateScope<PhysXErrorCallback>();

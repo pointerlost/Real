@@ -5,6 +5,8 @@
 #include "Graphics/Debug/DebugMeshFactory.h"
 #include <glad/include/glad/glad.h>
 #include "../../../include/Assets/AssetManager.h"
+#include "Assets/ShaderManager.h"
+#include "Common/RealEnum.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Camera.h"
@@ -26,22 +28,22 @@ namespace Real::graphics::debug {
         m_BoxMesh    = DebugMeshFactory::CreateBoxWire(m_DebugVertices, m_DebugIndices);
         m_SphereMesh = DebugMeshFactory::CreateSphereWire(m_DebugVertices, m_DebugIndices, 32);
 
-        glCreateBuffers(1, &m_VBO);
-        glNamedBufferData(m_VBO, m_DebugVertices.size() * sizeof(DebugVertex), m_DebugVertices.data(), GL_STATIC_DRAW);
+        glCreateBuffers(1, &m_VBO.value);
+        glNamedBufferData(m_VBO.value, m_DebugVertices.size() * sizeof(DebugVertex), m_DebugVertices.data(), GL_STATIC_DRAW);
 
-        glCreateBuffers(1, &m_EBO);
-        glNamedBufferData(m_EBO, m_DebugIndices.size() * sizeof(u32), m_DebugIndices.data(), GL_STATIC_DRAW);
+        glCreateBuffers(1, &m_EBO.value);
+        glNamedBufferData(m_EBO.value, m_DebugIndices.size() * sizeof(u32), m_DebugIndices.data(), GL_STATIC_DRAW);
 
-        glCreateVertexArrays(1, &m_VAO);
+        glCreateVertexArrays(1, &m_VAO.value);
 
-        glVertexArrayVertexBuffer(m_VAO, 0, m_VBO, 0, sizeof(DebugVertex));
+        glVertexArrayVertexBuffer(m_VAO.value, 0, m_VBO.value, 0, sizeof(DebugVertex));
 
         // Bind EBO to VAO
-        glVertexArrayElementBuffer(m_VAO, m_EBO);
+        glVertexArrayElementBuffer(m_VAO.value, m_EBO.value);
 
-        glEnableVertexArrayAttrib(m_VAO, 0);
-        glVertexArrayAttribFormat(m_VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
-        glVertexArrayAttribBinding(m_VAO, 0, 0);
+        glEnableVertexArrayAttrib(m_VAO.value, 0);
+        glVertexArrayAttribFormat(m_VAO.value, 0, 3, GL_FLOAT, GL_FALSE, 0);
+        glVertexArrayAttribBinding(m_VAO.value, 0, 0);
 
         // Instance Buffer(SSBO)
         m_DebugInstanceBuffer.Create(
@@ -56,8 +58,7 @@ namespace Real::graphics::debug {
             BufferType::SSBO
         );
 
-        // Get debug shader (TODO: remove hardcoded string)
-        m_DebugShader = &Services::GetAssetManager()->GetShader("debug");
+        m_DebugShader = &Services::GetShaderManager().Get(ShaderType::Debug);
     }
 
     void DebugRenderer::BeginFrame() {
@@ -91,11 +92,11 @@ namespace Real::graphics::debug {
             return;
 
         m_DebugShader->Bind();
-        m_DebugIndirectBuffer.Bind(GL_SHADER_STORAGE_BUFFER, DEBUG_INDIRECT_COMMANDS_BINDING_POINT);
-        m_DebugInstanceBuffer.Bind(GL_SHADER_STORAGE_BUFFER, DEBUG_INSTANCES_BINDING_POINT);
+        m_DebugIndirectBuffer.Bind(GL_SHADER_STORAGE_BUFFER, BindingPoint(DEBUG_INDIRECT_COMMANDS_BINDING_POINT));
+        m_DebugInstanceBuffer.Bind(GL_SHADER_STORAGE_BUFFER, BindingPoint(DEBUG_INSTANCES_BINDING_POINT));
 
-        glBindVertexArray(m_VAO);
-        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DebugIndirectBuffer.GetHandle());
+        glBindVertexArray(m_VAO.value);
+        glBindBuffer(GL_DRAW_INDIRECT_BUFFER, m_DebugIndirectBuffer.GetHandle().value);
         glMultiDrawElementsIndirect(
             GL_LINES,        // primitive type
             GL_UNSIGNED_INT, // index type

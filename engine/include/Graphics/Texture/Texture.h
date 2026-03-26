@@ -5,18 +5,10 @@
 #include "Assets/FileManager.h"
 #include "Graphics/RenderTypes.h"
 #include "Common/RealEnum.h"
-#include "Common/Types.h"
 #include "Core/UUID.h"
-#include "Util/Util.h"
 
-
-namespace Real {
-    struct TextureAsset;
-}
-
-namespace Real::math {
-    struct iVec2;
-}
+namespace Real { struct TextureAsset; }
+namespace Real::math { struct iVec2; }
 
 namespace Real::platform::opengl {
 

@@ -1,10 +1,12 @@
 //
 // Created by pointerlost on 1/13/26.
 //
+#include <glm/fwd.hpp>
 #include <Math/Quat.h>
 
 #include "Math/Math.h"
 #include "Math/Vec3.h"
+#include "Math/Conversions/GLMConversions.h"
 
 namespace Real::math {
 
@@ -81,6 +83,25 @@ namespace Real::math {
         m.m[2][2] = 1 - 2*(xx + yy);
 
         return m;
+    }
+
+    Quat Quat::Inverted() const noexcept {
+        // Let GLM handle the inverse
+        const glm::quat inv = glm::inverse(interop::glm::To(*this));
+
+        // Convert back to Real Mat4
+        return Quat(interop::glm::From(inv));
+    }
+
+    Quat Quat::Inverted(const Quat &m) noexcept {
+        // Convert Mat4 to glm::mat4
+        const glm::quat glmMat = interop::glm::To(m);
+
+        // Let GLM handle the inverse
+        const glm::quat inv = glm::inverse(glmMat);
+
+        // Convert back to Real Mat4
+        return Quat(interop::glm::From(inv));
     }
 
     Quat Quat::FromEulerDegrees(const Vec3& eulerDegrees) noexcept {

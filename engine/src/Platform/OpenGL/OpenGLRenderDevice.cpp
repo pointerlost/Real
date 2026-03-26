@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 #include "Common/Types.h"
 #include "Core/Logger.h"
+#include "Core/RealConfig.h"
 #include "Graphics/RenderTypes.h"
 
 namespace Real::platform::opengl {
@@ -37,30 +38,13 @@ namespace Real::platform::opengl {
             // glDepthMask(GL_FALSE);
         }
 
-        CheckOpenGLVersion(cfg.opengl);
+        CheckGLVersion(cfg.opengl);
     }
 
     void OpenGLRenderDevice::Shutdown() {
     }
 
-    void OpenGLRenderDevice::SwapBuffers() {
-    }
-
-    void OpenGLRenderDevice::ClearColor(const graphics::Color& color) {
-        glClearColor(color.r, color.g, color.b, color.a);
-    }
-
-    void OpenGLRenderDevice::Clear(graphics::ClearFlags clearFlags) {
-        GLbitfield mask = 0;
-
-        if (HasFlag(clearFlags, graphics::ClearFlags::Color)) mask |= GL_COLOR_BUFFER_BIT;
-        if (HasFlag(clearFlags, graphics::ClearFlags::Depth)) mask |= GL_DEPTH_BUFFER_BIT;
-        if (HasFlag(clearFlags, graphics::ClearFlags::Stencil)) mask |= GL_STENCIL_BUFFER_BIT;
-
-        glClear(mask);
-    }
-
-    void OpenGLRenderDevice::CheckOpenGLVersion(const OpenGLConfig& cfg) {
+    void OpenGLRenderDevice::CheckGLVersion(const OpenGLConfig& cfg) {
         // Get version info
         GLint major, minor;
         glGetIntegerv(GL_MAJOR_VERSION, &major);

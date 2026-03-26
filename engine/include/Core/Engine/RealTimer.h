@@ -3,11 +3,11 @@
 //
 #pragma once
 #include <chrono>
-#include "../Core/ITimer.h"
+#include "Core/ITimer.h"
 
 namespace Real {
 
-    class RealTimeTimer final : public core::ITimer {
+    class RealTimer final : public core::ITimer {
     public:
         void Start() override;
         void Update() override;
@@ -18,7 +18,7 @@ namespace Real {
         [[nodiscard]] int GetFPS() const;
 
     private:
-        using Clock = std::chrono::_V2::steady_clock;
+        using Clock     = std::chrono::steady_clock;  // portable, correct
         using TimePoint = std::chrono::time_point<Clock>;
 
         TimePoint m_LastTime{};

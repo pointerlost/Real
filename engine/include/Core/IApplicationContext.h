@@ -3,12 +3,18 @@
 //
 #pragma once
 
+namespace Real::assets {
+    class ResourceManager;
+}
+
 namespace Real {
-    class ResourceLoader;
-    class MeshManager;
-    class AssetImporter;
-    class AssetManager;
     class SceneManager;
+
+    namespace assets {
+        class MeshManager;
+        class AssetImporter;
+        class AssetManager;
+    }
 
     namespace graphics::debug {
         class DebugRenderer;
@@ -28,10 +34,10 @@ namespace Real::core {
         virtual void SetWindow(IWindow*) {}
 
         // Assets
-        virtual void SetAssetManager  (AssetManager*)   {}
-        virtual void SetAssetImporter (AssetImporter*)  {}
-        virtual void SetMeshManager   (MeshManager*)    {}
-        virtual void SetResourceLoader(ResourceLoader*) {}
+        virtual void SetAssetManager  (assets::AssetManager*)    {}
+        virtual void SetAssetImporter (assets::AssetImporter*)   {}
+        virtual void SetMeshManager   (assets::MeshManager*)     {}
+        virtual void SetResourceLoader(assets::ResourceManager*) {}
 
         // Scene
         virtual void SetSceneManager(SceneManager*) {}

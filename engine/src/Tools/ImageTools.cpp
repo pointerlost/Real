@@ -10,12 +10,16 @@
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
 #include "Assets/AssetManager.h"
-#include "Util/Util.h"
 #include <Tools/DDS.h>
 #include <algorithm>
 #include "Assets/FileManager.h"
+#include "Assets/TextureManager.h"
+#include "Common/RealEnum.h"
 #include "Core/CMakeConfig.h"
 #include "Core/Services.h"
+#include "Graphics/Texture/Texture.h"
+#include "Platform/OpenGL/OpenGLUtils.h"
+#include "Tools/CompressionUtils.h"
 
 namespace Real::tools {
 
@@ -38,7 +42,7 @@ namespace Real::tools {
         } else if (mtl->GetImageFormatState() != ImageFormatState::DEFAULT) {
             texture = mtl;
         } else {
-            return Services::GetAssetManager()->GetOrCreateDefaultTexture(TextureType::ORM);
+            return Services::GetTextureManager().GetOrCreateDefault(TextureType::ORM);
         }
 
         Ref<platform::opengl::OpenGLTexture> mixedTexture = CreateRef<platform::opengl::OpenGLTexture>();
@@ -55,7 +59,7 @@ namespace Real::tools {
 
         // Create mixedTexture data
         graphics::TextureData mixedData;
-        mixedData.data = new u8[dataSize]; // Still void ptr
+        mixedData.data        = new u8[dataSize]; // Still void ptr
         auto* mixedTexRawData = static_cast<u8*>(mixedData.data); // Cast to u8*
 
         for (size_t i = 0; i < width * height; i++) {
@@ -71,11 +75,13 @@ namespace Real::tools {
         mixedData.dataSize       = dataSize;
         mixedData.width          = width;
         mixedData.height         = height;
-        mixedData.format         = util::GetGLFormat(channelCount);
-        mixedData.internalFormat = util::GetGLInternalFormat(channelCount);
+        mixedData.format         = util::opengl::GetGLFormat(channelCount);
+        mixedData.internalFormat = util::opengl::GetGLInternalFormat(channelCount);
 
-        const auto& stateFolder = util::ImageFormatState_EnumToString(texture->GetImageFormatState());
-        const auto ext = texture->GetImageFormatState() == ImageFormatState::DEFAULT ? ".png" : texture->GetExtension();
+        const auto& stateFolder = util::compression::ImageFormatState_EnumToString(texture->GetImageFormatState());
+        const auto ext = texture->GetImageFormatState() == ImageFormatState::DEFAULT
+            ? ".png"
+            : texture->GetExtension();
 
         const auto& newPath = String(ASSETS_DIR) + "textures/" + stateFolder + '/' + materialName + "_ORM" + ext;
         mixedTexture->SetFileInfo(fs::CreateFileInfoFromPath(newPath));
@@ -84,13 +90,13 @@ namespace Real::tools {
         mixedTexture->CreateFromData(mixedData, TextureType::ORM);
 
         // Clear seperated textures
-        const auto& am = Services::GetAssetManager();
+        auto& am = Services::GetAssetManager();
         fs::File::Delete(ao->GetPath());
-        am->DeleteCPUTexture(ao->GetUUID());
+        am.DeleteCPUTexture(ao->GetUUID());
         fs::File::Delete(rgh->GetPath());
-        am->DeleteCPUTexture(rgh->GetUUID());
+        am.DeleteCPUTexture(rgh->GetUUID());
         fs::File::Delete(mtl->GetPath());
-        am->DeleteCPUTexture(mtl->GetUUID());
+        am.DeleteCPUTexture(mtl->GetUUID());
 
         if (!SaveTextureAsFile(mixedTexture.get())) {
             Warn("ORM packed texture can't saved!");
@@ -139,7 +145,7 @@ namespace Real::tools {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
-        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
+        if (Services::GetTextureManager().IsCompressed(texture->GetStem())) {
             const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
             const String fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
             texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
@@ -152,9 +158,9 @@ namespace Real::tools {
 
         // Init framework plugin and IO interfaces
         CMP_InitFramework();
-        CMP_ERROR     cmp_status = CMP_OK;
-        CMP_MipSet    MipSetIn  = {};
-        CMP_MipSet    MipSetCmp = {};
+        CMP_ERROR     cmp_status     = CMP_OK;
+        CMP_MipSet    MipSetIn       = {};
+        CMP_MipSet    MipSetCmp      = {};
         KernelOptions kernel_options = {};
 
         CMP_FORMAT srcFormat;
@@ -176,7 +182,7 @@ namespace Real::tools {
         }
 
         // TODO: Treat it as 8-bit everything except the 16-bit We don't have 16 bit option yet!
-        CMP_FORMAT destFormat = util::GetCMPDestinationFormat(channelCount);
+        CMP_FORMAT destFormat = util::compression::GetCMPDestinationFormat(channelCount);
         MipSetCmp.m_format = destFormat;
 
         kernel_options.encodeWith = CMP_HPC; // CMP_CPU | CMP_GPU_OCL
@@ -189,7 +195,7 @@ namespace Real::tools {
         cmp_status = CMP_ProcessTexture(&MipSetIn, &MipSetCmp, kernel_options, nullptr);
 
         if (cmp_status != CMP_OK) {
-            Warn(util::DebugCMPStatus(cmp_status));
+            Warn(util::compression::DebugCMPStatus(cmp_status));
             Warn("Damn, cmp_status is failed!");
             return false;
         }
@@ -205,8 +211,8 @@ namespace Real::tools {
             levelData.width          = currLevel->m_nWidth;
             levelData.height         = currLevel->m_nHeight;
             levelData.channelCount   = channelCount;
-            levelData.format         = util::GetGLFormat(channelCount);
-            levelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
+            levelData.format         = util::opengl::GetGLFormat(channelCount);
+            levelData.internalFormat = util::opengl::GetCompressedInternalFormat(channelCount);
 
             mipLevelsData.push_back(levelData);
         }
@@ -250,7 +256,7 @@ namespace Real::tools {
             Warn("[CompressTextureToBCn] Texture nullptr!");
             return false;
         }
-        if (Services::GetAssetManager()->IsTextureCompressed(texture->GetStem())) {
+        if (Services::GetTextureManager().IsCompressed(texture->GetStem())) {
             const auto compressed_dir = String(ASSETS_DIR) + "textures/compressed/";
             const String fullName = compressed_dir + texture->GetFileInfo().stem + ".dds";
             texture->SetFileInfo(fs::CreateFileInfoFromPath(fullName));
@@ -269,8 +275,8 @@ namespace Real::tools {
         KernelOptions kernel_options = {};
 
         auto& texFirstMipLevelData          = texture->GetLevelData(0);
-        texFirstMipLevelData.format         = util::GetGLFormat(channelCount);
-        texFirstMipLevelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
+        texFirstMipLevelData.format         = util::opengl::GetGLFormat(channelCount);
+        texFirstMipLevelData.internalFormat = util::opengl::GetCompressedInternalFormat(channelCount);
 
         CMP_FORMAT srcFormat;
         switch (channelCount) {
@@ -283,7 +289,7 @@ namespace Real::tools {
 
         MipSetIn.m_format = srcFormat;
         if (CMP_CreateMipSet(&MipSetIn, width, height, 1, CF_8bit, TT_2D) != CMP_OK) {
-            Warn(util::DebugCMPStatus(cmp_status));
+            Warn(util::compression::DebugCMPStatus(cmp_status));
             Warn("Mipmap creation failed!");
             return false;
         }
@@ -297,12 +303,12 @@ namespace Real::tools {
         memcpy(mipLevel->m_pbData, texFirstMipLevelData.data, mipLevel->m_dwLinearSize);
 
         if (CMP_GenerateMIPLevels(&MipSetIn, 4) != CMP_OK) {
-            Warn(util::DebugCMPStatus(cmp_status));
+            Warn(util::compression::DebugCMPStatus(cmp_status));
             Warn("CMP_GenerateMIPLevels failed!");
             return false;
         }
 
-        CMP_FORMAT destFormat = util::GetCMPDestinationFormat(channelCount);
+        CMP_FORMAT destFormat = util::compression::GetCMPDestinationFormat(channelCount);
 
         kernel_options.encodeWith = CMP_HPC;
         kernel_options.format     = destFormat;
@@ -313,8 +319,8 @@ namespace Real::tools {
         cmp_status = CMP_ProcessTexture(&MipSetIn, &MipSetCmp, kernel_options, nullptr);
 
         if (cmp_status != CMP_OK) {
-            Warn(util::DebugCMPStatus(cmp_status));
-            Warn("Damn, cmp_status is failed! Error type: " + util::DebugCMPStatus(cmp_status));
+            Warn(util::compression::DebugCMPStatus(cmp_status));
+            Warn("Damn, cmp_status is failed! Error type: " + util::compression::DebugCMPStatus(cmp_status));
             return false;
         }
 
@@ -328,8 +334,8 @@ namespace Real::tools {
             levelData.width          = currLevel->m_nWidth;
             levelData.height         = currLevel->m_nHeight;
             levelData.channelCount   = channelCount; // optional, may differ for compressed formats
-            levelData.format         = util::GetGLFormat(channelCount);
-            levelData.internalFormat = util::GetCompressedInternalFormat(channelCount);
+            levelData.format         = util::opengl::GetGLFormat(channelCount);
+            levelData.internalFormat = util::opengl::GetCompressedInternalFormat(channelCount);
             mipLevelsData.push_back(levelData);
         }
 
@@ -354,18 +360,18 @@ namespace Real::tools {
     }
 
     Ref<platform::opengl::OpenGLTexture> ReadCompressedDataFromDDSFile(const String& path) {
-        const auto& am = Services::GetAssetManager();
+        auto& tm = Services::GetTextureManager();
         Vector<graphics::TextureData> mipLevelsData;
 
         if (!fs::File::Exists(path)) {
             Warn("There is no DDS file with this name: " + path);
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
 
         std::ifstream file(path, std::ios::binary);
         if (!file.is_open()) {
             Warn("Can't open DDS file: " + path);
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
 
         // Check that the file is a valid DDS file, DirectX::DDS_MAGIC = "DDS "
@@ -373,28 +379,28 @@ namespace Real::tools {
         file.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber));
         if (!file) {
             Warn("Failed to read magic number for DDS: " + path);
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
         if (magicNumber != 0x20534444) { // 0x20534444 = DDS Magic number
             Warn("This file is not a DDS file!! path: " + path);
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
 
         DDSHeader header = {};
         if (!file.read(reinterpret_cast<char*>(&header), sizeof(DDSHeader))) {
             Warn("Failed to read DDSHeader: " + path);
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
         if (header.dwSize != 124) {
             Warn("Shit happened for magic 124!");
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
 
         DDSHeaderDX10 dx10Header = {};
         if (header.ddspf_dwFourCC == CMP_MAKEFOURCC('D', 'X', '1', '0')) {
             if (!file.read(reinterpret_cast<char*>(&dx10Header), sizeof(DDSHeaderDX10))) {
                 Warn("Failed to read DDSHeaderDX10: " + path);
-                return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+                return tm.GetOrCreateDefault(TextureType::ALBEDO);
             }
         }
 
@@ -408,9 +414,9 @@ namespace Real::tools {
             u32 dataSize   = blocksWide * blocksHigh * blockSize;
 
             graphics::TextureData data = {};
-            data.width          = (int)mipWidth;
-            data.height         = (int)mipHeight;
-            data.dataSize       = (int)dataSize;
+            data.width          = static_cast<int>(mipWidth);
+            data.height         = static_cast<int>(mipHeight);
+            data.dataSize       = static_cast<int>(dataSize);
             data.format         = format;
             data.internalFormat = internalFormat;
             data.channelCount   = channelCount;
@@ -435,7 +441,7 @@ namespace Real::tools {
 
         if (mipLevelsData.empty()) {
             Warn("Mip levels data is empty!!!");
-            return am->GetOrCreateDefaultTexture(TextureType::ALBEDO);
+            return tm.GetOrCreateDefault(TextureType::ALBEDO);
         }
 
         return CreateRef<platform::opengl::OpenGLTexture>(mipLevelsData, fs::CreateFileInfoFromPath(path));
@@ -528,6 +534,6 @@ namespace Real::tools {
         texture->SetMipLevelsData(mipLevelsData);
 
         texture->PrepareOptionsAndUploadToGPU();
-        texture->SetIndex(Services::GetAssetManager()->GetNextBindlessIndex());
+        texture->SetIndex(Services::GetTextureManager().GetNextBindlessIndex());
     }
 }

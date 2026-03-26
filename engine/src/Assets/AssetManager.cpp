@@ -5,9 +5,9 @@
 #include "Core/Logger.h"
 #include "Graphics/Model.h"
 
-namespace Real {
+namespace Real::assets {
 
-    void AssetManager::RegisterModel(const Ref<Model>& model) {
+    void AssetManager::RegisterModel(const Ref<graphics::Model>& model) {
         if (!m_Models.contains(model->m_UUID)) {
             m_Models.emplace(model->m_UUID, model);
             if (!m_ModelNameToUUID.contains(model->m_Name))
@@ -15,7 +15,7 @@ namespace Real {
         }
     }
 
-    Ref<Model> AssetManager::GetModel(const String& name) const {
+    Ref<graphics::Model> AssetManager::GetModel(const String& name) const {
         const auto it = m_ModelNameToUUID.find(name);
         if (it == m_ModelNameToUUID.end()) {
             Warn("Model not found: " + name);

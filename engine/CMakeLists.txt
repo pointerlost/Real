@@ -19,17 +19,27 @@ add_library(engine STATIC
     include/Scene/SceneManager.h
     src/Scene/SceneManager.cpp
     include/Core/IApplicationContext.h
-        include/RHI/RHITypes.h
-        include/Assets/TextureManager.h
-        include/Assets/ShaderManager.h
-        include/Assets/MaterialFactory.h
-        src/Assets/TextureManager.cpp
-        src/Assets/MaterialFactory.cpp
-        src/Assets/ShaderManager.cpp
-        include/Assets/AssetSystem.h
-        include/Assets/AssetTypes.h
-        include/Platform/OpenGL/OpenGLTypes.h
-        include/RHI/ITexture.h
+    include/RHI/RHITypes.h
+    include/Assets/TextureManager.h
+    include/Assets/ShaderManager.h
+    include/Assets/MaterialManager.h
+    src/Assets/TextureManager.cpp
+    src/Assets/MaterialManager.cpp
+    src/Assets/ShaderManager.cpp
+    include/Assets/AssetSystem.h
+    include/Assets/AssetTypes.h
+    include/Platform/OpenGL/OpenGLTypes.h
+    include/RHI/ITexture.h
+    include/Platform/OpenGL/OpenGLUtils.h
+    src/Platform/OpenGL/OpenGLUtils.cpp
+    include/Assets/TextureUtils.h
+    src/Assets/TextureUtils.cpp
+    include/Common/StringUtils.h
+    include/Physics/PhysicsUtils.h
+    include/Tools/CompressionUtils.h
+    src/Tools/CompressionUtils.cpp
+    src/Physics/PhysicsUtils.cpp
+    src/Common/StringUtils.cpp
 )
 
 target_sources(engine PRIVATE
@@ -40,15 +50,15 @@ target_sources(engine PRIVATE
     include/Platform/Vulkan/VkRenderDevice.h
     src/Assets/FileManager.cpp
     include/Core/Logger.h
-    include/Core/Utils.h
-    include/Timer/Timer.h
-    src/Timer/Timer.cpp
+    include/Common/Utils.h
+    include/Core/Engine/RealTimer.h
+    src/Core/Engine/RealTimer.cpp
     include/Graphics/Shader.h
     src/Graphics/Shader.cpp
     include/Assets/AssetManager.h
     src/Assets/AssetManager.cpp
-    include/Graphics/MeshManager.h
-    src/Graphics/MeshManager.cpp
+    include/Assets/MeshManager.h
+    src/Assets/MeshManager.cpp
     include/Core/Services.h
     src/Core/Services.cpp
     include/Graphics/MeshFactory.h
@@ -87,14 +97,10 @@ target_sources(engine PRIVATE
     src/Math/Math.cpp
     include/Scene/Systems/SystemsManager.h
     src/Scene/Systems/SystemsManager.cpp
-    include/Platform/OpenGL/FrameBuffer.h
-    src/Platform/OpenGL/FrameBuffer.cpp
-    include/Util/Util.h
-    src/Util/Util.cpp
+    include/Platform/OpenGL/OpenGLFrameBuffer.h
+    src/Platform/OpenGL/OpenGLFrameBuffer.cpp
     include/Tools/ImageTools.h
     src/Tools/ImageTools.cpp
-    include/Graphics/Texture/TextureArrays.h
-    src/Graphics/Texture/TextureArrays.cpp
     include/Common/Scheduling/Threads.h
     src/Common/Scheduling/Threads.cpp
     include/Common/Macros.h
@@ -129,9 +135,9 @@ target_sources(engine PRIVATE
     src/Math/Vec3.cpp
     src/Math/Vec4.cpp
     include/Scene/Systems/PhysicsSystem.h
-    include/Physics/PhysXContext.h
-    src/Physics/PhysXContext.cpp
-    include/Physics/Physx/PhysXTypes.h
+    include/Physics/PhysX/PhysXContext.h
+    src/Physics/PhysX/PhysXContext.cpp
+    include/Physics/PhysX/PhysXTypes.h
     src/Scene/Systems/PhysicsSystem.cpp
     include/Scene/Systems/MeshRendererSystem.h
     include/Scene/Systems/CameraSystem.h
@@ -139,14 +145,13 @@ target_sources(engine PRIVATE
     src/Scene/Systems/MeshRendererSystem.cpp
     src/Scene/Systems/CameraSystem.cpp
     src/Scene/Systems/LightSystem.cpp
-    include/Physics/PhysXErrorCallback.h
-    src/Physics/PhysXErrorCallback.cpp
-    src/Physics/PhysXAllocator.cpp
-    include/Physics/PhysXAllocator.h
+    include/Physics/PhysX/PhysXErrorCallback.h
+    src/Physics/PhysX/PhysXErrorCallback.cpp
+    src/Physics/PhysX/PhysXAllocator.cpp
+    include/Physics/PhysX/PhysXAllocator.h
     include/Physics/PhysicsTypes.h
     include/Scene/Systems/MovementSystem.h
     src/Scene/Systems/MovementSystem.cpp
-    include/Physics/PhysicsAPI.h
     include/Event/Event.h
     include/Event/SceneEvents.h
     src/Event/Event.cpp
@@ -159,9 +164,8 @@ target_sources(engine PRIVATE
     include/Math/Conversions/GLMConversions.h
     src/Math/Conversions/GLMConversions.cpp
     include/Core/IPhysicsBackend.h
-    include/Physics/Physx/PhysXBackend.h
+    include/Physics/PhysX/PhysXBackend.h
     src/Physics/PhysX/PhysXBackend.cpp
-    include/Physics/PhysicsDescriptors.h
     include/Scene/ISceneListener.h
     include/Core/ISystem.h
     include/Window/IWindow.h
@@ -236,11 +240,11 @@ target_link_libraries(engine
     -lCMP_Core_AVX512
 
     PRIVATE
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysX_static_64.a>
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXPvdSDK_static_64.a>
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXCommon_static_64.a>
-    $<$<CONFIG:Debug>:${PHYSX_DIR}/lib/debug/libPhysXFoundation_static_64.a>
+    $<$<CONFIG:Debug>:  ${PHYSX_DIR}/lib/debug/libPhysX_static_64.a>
+    $<$<CONFIG:Debug>:  ${PHYSX_DIR}/lib/debug/libPhysXPvdSDK_static_64.a>
+    $<$<CONFIG:Debug>:  ${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
+    $<$<CONFIG:Debug>:  ${PHYSX_DIR}/lib/debug/libPhysXCommon_static_64.a>
+    $<$<CONFIG:Debug>:  ${PHYSX_DIR}/lib/debug/libPhysXFoundation_static_64.a>
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysX_static_64.a>
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXExtensions_static_64.a>
     $<$<CONFIG:Release>:${PHYSX_DIR}/lib/release/libPhysXCommon_static_64.a>

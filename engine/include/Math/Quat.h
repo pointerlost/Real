@@ -28,5 +28,8 @@ namespace Real::math {
 
         [[nodiscard]] Vec3 Rotate(const Vec3& v) const noexcept;
         [[nodiscard]] Mat4 ToMat4() const noexcept;
+
+        [[nodiscard]] Quat Inverted()        const noexcept;
+        static        Quat Inverted(const Quat& m) noexcept;
     };
 }

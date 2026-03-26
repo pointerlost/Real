@@ -2,31 +2,31 @@
 // Created by pointerlost on 2/16/26.
 //
 #pragma once
-#include "Core/Utils.h"
+#include "Common/Utils.h"
 
 namespace Real {
+    struct EngineConfig;
+
     namespace rhi {
         class IRenderer;
         class IRenderDevice;
     }
 
-    struct EngineConfig;
-
     namespace ecs {
         class CameraSystem;
     }
-
     namespace core {
-        class IApplicationContext;
         class IPlatform;
         class IWindow;
-        struct AssetSystems;
-        struct CoreSystems;
+        class IApplicationContext;
         class SystemManager;
         class IPhysicsBackend;
+        struct AssetSystems;
+        struct CoreSystems;
         class IApplication;
         class EngineCore;
     }
+
 }
 
 namespace Real::core {

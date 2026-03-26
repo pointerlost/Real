@@ -2,23 +2,25 @@
 // Created by pointerlost on 3/23/26.
 //
 #include "Assets/TextureManager.h"
+#include "stb/stb_image.h"
 #include "Assets/FileManager.h"
 #include "Core/CMakeConfig.h"
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
 #include "Graphics/Texture/Texture.h"
 #include "Math/iVec2.h"
-#include "stb/stb_image.h"
-#include "Util/Util.h"
 #include <ranges>
 
-namespace Real {
+#include "Assets/TextureUtils.h"
+#include "Platform/OpenGL/OpenGLUtils.h"
+
+namespace Real::assets {
 
     TextureManager::TextureManager() {
         LoadDefaultTextures();
     }
 
-    void TextureManager::Register(const Ref<OpenGLTexture>& tex) {
+    void TextureManager::Register(const Ref<platform::opengl::OpenGLTexture>& tex) {
         if (!m_Textures.contains(tex->GetUUID()))
             m_Textures.emplace(tex->GetUUID(), tex);
     }
@@ -32,22 +34,23 @@ namespace Real {
         if (!fs::File::Exists(path)) { Warn("There is no texture: " + path); }
 
         const int desiredChannels = type != TextureType::UNDEFINED
-            ? util::TextureTypeToChannelCount(type) : 0;
+            ? util::texture::TextureTypeToChannelCount(type)
+            : 0;
 
         graphics::TextureData data;
-        data.data         = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, desiredChannels);
-        data.channelCount = desiredChannels != 0 ? desiredChannels : data.channelCount;
-        data.dataSize     = data.width * data.height * data.channelCount * 1;
-        data.format       = util::GetGLFormat(data.channelCount);
-        data.internalFormat = util::GetGLInternalFormat(data.channelCount);
+        data.data           = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, desiredChannels);
+        data.channelCount   = desiredChannels != 0 ? desiredChannels : data.channelCount;
+        data.dataSize       = data.width * data.height * data.channelCount * 1;
+        data.format         = util::opengl::GetGLFormat(data.channelCount);
+        data.internalFormat = util::opengl::GetGLInternalFormat(data.channelCount);
 
-        if (!data.data)           { Warn("[LoadFromFile] stbi_load returned nullptr!"); }
-        if (data.channelCount == 0) { Warn("[LoadFromFile] channel count is 0!"); }
+        if (!data.data)             { Warn("[LoadFromFile] stbi_load returned nullptr!"); }
+        if (data.channelCount == 0) { Warn("[LoadFromFile] channel count is 0!");         }
 
         return data;
     }
 
-    const Ref<OpenGLTexture>& TextureManager::GetTexture(const UUID& uuid, TextureType type) {
+    const Ref<platform::opengl::OpenGLTexture>& TextureManager::GetTexture(const UUID& uuid, TextureType type) {
         if (!m_Textures.contains(uuid)) {
             const auto& tex = GetOrCreateDefault(type);
             m_Textures[tex->GetUUID()] = tex;
@@ -56,14 +59,14 @@ namespace Real {
         return m_Textures[uuid];
     }
 
-    Ref<OpenGLTexture>& TextureManager::GetOrCreateDefault(TextureType type) {
+    Ref<platform::opengl::OpenGLTexture>& TextureManager::GetOrCreateDefault(TextureType type) {
         if (m_DefaultTextures.contains(type))
             return m_DefaultTextures[type];
 
-        const auto channelCount = util::TextureTypeToChannelCount(type);
+        const auto channelCount = util::texture::TextureTypeToChannelCount(type);
         constexpr math::iVec2 resolution{1, 1};
 
-        const Ref<OpenGLTexture> defaultTex = CreateRef<OpenGLTexture>();
+        const Ref<platform::opengl::OpenGLTexture> defaultTex = CreateRef<platform::opengl::OpenGLTexture>();
 
         u8 channelColor[4] = {UINT8_MAX};
         switch (type) {
@@ -125,8 +128,8 @@ namespace Real {
         data.dataSize       = imageSize;
         data.width          = resolution.x;
         data.height         = resolution.y;
-        data.format         = util::GetGLFormat(channelCount);
-        data.internalFormat = util::GetGLInternalFormat(channelCount);
+        data.format         = util::opengl::GetGLFormat(channelCount);
+        data.internalFormat = util::opengl::GetGLInternalFormat(channelCount);
 
         defaultTex->SetImageFormatState(ImageFormatState::DEFAULT);
         defaultTex->CreateFromData(data, type);
@@ -135,11 +138,8 @@ namespace Real {
     }
 
     bool TextureManager::IsCompressed(const String& stem) const {
+        // TODO: Need to find a better way to improve performance. This looks bad.
         return fs::File::Exists(String(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
-    }
-
-    void TextureManager::LoadArraysToGPU() const {
-        // TextureArrayManager::PrepareAndBindTextureArrays();
     }
 
     Vector<graphics::BindlessHandle> TextureManager::UploadToGPU() {
@@ -157,10 +157,11 @@ namespace Real {
         return m_BindlessHandles.size();
     }
 
-    Vector<Ref<OpenGLTexture>> TextureManager::GetMaterialTextures(const Material* mat) const {
-        Vector<Ref<OpenGLTexture>> textures;
+    Vector<Ref<platform::opengl::OpenGLTexture>> TextureManager::GetMaterialTextures(const graphics::Material* mat) const
+    {
+        Vector<Ref<platform::opengl::OpenGLTexture>> textures;
 
-        auto tryAdd = [this](const UUID id, Vector<Ref<OpenGLTexture>>& out) {
+        auto tryAdd = [this](const UUID id, Vector<Ref<platform::opengl::OpenGLTexture>>& out) {
             if (id == 0) return;
             const auto it = m_Textures.find(id);
             if (it != m_Textures.end() && it->second)

@@ -19,10 +19,6 @@ namespace Real::rhi {
         virtual ~IRenderDevice() = default;
 
         virtual void Initialize(void* nativeWindow, const RendererConfig& cfg) = 0;
-        virtual void Shutdown() = 0;
-
-        virtual void SwapBuffers() = 0;
-        virtual void ClearColor(const graphics::Color& /* color */) = 0;
-        virtual void Clear(graphics::ClearFlags /* clearFlags */) = 0;
+        virtual void Shutdown()                                                = 0;
     };
 }

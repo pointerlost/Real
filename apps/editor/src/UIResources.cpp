@@ -4,7 +4,7 @@
 #include "UIResources.h"
 
 #include "Core/Logger.h"
-#include "Core/Utils.h"
+#include "../../../engine/include/Common/Utils.h"
 
 namespace Real::editor {
 

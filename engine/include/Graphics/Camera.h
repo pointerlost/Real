@@ -46,7 +46,7 @@ namespace Real {
         [[nodiscard]] math::Mat4 GetViewProjection() const { return m_Projection * m_View; }
 
         void Update(Transform& transform);
-        void ConvertToGPUFormat(const Transform& transform, FrameUBO& outData);
+        void ConvertToGPUFormat(const Transform& transform, FrameUBO& outData) const;
 
     private:
         f32 m_Near = 0.1;

@@ -10,6 +10,7 @@
 #include "Assets/AssetManager.h"
 #include "Core/CMakeConfig.h"
 #include "Assets/FileManager.h"
+#include "Core/IPhysicsBackend.h"
 #include "Core/Services.h"
 #include "Platform/GLFW/GLFWwindow.h"
 #include "Input/Input.h"
@@ -307,7 +308,7 @@ namespace Real::UI {
 
         Entity entity = *editorState->selectedEntity;
         auto& tc = entity.GetComponentUnchecked<TransformComponent>();
-        auto& camera = editorState->editorCamera->GetComponent<CameraComponent>().m_Camera;
+        auto& camera = editorState->editorCamera->GetComponent<CameraComponent>().camera;
 
         const bool hasCollider = entity.HasComponent<ColliderComponent>();
         const bool hasPhysics  = entity.HasComponent<RigidbodyComponent>();
@@ -350,7 +351,7 @@ namespace Real::UI {
 
         // Draw gizmo
         ImGuizmo::Manipulate(camera.GetView().ValuePtr(), camera.GetProjection().ValuePtr(),
-            (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, gizmoMatrix.ValuePtr()
+            (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::WORLD, gizmoMatrix.ValuePtr()
         );
 
         if (!ImGuizmo::IsUsing())
@@ -368,14 +369,14 @@ namespace Real::UI {
             }
 
             tc.transform.SetPosition(translation);
-            tc.transform.SetRotation(rotation);
-            tc.transform.SetScale(scale);
+            tc.transform.SetLocalRotation(rotation);
+            tc.transform.SetLocalScale(scale);
             return;
         }
 
         // COLLIDER LOCAL TRANSFORM EDIT
         auto& cc = entity.GetComponentUnchecked<ColliderComponent>();
-        if (cc.shape == physics::ColliderShape::Box) {
+        if (cc.shape == core::ShapeDesc::Shape::Box) {
         }
 
         const math::Mat4 invActorWorld = actorWorld.Inverted();

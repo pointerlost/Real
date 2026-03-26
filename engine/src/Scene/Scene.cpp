@@ -2,11 +2,10 @@
 // Created by pointerlost on 10/7/25.
 //
 #include "Scene/Scene.h"
-#include "../../include/Assets/AssetManager.h"
-#include "../../include/RHI/IRenderer.h"
+#include "Assets/AssetManager.h"
+#include "Assets/MaterialManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
-#include "Graphics/Material.h"
 #include "Graphics/Model.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
@@ -57,7 +56,7 @@ namespace Real {
 
     template<>
     void Scene::OnComponentAdded<ModelComponent>(Entity& entity, ModelComponent& component) {
-        HandleModelAssigned(entity, component.m_Model);
+        HandleModelAssigned(entity, component.model);
 
         // Notify systems
         m_Events.OnModelAssigned.Emit(entity.GetHandle(), component);
@@ -75,7 +74,8 @@ namespace Real {
     void Scene::OnComponentAdded<TagComponent>(Entity& entity, TagComponent& component) {
     }
 
-    void Scene::Update(const core::IRenderer* renderer) {
+    void Scene::Update(const rhi::IRenderer* renderer) {
+
     }
 
     Entity& Scene::CreateEntity(const String &tag) {
@@ -96,7 +96,7 @@ namespace Real {
 
     Entity& Scene::CreateLight(const String &entityTag, Light::Mode mode) {
         auto& entity = CreateEntity(entityTag);
-        entity.AddComponent<LightComponent>().m_Light = Light{mode};
+        entity.AddComponent<LightComponent>().light = Light{mode};
         return entity;
     }
 
@@ -109,11 +109,11 @@ namespace Real {
         return &it->second;
     }
 
-    void Scene::HandleModelAssigned(Entity& parent, const Ref<Model>& model) {
+    void Scene::HandleModelAssigned(Entity& parent, const Ref<graphics::Model>& model) {
         Vector<UUID> matInstanceUUIDs;
 
         for (const auto& matUUID : model->m_MaterialAssetUUIDs) {
-            const auto instanceUUID = Services::GetAssetManager()->CreateMaterialInstance(matUUID);
+            const auto instanceUUID = Services::GetMaterialManager().CreateInstance(matUUID);
             matInstanceUUIDs.push_back(instanceUUID);
         }
 

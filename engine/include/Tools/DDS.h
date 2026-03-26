@@ -1,7 +1,5 @@
 #pragma once
-#include <cstdint>
-#include <GL/glext.h>
-
+#include <GL/gl.h>
 #include "Core/Logger.h"
 
 #define FOURCC_DXT1 0x31545844 // "DXT1"

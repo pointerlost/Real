@@ -3,8 +3,7 @@
 //
 #pragma once
 #include "Common/Types.h"
-#include "Core/Utils.h"
-
+#include "Common/Utils.h"
 
 namespace Real::platform::opengl { struct OpenGLTexture; }
 

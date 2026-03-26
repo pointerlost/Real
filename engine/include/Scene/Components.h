@@ -2,113 +2,97 @@
 // Created by pointerlost on 10/8/25.
 //
 #pragma once
-#include <utility>
-#include <vector>
-#include "Core/Utils.h"
-#include "Core/UUID.h"
+#include "Common/Utils.h"
+#include "Core/IPhysicsBackend.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Light.h"
 #include "Graphics/Transformations.h"
-#include "Physics/PhysicsTypes.h"
+#include "Core/UUID.h"
 
-namespace physx {
-    class PxShape;
-    class PxRigidActor;
-}
-
-namespace Real {
-    struct Model;
-    struct MaterialInstance;
-}
+namespace Real::graphics { struct Model; }
 
 namespace Real {
     // TODO: Add dirty flags to manage components and to avoid unnecessary updates
 
     struct TagComponent {
-        String m_Tag{};
+        std::string tag{};
 
-        TagComponent() = default;
-        explicit TagComponent(String tag) : m_Tag(std::move(tag)) {}
-        TagComponent(const TagComponent&) = default;
+        explicit TagComponent(std::string tag) : tag(std::move(tag)) {}
+        TagComponent()                             = default;
+        TagComponent(const TagComponent&) noexcept = default;
     };
 
     struct IDComponent {
-        UUID m_UUID{};
-        IDComponent() = default;
-        explicit IDComponent(UUID uuid) : m_UUID(uuid) {}
+        UUID id{};
+
+        explicit IDComponent(const UUID uuid) : id(uuid) {}
+        IDComponent()                              = default;
         bool operator==(const IDComponent &) const = default;
     };
 
     struct TransformComponent {
         Transform transform{};
-        TransformComponent() = default;
-        TransformComponent(const TransformComponent&) = delete;
+
+        TransformComponent()                              = default;
+        TransformComponent(const TransformComponent&)     = delete; // Transform is non-copyable
+        TransformComponent(TransformComponent&&) noexcept = default;
     };
 
     struct MeshRendererComponent {
-        Vector<UUID> m_MeshUUIDs = {};
-        Vector<UUID> m_MaterialInstanceUUIDs = {};
-        MeshRendererComponent(const Vector<UUID>& meshUUIDs, const Vector<UUID>& matInstanceUUIDs)
-            : m_MeshUUIDs(meshUUIDs), m_MaterialInstanceUUIDs(matInstanceUUIDs) {}
-        MeshRendererComponent(const UUID& meshUUID, const UUID& matInstanceUUID)
-            : m_MeshUUIDs{meshUUID}, m_MaterialInstanceUUIDs{matInstanceUUID} {}
-        MeshRendererComponent() = default;
-        MeshRendererComponent(MeshRendererComponent&) = default;
+        Vector<UUID> meshIDs        = {};
+        Vector<UUID> matInstanceIDs = {};
+
+        MeshRendererComponent(const Vector<UUID>& meshID,const Vector<UUID>& matInstanceID)
+            : meshIDs(meshID), matInstanceIDs(matInstanceID) {}
+        MeshRendererComponent(const UUID& meshID, const UUID& matInstanceID)
+            : meshIDs{meshID}, matInstanceIDs{matInstanceID} {}
+        MeshRendererComponent()                                      = default;
+        MeshRendererComponent(const MeshRendererComponent&) noexcept = default;
     };
 
-    // This component is only for behavior. It's optional and not necessary for PhysX
     struct RigidbodyComponent {
-        physics::BodyType type = physics::BodyType::Static;
-        f32 mass = 1.0f;
-
-        physics::RigidBodyHandle handle = physics::InvalidRigidBodyHandle; // transient
+        core::BodyDesc        desc   = {};
+        core::RigidBodyHandle handle = {}; // transient
     };
 
     struct ColliderComponent {
-        physics::ColliderShape shape = physics::ColliderShape::Box;
-
-        // Geometry
-        math::Vec3 size{0.5f};
-        // Local offset relative to actor
-        math::Vec3 localPosition{0.0f};
-        math::Quat localRotation = math::Quat::Identity();
-
-        bool isTrigger = false;
-        // User intent
-        bool enabled = true; // true = Attach shape, false = Detach shape
-        bool rebuildRequired = false;
-
-        physics::PhysicsShapeHandle handle = physics::InvalidShapeHandle; // transient
+        core::ShapeDesc   desc   = {}; // transient
+        core::ShapeHandle handle = {};
     };
 
     struct MovementComponent {
-        math::Vec3 moveInput = { 0.0, 0.0, 0.0 }; // normalized direction
-        f32 maxSpeed = 6.0f;
-        f32 acceleration = 20.0f;
-        f32 airControl = 0.4f;
+        // Input
+        math::Vec3 moveInput      = { 0.0, 0.0, 0.0 }; // normalized direction
+        bool       jumpRequested  = false;
 
-        bool jumpRequested  = false;
+        // Tuning
+        f32 maxSpeed     = 6.f;
+        f32 acceleration = 20.f;
+        f32 airControl   = 0.4f;
     };
 
     struct ModelComponent {
-        Ref<Model> m_Model{};
-        explicit ModelComponent(Ref<Model> model) : m_Model(std::move(model)) {}
-        ModelComponent() = default;
-        ModelComponent(const ModelComponent&) = default;
+        Ref<graphics::Model> model{};
+
+        explicit ModelComponent(Ref<graphics::Model> model) : model(std::move(model)) {}
+                 ModelComponent()                      = default;
+                 ModelComponent(const ModelComponent&) = default;
     };
 
     struct LightComponent {
-        Light m_Light{};
-        explicit LightComponent(const Light &light) : m_Light(light) {}
-        explicit LightComponent(Light::Mode mode) : m_Light(Light{mode}) {}
-        LightComponent() = default;
-        LightComponent(const LightComponent&) = default;
+        Light light{};
+
+        explicit LightComponent(const Light &l)   : light(l)           {}
+        explicit LightComponent(Light::Mode mode) : light(Light{mode}) {}
+                 LightComponent()                      = default;
+                 LightComponent(const LightComponent&) = default;
     };
 
     struct CameraComponent {
-        Camera m_Camera{};
-        explicit CameraComponent(Camera camera) : m_Camera(std::move(camera)) {}
-        CameraComponent() = default;
-        CameraComponent(const CameraComponent&) = default;
+        Camera camera{};
+
+        explicit CameraComponent(Camera cam) : camera(std::move(cam)) {}
+                 CameraComponent()                       = default;
+                 CameraComponent(const CameraComponent&) = default;
     };
 }

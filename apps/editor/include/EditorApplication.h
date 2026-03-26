@@ -6,19 +6,13 @@
 #include "EditorState.h"
 #include "Core/IApplication.h"
 #include "Core/IApplicationContext.h"
-#include "Core/Utils.h"
+#include "../../../engine/include/Common/Utils.h"
 #include "Input/CameraInput.h"
 
 namespace Real {
     namespace ecs {
         class CameraSystem;
     }
-
-    class SceneManager;
-    class RealTimeTimer;
-    class AssetImporter;
-    class MeshManager;
-    class AssetManager;
 
     namespace core {
         class IRenderer;

@@ -2,7 +2,7 @@
 // Created by pointerlost on 1/25/26.
 //
 #pragma once
-#include "../../Core/ISystem.h"
+#include "Core/ISystem.h"
 
 namespace Real::ecs {
 

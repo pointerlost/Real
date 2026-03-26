@@ -3,14 +3,10 @@
 //
 #pragma once
 #include "Buffer.h"
+#include "RenderCommand.h"
 #include "RenderTypes.h"
 #include "Math/Mat4.h"
 #include "Math/Vec4.h"
-
-namespace Real {
-    struct EntityMetadata;
-    struct DrawElementsIndirectCommand;
-}
 
 namespace Real {
 
@@ -21,12 +17,12 @@ namespace Real {
 
     struct LightSSBO {
         math::Vec4 pos_cutoff{0.0}; // vec3 = position, f32 = cutoff
-        math::Vec4 dir_outer{0.0}; // vec3 direction, f32 = outerCutoff
+        math::Vec4 dir_outer{0.0};  // vec3 direction,  f32 = outerCutoff
         math::Vec4 radiance{0.0};
         int type = 0;
         // Attenuation parameters
-        f32 constant = 1.0;
-        f32 linear = 0.09;
+        f32 constant  = 1.0;
+        f32 linear    = 0.09;
         f32 quadratic = 0.002;
     };
 
@@ -58,14 +54,14 @@ namespace Real {
 
     // CPU-only data
     struct FrameRenderData {
-        Vector<TransformSSBO> transforms;
-        Vector<MaterialSSBO> materials;
-        Vector<graphics::BindlessHandle> textures;
-        Vector<LightSSBO> lights;
+        Vector<TransformSSBO>               transforms;
+        Vector<MaterialSSBO>                materials;
+        Vector<graphics::BindlessHandle>    textures;
+        Vector<LightSSBO>                   lights;
         Vector<DrawElementsIndirectCommand> drawCommands;
-        Vector<EntityMetadata> entityData;
-        FrameUBO camera;
-        GlobalUBO globalData;
+        Vector<EntityMetadata>              entityData;
+        FrameUBO                            camera;
+        GlobalUBO                           globalData;
     };
 
     struct OpenGLBuffers {

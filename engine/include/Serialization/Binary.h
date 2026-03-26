@@ -4,7 +4,7 @@
 #pragma once
 #include "Assets/AssetTypes.h"
 #include "Common/Types.h"
-#include "Core/Utils.h"
+#include "../Common/Utils.h"
 
 namespace Real::graphics { struct Vertex; }
 

@@ -3,14 +3,15 @@
 //
 #pragma once
 #include "Core/ISystem.h"
-#include "Core/Utils.h"
+#include "Common/Utils.h"
 
 namespace Real {
     namespace event {
         class SceneEvents;
     }
 
-    class Scene; }
+    class Scene;
+}
 
 namespace Real::core {
 

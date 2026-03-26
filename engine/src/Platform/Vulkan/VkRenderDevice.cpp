@@ -3,7 +3,7 @@
 //
 #include "Platform/Vulkan/VkRenderDevice.h"
 
-namespace Real::platform::Vk {
+namespace Real::platform::vk {
 
     void VkRenderDevice::Initialize(void *nativeWindow, const RendererConfig& cfg) {
     }
@@ -11,12 +11,4 @@ namespace Real::platform::Vk {
     void VkRenderDevice::Shutdown() {
     }
 
-    void VkRenderDevice::SwapBuffers() {
-    }
-
-    void VkRenderDevice::ClearColor(const graphics::Color &color) {
-    }
-
-    void VkRenderDevice::Clear(graphics::ClearFlags clearFlags) {
-    }
 }

@@ -14,6 +14,7 @@ namespace Real::math {
         // Column-major: m[column][row]
         f32 m[2][2]{};
 
+        // Converting Constructor (disabled by explicit) with a default parameter
         constexpr explicit Mat2(f32 diagonal = 1.0f) noexcept {
             for (int c = 0; c < 2; ++c)
                 for (int r = 0; r < 2; ++r)
@@ -21,9 +22,12 @@ namespace Real::math {
         }
 
         static constexpr Mat2 Identity() noexcept { return { Mat2(1.0f) }; }
-        Mat2 operator*(const Mat2& rhs) const noexcept;
 
-        static Mat2 Rotate(f32 rad)  noexcept;
+        Mat2       operator*(const Mat2& rhs) const noexcept;
+        f32*       operator[](int col)              noexcept { return m[col]; }
+        const f32* operator[](int col)        const noexcept { return m[col]; }
+
+        static Mat2 Rotate(f32 rad)      noexcept;
         static Mat2 Scale(const Vec2& s) noexcept;
 
         [[nodiscard]] const f32* ValuePtr() const noexcept { return &m[0][0]; }

@@ -46,7 +46,7 @@ namespace Real::UI {
         const auto& editorState = Services::GetEditorState();
         auto& entities = m_Scene->GetEntities();
         for (auto& entity: entities | std::views::values) {
-            const auto& tag = entity.GetComponent<TagComponent>().m_Tag;
+            const auto& tag = entity.GetComponent<TagComponent>().tag;
             if (ImGui::Selectable(tag.c_str())) {
                 editorState->selectedEntity = &entity;
             }

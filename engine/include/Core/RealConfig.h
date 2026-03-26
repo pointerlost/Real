@@ -2,12 +2,19 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include "IPhysicsBackend.h"
+#include "Common/Types.h"
+#include "Physics/PhysicsTypes.h"
 #include "RHI/RHITypes.h"
 #include "Window/WindowConfig.h"
 
 constexpr float SCREEN_WIDTH  = 1520.0f;
 constexpr float SCREEN_HEIGHT = 840.0f;
+
+
+namespace Real::physics {
+    enum class PhysicsBackend;
+}
+
 
 namespace Real {
 
@@ -41,8 +48,8 @@ namespace Real {
     };
 
     struct EngineConfig {
-        EngineMode mode                        = EngineMode::Editor;
-        rhi::GraphicsAPI   graphicsAPI         = rhi::GraphicsAPI::OpenGL;
+        EngineMode              mode           = EngineMode::Editor;
+        rhi::GraphicsAPI        graphicsAPI    = rhi::GraphicsAPI::OpenGL;
         physics::PhysicsBackend physicsBackend = physics::PhysicsBackend::PhysX;
 
         WindowConfig   window;

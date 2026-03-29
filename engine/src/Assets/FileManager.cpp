@@ -71,7 +71,7 @@ namespace Real::fs {
         return files;
     }
 
-    FileInfo CreateFileInfoFromPath(const String &rawPath) {
+    FileInfo FileInfoFromPath(const String &rawPath) {
         const String path = NormalizePath(rawPath);
         const std::filesystem::path p(path);
 

@@ -1,11 +1,12 @@
 //
 // Created by pointerlost on 3/23/26.
 //
-#include "Tools/CompressionUtils.h"
-#include "Common/RealEnum.h"
+#include "Tools/Compression/CompressionUtils.h"
 #include "Core/Logger.h"
+#include "Graphics/RenderEnum.h"
 
 namespace Real::util::compression {
+    using namespace graphics;
 
     CMP_FORMAT GetCMPDestinationFormat(int channelCount) {
         switch (channelCount) {

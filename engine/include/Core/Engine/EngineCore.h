@@ -75,19 +75,20 @@ namespace Real::core {
 
         ecs::CameraSystem* m_CameraSystem = nullptr; // is it good?
 
-        bool m_ShouldStop{false};
+        graphics::FrameConfig m_FrameConfig {};
+        bool                  m_ShouldStop  { false };
 
     private:
         void StartPhase()  const;
         void UpdatePhase() const;
         void RenderPhase() const;
-        void EndPhase(); // non-const — mutates m_ShouldStop
+        void EndPhase(); // non-const - mutates m_ShouldStop
 
         void InitApplication();
         void ShutdownApplication();
         void InitRendererBackend();
         void ShutdownRendererBackend();
 
-        [[nodiscard]] bool ShouldClose(); // non-const — mutates m_ShouldStop
+        [[nodiscard]] bool ShouldClose(); // non-const - mutates m_ShouldStop
     };
 }

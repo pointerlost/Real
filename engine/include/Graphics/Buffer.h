@@ -5,8 +5,6 @@
 #include <cstddef>
 #include "RenderTypes.h"
 
-namespace Real { enum class BufferType; }
-
 namespace Real::opengl {
 
     class Buffer {
@@ -22,7 +20,7 @@ namespace Real::opengl {
         Buffer(Buffer&& other) noexcept;
         Buffer& operator=(Buffer&& other) noexcept;
 
-        void Create(const void* data, size_t size, BufferType type);
+        void Create(const void* data, size_t size, graphics::BufferType type);
         void Upload(const void* data, size_t size);
 
         void Bind(uint32_t target, graphics::BindingPoint bindingPoint) const noexcept;
@@ -44,7 +42,7 @@ namespace Real::opengl {
         graphics::BufferHandle m_Buffer{};
         void* m_MappedPtr = nullptr;
         size_t m_Size = 0;
-        BufferType m_Type{};
+        graphics::BufferType m_Type{};
     };
 
 }

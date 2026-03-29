@@ -2,10 +2,10 @@
 // Created by pointerlost on 10/13/25.
 //
 #include "Graphics/Material.h"
-#include "../../include/Assets/AssetManager.h"
+#include "Assets/AssetManager.h"
 #include "Core/Services.h"
-#include "../../include/Graphics/Texture/Texture.h"
 #include "Assets/TextureManager.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace Real::graphics {
 
@@ -18,7 +18,7 @@ namespace Real::graphics {
         auto& tm = Services::GetTextureManager();
 
         const auto& GetIndex = [&](const UUID& uuid, TextureType type) {
-            return tm.GetTexture(uuid, type)->GetIndex();
+            return tm.GetTexture(uuid, type)->GetGPUIndex();
         };
 
         const UUID albedoUUID   = m_AlbedoOverride.value_or(m_Base->m_Albedo);

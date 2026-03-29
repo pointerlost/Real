@@ -2,12 +2,12 @@
 // Created by pointerlost on 2/18/26.
 //
 #include <memory>
-
 #include "Core/Engine/EngineBootstrap.h"
 #include "Window/WindowConfig.h"
 #include "EditorApplication.h"
 #include "Core/Engine/EngineCore.h"
 #include "include/ApplicationBuilder.h"
+#include "Assets/AssetTypes.h"
 #include "Graphics/Shader.h"
 
 int main() {
@@ -20,11 +20,11 @@ int main() {
         cfg.window.height   = 840;
         cfg.window.title    = "Real";
         cfg.window.backend  = Real::core::WindowBackend::GLFW;
-        cfg.graphicsAPI     = Real::graphics::GraphicsAPI::OpenGL;
+        cfg.graphicsAPI     = Real::rhi::GraphicsAPI::OpenGL;
         cfg.physicsBackend  = Real::physics::PhysicsBackend::PhysX;
 
-        auto app = Real::ApplicationBuilder::Build(Real::ApplicationMode::Editor);
-        auto engineCore = Real::core::EngineBootstrap::Build(cfg, std::move(app));
+        auto app              = Real::ApplicationBuilder::Build(Real::ApplicationMode::Editor);
+        const auto engineCore = Real::core::EngineBootstrap::Build(cfg, std::move(app));
 
         engineCore->Start();
         engineCore->RunLoop();

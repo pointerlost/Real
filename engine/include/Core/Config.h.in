@@ -1,3 +1,8 @@
 #pragma once
-#define SHADERS_DIR "@SHADERS_DIR@"
-#define ASSETS_DIR  "@ASSETS_DIR@"
+#define ASSETS_DB_PATH "@ASSETS_DB_PATH@"
+#define FONTS_DIR      "@FONTS_DIR@"
+#define RUNTIME_DIR    "@RUNTIME_DIR@"
+#define SOURCES_DIR    "@SOURCES_DIR@"
+#define ASSETS_DIR     "@ASSETS_DIR@"
+#define SHADERS_DIR    "@SHADERS_DIR@"
+#define TEXTURES_DIR   "@TEXTURES_DIR@"

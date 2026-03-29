@@ -25,18 +25,19 @@ namespace Real::UI {
 
     private:
         Scene* m_Scene = nullptr;
-        bool m_Open = true;
-        f32 m_SizeX = SCREEN_WIDTH / 5 + 31.0;
-        f32 m_SizeY = SCREEN_HEIGHT;
-        int m_IDcounter = 0;
+
+        bool   m_Open      = true;
+        int    m_IDCounter = 0;
+        f32    m_SizeX     = SCREEN_WIDTH / 5 + 31.0; // remove hardcoded shit
+        f32    m_SizeY     = SCREEN_HEIGHT;
 
     private:
         void DrawComponents();
         void DrawComponent(TagComponent* comp);
         void DrawComponent(TransformComponent* comp);
         void DrawComponent(const MeshRendererComponent* comp);
-        void DrawComponent(Entity& entity, ColliderComponent *comp);
-        void DrawComponent(Entity& entity, RigidbodyComponent *comp);
+        void DrawComponent(Entity& entity, ColliderComponent *comp) const;
+        void DrawComponent(Entity& entity, RigidbodyComponent *comp) const;
         void DrawComponent(LightComponent* comp, TransformComponent* tc);
         void DrawComponent(CameraComponent* comp);
 

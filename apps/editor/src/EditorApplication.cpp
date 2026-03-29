@@ -3,6 +3,7 @@
 //
 #include "EditorApplication.h"
 #include "IPanel.h"
+#include "UIResources.h"
 #include "Core/Engine/EngineCore.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
@@ -13,10 +14,6 @@ namespace Real::app::editor {
     EditorApplication::EditorApplication(EditorContext ctx) noexcept
         : m_Ctx(std::move(ctx)), m_Editor(CreateScope<UI::Editor>())
     {
-        Services::SetAssetManager(m_Ctx.assetManager);
-        Services::SetAssetImporter(m_Ctx.assetImporter);
-        Services::SetMeshManager(m_Ctx.meshManager);
-
         m_State = CreateScope<EditorState>();
         Services::SetEditorState(m_State.get());
     }
@@ -25,9 +22,9 @@ namespace Real::app::editor {
         auto* scene = m_Ctx.sceneManager->GetActiveScene();
 
         m_State->editorCamera = &scene->CreateEntity("Editor Camera");
-        (void)m_State->editorCamera->AddComponent<CameraComponent>();
-        (void)m_State->editorCamera->AddComponent<MovementComponent>();
-        m_State->editorCamera->GetComponentUnchecked<TransformComponent>().transform.SetPosition(math::Vec3(0.0, 2.0, 5.0));
+        m_State->editorCamera->AddComponent<CameraComponent>();
+        m_State->editorCamera->AddComponent<MovementComponent>();
+        m_State->editorCamera->GetComponentUnchecked<TransformComponent>().transform.SetLocalPosition(math::Vec3(0.0, 2.0, 5.0));
 
         if (m_State->editorCamera) {
             m_CameraInput = CreateScope<CameraInput>(m_State->editorCamera);
@@ -36,6 +33,8 @@ namespace Real::app::editor {
         }
 
         scene->SetActiveCamera(m_State->editorCamera);
+
+        m_UIResources->InitResources();
 
         m_Editor->Init(m_Ctx.window);
     }

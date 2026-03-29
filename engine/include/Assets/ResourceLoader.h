@@ -2,12 +2,8 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include "../Common/Utils.h"
+#include "Common/Utils.h"
 #include "Graphics/ModelLoader.h"
-
-namespace Real {
-    class RenderContext;
-}
 
 namespace Real::assets {
 
@@ -18,10 +14,10 @@ namespace Real::assets {
         void Load();
 
     private:
-        Scope<ModelLoader> m_ModelLoader;
+        Scope<graphics::ModelLoader> m_ModelLoader;
 
     private:
-        void LoadAssets();
+        void LoadAssets() const;
         void LoadShaders();
     };
 

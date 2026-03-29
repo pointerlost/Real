@@ -4,15 +4,13 @@
 #pragma once
 #include <span>
 #include <unordered_map>
-#include <vector>
-#include "Common/Types.h"
-#include "Core/UUID.h"
+
+#include "AssetTypes.h"
 #include "Graphics/RenderTypes.h"
 
-namespace Real {
-    struct OpenGLTexture;
-    namespace graphics { struct Vertex; }
-    namespace assets { struct MeshAsset; }
+
+namespace Real::graphics {
+    enum class PrimitiveType;
 }
 
 namespace Real::assets {

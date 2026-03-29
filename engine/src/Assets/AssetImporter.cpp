@@ -8,17 +8,17 @@
 #include "Assets/MaterialManager.h"
 #include "Assets/MeshManager.h"
 #include "Assets/TextureManager.h"
-#include "Assets/TextureUtils.h"
+#include "Tools/Image/TextureUtils.h"
 #include "Common/StringUtils.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
 #include "Graphics/Material.h"
 #include "Graphics/Model.h"
-#include "Graphics/Texture/Texture.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 #include "Serialization/Binary.h"
 #include "Serialization/Json.h"
-#include "Tools/CompressionUtils.h"
-#include "Tools/ImageTools.h"
+#include "Tools/Compression/CompressionUtils.h"
+#include "Tools/Image/ImageTools.h"
 
 namespace Real::assets {
 
@@ -45,24 +45,25 @@ namespace Real::assets {
     }
 
     void AssetImporter::SaveTextureToAssetDB(const platform::opengl::OpenGLTexture* texture) {
-        if (HasAssetWithPath(texture->GetPath()))
+        const auto fileInfo = texture->GetFileInfo();
+        if (HasAssetWithPath(fileInfo.path))
             return;
 
         const String uuidStr = std::to_string(texture->GetUUID());
         nlohmann::json& tex = m_AssetDB["textures"][uuidStr];
 
-        tex["name"]               = texture->GetName();
-        tex["stem"]               = texture->GetStem();
-        tex["path"]               = texture->GetPath();
-        tex["extension"]          = texture->GetExtension();
+        tex["name"]               = fileInfo.name;
+        tex["stem"]               = fileInfo.stem;
+        tex["path"]               = fileInfo.path;
+        tex["extension"]          = fileInfo.ext;
         tex["type"]               = util::texture::TextureType_EnumToString(texture->GetType());
         tex["image_format_state"] = util::compression::ImageFormatState_EnumToString(texture->GetImageFormatState());
 
-        CacheAssetWithPath(texture->GetPath(), texture->GetUUID());
+        CacheAssetWithPath(fileInfo.path, texture->GetUUID());
         MarkDirtyAssetDB();
     }
 
-    void AssetImporter::SaveMaterialToAssetDB(const Ref<graphics::Material> &mat) {
+    void AssetImporter::SaveMaterialToAssetDB(const Ref<Material> &mat) {
         if (HasAssetWithName(mat->m_Name))
             return;
 
@@ -85,7 +86,7 @@ namespace Real::assets {
         MarkDirtyAssetDB();
     }
 
-    void AssetImporter::SaveModelToAssetDB(const Ref<graphics::Model> &model) {
+    void AssetImporter::SaveModelToAssetDB(const Ref<Model> &model) {
         if (HasAssetWithPath(model->m_FileInfo.path))
             return;
 
@@ -136,50 +137,55 @@ namespace Real::assets {
     }
 
     void AssetImporter::ImportTextures() {
-        auto& am = Services::GetAssetManager();
         auto& tm = Services::GetTextureManager();
 
-        for (const auto& [uuidStr, tex_data] : m_AssetDB["textures"].items()) {
+        for (const auto& [uuidStr, texData] : m_AssetDB["textures"].items()) {
             UUID uuid;
             if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalid UUID in Material DB");
+                Warn("[ImportTextures] Invalid UUID in Asset DB");
                 continue;
             }
-            const auto type = util::texture::TextureType_StringToEnum(tex_data["type"]);
-            const auto ifs  = util::compression::ImageFormatState_StringToEnum(tex_data["image_format_state"]);
+
+            const auto type = util::texture::TextureType_StringToEnum(texData["type"]);
+            const auto ifs  = util::compression::ImageFormatState_StringToEnum(texData["image_format_state"]);
 
             fs::FileInfo fi;
-            fi.name = tex_data.value("name", "null");
-            fi.stem = tex_data.value("stem", "null");
-            fi.path = tex_data.value("path", "null");
-            fi.ext  = tex_data.value("extension", "null");
+            fi.name = texData.value("name", "null");
+            fi.stem = texData.value("stem", "null");
+            fi.path = texData.value("path", "null");
+            fi.ext  = texData.value("extension", "null");
 
-            Ref<platform::opengl::OpenGLTexture> texture;
-            if (ifs == ImageFormatState::COMPRESS_ME)
-            {
-                const auto td = tm.LoadFromFile(fi.path, type);
-                texture = CreateRef<platform::opengl::OpenGLTexture>(td, true, type, ifs, fi, uuid);
-                tools::CompressTextureAndReadFromFile(texture.get());
-                UpdateTextureInAssetDB(texture.get());
-            }
-            else if (ifs == ImageFormatState::UNCOMPRESSED)
-            {
-                const auto td = tm.LoadFromFile(fi.path, type);
-                texture = CreateRef<platform::opengl::OpenGLTexture>(td, true, type, ifs, fi, uuid);
-            }
-            else if (ifs == ImageFormatState::COMPRESSED)
-            {
-                texture = tools::ReadCompressedDataFromDDSFile(fi.path);
-                texture->SetType(type);
-                texture->SetImageFormatState(ifs);
-                texture->SetUUID(uuid);
-            } else {
-                Warn("[LoadTexturesFromAssetDB] Image format state is UNDEFINED: " + fi.path);
+            if (ifs == ImageFormatState::UNDEFINED) {
+                Warn("[ImportTextures] UNDEFINED image format state: " + fi.path);
                 continue;
             }
 
-            tm.Register(texture);
+            auto texture = CreateRef<platform::opengl::OpenGLTexture>();
+            texture->SetType(type);
+            texture->LoadFromFile(fi.path);  // sets origin, state, mip data
+
+            // If it was never compressed (COMPRESS_ME in DB = leftover from last session)
+            // or it's uncompressed and no .dds exists yet - compress now
+            const bool needsCompression =
+                (ifs == ImageFormatState::COMPRESS_ME) ||
+                (ifs == ImageFormatState::UNCOMPRESSED && !tm.IsCompressed(fi.stem));
+
+            if (needsCompression) {
+                if (tools::CompressTexture(texture.get()))
+                    UpdateTextureInAssetDB(texture.get());
+                else
+                    Warn("[ImportTextures] Compression failed, keeping uncompressed: " + fi.path);
+            }
+
+            if (!texture->IsReadyForUpload()) {
+                Warn("[ImportTextures] Texture not ready after load: " + fi.path);
+                continue;
+            }
+
+            tm.Register(uuid, texture);
         }
+
+        Info("Textures imported from Asset DB successfully!");
     }
 
     void AssetImporter::ImportMeshes() {
@@ -195,6 +201,7 @@ namespace Real::assets {
             UUID meshUUID{header.uuid};
             Services::GetMeshManager().CreateSingleMesh(vertices, indices, meshUUID);
         }
+        Info("Meshes imported from ASSETS_DB successfully!");
     }
 
     void AssetImporter::ImportModels() {
@@ -215,7 +222,7 @@ namespace Real::assets {
             const auto& bPath = modelData["binary"];
             const auto& [header, meshUUIDs, matUUIDs] = serialization::binary::LoadModel(bPath);
 
-            const Ref<graphics::Model> model = CreateRef<graphics::Model>(uuid, info);
+            const Ref<Model> model = CreateRef<Model>(uuid, info);
             model->m_MeshUUIDs = meshUUIDs;
             model->m_MaterialAssetUUIDs = matUUIDs;
             model->m_Name = modelData["name"];
@@ -226,6 +233,7 @@ namespace Real::assets {
 
             am.RegisterModel(model);
         }
+        Info("Models imported from ASSETS_DB successfully!");
     }
 
     void AssetImporter::ImportMaterials() {
@@ -252,6 +260,7 @@ namespace Real::assets {
 
             mm.RegisterBase(mat);
         }
+        Info("Materials imported from ASSETS_DB successfully!");
     }
 
     void AssetImporter::BuildCachesFromDB() {
@@ -316,13 +325,15 @@ namespace Real::assets {
     }
 
     void AssetImporter::UpdateTextureInAssetDB(const platform::opengl::OpenGLTexture *texture) {
-        const String uuidStr = std::to_string(texture->GetUUID());
+        const auto [name, stem, path, ext] = texture->GetFileInfo();
+        const String uuidStr               = std::to_string(texture->GetUUID());
+
         auto& tex = m_AssetDB["textures"][uuidStr];
 
-        tex["name"]               = texture->GetName();
-        tex["stem"]               = texture->GetStem();
-        tex["path"]               = texture->GetPath();
-        tex["extension"]          = texture->GetExtension();
+        tex["name"]               = name;
+        tex["stem"]               = stem;
+        tex["path"]               = path;
+        tex["extension"]          = ext;
         tex["type"]               = util::texture::TextureType_EnumToString(texture->GetType());
         tex["image_format_state"] = util::compression::ImageFormatState_EnumToString(texture->GetImageFormatState());
 
@@ -332,75 +343,90 @@ namespace Real::assets {
     void AssetImporter::LoadTexturesFromFolder() {
         auto& tm = Services::GetTextureManager();
         auto& mm = Services::GetMaterialManager();
-        std::unordered_map<String, std::array<Ref<platform::opengl::OpenGLTexture>, 3>> m_ormPack;
-
-        const auto SaveTexture = [this, &m_ormPack, &tm, &mm](const fs::FileInfo& file, ImageFormatState imageFormatState)
+    
+        std::unordered_map<String, std::array<Ref<platform::opengl::OpenGLTexture>, 3>> ormPack;
+    
+        const auto ProcessTexture = [&](const fs::FileInfo& file, ImageFormatState imageFormatState)
         {
-            auto& stem = file.stem;
-            if (HasAssetWithPath(file.path) || tm.IsCompressed(stem))
+            if (HasAssetWithPath(file.path) || tm.IsCompressed(file.stem))
                 return;
-
-            const auto dashPos = stem.find('_');
-            const auto matName = stem.substr(0, dashPos);
-            TextureType type   = util::texture::TextureType_StringToEnum(stem.substr(dashPos + 1));
-
-            auto texData       = tm.LoadFromFile(file.path, type);
-            const auto texture = CreateRef<platform::opengl::OpenGLTexture>(texData, true, type, imageFormatState, file);
-
-            if (type == TextureType::AMBIENT_OCCLUSION) {
-                m_ormPack[matName][0] = texture;
+    
+            const auto dashPos = file.stem.find('_');
+            if (dashPos == String::npos) {
+                Warn("[LoadTexturesFromFolder] No underscore in stem: " + file.stem);
                 return;
             }
-            if (type == TextureType::ROUGHNESS) {
-                m_ormPack[matName][1] = texture;
+    
+            const auto matName = file.stem.substr(0, dashPos);
+            const auto typeStr = file.stem.substr(dashPos + 1);
+            const auto type    = util::texture::TextureType_StringToEnum(typeStr);
+    
+            auto texture = CreateRef<platform::opengl::OpenGLTexture>();
+            texture->SetType(type);
+            texture->LoadFromFile(file.path);
+    
+            // Collect ORM channels - pack + compress later as a unit
+            if (type == TextureType::AMBIENT_OCCLUSION) { ormPack[matName][0] = texture; return; }
+            if (type == TextureType::ROUGHNESS)         { ormPack[matName][1] = texture; return; }
+            if (type == TextureType::METALLIC)          { ormPack[matName][2] = texture; return; }
+    
+            // Compress non-ORM textures individually
+            if (imageFormatState == ImageFormatState::COMPRESS_ME ||
+                imageFormatState == ImageFormatState::UNCOMPRESSED)
+            {
+                if (!tools::CompressTexture(texture.get()))
+                    Warn("[LoadTexturesFromFolder] Compression failed: " + file.path);
+            }
+    
+            if (!texture->IsReadyForUpload()) {
+                Warn("[LoadTexturesFromFolder] Texture not ready: " + file.path);
                 return;
             }
-            if (type == TextureType::METALLIC) {
-                m_ormPack[matName][2] = texture;
-                return;
-            }
-
-            if (imageFormatState == ImageFormatState::COMPRESS_ME) {
-                tools::CompressTextureAndReadFromFile(texture.get());
-            }
-
-            tm.Register(texture);
-
+    
+            const UUID uuid = texture->GetUUID();
+            tm.Register(uuid, texture);
+            UpdateTextureInAssetDB(texture.get());
+    
             const auto& mat = mm.GetOrCreateBase(matName);
             switch (type) {
-                case TextureType::ALBEDO:   mat->m_Albedo   = texture->GetUUID(); break;
-                case TextureType::NORMAL:   mat->m_Normal   = texture->GetUUID(); break;
-                case TextureType::ORM:      mat->m_ORM      = texture->GetUUID(); break;
-                case TextureType::HEIGHT:   mat->m_Height   = texture->GetUUID(); break;
-                case TextureType::EMISSIVE: mat->m_Emissive = texture->GetUUID(); break;
-                default: ;
+                case TextureType::ALBEDO:   mat->m_Albedo   = uuid; break;
+                case TextureType::NORMAL:   mat->m_Normal   = uuid; break;
+                case TextureType::ORM:      mat->m_ORM      = uuid; break;
+                case TextureType::HEIGHT:   mat->m_Height   = uuid; break;
+                case TextureType::EMISSIVE: mat->m_Emissive = uuid; break;
+                default: break;
             }
             mm.RegisterBase(mat);
         };
-
-        // Uncompressed State (Load from file)
-        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/"))) {
-            SaveTexture(file, ImageFormatState::UNCOMPRESSED);
-        }
-
-        // Compress_me State (Load from file)
-        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/"))) {
-            SaveTexture(file, ImageFormatState::COMPRESS_ME);
-        }
-
-        // Process ORM textures
-        for (const auto& [matName, pack] : m_ormPack) {
+    
+        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/uncompressed/")))
+            ProcessTexture(file, ImageFormatState::UNCOMPRESSED);
+    
+        for (const auto& file : fs::IterateDirectory(ConcatStr(ASSETS_DIR, "textures/compress_me/")))
+            ProcessTexture(file, ImageFormatState::COMPRESS_ME);
+    
+        // Pack and compress ORM after all channels are collected
+        for (const auto& [matName, pack] : ormPack) {
             const auto& ao  = pack[0] ? pack[0] : tm.GetOrCreateDefault(TextureType::AMBIENT_OCCLUSION);
             const auto& rgh = pack[1] ? pack[1] : tm.GetOrCreateDefault(TextureType::ROUGHNESS);
             const auto& mtl = pack[2] ? pack[2] : tm.GetOrCreateDefault(TextureType::METALLIC);
-            const auto& orm = tools::PackTexturesToRGBChannels(ao, rgh, mtl, matName);
-            if (!orm || orm->GetImageFormatState() == ImageFormatState::DEFAULT) {
+    
+            // PackORM packs + compresses internally, returns CPU-ready texture
+            const auto orm = tools::PackORM(ao, rgh, mtl, matName);
+            if (!orm || orm->IsDefault()) continue;
+    
+            if (!orm->IsReadyForUpload()) {
+                Warn("[LoadTexturesFromFolder] ORM not ready: " + matName);
                 continue;
             }
-            mm.GetOrCreateBase(matName)->m_ORM = orm->GetUUID();
-            tools::CompressTextureAndReadFromFile(orm.get());
-            tm.Register(orm);
+    
+            const UUID uuid = orm->GetUUID();
+            tm.Register(uuid, orm);
+            UpdateTextureInAssetDB(orm.get());
+            mm.GetOrCreateBase(matName)->m_ORM = uuid;
         }
+    
+        Info("Textures loaded from folder successfully!");
     }
 
     void AssetImporter::Update() {

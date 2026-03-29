@@ -4,9 +4,9 @@
 #include "Platform/OpenGL/OpenGLUtils.h"
 #include "glad/glad.h"
 #include <GL/glext.h>
-#include "Common/RealEnum.h"
 #include "Common/Types.h"
 #include "Core/Logger.h"
+#include "Graphics/RenderEnum.h"
 
 namespace Real::util::opengl {
 
@@ -51,12 +51,12 @@ namespace Real::util::opengl {
         }
     }
 
-    int TextureWrapModeToGLEnum(TextureWrapMode mode) {
+    int TextureWrapModeToGLEnum(graphics::TextureWrapMode mode) {
         switch (mode) {
-            case TextureWrapMode::REPEAT:          return GL_REPEAT;
-            case TextureWrapMode::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
-            case TextureWrapMode::CLAMP_TO_EDGE:   return GL_CLAMP_TO_EDGE;
-            case TextureWrapMode::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
+            case graphics::TextureWrapMode::REPEAT:          return GL_REPEAT;
+            case graphics::TextureWrapMode::CLAMP_TO_BORDER: return GL_CLAMP_TO_BORDER;
+            case graphics::TextureWrapMode::CLAMP_TO_EDGE:   return GL_CLAMP_TO_EDGE;
+            case graphics::TextureWrapMode::MIRRORED_REPEAT: return GL_MIRRORED_REPEAT;
 
             default: {
                 Warn("There is no wrapping mode for this type!");
@@ -65,10 +65,10 @@ namespace Real::util::opengl {
         }
     }
 
-    int TextureFilterModeToGLEnum(TextureFilterMode filter) {
+    int TextureFilterModeToGLEnum(graphics::TextureFilterMode filter) {
         switch (filter) {
-            case TextureFilterMode::LINEAR:  return GL_LINEAR;
-            case TextureFilterMode::NEAREST: return GL_NEAREST;
+            case graphics::TextureFilterMode::LINEAR:  return GL_LINEAR;
+            case graphics::TextureFilterMode::NEAREST: return GL_NEAREST;
 
             default: return GL_REPEAT;
         }

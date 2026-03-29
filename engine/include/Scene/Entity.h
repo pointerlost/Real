@@ -27,10 +27,10 @@ namespace Real {
         [[nodiscard]] bool IsExists() const { return m_Handle != entt::null; }
 
         template <typename T>
-        [[nodiscard]] T& AddComponent();
+        [[maybe_unused]] T& AddComponent();
 
         template <typename T, typename... Args>
-        [[nodiscard]] T& AddComponent(Args&&... args);
+        [[maybe_unused]] T& AddComponent(Args&&... args);
 
         // Add multiple components at once
         template <typename... Args>
@@ -65,7 +65,7 @@ namespace Real {
 
     private:
         entt::entity m_Handle;
-        Scene* m_Scene;
+        Scene* m_Scene; // TODO: when we going to multiple scene in editor, no lifetime guarantee for scene!
     };
 }
 

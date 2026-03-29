@@ -138,29 +138,32 @@ namespace Real::physics {
 
         switch (sd.shape)
         {
-            case core::ShapeDesc::Shape::Box:
+            case core::ShapeDesc::Shape::Box: {
                 shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
                     core::ShapeDesc::Shape::Box
                 );
                 break;
+            }
 
-            case core::ShapeDesc::Shape::Sphere:
+            case core::ShapeDesc::Shape::Sphere: {
                 shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
                     core::ShapeDesc::Shape::Sphere
                 );
                 break;
+            }
 
-            case core::ShapeDesc::Shape::Capsule:
+            case core::ShapeDesc::Shape::Capsule: {
                 shape = util::physics::CreatePhysXShapeFromReal(
                     physics,
                     &defaultPxMaterial,
                     core::ShapeDesc::Shape::Capsule
                 );
                 break;
+            }
 
             default: {
                 Warn("[PhysXBackend::CreateShape] There is no shape with this type damnit!");
@@ -214,37 +217,6 @@ namespace Real::physics {
 
         // Detach shape from actor
         actor->detachShape(*shape);
-    }
-
-    void PhysXBackend::SetShapeLocalTransform(
-        core::ShapeHandle handle,
-        const math::Vec3 &position,
-        const math::Quat &rotation)
-    {
-        if (!m_shapes.contains(handle))
-            return;
-
-        auto* shape = m_shapes[handle].shape;
-
-        // Set local pose relative to owning actor
-        shape->setLocalPose(physx::PxTransform(ToPxVec(position), ToPxQuat(rotation)));
-    }
-
-    void PhysXBackend::SetShapeEnabled(core::ShapeHandle handle, bool enabled) {
-        if (!m_shapes.contains(handle))
-            return;
-
-        auto* shape = m_shapes[handle].shape;
-
-        // Check if shape is a trigger
-        const bool isTrigger = shape->getFlags() & physx::PxShapeFlag::eTRIGGER_SHAPE;
-
-        // Do not modify simulation flag for triggers (PhysX don't accept this!!)
-        if (isTrigger)
-            return; // triggers should not toggle simulation
-
-        // Enable or disable physical collision response
-        shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, enabled);
     }
 
     void PhysXBackend::SetBodyTransform(core::RigidBodyHandle handle, const core::LocalPose &t) {

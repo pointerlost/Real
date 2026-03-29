@@ -6,6 +6,7 @@
 #include "Graphics/Shader.h"
 #include <cassert>
 #include "Core/IApplicationContext.h"
+#include "Core/Logger.h"
 #include "Core/RealConfig.h"
 #include "Core/Services.h"
 #include "Physics/PhysX/PhysXBackend.h"
@@ -22,7 +23,6 @@
 #include "Scene/Systems/PhysicsSystem.h"
 #include "Scene/Systems/CameraSystem.h"
 
-
 namespace Real::core {
 
     Scope<EngineCore> EngineBootstrap::Build(const EngineConfig& cfg, Scope<IApplication> app)
@@ -31,7 +31,7 @@ namespace Real::core {
         auto as = BuildAssetSystems();
 
         assert(cs->physicsBackend && "Physics backend failed to initialize");
-        auto rs = RegisterSystems(cs->systems.get(), *cs->physicsBackend);
+        const auto rs = RegisterSystems(cs->systems.get(), *cs->physicsBackend);
 
         PopulateContext(app->GetContext(), *cs, *as, rs);
 
@@ -48,18 +48,13 @@ namespace Real::core {
         auto renderDevice = CreateRenderDevice(cfg);
         renderDevice->Initialize(cs->window->GetNativeHandle(), cfg.renderer);
 
-        cs->renderer = CreateRenderer(std::move(renderDevice), cfg);
-
+        cs->renderer       = CreateRenderer(std::move(renderDevice), cfg);
         cs->physicsBackend = CreatePhysicsBackend(cfg);
-
-        cs->sceneManager = CreateScope<SceneManager>();
-
-        cs->systems = CreateScope<SystemManager>();
-
-        cs->timer = CreateScope<RealTimer>();
-
-        cs->debugRenderer = CreateScope<graphics::debug::DebugRenderer>();
-        Services::SetDebugRenderer(cs->debugRenderer.get());
+        cs->sceneManager   = CreateScope<SceneManager>();
+        cs->systems        = CreateScope<SystemManager>();
+        cs->timer          = CreateScope<RealTimer>();
+        cs->debugRenderer  = CreateScope<graphics::debug::DebugRenderer>();
+        Info("CoreSystem build successfully!");
 
         return std::move(cs);
     }
@@ -73,19 +68,29 @@ namespace Real::core {
         as->materialManager = CreateScope<assets::MaterialManager>();
         as->meshManager     = CreateScope<assets::MeshManager>();
         as->resourceManager = CreateScope<assets::ResourceManager>();
+        Info("AssetSystems build successfully!");
 
         return as;
     }
 
-    void EngineBootstrap::PopulateContext(IApplicationContext &ctx, CoreSystems& cs, AssetSystems& as, RegisteredSystems& rs) {
-        ctx.SetWindow(cs.window.get());
-        ctx.SetCameraSystem  (rs.cameraSystem);
-        ctx.SetAssetManager  (as.assetManager.get());
-        ctx.SetAssetImporter (as.assetImporter.get());
-        ctx.SetMeshManager   (as.meshManager.get());
-        ctx.SetResourceLoader(as.resourceManager.get());
-        ctx.SetSceneManager  (cs.sceneManager.get());
-        ctx.SetDebugRenderer (cs.debugRenderer.get());
+    void EngineBootstrap::PopulateContext(
+        IApplicationContext &ctx,
+        const CoreSystems& cs,
+        AssetSystems& as,
+        const RegisteredSystems& rs
+    ) {
+        ctx.SetWindow        ( cs.window.get()          );
+        ctx.SetCameraSystem  ( rs.cameraSystem          );
+        ctx.SetAssetManager  ( as.assetManager.get()    );
+        ctx.SetAssetImporter ( as.assetImporter.get()   );
+        ctx.SetMeshManager   ( as.meshManager.get()     );
+        ctx.SetResourceLoader( as.resourceManager.get() );
+        ctx.SetSceneManager  ( cs.sceneManager.get()    );
+        ctx.SetDebugRenderer ( cs.debugRenderer.get()   );
+
+        Services::SetAssetSystems(&as);
+        Services::SetDebugRenderer(cs.debugRenderer.get());
+        Info("ApplicationContext populated successfully!");
     }
 
     Scope<IWindow> EngineBootstrap::CreateWindow(const EngineConfig &cfg) {
@@ -165,6 +170,7 @@ namespace Real::core {
         sysMngr->AddSystem<ecs::MovementSystem>();
         sysMngr->AddSystem<ecs::MeshRendererSystem>();
         sysMngr->AddSystem<ecs::LightSystem>();
+        Info("Registered systems successfully!");
 
         return rs;
     }

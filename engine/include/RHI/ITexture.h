@@ -4,19 +4,26 @@
 #pragma once
 #include "Common/Types.h"
 #include "Core/UUID.h"
-#include "Graphics/Texture/TextureTypes.h"
+#include "Graphics/RenderEnum.h"
+
+namespace Real::graphics {
+    struct TextureData;
+}
 
 namespace Real::rhi {
+    using namespace graphics;
 
     class ITexture {
     public:
         virtual ~ITexture() = default;
 
-        [[nodiscard]] virtual UUID         GetUUID() const = 0;
-        [[nodiscard]] virtual u32          GetWidth() const = 0;
+        [[nodiscard]] virtual UUID         GetUUID()   const = 0;
+        [[nodiscard]] virtual u32          GetWidth()  const = 0;
         [[nodiscard]] virtual u32          GetHeight() const = 0;
-        [[nodiscard]] virtual TextureType  GetType() const = 0;
-        virtual void CreateFromData(const graphics::TextureData& data, TextureType type) = 0;
+        [[nodiscard]] virtual TextureType  GetType()   const = 0;
+
+        virtual void LoadFromFile(const String& path)                          = 0;
+        virtual void CreateFromData(const TextureData& data, TextureType type) = 0;
     };
 
 }

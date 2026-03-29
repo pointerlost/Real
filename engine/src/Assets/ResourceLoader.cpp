@@ -12,7 +12,7 @@
 namespace Real::assets {
 
     ResourceManager::ResourceManager()
-        : m_ModelLoader(CreateScope<ModelLoader>())
+        : m_ModelLoader(CreateScope<graphics::ModelLoader>())
     {
     }
 
@@ -21,19 +21,24 @@ namespace Real::assets {
         LoadShaders();
     }
 
-    void ResourceManager::LoadAssets() {
+    void ResourceManager::LoadAssets() const {
+        Info("Loading assets...");
         auto& ai = Services::GetAssetImporter();
         auto& mm = Services::GetMeshManager();
-        // The order is matter!!
+
+        // The asset loading order is matter!!
 
         // Asset importer state
         ai.ImportFromDatabase();
+        Info("Assets loaded from ASSET_DB successfully!");
 
         // Model loader state
         m_ModelLoader->LoadAll(String(ASSETS_SOURCE_DIR) + "models/");
+        Info("Models loaded from folder successfully!");
 
         // Mesh manager state
         mm.InitResources();
+        Info("Mesh manager init resources successfully!");
 
         Info("[ResourceLoader] Assets loaded successfully!");
     }

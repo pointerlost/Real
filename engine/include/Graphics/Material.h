@@ -9,10 +9,9 @@
 
 namespace Real::graphics {
 
-    // TODO: Need material baking system to optimize run-time
     struct Material {
-        UUID m_UUID = UUID(0);
-        String m_Name{};
+        UUID   m_UUID = UUID(0);
+        String m_Name {};
 
         UUID m_Albedo   = UUID(0);
         UUID m_Normal   = UUID(0);
@@ -20,18 +19,18 @@ namespace Real::graphics {
         UUID m_Height   = UUID(0);
         UUID m_Emissive = UUID(0);
 
-        Material() = default;
+        Material()                = default;
         Material(const Material&) = default;
         explicit Material(const UUID& uuid) : m_UUID(uuid) {}
         explicit Material(const UUID& uuid, String  name) : m_UUID(uuid), m_Name(std::move(name)) {}
     };
 
     struct MaterialInstance {
-        UUID m_UUID{}; // Instance UUID, initialized with constructor
+        UUID                m_UUID {}; // Instance UUID, initialized with constructor
         Ref<const Material> m_Base = nullptr;
 
+                 MaterialInstance(const MaterialInstance&) = default;
         explicit MaterialInstance(const Ref<Material>& assetMaterial);
-        MaterialInstance(const MaterialInstance&) = default;
 
         // TODO: Factors should add into AssetDB
         // Instance override colors

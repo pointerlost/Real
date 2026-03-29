@@ -3,8 +3,12 @@
 //
 #include "UIResources.h"
 
+#include <imgui.h>
+
 #include "Core/Logger.h"
 #include "../../../engine/include/Common/Utils.h"
+#include "Assets/FileManager.h"
+#include "Core/CMakeConfig.h"
 
 namespace Real::editor {
 
@@ -29,4 +33,43 @@ namespace Real::editor {
         return it->second;
     }
 
+    void UIResources::InitResources() {
+        // Font style
+        // Hardcoded for now!!
+        const auto assets_dir = String(ASSETS_DIR);
+
+        const ImGuiIO& io = ImGui::GetIO();
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
+            AddFont("Ubuntu-Regular",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                16.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
+        }
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Regular.ttf"; fs::File::Exists(fontFile)) {
+            AddFont("Ubuntu-Regular-Big",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                17.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
+        }
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
+            AddFont("Ubuntu-Bold",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                16.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
+        }
+        if (const auto fontFile = assets_dir + "fonts/Ubuntu/Ubuntu-Bold.ttf"; fs::File::Exists(fontFile)) {
+            AddFont("Ubuntu-Bold-Big",
+                io.Fonts->AddFontFromFileTTF(fontFile.c_str(),
+                17.5f,
+                nullptr,
+                io.Fonts->GetGlyphRangesDefault())
+            );
+        }
+    }
 }

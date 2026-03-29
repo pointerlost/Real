@@ -7,6 +7,8 @@
 #include "Input/Input.h"
 #include <stdexcept>
 #include "Graphics/RenderContext.h"
+#include "Assets/AssetTypes.h"
+#include "Core/Logger.h"
 
 namespace Real::core {
 
@@ -15,36 +17,41 @@ namespace Real::core {
           m_Core(std::move(cs)),
           m_Assets(std::move(as))
     {
+        // Init frame config
+        m_FrameConfig.clearColor = { 0.07f, 0.07f, 0.07f, 1.0f };
+        m_FrameConfig.clearFlags = { graphics::ClearFlags::Color | graphics::ClearFlags::Depth };
     }
 
     void EngineCore::Start() {
         Timer().Start();
+        Info("Engine Timer initialized!");
 
         m_Core->systems->Init();
+        Info("Engine CoreSystems initialized!");
 
         // systems attach to the active scene before the loop begins
         Systems().OnSceneAttach(
             ActiveScene().GetRegistry(),
             ActiveScene().GetEvents()
         );
-
-        m_Assets->meshManager->InitResources();
-
-        m_Core->renderer->Init();
+        Info("Systems attached to the active scene successfully!!");
 
         m_Assets->resourceManager->Load();
+        Info("ResourceManager initialized successfully!!");
 
         m_Core->debugRenderer->Init();
+        Info("DebugRenderer initialized successfully!!");
 
-        m_Core->renderer->GetRenderContext().GetGPURenderData().textures =  m_Assets->textureManager->UploadToGPU();
-    }
+        m_Core->renderer->GetRenderContext().GetGPURenderData().textures =  m_Assets->textureManager->FlushPendingUploads();
 
-    void EngineCore::RunLoop() {
         if (!m_Application)
             throw std::runtime_error("Application not set");
 
         InitApplication();
         InitRendererBackend();
+    }
+
+    void EngineCore::RunLoop() {
 
         while (!ShouldClose()) {
             StartPhase();
@@ -52,12 +59,11 @@ namespace Real::core {
             RenderPhase(); // TODO: Thread-safe rendering
             EndPhase();
         }
-
-        ShutdownApplication();
-        ShutdownRendererBackend();
     }
 
     void EngineCore::Stop() {
+        ShutdownApplication();
+        ShutdownRendererBackend();
     }
 
     Scene& EngineCore::ActiveScene() const noexcept {
@@ -68,7 +74,7 @@ namespace Real::core {
 
     void EngineCore::StartPhase() const {
         Window().PollEvents();
-        Renderer().BeginFrame();
+        Renderer().BeginFrame(m_FrameConfig);
     }
 
     void EngineCore::UpdatePhase() const {
@@ -76,7 +82,6 @@ namespace Real::core {
 
         Input::Update();
         m_Assets->assetImporter->Update();
-        m_Assets->assetManager->Update();
         Systems().Update(ActiveScene().GetRegistry(), dt);
 
         m_Application->Update(dt);
@@ -94,6 +99,7 @@ namespace Real::core {
 
     void EngineCore::InitApplication() {
         m_Application->Init();
+        Info("Application initialized successfully!");
     }
 
     void EngineCore::ShutdownApplication() {
@@ -102,6 +108,7 @@ namespace Real::core {
 
     void EngineCore::InitRendererBackend() {
         Renderer().Init();
+        Info("Application initialized successfully!");
     }
 
     void EngineCore::ShutdownRendererBackend() {

@@ -8,8 +8,14 @@
 
 namespace Real::core {
 
-    struct RigidBodyHandle { uint32_t id = 0; };
-    struct ShapeHandle     { uint32_t id = 0; };
+    struct RigidBodyHandle {
+        uint32_t id = 0;
+        bool operator==(const RigidBodyHandle&) const = default;
+    };
+    struct ShapeHandle {
+        uint32_t id = 0;
+        bool operator==(const ShapeHandle&) const = default;
+    };
 
     // Invalid constants
     constexpr RigidBodyHandle InvalidBodyID { 0 };
@@ -45,9 +51,9 @@ namespace Real::core {
         // Local offset relative to actor
         LocalPose localTransform;
 
-        bool       isTrigger       = false;
-        bool       enabled         = true; /*(user intent)*/ // true = Attach shape, false = Detach shape
-        bool       rebuildRequired = false;
+        bool isTrigger       = false;
+        bool enabled         = true; /*(user intent)*/ // true = Attach shape, false = Detach shape
+        bool rebuildRequired = false;
     };
 
     class IPhysicsBackend {

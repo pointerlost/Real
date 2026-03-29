@@ -37,17 +37,17 @@ namespace Real::UI {
         void Shutdown();
 
     private:
-        Scene* m_Scene = nullptr;
-        core::IWindow* m_Window = nullptr;
+        Scene*                m_Scene  = nullptr;
+        core::IWindow*        m_Window = nullptr;
         Vector<Scope<IPanel>> m_Panels;
-        bool m_OpenPerformanceProfile = false;
+
         ImGuizmo::OPERATION m_GizmoType = ImGuizmo::TRANSLATE;
-        // User intention
-        bool m_EditEntityTransform = true;
 
         // Screen height can wrong for editor-time, because of main menu panel has some height
         // TODO: remove hardcoded stuff
-        math::Vec2 m_SceneWindowSize = math::Vec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
+        math::Vec2 m_SceneWindowSize  = math::Vec2(SCREEN_WIDTH - (SCREEN_WIDTH / 5 + 31.0) * 2, SCREEN_HEIGHT);
+        bool m_EditEntityTransform    = true; // User intention
+        bool m_OpenPerformanceProfile = false;
 
     private:
         void Render();
@@ -62,7 +62,6 @@ namespace Real::UI {
         void DrawPerformanceProfile();
         void UpdateInputUI();
 
-        void InitFontStyle();
         void InitDarkTheme();
 
         void RenderSceneGizmos();

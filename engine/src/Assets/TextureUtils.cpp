@@ -1,11 +1,13 @@
 //
 // Created by pointerlost on 3/23/26.
 //
-#include "Assets/TextureUtils.h"
+#include "Tools/Image/TextureUtils.h"
+#include <assimp/material.h>
 #include "Core/Logger.h"
 #include "Platform/OpenGL/OpenGLUtils.h"
 
 namespace Real::util::texture {
+    using namespace graphics;
 
     int TextureTypeToChannelCount(TextureType type) {
         switch (type) {
@@ -96,8 +98,12 @@ namespace Real::util::texture {
         return GetBitPerTexel(type) / 8;
     }
 
-    TextureType AssimpTextureTypeToRealType(aiTextureType type) {
-        switch (type) {
+    TextureType AssimpTextureTypeToRealType(uint type) {
+        if (type > aiTextureType_UNKNOWN)
+            return TextureType::UNDEFINED;
+
+        auto assimpType = static_cast<aiTextureType>(type);
+        switch (assimpType) {
             case aiTextureType_DIFFUSE:
             case aiTextureType_BASE_COLOR:              return TextureType::ALBEDO;
 
@@ -125,13 +131,13 @@ namespace Real::util::texture {
         }
     }
 
-    graphics::TextureData ExtractChannel(const graphics::TextureData& data, int channelIndex) {
+    TextureData ExtractChannel(const TextureData& data, int channelIndex) {
         if (channelIndex < 0 || channelIndex >= data.channelCount) {
             Warn("[ExtractChannel] Invalid channel index!");
             return {};
         }
 
-        graphics::TextureData d;
+        TextureData d;
         d.width          = data.width;
         d.height         = data.height;
         d.channelCount   = 1;
@@ -149,8 +155,8 @@ namespace Real::util::texture {
         return d;
     }
 
-    graphics::TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex) {
-        graphics::TextureData wrapper;
+    TextureData ExtractChannel(void* data, int width, int height, int channels, int channelIndex) {
+        TextureData wrapper;
         wrapper.data           = data;
         wrapper.width          = width;
         wrapper.height         = height;
@@ -161,10 +167,10 @@ namespace Real::util::texture {
         return ExtractChannel(wrapper, channelIndex);
     }
 
-    graphics::TextureData ExtractChannels(const graphics::TextureData& data, const Vector<int>& wantedChannels) {
+    TextureData ExtractChannels(const TextureData& data, const Vector<int>& wantedChannels) {
         const int outC = static_cast<int>(wantedChannels.size());
 
-        graphics::TextureData d;
+        TextureData d;
         d.width          = data.width;
         d.height         = data.height;
         d.channelCount   = outC;
@@ -183,8 +189,8 @@ namespace Real::util::texture {
         return d;
     }
 
-    graphics::TextureData ExtractChannels(void* data, int width, int height, int channels, const Vector<int>& wanted) {
-        graphics::TextureData wrapper;
+    TextureData ExtractChannels(void* data, int width, int height, int channels, const Vector<int>& wanted) {
+        TextureData wrapper;
         wrapper.data         = data;
         wrapper.width        = width;
         wrapper.height       = height;

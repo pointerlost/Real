@@ -41,7 +41,7 @@ namespace Real::ecs {
         void RegisterEventCallbacks(event::SceneEvents& events);
 
         void SyncTransform(const entt::entity& entity) const;
-        void SyncCollider(entt::entity& entity);
+        void SyncCollider(entt::entity& entity) const;
 
     private:
         core::IPhysicsBackend& m_Backend;

@@ -2,10 +2,8 @@
 // Created by pointerlost on 2/16/26.
 //
 #include "Platform/GLFW/GLFWwindow.h"
-
 #include <stdexcept>
 #include <GLFW/glfw3.h>
-
 #include "Core/RealConfig.h"
 #include "Input/Input.h"
 #include "Input/Keycodes.h"

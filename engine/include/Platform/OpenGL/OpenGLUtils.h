@@ -3,18 +3,18 @@
 //
 #pragma once
 
-namespace Real {
-    namespace graphics {
-        enum class ClearFlags : unsigned char;
-    }
 
+namespace Real::graphics {
     enum class TextureFilterMode;
     enum class TextureWrapMode;
+    enum class ClearFlags : unsigned char;
 }
 
+
+
 namespace Real::util::opengl {
-    int  TextureWrapModeToGLEnum(TextureWrapMode mode);
-    int  TextureFilterModeToGLEnum(TextureFilterMode filter);
+    int  TextureWrapModeToGLEnum(graphics::TextureWrapMode mode);
+    int  TextureFilterModeToGLEnum(graphics::TextureFilterMode filter);
     int  GetGLFormat(int channelCount, bool srgb = false);
     int  GetGLInternalFormat(int channelCount, bool srgb = false);
     int  GetCompressedInternalFormat(int channelCount);

@@ -42,7 +42,7 @@ namespace Real::opengl {
         return *this;
     }
 
-    void Buffer::Create(const void* data, size_t size, BufferType type) {
+    void Buffer::Create(const void* data, size_t size, graphics::BufferType type) {
         Destroy();
 
         m_Type = type;
@@ -58,7 +58,7 @@ namespace Real::opengl {
 
         glCreateBuffers(1, &m_Buffer.value);
 
-        if (m_Type == BufferType::SSBO) {
+        if (m_Type == graphics::BufferType::SSBO) {
 
             constexpr GLbitfield storageFlags =
                 GL_DYNAMIC_STORAGE_BIT |
@@ -75,7 +75,7 @@ namespace Real::opengl {
 
             m_MappedPtr = glMapNamedBufferRange(m_Buffer.value, 0, size, mapFlags);
         }
-        else if (m_Type == BufferType::UBO) {
+        else if (m_Type == graphics::BufferType::UBO) {
 
             glNamedBufferStorage(m_Buffer.value, size, nullptr, GL_DYNAMIC_STORAGE_BIT);
 
@@ -92,7 +92,7 @@ namespace Real::opengl {
             Resize(newSize);
         }
 
-        if (m_Type == BufferType::SSBO && m_MappedPtr) {
+        if (m_Type == graphics::BufferType::SSBO && m_MappedPtr) {
             std::memcpy(m_MappedPtr, data, size);
             glFlushMappedNamedBufferRange(m_Buffer.value, 0, size);
         }
@@ -144,7 +144,7 @@ namespace Real::opengl {
         m_Buffer    = graphics::BufferHandle{};
         m_MappedPtr = nullptr;
         m_Size      = 0;
-        m_Type      = BufferType{};
+        m_Type      = graphics::BufferType{};
     }
 
 }

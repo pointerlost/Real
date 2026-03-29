@@ -28,7 +28,7 @@ namespace Real::UI {
         ImGui::SetNextWindowSize(ImVec2(m_SizeX, m_SizeY));
         ImGui::SetNextWindowPos(ImVec2(0, 25), ImGuiCond_Always);
         ImGui::Begin("Inspector", &m_Open, ImGuiWindowFlags_NoResize);
-        ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Regular-Big"));
+        // ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Regular-Big"));
 
         IterateEntities();
         if (m_OpenRClickWindow)

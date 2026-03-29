@@ -97,8 +97,8 @@ namespace Real::ecs {
         if (!m_Registry->any_of<RigidbodyComponent>(e))
             return;
 
-        auto&[rbDesc, rbHandle] = m_Registry->get<RigidbodyComponent>(e);
-        const auto& tc = m_Registry->get<TransformComponent>(e);
+        auto& [rbDesc, rbHandle] = m_Registry->get<RigidbodyComponent>(e);
+        const auto& tc           = m_Registry->get<TransformComponent>(e);
 
         core::BodyDesc bd;
         bd.type           = rbDesc.type;
@@ -140,8 +140,8 @@ namespace Real::ecs {
         if (!m_Registry->any_of<ColliderComponent>(e))
             return;
 
-        auto&[desc, handle] = m_Registry->get<ColliderComponent>(e);
-        const auto& tc = m_Registry->get<TransformComponent>(e);
+        auto& [desc, handle] = m_Registry->get<ColliderComponent>(e);
+        const auto& tc       = m_Registry->get<TransformComponent>(e);
 
         auto* debugRenderer     = Services::GetDebugRenderer();
         const auto& modelMatrix = tc.transform.GetWorldMatrix();
@@ -247,7 +247,7 @@ namespace Real::ecs {
         }
     }
 
-    void PhysicsSystem::SyncCollider(entt::entity& entity) {
+    void PhysicsSystem::SyncCollider(entt::entity& entity) const {
         if (!m_Registry->any_of<RigidbodyComponent>(entity) || !m_Registry->any_of<ColliderComponent>(entity))
             return;
 

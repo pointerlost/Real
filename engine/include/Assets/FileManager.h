@@ -15,12 +15,16 @@ namespace Real::fs {
 
     class File {
     public:
-        [[nodiscard]] static String ReadFromFile(const String& path);
-        [[nodiscard]] static bool Exists(const String& path);
+        [[nodiscard]]    static String ReadFromFile(const String& path);
+        [[nodiscard]]    static bool Exists(const String& path);
         [[maybe_unused]] static bool Delete(const String& path);
+
+        [[nodiscard]] static String GetName(const String& path);
+        [[nodiscard]] static String GetStem(const String& path);
+        [[nodiscard]] static String GetExtension(const String& path);
     };
 
     [[nodiscard]] Vector<FileInfo> IterateDirectory(const String& folderPath);
-    FileInfo CreateFileInfoFromPath(const String& rawPath);
+    FileInfo FileInfoFromPath(const String& rawPath);
     String NormalizePath(const String& path);
 }

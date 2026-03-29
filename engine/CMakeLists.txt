@@ -15,7 +15,6 @@ add_library(engine STATIC
     src/Math/iVec2.cpp
     include/Graphics/FrameBuilder.h
     src/Graphics/FrameBuilder.cpp
-    include/Graphics/Texture/TextureTypes.h
     include/Scene/SceneManager.h
     src/Scene/SceneManager.cpp
     include/Core/IApplicationContext.h
@@ -26,20 +25,27 @@ add_library(engine STATIC
     src/Assets/TextureManager.cpp
     src/Assets/MaterialManager.cpp
     src/Assets/ShaderManager.cpp
-    include/Assets/AssetSystem.h
     include/Assets/AssetTypes.h
     include/Platform/OpenGL/OpenGLTypes.h
     include/RHI/ITexture.h
     include/Platform/OpenGL/OpenGLUtils.h
     src/Platform/OpenGL/OpenGLUtils.cpp
-    include/Assets/TextureUtils.h
+    include/Tools/Image/TextureUtils.h
     src/Assets/TextureUtils.cpp
     include/Common/StringUtils.h
     include/Physics/PhysicsUtils.h
-    include/Tools/CompressionUtils.h
-    src/Tools/CompressionUtils.cpp
+    include/Tools/Compression/CompressionUtils.h
+    src/Tools/Compression/CompressionUtils.cpp
     src/Physics/PhysicsUtils.cpp
     src/Common/StringUtils.cpp
+    include/Resource/ResourceHandle.h
+    src/Core/ResourceHandle.cpp
+    include/Core/SlotMap.h
+    include/Core/TypedHandle.h
+    include/Assets/ResourceManager.h
+    include/Platform/OpenGL/OpenGLTexture.h
+    src/Platform/OpenGL/OpenGLTexture.cpp
+        include/Graphics/RenderEnum.h
 )
 
 target_sources(engine PRIVATE
@@ -63,7 +69,6 @@ target_sources(engine PRIVATE
     src/Core/Services.cpp
     include/Graphics/MeshFactory.h
     src/Graphics/MeshFactory.cpp
-    include/Graphics/Texture/Texture.h
     include/Graphics/Transformations.h
     include/Graphics/Camera.h
     src/Graphics/Camera.cpp
@@ -84,7 +89,6 @@ target_sources(engine PRIVATE
     include/Graphics/Light.h
     src/Graphics/Light.cpp
     include/Graphics/Material.h
-    src/Graphics/Texture/Texture.cpp
     include/Graphics/Buffer.h
     src/Graphics/Buffer.cpp
     include/Graphics/GPUBuffers.h
@@ -99,8 +103,8 @@ target_sources(engine PRIVATE
     src/Scene/Systems/SystemsManager.cpp
     include/Platform/OpenGL/OpenGLFrameBuffer.h
     src/Platform/OpenGL/OpenGLFrameBuffer.cpp
-    include/Tools/ImageTools.h
-    src/Tools/ImageTools.cpp
+    include/Tools/Image/ImageTools.h
+    src/Tools/Image/ImageTools.cpp
     include/Common/Scheduling/Threads.h
     src/Common/Scheduling/Threads.cpp
     include/Common/Macros.h
@@ -187,8 +191,13 @@ target_sources(engine PRIVATE
     src/Platform/OpenGL/OpenGLRenderDevice.cpp
 )
 
-set(SHADERS_DIR shaders)
-set(ASSETS_DIR assets)
+set(ASSETS_DB_PATH ${CMAKE_CURRENT_SOURCE_DIR}/assets/asset_database/asset_database.json)
+set(FONTS_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/assets/fonts/)
+set(RUNTIME_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/assets/runtime/)
+set(SOURCES_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sources/)
+set(ASSETS_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/assets/)
+set(SHADERS_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/)
+set(TEXTURES_DIR   ${CMAKE_CURRENT_SOURCE_DIR}/assets/textures/)
 
 configure_file(
     include/Core/Config.h.in
@@ -200,7 +209,7 @@ target_sources(engine PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/include/Core/CMakeConfig.h
 )
 
-add_library(glad_local STATIC ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c)
+add_library(glad_local                STATIC ${CMAKE_SOURCE_DIR}/vendor/glad/src/glad.c)
 target_include_directories(glad_local PUBLIC ${CMAKE_SOURCE_DIR}/vendor/glad/include)
 
 target_include_directories(engine PUBLIC

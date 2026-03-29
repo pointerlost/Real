@@ -4,9 +4,10 @@
 #pragma once
 #include "Editor.h"
 #include "EditorState.h"
+#include "UIResources.h"
 #include "Core/IApplication.h"
 #include "Core/IApplicationContext.h"
-#include "../../../engine/include/Common/Utils.h"
+#include "Common/Utils.h"
 #include "Input/CameraInput.h"
 
 namespace Real {
@@ -22,23 +23,23 @@ namespace Real {
 namespace Real::app::editor {
 
     struct EditorContext final : public core::IApplicationContext {
-        void SetWindow(core::IWindow *win)         override { window = win;         }
-        void SetAssetManager  (AssetManager*  am)  override { assetManager   = am;  }
-        void SetAssetImporter (AssetImporter* ai)  override { assetImporter  = ai;  }
-        void SetMeshManager   (MeshManager*   mm)  override { meshManager    = mm;  }
-        void SetResourceLoader(ResourceLoader* rl) override { resourceLoader = rl;  }
-        void SetSceneManager  (SceneManager*  sm)  override { sceneManager   = sm;  }
-        void SetDebugRenderer (graphics::debug::DebugRenderer* dr) override { debugRenderer = dr; }
-        void SetCameraSystem  (ecs::CameraSystem* cam) override { cameraSystem = cam; }
+        void SetWindow        (core::IWindow *win)                 override { window = win;         }
+        void SetAssetManager  (assets::AssetManager*  am)          override { assetManager   = am;  }
+        void SetAssetImporter (assets::AssetImporter* ai)          override { assetImporter  = ai;  }
+        void SetMeshManager   (assets::MeshManager*   mm)          override { meshManager    = mm;  }
+        void SetResourceLoader(assets::ResourceManager* rl)        override { resourceLoader = rl;  }
+        void SetSceneManager  (SceneManager*  sm)                  override { sceneManager   = sm;  }
+        void SetDebugRenderer (graphics::debug::DebugRenderer* dr) override { debugRenderer = dr;   }
+        void SetCameraSystem  (ecs::CameraSystem* cam)             override { cameraSystem = cam;   }
 
-        core::IWindow*  window         = nullptr;
-        AssetManager*   assetManager   = nullptr;
-        AssetImporter*  assetImporter  = nullptr;
-        MeshManager*    meshManager    = nullptr;
-        ResourceLoader* resourceLoader = nullptr;
-        SceneManager*   sceneManager   = nullptr;
-        graphics::debug::DebugRenderer* debugRenderer = nullptr;
-        ecs::CameraSystem* cameraSystem = nullptr;
+        core::IWindow*                  window         = nullptr;
+        assets::AssetManager*           assetManager   = nullptr;
+        assets::AssetImporter*          assetImporter  = nullptr;
+        assets::MeshManager*            meshManager    = nullptr;
+        assets::ResourceManager*        resourceLoader = nullptr;
+        SceneManager*                   sceneManager   = nullptr;
+        graphics::debug::DebugRenderer* debugRenderer  = nullptr;
+        ecs::CameraSystem*              cameraSystem   = nullptr;
     };
 
     class EditorApplication final : public core::IApplication {
@@ -54,8 +55,9 @@ namespace Real::app::editor {
     private:
         EditorContext m_Ctx;
 
-        Scope<UI::Editor>    m_Editor;
-        Scope<EditorState>   m_State;
-        Scope<CameraInput>   m_CameraInput;
+        Scope<UI::Editor>                m_Editor;
+        Scope<Real::editor::UIResources> m_UIResources;
+        Scope<EditorState>               m_State;
+        Scope<CameraInput>               m_CameraInput; // Probably it shouldn't be here?
     };
 }

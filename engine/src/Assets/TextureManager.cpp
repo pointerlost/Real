@@ -2,187 +2,157 @@
 // Created by pointerlost on 3/23/26.
 //
 #include "Assets/TextureManager.h"
-#include "stb/stb_image.h"
+#include <cstring>
 #include "Assets/FileManager.h"
 #include "Core/CMakeConfig.h"
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
-#include "Graphics/Texture/Texture.h"
 #include "Math/iVec2.h"
 #include <ranges>
-
-#include "Assets/TextureUtils.h"
-#include "Platform/OpenGL/OpenGLUtils.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
+#include "Tools/Image/TextureUtils.h"
 
 namespace Real::assets {
 
     TextureManager::TextureManager() {
-        LoadDefaultTextures();
+        InitDefaults();
     }
 
-    void TextureManager::Register(const Ref<platform::opengl::OpenGLTexture>& tex) {
-        if (!m_Textures.contains(tex->GetUUID()))
-            m_Textures.emplace(tex->GetUUID(), tex);
+    void TextureManager::Register(const UUID& uuid, Ref<platform::opengl::OpenGLTexture> texture) {
+        if (m_Textures.contains(uuid)) return;
+        texture->SetID(uuid);
+        m_Textures[uuid] = texture;
+        m_PendingUpload.push_back(texture);
     }
 
     void TextureManager::DeleteCPU(const UUID& uuid) {
-        if (m_Textures.contains(uuid))
-            m_Textures.erase(uuid);
+        m_Textures.erase(uuid);
     }
 
-    graphics::TextureData TextureManager::LoadFromFile(const String& path, TextureType type) {
-        if (!fs::File::Exists(path)) { Warn("There is no texture: " + path); }
+    const Ref<platform::opengl::OpenGLTexture>& TextureManager::GetTexture(
+        const UUID& uuid, TextureType type)
+    {
+        const auto it = m_Textures.find(uuid);
+        if (it != m_Textures.end() && it->second)
+            return it->second;
 
-        const int desiredChannels = type != TextureType::UNDEFINED
-            ? util::texture::TextureTypeToChannelCount(type)
-            : 0;
-
-        graphics::TextureData data;
-        data.data           = stbi_load(path.c_str(), &data.width, &data.height, &data.channelCount, desiredChannels);
-        data.channelCount   = desiredChannels != 0 ? desiredChannels : data.channelCount;
-        data.dataSize       = data.width * data.height * data.channelCount * 1;
-        data.format         = util::opengl::GetGLFormat(data.channelCount);
-        data.internalFormat = util::opengl::GetGLInternalFormat(data.channelCount);
-
-        if (!data.data)             { Warn("[LoadFromFile] stbi_load returned nullptr!"); }
-        if (data.channelCount == 0) { Warn("[LoadFromFile] channel count is 0!");         }
-
-        return data;
-    }
-
-    const Ref<platform::opengl::OpenGLTexture>& TextureManager::GetTexture(const UUID& uuid, TextureType type) {
-        if (!m_Textures.contains(uuid)) {
-            const auto& tex = GetOrCreateDefault(type);
-            m_Textures[tex->GetUUID()] = tex;
-            return tex;
-        }
-        return m_Textures[uuid];
+        return GetOrCreateDefault(type);
     }
 
     Ref<platform::opengl::OpenGLTexture>& TextureManager::GetOrCreateDefault(TextureType type) {
         if (m_DefaultTextures.contains(type))
             return m_DefaultTextures[type];
 
-        const auto channelCount = util::texture::TextureTypeToChannelCount(type);
-        constexpr math::iVec2 resolution{1, 1};
+        const int channelCount = util::texture::TextureTypeToChannelCount(type);
 
-        const Ref<platform::opengl::OpenGLTexture> defaultTex = CreateRef<platform::opengl::OpenGLTexture>();
-
-        u8 channelColor[4] = {UINT8_MAX};
+        // Default values per type
+        u8 r = 255, g = 255, b = 255, a = 255;
         switch (type) {
-            case TextureType::ALBEDO:
-                channelColor[0] = 128; channelColor[1] = 128;
-                channelColor[2] = 128; channelColor[3] = 255;
-                break;
-            case TextureType::NORMAL:
-                channelColor[0] = 128; channelColor[1] = 128;
-                channelColor[2] = 255; channelColor[3] = 255;
-                break;
-            case TextureType::EMISSIVE:
-                channelColor[0] = 0; channelColor[1] = 0;
-                channelColor[2] = 0; channelColor[3] = 255;
-                break;
+            case TextureType::ALBEDO:            r=128; g=128; b=128; a=255; break;
+            case TextureType::NORMAL:            r=128; g=128; b=255; a=255; break;
+            case TextureType::EMISSIVE:          r=0;   g=0;   b=0;   a=255; break;
             case TextureType::ROUGHNESS:
-            case TextureType::AMBIENT_OCCLUSION:
-                channelColor[0] = 255;
-                break;
+            case TextureType::AMBIENT_OCCLUSION: r=255; g=0;   b=0;   a=0;   break;
             case TextureType::METALLIC:
-            case TextureType::HEIGHT:
-                channelColor[0] = 0;
-                break;
-            default:
-                channelColor[0] = UINT8_MAX; channelColor[1] = UINT8_MAX;
-                channelColor[2] = UINT8_MAX; channelColor[3] = UINT8_MAX;
+            case TextureType::HEIGHT:            r=0;   g=0;   b=0;   a=0;   break;
+            case TextureType::ALPHA:             r=255; g=255; b=255; a=255; break;
+
+            case TextureType::ORM:  // Occlusion, Roughness, Metallic packed
+                // Default neutral values:
+                // R (Occlusion) = 255 (full occlusion)
+                // G (Roughness) = 255 (fully rough)
+                // B (Metallic)  = 0   (non-metallic)
+                r=255; g=255; b=0; a=255; break;
+
+            default:                             r=255; g=255; b=255; a=255; break;
         }
 
-        const auto imageSize = resolution.x * resolution.y * channelCount;
-        graphics::TextureData data;
-        data.data = new u8[imageSize];
-        auto* imageData = static_cast<u8*>(data.data);
+        // Heap allocated - CleanUpCPUData will delete[] it
+        const int imageSize = channelCount;  // 1x1
+        auto* imageData = new u8[imageSize];
+        const u8 pixel[4] = { r, g, b, a };
+        memcpy(imageData, pixel, imageSize);
 
-        switch (channelCount) {
-            case 1:
-                for (size_t i = 0; i < imageSize; i += channelCount)
-                    imageData[i] = channelColor[0];
-                break;
-            case 2:
-                for (size_t i = 0; i < imageSize; i += channelCount) {
-                    imageData[i + 0] = channelColor[0];
-                    imageData[i + 1] = channelColor[1];
-                }
-                break;
-            case 3:
-            case 4:
-                for (size_t i = 0; i < imageSize; i += channelCount) {
-                    imageData[i + 0] = channelColor[0];
-                    imageData[i + 1] = channelColor[1];
-                    imageData[i + 2] = channelColor[2];
-                    imageData[i + 3] = channelColor[3];
-                }
-                break;
-            default:
-                Warn("Channel count mismatch!");
-        }
+        TextureData data{};
+        data.data         = imageData;
+        data.channelCount = channelCount;
+        data.dataSize     = imageSize;
+        data.width        = 1;
+        data.height       = 1;
 
-        data.channelCount   = channelCount;
-        data.dataSize       = imageSize;
-        data.width          = resolution.x;
-        data.height         = resolution.y;
-        data.format         = util::opengl::GetGLFormat(channelCount);
-        data.internalFormat = util::opengl::GetGLInternalFormat(channelCount);
+        auto tex = CreateRef<platform::opengl::OpenGLTexture>();
+        tex->SetOrigin(platform::opengl::OpenGLTexture::TextureOrigin::Generated);
+        tex->SetImageFormatState(ImageFormatState::DEFAULT);
+        tex->CreateFromData(data, type);
 
-        defaultTex->SetImageFormatState(ImageFormatState::DEFAULT);
-        defaultTex->CreateFromData(data, type);
-        m_Textures[defaultTex->GetUUID()] = defaultTex;
-        return m_DefaultTextures[type] = defaultTex;
+        m_Textures[tex->GetUUID()] = tex;
+        return m_DefaultTextures[type] = tex;
     }
 
     bool TextureManager::IsCompressed(const String& stem) const {
-        // TODO: Need to find a better way to improve performance. This looks bad.
         return fs::File::Exists(String(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
     }
 
-    Vector<graphics::BindlessHandle> TextureManager::UploadToGPU() {
-        Vector<graphics::BindlessHandle> bindlessIDs;
-        for (const auto& tex : std::views::values(m_Textures)) {
-            if (tex->GetImageFormatState() == ImageFormatState::DEFAULT) continue;
-            tex->PrepareOptionsAndUploadToGPU();
-            tex->SetIndex(bindlessIDs.size());
-            bindlessIDs.push_back(tex->GetBindlessHandle());
+    // Call this on the main thread after loading textures on any thread
+    Vector<BindlessHandle> TextureManager::FlushPendingUploads() {
+        Vector<BindlessHandle> newHandles;
+        newHandles.reserve(m_PendingUpload.size());
+
+        for (auto& tex : m_PendingUpload) {
+            if (!tex->IsReadyForUpload()) {
+                Warn("[FlushPendingUploads] Not ready: " + tex->GetDebugName());
+                continue;
+            }
+            tex->UploadToGPU();
+            tex->SetGPUIndex(static_cast<GPUIndex>(m_BindlessHandles.size()));
+            m_BindlessHandles.push_back(tex->GetBindless());
+            newHandles.push_back(tex->GetBindless());
         }
-        return bindlessIDs;
+
+        m_PendingUpload.clear();
+        return newHandles;
     }
 
     size_t TextureManager::GetNextBindlessIndex() const {
         return m_BindlessHandles.size();
     }
 
-    Vector<Ref<platform::opengl::OpenGLTexture>> TextureManager::GetMaterialTextures(const graphics::Material* mat) const
+    Vector<Ref<platform::opengl::OpenGLTexture>> TextureManager::GetMaterialTextures(
+        const Material* mat) const
     {
         Vector<Ref<platform::opengl::OpenGLTexture>> textures;
 
-        auto tryAdd = [this](const UUID id, Vector<Ref<platform::opengl::OpenGLTexture>>& out) {
+        auto tryAdd = [&](UUID id) {
             if (id == 0) return;
             const auto it = m_Textures.find(id);
             if (it != m_Textures.end() && it->second)
-                out.push_back(it->second);
+                textures.push_back(it->second);
         };
 
-        tryAdd(mat->m_Albedo,   textures);
-        tryAdd(mat->m_Normal,   textures);
-        tryAdd(mat->m_ORM,      textures);
-        tryAdd(mat->m_Height,   textures);
-        tryAdd(mat->m_Emissive, textures);
-
+        tryAdd(mat->m_Albedo);
+        tryAdd(mat->m_Normal);
+        tryAdd(mat->m_ORM);
+        tryAdd(mat->m_Height);
+        tryAdd(mat->m_Emissive);
         return textures;
     }
 
-    void TextureManager::Update() {
-    }
+    void TextureManager::Update() {}
 
-    void TextureManager::LoadDefaultTextures() {
-        for (int i = 0; i <= static_cast<int>(TextureType::EMISSIVE); i++)
-            GetOrCreateDefault(static_cast<TextureType>(i));
+    void TextureManager::InitDefaults() {
+        // Pre-create all known default types at startup
+        constexpr TextureType types[] = {
+            TextureType::ALBEDO,
+            TextureType::NORMAL,
+            TextureType::AMBIENT_OCCLUSION,
+            TextureType::ROUGHNESS,
+            TextureType::METALLIC,
+            TextureType::ORM,
+            TextureType::HEIGHT,
+            TextureType::EMISSIVE,
+            TextureType::ALPHA,
+        };
+        for (const auto t : types)
+            GetOrCreateDefault(t);
     }
-
 }

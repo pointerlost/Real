@@ -36,21 +36,27 @@ namespace Real::core {
         static Scope<EngineCore> Build(const EngineConfig& cfg, Scope<IApplication> app);
 
     private:
-        struct RegisteredSystems {
-            ecs::CameraSystem* cameraSystem = nullptr;
-        };
+        struct RegisteredSystems { ecs::CameraSystem* cameraSystem = nullptr; };
 
     private:
         static Scope<CoreSystems>  BuildCoreSystems(const EngineConfig& cfg);
         static Scope<AssetSystems> BuildAssetSystems();
+        static RegisteredSystems   RegisterSystems(SystemManager* sysMngr, IPhysicsBackend& physicsBackend);
 
-        static RegisteredSystems RegisterSystems(SystemManager* sysMngr, IPhysicsBackend& physicsBackend);
-        static void PopulateContext(IApplicationContext& ctx, CoreSystems& cs, AssetSystems& as, RegisteredSystems& rs);
+        static void PopulateContext(
+            IApplicationContext& ctx,
+            const CoreSystems& cs,
+            AssetSystems& as,
+            const RegisteredSystems& rs
+        );
 
-        static Scope<IWindow> CreateWindow(const EngineConfig& cfg);
-        static Scope<IPlatform> CreatePlatform(const EngineConfig& cfg);
+        static Scope<IWindow>            CreateWindow(const EngineConfig& cfg);
+        static Scope<IPlatform>          CreatePlatform(const EngineConfig& cfg);
         static Scope<rhi::IRenderDevice> CreateRenderDevice(const EngineConfig& cfg);
-        static Scope<IPhysicsBackend> CreatePhysicsBackend(const EngineConfig& cfg);
-        static Scope<rhi::IRenderer> CreateRenderer(Scope<rhi::IRenderDevice> graphicsBackend ,const EngineConfig& cfg);
+        static Scope<IPhysicsBackend>    CreatePhysicsBackend(const EngineConfig& cfg);
+        static Scope<rhi::IRenderer>     CreateRenderer(
+            Scope<rhi::IRenderDevice> graphicsBackend,
+            const EngineConfig& cfg
+        );
     };
 }

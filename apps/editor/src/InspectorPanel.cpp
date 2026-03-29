@@ -8,7 +8,9 @@
 #include "Core/Services.h"
 #include "../include/Editor.h"
 #include "../include/EditorState.h"
+#include "Assets/MaterialManager.h"
 #include "Graphics/Material.h"
+#include "Math/Math.h"
 #include "Scene/Components.h"
 #include "Scene/Entity.h"
 #include "Scene/Scene.h"
@@ -37,7 +39,7 @@ namespace Real::UI {
         const auto& entity = editorState->selectedEntity;
         if (!entity) return;
 
-        ImGui::PushFont(Services::GetAssetManager()->GetFontStyle("Ubuntu-Bold"));
+        // ImGui::PushFont(Services::Get()->GetFontStyle("Ubuntu-Bold"));
         if (entity->HasComponent<TagComponent>()) {
             DrawComponent(&entity->GetComponentUnchecked<TagComponent>());
         }
@@ -62,7 +64,7 @@ namespace Real::UI {
         ImGui::PopFont();
 
         // Reset
-        m_IDcounter = 0;
+        m_IDCounter = 0;
     }
 
     void InspectorPanel::DrawComponent(TagComponent *comp) {
@@ -74,14 +76,15 @@ namespace Real::UI {
 
     void InspectorPanel::DrawComponent(TransformComponent *comp) {
         auto& transform = comp->transform;
-        auto position = transform.position;
-        auto rotate   = transform.rotation;
-        auto scale    = transform.scale;
+        auto position   = transform.GetWorldPosition();
+        auto rotate     = transform.GetWorldRotation();
+        auto scale      = transform.GetWorldScale();
 
         constexpr auto textboxSize = ImVec2(25.0, 30.0);
         constexpr auto textSize    = ImVec2(70.0, 30.0);
-        constexpr f32 dragCount = 3.0;
+        constexpr f32 dragCount    = 3.0;
         const auto dragSize = static_cast<f32>((m_SizeX - 3.0 * textboxSize.x - textSize.x) / dragCount - 20.0);
+        // remove hardcoded shit
         if (ImGui::CollapsingHeader("Transform Component")) {
             // Translate
             {
@@ -99,7 +102,7 @@ namespace Real::UI {
                 ImGui::SameLine();
                 DrawCustomSizedDragger(dragSize, position.z, 0.1, -360.0, 360.0, "%.2f");
 
-                transform.SetPosition(position);
+                transform.SetLocalPosition(position);
             }
 
             // Rotate
@@ -147,17 +150,18 @@ namespace Real::UI {
     // }
 
     void InspectorPanel::DrawComponent(const MeshRendererComponent *comp) {
-        const auto& am = Services::GetAssetManager();
+        auto& mm = Services::GetMaterialManager();
 
         if (!ImGui::CollapsingHeader("Mesh Component", ImGuiTreeNodeFlags_DefaultOpen))
             return;
 
-        const auto mat = am->GetMaterialInstance(comp->matInstanceIDs[0]);
+        const auto matUUID = mm.CreateInstance(comp->matInstanceIDs[0]);
+        const auto& mat = mm.GetInstance(matUUID);
         if (!mat)
             return;
 
         auto& baseColor = mat->m_BaseColorFactor;
-        auto& factors = mat->m_ORMFactor; // x=AO, y=Roughness, z=Metallic, w=padding
+        auto& factors   = mat->m_ORMFactor; // x=AO, y=Roughness, z=Metallic, w=padding
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));
@@ -297,7 +301,7 @@ namespace Real::UI {
         }
     }
 
-    void InspectorPanel::DrawComponent(Entity& entity, ColliderComponent *comp) {
+    void InspectorPanel::DrawComponent(Entity& entity, ColliderComponent *comp) const {
         if (!ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen))
             return;
 
@@ -305,7 +309,7 @@ namespace Real::UI {
         bool rebuild = false;
 
         // Enabled toggle (attach / detach)
-        if (ImGui::Checkbox("Enabled", &comp->enabled)) {
+        if (ImGui::Checkbox("Enabled", &comp->desc.enabled)) {
             rebuild = true;
         }
 
@@ -313,17 +317,17 @@ namespace Real::UI {
 
         // Collider shape type
         const char* shapeNames[] = { "Box", "Sphere", "Capsule" };
-        int currentShape = static_cast<int>(comp->shape);
+        int currentShape = static_cast<int>(comp->desc.shape);
 
         if (ImGui::Combo("Shape", &currentShape, shapeNames, IM_ARRAYSIZE(shapeNames))) {
-            comp->shape = static_cast<physics::ColliderShape>(currentShape);
+            comp->desc.shape = static_cast<core::ShapeDesc::Shape>(currentShape);
             rebuild = true;
         }
 
         // Geometry
-        if (comp->shape == physics::ColliderShape::Box) {
+        if (comp->desc.shape == core::ShapeDesc::Shape::Box) {
             ImGui::Text("Size");
-            if (ImGui::DragFloat3("##Size", &comp->size.x, 0.01f, 0.001f)) {
+            if (ImGui::DragFloat3("##Size", &comp->desc.size.x, 0.01f, 0.001f)) {
                 dirty = true;
             }
         }
@@ -332,21 +336,21 @@ namespace Real::UI {
 
         // Local offset
         ImGui::Text("Center");
-        if (ImGui::DragFloat3("##Center", &comp->localPosition.x, 0.01f)) {
+        if (ImGui::DragFloat3("##Center", &comp->desc.localTransform.position.x, 0.01f)) {
             dirty = true;
         }
 
         ImGui::Text("Rotation");
-        math::Vec3 euler = math::ToEulerDegrees(comp->localRotation);
+        math::Vec3 euler = math::ToEulerDegrees(comp->desc.localTransform.rotation);
         if (ImGui::DragFloat3("##Rotation", &euler.x, 0.5f)) {
-            comp->localRotation = math::Quat::FromEulerDegrees(euler);
+            comp->desc.localTransform.rotation = math::Quat::FromEulerDegrees(euler);
             dirty = true;
         }
 
         ImGui::Separator();
 
         // Trigger
-        if (ImGui::Checkbox("Is Trigger", &comp->isTrigger)) {
+        if (ImGui::Checkbox("Is Trigger", &comp->desc.isTrigger)) {
             rebuild = true; // PhysX flags need rebuild
         }
 
@@ -369,22 +373,23 @@ namespace Real::UI {
         );
     }
 
-    void InspectorPanel::DrawComponent(Entity &entity, RigidbodyComponent *comp) {
+    void InspectorPanel::DrawComponent(Entity &entity, RigidbodyComponent *comp) const {
         if (entity.HasComponent<RigidbodyComponent>()) {
             if (ImGui::CollapsingHeader("Physics Body", ImGuiTreeNodeFlags_DefaultOpen)) {
 
                 const char* bodyTypes[] = { "Static", "Dynamic", "Kinematic" };
-                int current = static_cast<int>(comp->type);
+                int current = static_cast<int>(comp->desc.type);
 
                 if (ImGui::Combo("Body Type", &current, bodyTypes, IM_ARRAYSIZE(bodyTypes))) {
-                    comp->type = static_cast<physics::BodyType>(current);
+
+                    comp->desc.type = static_cast<core::BodyDesc::Type>(current);
 
                     // IMPORTANT: body type change requires actor recreation
                     m_Scene->GetEvents().OnPhysicsBodyChanged.Emit(entity.GetHandle(), *comp);
                 }
 
-                if (comp->type == physics::BodyType::Dynamic) {
-                    if (ImGui::DragFloat3("Mass", &comp->mass, 0.1f, 0.01f)) {
+                if (comp->desc.type == core::BodyDesc::Type::Dynamic) {
+                    if (ImGui::DragFloat3("Mass", &comp->desc.mass, 0.1f, 0.01f)) {
                         m_Scene->GetEvents().OnPhysicsBodyChanged.Emit(entity.GetHandle(), *comp);
                     }
                 }
@@ -393,7 +398,7 @@ namespace Real::UI {
     }
 
     void InspectorPanel::DrawComponent(LightComponent *comp, TransformComponent* transform) {
-        auto& light = comp->light;
+        auto& light      = comp->light;
         auto radiance    = light.GetRadiance();
         auto constant    = light.GetConstant();
         auto linear      = light.GetLinear();
@@ -470,13 +475,13 @@ namespace Real::UI {
 
     void InspectorPanel::DrawComponent(CameraComponent *comp) {
         auto& camera = comp->camera;
-        auto near   = camera.GetNear();
-        auto far    = camera.GetFar();
-        auto fov    = camera.GetFOV();
-        auto aspect = camera.GetAspect();
+        auto near    = camera.GetNear();
+        auto far     = camera.GetFar();
+        auto fov     = camera.GetFOV();
+        auto aspect  = camera.GetAspect();
 
         if (ImGui::CollapsingHeader("Camera Component")) {
-            // TODO: redesign drag f32s with new values
+            // TODO: redesign DragFloat with new values
             if (ImGui::DragFloat3("Near Plane", &near, 0.01, 0.001, 500.0)) {
                 camera.SetNear(near);
             }
@@ -512,9 +517,10 @@ namespace Real::UI {
     void InspectorPanel::DrawCustomTextShape(const String &text, ImVec2 boxSize, ImVec4 color, bool textColorActive, ImVec4 textColor) {
         const ImVec2 textSize = ImGui::CalcTextSize(text.c_str());
         ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-        ImGui::BeginChild(ConcatStr("##readonly", std::to_string(m_IDcounter++)).c_str(), boxSize);
+        ImGui::BeginChild(ConcatStr("##readonly", std::to_string(m_IDCounter++)).c_str(), boxSize);
         // Center the text
         ImGui::SetCursorPos(ImVec2((boxSize.x - textSize.x) * 0.5f, (boxSize.y - textSize.y) * 0.5f));
+        // TODO: it's not a string literal so potentially insecure!!!
         textColorActive ? ImGui::TextColored(textColor, text.c_str()) : ImGui::Text(text.c_str());
         ImGui::EndChild();
         ImGui::PopStyleColor(1);
@@ -523,7 +529,7 @@ namespace Real::UI {
     void InspectorPanel::DrawCustomSizedDragger(f32 dragWidth, f32& val, f32 speed, f32 v_min, f32 v_max, const char* format) {
         ImGui::SetNextItemWidth(dragWidth);
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 7));
-        ImGui::DragFloat3(ConcatStr("##dragger", std::to_string(m_IDcounter++)).c_str(), &val, speed, v_min, v_max, format);
+        ImGui::DragFloat3(ConcatStr("##dragger", std::to_string(m_IDCounter++)).c_str(), &val, speed, v_min, v_max, format);
         ImGui::PopStyleVar();
     }
 

@@ -11,8 +11,7 @@ namespace Real {
     Scope<core::IApplication> ApplicationBuilder::Build(ApplicationMode mode)
     {
         if (mode == ApplicationMode::Editor) {
-            app::editor::EditorContext ctx;
-            return CreateScope<app::editor::EditorApplication>(std::move(ctx));
+            return CreateScope<app::editor::EditorApplication>(app::editor::EditorContext{});
         }
         // if (mode == ApplicationMode::Game) {
         //     realgame::app::GameContext ctx;

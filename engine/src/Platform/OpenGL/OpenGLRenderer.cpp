@@ -81,13 +81,13 @@ namespace Real::platform::opengl {
         m_Buffers.transform.Create(
             gpuData.transforms.data(),
             MAX_ENTITIES * sizeof(TransformSSBO),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
 
         m_Buffers.texture.Create(
             gpuData.textures.data(),
             MAX_ENTITIES * sizeof(graphics::BindlessHandle),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
         m_Buffers.texture.Upload(
             gpuData.textures.data(),
@@ -97,36 +97,36 @@ namespace Real::platform::opengl {
         m_Buffers.material.Create(
             gpuData.materials.data(),
             MAX_ENTITIES * sizeof(MaterialSSBO),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
 
         m_Buffers.light.Create(
             gpuData.lights.data(),
             MAX_LIGHTS * sizeof(LightSSBO),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
 
         m_Buffers.entityData.Create(
             gpuData.entityData.data(),
             MAX_ENTITIES * sizeof(EntityMetadata),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
 
         m_Buffers.drawCommand.Create(
             gpuData.drawCommands.data(),
             MAX_ENTITIES * sizeof(DrawElementsIndirectCommand),
-            BufferType::SSBO
+            graphics::BufferType::SSBO
         );
 
         m_Buffers.camera.Create(
             &gpuData.camera,
             1 * sizeof(FrameUBO),
-            BufferType::UBO);
+            graphics::BufferType::UBO);
 
         m_Buffers.globalData.Create(
             &gpuData.globalData,
             1 * sizeof(GlobalUBO),
-            BufferType::UBO);
+            graphics::BufferType::UBO);
     }
 
     void OpenGLRenderer::BindGPUBuffers() const {

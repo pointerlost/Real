@@ -14,6 +14,8 @@ namespace Real::editor {
         void    AddFont(const String& name, ImFont* font);
         ImFont* GetFont(const String& name) const;
 
+        void InitResources();
+
     private:
         std::unordered_map<String, ImFont*> m_Fonts;
     };

@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/7/25.
 //
 #pragma once
-#include "Common/Types.h"
 #include "Physics/PhysicsTypes.h"
 #include "RHI/RHITypes.h"
 #include "Window/WindowConfig.h"
@@ -17,13 +16,6 @@ namespace Real::physics {
 
 
 namespace Real {
-
-    struct WindowConfig {
-        u32    width          = 1520;
-        u32    height         = 840;
-        String title          = "Real";
-        core::WindowBackend backend = core::WindowBackend::GLFW;
-    };
 
     struct OpenGLConfig {
         int  major        = 4;
@@ -52,7 +44,7 @@ namespace Real {
         rhi::GraphicsAPI        graphicsAPI    = rhi::GraphicsAPI::OpenGL;
         physics::PhysicsBackend physicsBackend = physics::PhysicsBackend::PhysX;
 
-        WindowConfig   window;
-        RendererConfig renderer;
+        core::WindowConfig window;
+        RendererConfig     renderer;
     };
 }

@@ -6,18 +6,19 @@
 #include <string>
 
 namespace Real {
-    using u64 = uint64_t;
+    using u64    = uint64_t;
     using String = std::string;
 
     struct UUID {
-        UUID();
         explicit UUID(u64 uuid);
-        UUID(const UUID&) = default;
+                 UUID();
+                 UUID(const UUID&) = default;
 
-        [[nodiscard]] bool IsNull() const { return m_UUID == 0; };
-        [[nodiscard]] String ToString() const;
         bool operator==(const UUID&) const = default;
         operator u64() const { return m_UUID; }
+
+        [[nodiscard]] bool   IsNull()   const { return m_UUID == 0; }
+        [[nodiscard]] String ToString() const;
 
     private:
         u64 m_UUID = 0;

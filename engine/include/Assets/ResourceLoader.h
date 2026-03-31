@@ -2,8 +2,10 @@
 // Created by pointerlost on 12/6/25.
 //
 #pragma once
-#include "Common/Utils.h"
-#include "Graphics/ModelLoader.h"
+
+namespace Real::core {
+    struct CoreSystems;
+}
 
 namespace Real::assets {
 
@@ -11,13 +13,10 @@ namespace Real::assets {
     public:
         ResourceManager();
 
-        void Load();
+        void Load(core::CoreSystems* core);
 
     private:
-        Scope<graphics::ModelLoader> m_ModelLoader;
-
-    private:
-        void LoadAssets() const;
+        void LoadAssets(core::CoreSystems* core) const;
         void LoadShaders();
     };
 

@@ -11,15 +11,16 @@ namespace Real::graphics {
 }
 
 namespace Real::assets {
+    using namespace graphics;
 
-    class ShaderManager {
+    class ShaderManager final {
     public:
-        void Load(const String& vertPath, const String& fragPath, const graphics::ShaderType& type);
-        [[nodiscard]] graphics::Shader& Get(const graphics::ShaderType& type);
-        [[nodiscard]] bool              Exists(const graphics::ShaderType& type) const;
+        void               Load(const String& vertPath, const String& fragPath, const ShaderType& type);
+        [[nodiscard]] bool Exists(const ShaderType& type) const;
+        [[nodiscard]] Shader& Get(const ShaderType& type);
 
     private:
-        std::unordered_map<graphics::ShaderType, graphics::Shader> m_Shaders;
+        std::unordered_map<ShaderType, Shader> m_Shaders;
 
     private:
         [[nodiscard]] String PreprocessFile(const String& filePath) const;

@@ -29,7 +29,7 @@ namespace Real::graphics {
         void InitResources();
         void CollectRenderables(Scene* scene);
 
-        [[nodiscard]] FrameRenderData& GetGPURenderData() { return m_FrameRenderData; }
+        [[nodiscard]] FrameRenderData&       GetGPURenderData()       { return m_FrameRenderData; }
         [[nodiscard]] const FrameRenderData& GetGPURenderData() const { return m_FrameRenderData; }
 
     private:

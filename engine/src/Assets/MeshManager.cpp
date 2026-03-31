@@ -22,7 +22,7 @@ namespace Real::assets {
     }
 
     const MeshAsset& MeshManager::CreateSingleMesh(
-        Vector<graphics::Vertex> vertices,
+        Vector<Vertex> vertices,
         const Vector<u32>& indices,
         const UUID& meshUUID)
     {
@@ -45,7 +45,7 @@ namespace Real::assets {
         return m_MeshAssets[meshUUID] = info;
     }
 
-    std::span<const graphics::Vertex> MeshManager::ViewVertices(const UUID& uuid) const {
+    std::span<const Vertex> MeshManager::ViewVertices(const UUID& uuid) const {
         if (!m_MeshAssets.contains(uuid)) return {};
 
         const auto& info = m_MeshAssets.at(uuid);
@@ -65,15 +65,15 @@ namespace Real::assets {
         };
     }
 
-    const MeshAsset& MeshManager::GetPrimitiveMeshData(const graphics::PrimitiveType& type) {
+    const MeshAsset& MeshManager::GetPrimitiveMeshData(const PrimitiveType& type) {
         if (m_PrimitiveTypesUUIDs.contains(type)) {
             Warn("There is no primitive type with this type enum id: " + std::to_string((int)type));
-            return m_MeshAssets[m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]];
+            return m_MeshAssets[m_PrimitiveTypesUUIDs[PrimitiveType::Triangle]];
         }
         return m_MeshAssets[m_PrimitiveTypesUUIDs[type]];
     }
 
-    const UUID& MeshManager::GetPrimitiveUUID(const graphics::PrimitiveType& type) {
+    const UUID& MeshManager::GetPrimitiveUUID(const PrimitiveType& type) {
         return m_PrimitiveTypesUUIDs[type];
     }
 
@@ -88,12 +88,12 @@ namespace Real::assets {
     void MeshManager::LoadPrimitiveTypes()
     {
         auto [triFirst, triSecond] = MeshFactory::CreateTriangle();
-        m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle] = UUID();
-        CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]);
+        m_PrimitiveTypesUUIDs[PrimitiveType::Triangle] = UUID();
+        CreateSingleMesh(triFirst, triSecond, m_PrimitiveTypesUUIDs[PrimitiveType::Triangle]);
 
         auto [cubeFirst, cubeSecond] = MeshFactory::CreateCube();
-        m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Cube] = UUID();
-        CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs[graphics::PrimitiveType::Triangle]);
+        m_PrimitiveTypesUUIDs[PrimitiveType::Cube] = UUID();
+        CreateSingleMesh(cubeFirst, cubeSecond, m_PrimitiveTypesUUIDs[PrimitiveType::Triangle]);
     }
 
     u32 MeshData3D::GetIndexCount(const UUID &uuid) const {
@@ -104,7 +104,7 @@ namespace Real::assets {
         return GetMeshData(uuid)->indexOffset;
     }
 
-    void MeshData3D::AddMesh3DToMeshData(Vector<graphics::Vertex> v, const Vector<u32>& i, const UUID& meshUUID)
+    void MeshData3D::AddMesh3DToMeshData(Vector<Vertex> v, const Vector<u32>& i, const UUID& meshUUID)
     {
         CreateSingleMesh(std::move(v), i, meshUUID);
     }
@@ -115,7 +115,7 @@ namespace Real::assets {
         glCreateBuffers(1, &m_VBO.value);
         glNamedBufferData(
             m_VBO.value,
-            m_AllVertices.size() * sizeof(graphics::Vertex),
+            m_AllVertices.size() * sizeof(Vertex),
             m_AllVertices.data(),
             GL_STATIC_DRAW
         );
@@ -132,7 +132,7 @@ namespace Real::assets {
         glCreateVertexArrays(1, &m_UniversalVAO.value);
 
         // Bind VBO to Current VAO
-        glVertexArrayVertexBuffer(m_UniversalVAO.value, 0, m_VBO.value, 0, sizeof(graphics::Vertex));
+        glVertexArrayVertexBuffer(m_UniversalVAO.value, 0, m_VBO.value, 0, sizeof(Vertex));
 
         // Bind EBO to VAO
         glVertexArrayElementBuffer(m_UniversalVAO.value, m_EBO.value);
@@ -144,7 +144,7 @@ namespace Real::assets {
             3,
             GL_FLOAT,
             GL_FALSE,
-            offsetof(graphics::Vertex, position)
+            offsetof(Vertex, position)
         );
         glVertexArrayAttribBinding(m_UniversalVAO.value, 0, 0);
 
@@ -156,7 +156,7 @@ namespace Real::assets {
             3,
             GL_FLOAT,
             GL_FALSE,
-            offsetof(graphics::Vertex, normal)
+            offsetof(Vertex, normal)
         );
         glVertexArrayAttribBinding(m_UniversalVAO.value, 1, 0);
 
@@ -168,7 +168,7 @@ namespace Real::assets {
             2,
             GL_FLOAT,
             GL_FALSE,
-            offsetof(graphics::Vertex, UV)
+            offsetof(Vertex, UV)
         );
         glVertexArrayAttribBinding(m_UniversalVAO.value, 2, 0);
     }

@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cstring>
 #include <glad/include/glad/glad.h>
-#include "Common/RealEnum.h"
 
 namespace Real::opengl {
 

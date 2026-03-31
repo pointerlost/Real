@@ -16,9 +16,9 @@ namespace Real {
     };
 
     struct LightSSBO {
-        math::Vec4 pos_cutoff{0.0}; // vec3 = position, f32 = cutoff
-        math::Vec4 dir_outer{0.0};  // vec3 direction,  f32 = outerCutoff
-        math::Vec4 radiance{0.0};
+        math::Vec4 pos_cutoff { 0.0 };  // vec3 = position,  f32 = cutoff
+        math::Vec4 dir_outer  { 0.0 };  // vec3 = direction, f32 = outerCutoff
+        math::Vec4 radiance   { 0.0 };
         int type = 0;
         // Attenuation parameters
         f32 constant  = 1.0;
@@ -27,9 +27,9 @@ namespace Real {
     };
 
     struct MaterialSSBO {
-        math::Vec4 m_BaseColorFactor = math::Vec4(1.0, 1.0, 1.0, 1.0);
+        math::Vec4 m_BaseColorFactor = math::Vec4{ 1.0, 1.0, 1.0, 1.0 };
         // 0 = ambient occlusion, 1 = roughness, 2 = metallic, 3 = padding
-        math::Vec4 m_ORMFactor = math::Vec4{1.0, 1.0, 1.0, 1.0};
+        math::Vec4 m_ORMFactor       = math::Vec4{ 1.0, 1.0, 1.0, 1.0 };
 
         // lookup table provides us texIndex and texArrayIndex
         int m_BindlessAlbedoIdx;
@@ -41,10 +41,10 @@ namespace Real {
     };
 
     struct FrameUBO {
-        math::Vec4 position       = math::Vec4(0.0f);
-        math::Mat4 view           = math::Mat4(1.0f);
-        math::Mat4 projection     = math::Mat4(1.0f);
-        math::Mat4 viewProjection = math::Mat4(1.0f);
+        math::Vec4 position       = math::Vec4( 0.0f );
+        math::Mat4 view           = math::Mat4( 1.0f );
+        math::Mat4 projection     = math::Mat4( 1.0f );
+        math::Mat4 viewProjection = math::Mat4( 1.0f );
     };
 
     struct GlobalUBO {

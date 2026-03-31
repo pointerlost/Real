@@ -6,23 +6,24 @@
 #include "GPUBuffers.h"
 #include "Common/Utils.h"
 #include "Core/UUID.h"
+#include "Resource/ResourceHandle.h"
 
 namespace Real::graphics {
 
     struct Material {
-        UUID   m_UUID = UUID(0);
-        String m_Name {};
+        UUID   id   {};
+        String name {};
 
-        UUID m_Albedo   = UUID(0);
-        UUID m_Normal   = UUID(0);
-        UUID m_ORM      = UUID(0);
-        UUID m_Height   = UUID(0);
-        UUID m_Emissive = UUID(0);
+        GLTextureResourceHandle albedo;
+        GLTextureResourceHandle normal;
+        GLTextureResourceHandle orm;
+        GLTextureResourceHandle height;
+        GLTextureResourceHandle emissive;
 
         Material()                = default;
-        Material(const Material&) = default;
-        explicit Material(const UUID& uuid) : m_UUID(uuid) {}
-        explicit Material(const UUID& uuid, String  name) : m_UUID(uuid), m_Name(std::move(name)) {}
+        Material(const Material&) = delete;
+        explicit Material(const UUID& uuid) : id(uuid) {}
+        explicit Material(const UUID& uuid, String n) : id(uuid), name(std::move(n)) {}
     };
 
     struct MaterialInstance {
@@ -34,15 +35,15 @@ namespace Real::graphics {
 
         // TODO: Factors should add into AssetDB
         // Instance override colors
-        math::Vec4 m_BaseColorFactor = math::Vec4(1.0, 1.0, 1.0, 1.0);
-        math::Vec4 m_ORMFactor = {}; // last index padding
+        math::Vec4 baseColorFactor = math::Vec4(1.0, 1.0, 1.0, 1.0);
+        math::Vec4 ormFactor = {}; // last index padding
 
         // Instance override textures
-        std::optional<UUID> m_AlbedoOverride;
-        std::optional<UUID> m_NormalOverride;
-        std::optional<UUID> m_ORMOverride;
-        std::optional<UUID> m_HeightOverride;
-        std::optional<UUID> m_EmissiveOverride;
+        std::optional<GLTextureResourceHandle> albedoOverride;
+        std::optional<GLTextureResourceHandle> normalOverride;
+        std::optional<GLTextureResourceHandle> ormOverride;
+        std::optional<GLTextureResourceHandle> heightOverride;
+        std::optional<GLTextureResourceHandle> emissiveOverride;
         // TODO: add other types like emissive, shininess etc.
 
         void ConvertToGPUFormat(MaterialSSBO& outData) const;

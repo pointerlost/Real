@@ -20,12 +20,12 @@ namespace {
 namespace Real::platform::opengl {
 
     OpenGLRenderer::OpenGLRenderer(Scope<rhi::IRenderDevice> device)
-        : m_Device(std::move(device)), m_RenderContext()
+        : m_Device(std::move(device)), m_RenderContext(CreateScope<RenderContext>())
     {
     }
 
     void OpenGLRenderer::Init() {
-        m_RenderContext = CreateScope<graphics::RenderContext>();
+        m_RenderContext = CreateScope<RenderContext>();
         Info("OpenGLRenderer::Init successfully!");
     }
 
@@ -33,7 +33,7 @@ namespace Real::platform::opengl {
         auto& mm = Services::GetMeshManager();
         auto& sm = Services::GetShaderManager();
 
-        const auto& shader = sm.Get(graphics::ShaderType::Main);
+        const auto& shader = sm.Get(ShaderType::Main);
 
         m_RenderContext->CollectRenderables(scene);
 
@@ -68,7 +68,7 @@ namespace Real::platform::opengl {
     void OpenGLRenderer::Shutdown() {
     }
 
-    void OpenGLRenderer::BeginFrame(const graphics::FrameConfig& fc) {
+    void OpenGLRenderer::BeginFrame(const FrameConfig& fc) {
         ClearColor(fc.clearColor);
         Clear(fc.clearFlags);
     }
@@ -81,66 +81,66 @@ namespace Real::platform::opengl {
         m_Buffers.transform.Create(
             gpuData.transforms.data(),
             MAX_ENTITIES * sizeof(TransformSSBO),
-            graphics::BufferType::SSBO
+            BufferType::SSBO
         );
 
         m_Buffers.texture.Create(
             gpuData.textures.data(),
-            MAX_ENTITIES * sizeof(graphics::BindlessHandle),
-            graphics::BufferType::SSBO
+            MAX_ENTITIES * sizeof(BindlessHandle),
+            BufferType::SSBO
         );
         m_Buffers.texture.Upload(
             gpuData.textures.data(),
-            gpuData.textures.size() * sizeof(graphics::BindlessHandle)
+            gpuData.textures.size() * sizeof(BindlessHandle)
         );
 
         m_Buffers.material.Create(
             gpuData.materials.data(),
             MAX_ENTITIES * sizeof(MaterialSSBO),
-            graphics::BufferType::SSBO
+            BufferType::SSBO
         );
 
         m_Buffers.light.Create(
             gpuData.lights.data(),
             MAX_LIGHTS * sizeof(LightSSBO),
-            graphics::BufferType::SSBO
+            BufferType::SSBO
         );
 
         m_Buffers.entityData.Create(
             gpuData.entityData.data(),
             MAX_ENTITIES * sizeof(EntityMetadata),
-            graphics::BufferType::SSBO
+            BufferType::SSBO
         );
 
         m_Buffers.drawCommand.Create(
             gpuData.drawCommands.data(),
             MAX_ENTITIES * sizeof(DrawElementsIndirectCommand),
-            graphics::BufferType::SSBO
+            BufferType::SSBO
         );
 
         m_Buffers.camera.Create(
             &gpuData.camera,
             1 * sizeof(FrameUBO),
-            graphics::BufferType::UBO);
+            BufferType::UBO);
 
         m_Buffers.globalData.Create(
             &gpuData.globalData,
             1 * sizeof(GlobalUBO),
-            graphics::BufferType::UBO);
+            BufferType::UBO);
     }
 
     void OpenGLRenderer::BindGPUBuffers() const {
-        m_Buffers.drawCommand.Bind(GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(0));
-        m_Buffers.entityData.Bind( GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(1));
-        m_Buffers.transform.Bind(  GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(2));
+        m_Buffers.drawCommand.Bind(GL_SHADER_STORAGE_BUFFER, BindingPoint(0));
+        m_Buffers.entityData.Bind( GL_SHADER_STORAGE_BUFFER, BindingPoint(1));
+        m_Buffers.transform.Bind(  GL_SHADER_STORAGE_BUFFER, BindingPoint(2));
 
-        m_Buffers.camera.Bind(     GL_UNIFORM_BUFFER,        graphics::BindingPoint(3));
+        m_Buffers.camera.Bind(     GL_UNIFORM_BUFFER,        BindingPoint(3));
 
-        m_Buffers.material.Bind(   GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(4));
-        m_Buffers.texture.Bind(    GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(5));
-        m_Buffers.light.Bind(      GL_SHADER_STORAGE_BUFFER, graphics::BindingPoint(6));
+        m_Buffers.material.Bind(   GL_SHADER_STORAGE_BUFFER, BindingPoint(4));
+        m_Buffers.texture.Bind(    GL_SHADER_STORAGE_BUFFER, BindingPoint(5));
+        m_Buffers.light.Bind(      GL_SHADER_STORAGE_BUFFER, BindingPoint(6));
 
-        m_Buffers.globalData.Bind( GL_UNIFORM_BUFFER,        graphics::BindingPoint(7));
+        m_Buffers.globalData.Bind( GL_UNIFORM_BUFFER,        BindingPoint(7));
     }
 
     void OpenGLRenderer::UploadToGPU() {
@@ -191,16 +191,16 @@ namespace Real::platform::opengl {
     void OpenGLRenderer::SwapBuffers() {
     }
 
-    void OpenGLRenderer::ClearColor(const graphics::Color& color) {
+    void OpenGLRenderer::ClearColor(const Color& color) {
         glClearColor(color.r, color.g, color.b, color.a);
     }
 
-    void OpenGLRenderer::Clear(const graphics::ClearFlags& clearFlags) {
+    void OpenGLRenderer::Clear(const ClearFlags& clearFlags) {
         GLbitfield mask = 0;
 
-        if (HasFlag(clearFlags, graphics::ClearFlags::Color))   mask |= GL_COLOR_BUFFER_BIT;
-        if (HasFlag(clearFlags, graphics::ClearFlags::Depth))   mask |= GL_DEPTH_BUFFER_BIT;
-        if (HasFlag(clearFlags, graphics::ClearFlags::Stencil)) mask |= GL_STENCIL_BUFFER_BIT;
+        if (HasFlag(clearFlags, ClearFlags::Color))   mask |= GL_COLOR_BUFFER_BIT;
+        if (HasFlag(clearFlags, ClearFlags::Depth))   mask |= GL_DEPTH_BUFFER_BIT;
+        if (HasFlag(clearFlags, ClearFlags::Stencil)) mask |= GL_STENCIL_BUFFER_BIT;
 
         glClear(mask);
     }

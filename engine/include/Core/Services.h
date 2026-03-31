@@ -4,6 +4,10 @@
 #pragma once
 
 namespace Real::assets {
+    class ModelManager;
+}
+
+namespace Real::assets {
     class ResourceManager;
 }
 
@@ -39,7 +43,8 @@ namespace Real::Services {
     [[nodiscard]] assets::AssetManager    &GetAssetManager();
     [[nodiscard]] assets::MaterialManager &GetMaterialManager();
     [[nodiscard]] assets::MeshManager     &GetMeshManager();
-    [[nodiscard]] assets::ResourceManager  &GetResourceLoader();
+    [[nodiscard]] assets::ResourceManager &GetResourceLoader();
     [[nodiscard]] assets::ShaderManager   &GetShaderManager();
     [[nodiscard]] assets::TextureManager  &GetTextureManager();
+    [[nodiscard]] assets::ModelManager    &GetModelManager();
 }

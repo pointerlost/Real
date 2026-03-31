@@ -23,6 +23,7 @@ namespace Real {
     private:
         u64 m_UUID = 0;
     };
+
 }
 
 namespace std {

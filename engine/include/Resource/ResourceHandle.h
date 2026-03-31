@@ -6,37 +6,68 @@
 #include "Assets/ResourceLoader.h"
 #include "Core/TypedHandle.h"
 
+namespace Real::assets {
+    struct IResourceManager;
+}
+
 namespace Real::core {
 
-    template <typename T>
+    template<typename T>
     class ResourceHandle {
     public:
-        explicit ResourceHandle(assets::ResourceManager* mngr) : m_ResourceManager(mngr) {}
         ResourceHandle() = default;
-        ResourceHandle(const ResourceHandle& other) {
-            m_Handle          = other.m_Handle;
-            m_ResourceManager = other.m_ResourceManager;
-            // TODO: Notify resourcemanager
-        }
-        ~ResourceHandle() {
-            if (m_ResourceManager && !m_Handle.IsNull());
-                // m_ResourceManager->Release(m_Handle);
+        explicit ResourceHandle(assets::IResourceManager* mgr, SlotHandle handle)
+            : m_Handle(handle), m_ResourceManager(mgr) {}
+
+        // Copy - shallow, no ref count yet (TODO: when ref counting enabled)
+        // TODO: add ref counter to release unused textures!
+        ResourceHandle(const ResourceHandle& other)            = default;
+        ResourceHandle& operator=(const ResourceHandle& other) = default;
+
+        // Move - transfer ownership, null source
+        ResourceHandle(ResourceHandle&& other) noexcept
+            : m_Handle(other.m_Handle), m_ResourceManager(other.m_ResourceManager)
+        { other.m_Handle = {}; }
+
+        ResourceHandle& operator=(ResourceHandle&& other) noexcept {
+            if (this != &other) {
+                m_Handle          = other.m_Handle;
+                m_ResourceManager = other.m_ResourceManager;
+                other.m_Handle    = {};
+            }
+            return *this;
         }
 
-        // Convenience operators
-        operator bool() const { return IsValid(); }
-        T* operator->() const { return Get();     }
-        T& operator*()  const {
-            assert(IsValid() && "Dereferencing invalid handle");
-            return *Get();
-        }
+        ~ResourceHandle();
 
-                      T*   Get(SlotHandle handle)    {  }
-        [[nodiscard]] SlotHandle GetHandle() const { return m_Handle; }
-        [[nodiscard]] bool IsValid() const { return !m_Handle.IsNull(); }
+        [[nodiscard]] T* Get() const;
+
+        [[nodiscard]] SlotHandle GetHandle() const { return m_Handle;           }
+        [[nodiscard]] bool       IsValid()   const { return !m_Handle.IsNull(); }
+
+        explicit operator bool() const { return IsValid(); }
+        T* operator->()          const { return Get();     }
+        T& operator*()           const { assert(IsValid() && "Dereferencing invalid handle"); return *Get(); }
+
+        bool operator==(const ResourceHandle& o) const { return m_Handle == o.m_Handle; }
+        bool operator!=(const ResourceHandle& o) const { return m_Handle != o.m_Handle; }
 
     private:
-        SlotHandle               m_Handle {};
-        assets::ResourceManager* m_ResourceManager {};
+        SlotHandle                m_Handle          {};
+        assets::IResourceManager* m_ResourceManager {};
+    };
+
+}
+
+#include "Resource/ResourceHandle.inl"
+
+// Hash specialization
+namespace std {
+    template<typename T>
+    struct hash<Real::core::ResourceHandle<T>> {
+        size_t operator()(const Real::core::ResourceHandle<T>& h) const {
+            return std::hash<Real::u32>{}(h.GetHandle().index)
+                 ^ std::hash<Real::u32>{}(h.GetHandle().generation);
+        }
     };
 }

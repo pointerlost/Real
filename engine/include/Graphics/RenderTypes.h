@@ -3,9 +3,14 @@
 //
 #pragma once
 #include "RenderEnum.h"
-#include "Assets/FileManager.h"
+#include "Common/Utils.h"
+#include "Core/FileManager.h"
 #include "Math/Vec2.h"
 #include "Math/Vec3.h"
+#include "Resource/ResourceHandle.h"
+
+namespace Real::platform::opengl { class OpenGLTexture; }
+namespace Real::graphics { struct Material; }
 
 namespace Real::graphics {
 
@@ -46,6 +51,11 @@ namespace Real::graphics {
     using ShaderHandle   = Handle<struct ShaderTag>;
     using BufferHandle   = Handle<struct BufferTag>;
     using BindingPoint   = Handle<struct BindingTag>;
+
+    using GLTextureResourceHandle  = core::ResourceHandle<platform::opengl::OpenGLTexture>;
+    using GLMaterialResourceHandle = core::ResourceHandle<Material>;
+    using GLTextureReference       = Ref<platform::opengl::OpenGLTexture>;
+    using GLTexture                = platform::opengl::OpenGLTexture;
 
     using     BindlessHandle = u64; // stays flat, GL-specific
     constexpr BindlessHandle InvalidBindlessHandle = 0;

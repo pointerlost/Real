@@ -2,6 +2,7 @@
 // Created by pointerlost on 3/27/26.
 //
 #pragma once
+#include "Logger.h"
 #include "Core/TypedHandle.h"
 
 namespace Real::core {
@@ -10,6 +11,10 @@ namespace Real::core {
     class SlotMap {
     public:
         SlotHandle Add(T data) {
+            // Info("SlotMap this: " + std::to_string(reinterpret_cast<uintptr_t>(this)));
+            // Info("m_Slots addr: " + std::to_string(reinterpret_cast<uintptr_t>(&m_Slots)));
+            // Info("m_FreedSlots addr: " + std::to_string(reinterpret_cast<uintptr_t>(&m_FreedSlots)));
+
             if (!m_FreedSlots.empty()) {
                 u32 index = m_FreedSlots.back();
                 m_FreedSlots.pop_back();
@@ -21,7 +26,7 @@ namespace Real::core {
                 return { index, m_Slots[index].generation };
             }
 
-            u32 index = static_cast<u32>(m_Slots.size());
+            const auto index = static_cast<u32>(m_Slots.size());
             m_Slots.push_back({ std::move(data), 0, true });
             return { index, 0 };
         }
@@ -64,7 +69,7 @@ namespace Real::core {
             bool occupied   = false;
         };
 
-        Vector<Slot> m_Slots;
-        Vector<u32>  m_FreedSlots; // recycled indices
+        Vector<Slot> m_Slots{};
+        Vector<u32>  m_FreedSlots{}; // recycled indices
     };
 }

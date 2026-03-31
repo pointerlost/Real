@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 #include <Core/UUID.h>
-#include "Assets/FileManager.h"
+#include "../Core/FileManager.h"
 #include "Common/Types.h"
 
 namespace Real::graphics {

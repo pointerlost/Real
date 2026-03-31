@@ -9,7 +9,7 @@
 #include "HierarchyPanel.h"
 #include "Assets/AssetManager.h"
 #include "Core/CMakeConfig.h"
-#include "Assets/FileManager.h"
+#include "../../../engine/include/Core/FileManager.h"
 #include "Core/IPhysicsBackend.h"
 #include "Core/Services.h"
 #include "Platform/GLFW/GLFWwindow.h"

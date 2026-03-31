@@ -2,6 +2,7 @@
 // Created by pointerlost on 10/13/25.
 //
 #pragma once
+#include <cstdint>
 
 namespace Real {
 

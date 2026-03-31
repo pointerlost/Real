@@ -64,4 +64,8 @@ namespace Real::Services {
     assets::TextureManager& GetTextureManager() {
         return *s_AssetSystems->textureManager;
     }
+
+    assets::ModelManager& GetModelManager() {
+        return *s_AssetSystems->modelManager;
+    }
 }

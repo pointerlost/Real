@@ -10,6 +10,7 @@
 #include "Graphics/GPUBuffers.h"
 
 namespace Real::platform::opengl {
+    using namespace graphics;
 
     class OpenGLRenderer final : public rhi::IRenderer {
     public:
@@ -18,16 +19,16 @@ namespace Real::platform::opengl {
         void Init() override;
         void Render(Scene* scene, Entity *camera) override;
         void Shutdown() override;
-        void BeginFrame(const graphics::FrameConfig& fc) override;
+        void BeginFrame(const FrameConfig& fc) override;
         void EndFrame() override;
 
-        graphics::RenderContext& GetRenderContext() override { return *m_RenderContext.get(); }
+        RenderContext& GetRenderContext() override { return *m_RenderContext.get(); }
 
     private:
         Scope<rhi::IRenderDevice> m_Device;
         OpenGLBuffers m_Buffers;
 
-        Scope<graphics::RenderContext> m_RenderContext = nullptr;
+        Scope<RenderContext> m_RenderContext = nullptr;
 
         RendererConfig config;
 
@@ -39,7 +40,7 @@ namespace Real::platform::opengl {
         void UploadToGPU();
 
         void SwapBuffers();
-        void ClearColor(const graphics::Color& color);
-        void Clear(const graphics::ClearFlags& clearFlags);
+        void ClearColor(const Color& color);
+        void Clear(const ClearFlags& clearFlags);
     };
 }

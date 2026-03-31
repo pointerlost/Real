@@ -2,7 +2,6 @@
 // Created by pointerlost on 3/23/26.
 //
 #include "Assets/MaterialManager.h"
-
 #include "Assets/AssetImporter.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
@@ -10,17 +9,17 @@
 
 namespace Real::assets {
 
-    Ref<graphics::Material> MaterialManager::CreateBase(const String& name) {
+    Ref<Material> MaterialManager::CreateBase(const String& name) {
         const auto uniqueName = GenerateUniqueName(name);
-        const auto base = CreateRef<graphics::Material>(UUID{}, uniqueName);
+        const auto base       = CreateRef<Material>(UUID{}, uniqueName);
 
-        m_Materials.emplace(base->m_UUID, base);
-        m_MaterialNameToUUID.emplace(base->m_Name, base->m_UUID);
+        m_Materials.emplace(base->id, base);
+        m_MaterialNameToUUID.emplace(base->name, base->id);
 
-        return m_Materials.at(base->m_UUID);
+        return m_Materials.at(base->id);
     }
 
-    Ref<graphics::Material> MaterialManager::GetOrCreateBase(const String& name) {
+    Ref<Material> MaterialManager::GetOrCreateBase(const String& name) {
         const String normalized = NormalizeName(name);
 
         if (m_MaterialNameToUUID.contains(normalized))
@@ -28,7 +27,7 @@ namespace Real::assets {
 
         const String uniqueName = GenerateUniqueName(normalized);
         UUID uuid{};
-        auto mat = CreateRef<graphics::Material>(uuid, uniqueName);
+        auto mat = CreateRef<Material>(uuid, uniqueName);
 
         m_Materials.emplace(uuid, mat);
         m_MaterialNameToUUID.emplace(uniqueName, uuid);
@@ -36,18 +35,18 @@ namespace Real::assets {
         return mat;
     }
 
-    Ref<graphics::Material> MaterialManager::LoadBaseAsset(const UUID& uuid, const String& name) {
+    Ref<Material> MaterialManager::LoadBaseAsset(const UUID& uuid, const String& name) {
         if (m_Materials.contains(uuid))
             return m_Materials.at(uuid);
 
-        auto mat = CreateRef<graphics::Material>(uuid, name);
+        auto mat = CreateRef<Material>(uuid, name);
         m_Materials.emplace(uuid, mat);
         m_MaterialNameToUUID.emplace(name, uuid);
 
         return mat;
     }
 
-    Ref<graphics::Material> MaterialManager::GetBase(const UUID& uuid) const {
+    Ref<Material> MaterialManager::GetBase(const UUID& uuid) const {
         const auto it = m_Materials.find(uuid);
         if (it == m_Materials.end()) {
             Warn("[GetBase] Material not found!");
@@ -56,7 +55,7 @@ namespace Real::assets {
         return it->second;
     }
 
-    Ref<graphics::Material> MaterialManager::GetBase(const String& name) const {
+    Ref<Material> MaterialManager::GetBase(const String& name) const {
         const auto it = m_MaterialNameToUUID.find(name);
         if (it == m_MaterialNameToUUID.end()) {
             Warn("Material not found: " + name);
@@ -72,7 +71,7 @@ namespace Real::assets {
             Warn("Material asset not found!");
             return UUID(0);
         }
-        const auto instance = CreateRef<graphics::MaterialInstance>(base);
+        const auto instance = CreateRef<MaterialInstance>(base);
         instance->m_UUID = UUID{};
         m_MaterialInstances.emplace(instance->m_UUID, instance);
         return instance->m_UUID;
@@ -87,7 +86,7 @@ namespace Real::assets {
         return CreateInstance(it->second);
     }
 
-    Ref<graphics::MaterialInstance> MaterialManager::GetInstance(const UUID& uuid) const {
+    Ref<MaterialInstance> MaterialManager::GetInstance(const UUID& uuid) const {
         const auto it = m_MaterialInstances.find(uuid);
         if (it == m_MaterialInstances.end()) {
             Warn("Material instance not found: " + std::to_string(uuid));
@@ -110,9 +109,9 @@ namespace Real::assets {
             && m_Materials.contains(m_MaterialNameToUUID.at(name));
     }
 
-    void MaterialManager::RegisterBase(const Ref<graphics::Material>& material) {
-        if (!m_Materials.contains(material->m_UUID))
-            m_Materials.emplace(material->m_UUID, material);
+    void MaterialManager::RegisterBase(const Ref<Material>& material) {
+        if (!m_Materials.contains(material->id))
+            m_Materials.emplace(material->id, material);
     }
 
     void MaterialManager::Rename(const String& newName, const UUID& uuid) {
@@ -122,14 +121,14 @@ namespace Real::assets {
         db["materials"][std::to_string(uuid)]["name"] = newName;
 
         const auto& mat = m_Materials[uuid];
-        m_MaterialNameToUUID.erase(mat->m_Name);
-        mat->m_Name = newName;
+        m_MaterialNameToUUID.erase(mat->name);
+        mat->name = newName;
         m_MaterialNameToUUID[newName] = uuid;
 
         ai.MarkDirtyAssetDB();
     }
 
-    const std::unordered_map<UUID, Ref<graphics::Material>>& MaterialManager::GetAllBases() const {
+    const std::unordered_map<UUID, Ref<Material>>& MaterialManager::GetAllBases() const {
         return m_Materials;
     }
 

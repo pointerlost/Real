@@ -36,13 +36,11 @@ namespace Real::core {
         );
         Info("Systems attached to the active scene successfully!!");
 
-        m_Assets->resourceManager->Load();
+        m_Assets->resourceManager->Load(m_Core.get());
         Info("ResourceManager initialized successfully!!");
 
         m_Core->debugRenderer->Init();
         Info("DebugRenderer initialized successfully!!");
-
-        m_Core->renderer->GetRenderContext().GetGPURenderData().textures =  m_Assets->textureManager->FlushPendingUploads();
 
         if (!m_Application)
             throw std::runtime_error("Application not set");

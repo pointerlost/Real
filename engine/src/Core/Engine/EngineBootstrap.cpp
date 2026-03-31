@@ -68,6 +68,9 @@ namespace Real::core {
         as->materialManager = CreateScope<assets::MaterialManager>();
         as->meshManager     = CreateScope<assets::MeshManager>();
         as->resourceManager = CreateScope<assets::ResourceManager>();
+        as->shaderManager   = CreateScope<assets::ShaderManager>();
+        as->textureManager  = CreateScope<assets::TextureManager>();
+        as->modelManager    = CreateScope<assets::ModelManager>();
         Info("AssetSystems build successfully!");
 
         return as;

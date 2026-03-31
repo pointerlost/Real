@@ -13,19 +13,19 @@
 
 namespace Real::assets {
 
-    void ShaderManager::Load(const String& vertPath, const String& fragPath, const graphics::ShaderType& type) {
+    void ShaderManager::Load(const String& vertPath, const String& fragPath, const ShaderType& type) {
         const auto vert = PreprocessFile(vertPath);
         const auto frag = PreprocessFile(fragPath);
-        m_Shaders[type] = graphics::Shader{vert, frag, type};
+        m_Shaders[type] = Shader{vert, frag, type};
     }
 
-    graphics::Shader& ShaderManager::Get(const graphics::ShaderType& type) {
+    Shader& ShaderManager::Get(const ShaderType& type) {
         if (!m_Shaders.contains(type))
             Warn(ConcatStr("Shader doesn't exist! from: ", __FILE__));
         return m_Shaders.at(type);
     }
 
-    bool ShaderManager::Exists(const graphics::ShaderType& type) const {
+    bool ShaderManager::Exists(const ShaderType& type) const {
         return m_Shaders.contains(type);
     }
 

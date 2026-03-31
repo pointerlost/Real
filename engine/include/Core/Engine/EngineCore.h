@@ -17,6 +17,7 @@
 #include "Assets/ShaderManager.h"
 #include "Assets/TextureManager.h"
 #include "Assets/MeshManager.h"
+#include "Assets/ModelManager.h"
 #include "Scene/Systems/SystemsManager.h"
 
 
@@ -44,6 +45,7 @@ namespace Real::core {
         std::unique_ptr<assets::ResourceManager> resourceManager;
         std::unique_ptr<assets::ShaderManager>   shaderManager;
         std::unique_ptr<assets::TextureManager>  textureManager;
+        std::unique_ptr<assets::ModelManager>    modelManager;
     };
 
 

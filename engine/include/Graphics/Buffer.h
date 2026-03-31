@@ -2,7 +2,6 @@
 // Created by pointerlost on 10/12/25.
 //
 #pragma once
-#include <cstddef>
 #include "RenderTypes.h"
 
 namespace Real::opengl {

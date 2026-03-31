@@ -3,11 +3,10 @@
 //
 #include "Assets/TextureManager.h"
 #include <cstring>
-#include "Assets/FileManager.h"
+#include "../../include/Core/FileManager.h"
 #include "Core/CMakeConfig.h"
 #include "Core/Logger.h"
 #include "Graphics/Material.h"
-#include "Math/iVec2.h"
 #include <ranges>
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Tools/Image/TextureUtils.h"
@@ -18,34 +17,55 @@ namespace Real::assets {
         InitDefaults();
     }
 
-    void TextureManager::Register(const UUID& uuid, Ref<platform::opengl::OpenGLTexture> texture) {
-        if (m_Textures.contains(uuid)) return;
-        texture->SetID(uuid);
-        m_Textures[uuid] = texture;
+    void* TextureManager::Get(core::SlotHandle handle) {
+        const auto* ref = m_Textures.Get(handle);  // GLTextureReference* = Ref<OpenGLTexture>*
+        return ref ? ref->get() : nullptr;         // .get() -> raw OpenGLTexture* stored as void*
+    }
+
+    void TextureManager::Release(core::SlotHandle handle) {
+        m_Textures.Remove(handle);
+    }
+
+    GLTextureResourceHandle TextureManager::Register(const GLTextureReference& texture) {
+        core::SlotHandle slot = m_Textures.Add(texture);
+        m_UUIDToSlot[texture->GetUUID()] = slot;
         m_PendingUpload.push_back(texture);
+
+        GLTextureResourceHandle handle(this, slot);
+        return handle;
     }
 
-    void TextureManager::DeleteCPU(const UUID& uuid) {
-        m_Textures.erase(uuid);
+    GLTextureResourceHandle TextureManager::FindByUUID(const UUID& uuid) {
+        if (!m_UUIDToSlot.contains(uuid))
+            return {};
+
+        GLTextureResourceHandle handle(this, m_UUIDToSlot[uuid]);
+        return handle;
     }
 
-    const Ref<platform::opengl::OpenGLTexture>& TextureManager::GetTexture(
-        const UUID& uuid, TextureType type)
-    {
-        const auto it = m_Textures.find(uuid);
-        if (it != m_Textures.end() && it->second)
-            return it->second;
-
-        return GetOrCreateDefault(type);
+    void TextureManager::DeleteCPU(core::SlotHandle slot) {
+        if (const auto* ref = m_Textures.Get(slot))
+            m_UUIDToSlot.erase((*ref)->GetUUID());
+        m_Textures.Remove(slot);
     }
 
-    Ref<platform::opengl::OpenGLTexture>& TextureManager::GetOrCreateDefault(TextureType type) {
+    GLTextureReference TextureManager::GetTexture(const GLTextureResourceHandle& handle) {
+        if (!handle.IsValid())
+            return GetOrCreateDefault(TextureType::ALPHA); // Debug texture type is ALPHA
+        const auto* ref = m_Textures.Get(handle.GetHandle());
+        if (ref && *ref) return *ref;
+        return GetOrCreateDefault(TextureType::ALPHA);     // Debug texture type is ALPHA
+    }
+
+    GLTextureReference TextureManager::GetTexture(const UUID &id) {
+        return GetTexture(FindByUUID(id));
+    }
+
+    GLTextureReference& TextureManager::GetOrCreateDefault(TextureType type) {
         if (m_DefaultTextures.contains(type))
             return m_DefaultTextures[type];
 
         const int channelCount = util::texture::TextureTypeToChannelCount(type);
-
-        // Default values per type
         u8 r = 255, g = 255, b = 255, a = 255;
         switch (type) {
             case TextureType::ALBEDO:            r=128; g=128; b=128; a=255; break;
@@ -55,28 +75,19 @@ namespace Real::assets {
             case TextureType::AMBIENT_OCCLUSION: r=255; g=0;   b=0;   a=0;   break;
             case TextureType::METALLIC:
             case TextureType::HEIGHT:            r=0;   g=0;   b=0;   a=0;   break;
-            case TextureType::ALPHA:             r=255; g=255; b=255; a=255; break;
+            case TextureType::ORM:               r=255; g=255; b=0;   a=255; break;
 
-            case TextureType::ORM:  // Occlusion, Roughness, Metallic packed
-                // Default neutral values:
-                // R (Occlusion) = 255 (full occlusion)
-                // G (Roughness) = 255 (fully rough)
-                // B (Metallic)  = 0   (non-metallic)
-                r=255; g=255; b=0; a=255; break;
-
-            default:                             r=255; g=255; b=255; a=255; break;
+            default:                             r=255; g=255; b=255; a=255; break; // Use ALPHA as default
         }
 
-        // Heap allocated - CleanUpCPUData will delete[] it
-        const int imageSize = channelCount;  // 1x1
-        auto* imageData = new u8[imageSize];
+        auto* imageData   = new u8[channelCount];
         const u8 pixel[4] = { r, g, b, a };
-        memcpy(imageData, pixel, imageSize);
+        memcpy(imageData, pixel, channelCount);
 
         TextureData data{};
         data.data         = imageData;
         data.channelCount = channelCount;
-        data.dataSize     = imageSize;
+        data.dataSize     = channelCount;
         data.width        = 1;
         data.height       = 1;
 
@@ -85,7 +96,10 @@ namespace Real::assets {
         tex->SetImageFormatState(ImageFormatState::DEFAULT);
         tex->CreateFromData(data, type);
 
-        m_Textures[tex->GetUUID()] = tex;
+        // Pinned - gets a slot, never removed
+        core::SlotHandle slot = m_Textures.Add(tex);
+        m_UUIDToSlot[tex->GetUUID()] = slot;
+
         return m_DefaultTextures[type] = tex;
     }
 
@@ -93,14 +107,15 @@ namespace Real::assets {
         return fs::File::Exists(String(ASSETS_DIR) + "textures/compressed/" + stem + ".dds");
     }
 
-    // Call this on the main thread after loading textures on any thread
     Vector<BindlessHandle> TextureManager::FlushPendingUploads() {
         Vector<BindlessHandle> newHandles;
         newHandles.reserve(m_PendingUpload.size());
 
-        for (auto& tex : m_PendingUpload) {
+        Vector<GLTextureReference> stillPending;
+
+        for (const auto& tex : m_PendingUpload) {
             if (!tex->IsReadyForUpload()) {
-                Warn("[FlushPendingUploads] Not ready: " + tex->GetDebugName());
+                stillPending.push_back(tex);
                 continue;
             }
             tex->UploadToGPU();
@@ -109,7 +124,7 @@ namespace Real::assets {
             newHandles.push_back(tex->GetBindless());
         }
 
-        m_PendingUpload.clear();
+        m_PendingUpload = std::move(stillPending);  // failed ones stay for next flush
         return newHandles;
     }
 
@@ -117,39 +132,29 @@ namespace Real::assets {
         return m_BindlessHandles.size();
     }
 
-    Vector<Ref<platform::opengl::OpenGLTexture>> TextureManager::GetMaterialTextures(
-        const Material* mat) const
-    {
-        Vector<Ref<platform::opengl::OpenGLTexture>> textures;
+    Vector<GLTextureReference> TextureManager::GetMaterialTextures(const Material* mat) {
+        Vector<GLTextureReference> textures;
 
-        auto tryAdd = [&](UUID id) {
-            if (id == 0) return;
-            const auto it = m_Textures.find(id);
-            if (it != m_Textures.end() && it->second)
-                textures.push_back(it->second);
+        auto tryAdd = [&](const GLTextureResourceHandle& handle) {
+            if (!handle.IsValid()) return;
+            auto tex = GetTexture(handle);
+            if (tex) textures.push_back(tex);
         };
 
-        tryAdd(mat->m_Albedo);
-        tryAdd(mat->m_Normal);
-        tryAdd(mat->m_ORM);
-        tryAdd(mat->m_Height);
-        tryAdd(mat->m_Emissive);
+        tryAdd(mat->albedo);
+        tryAdd(mat->normal);
+        tryAdd(mat->orm);
+        tryAdd(mat->height);
+        tryAdd(mat->emissive);
         return textures;
     }
 
-    void TextureManager::Update() {}
-
     void TextureManager::InitDefaults() {
-        // Pre-create all known default types at startup
         constexpr TextureType types[] = {
-            TextureType::ALBEDO,
-            TextureType::NORMAL,
-            TextureType::AMBIENT_OCCLUSION,
-            TextureType::ROUGHNESS,
-            TextureType::METALLIC,
-            TextureType::ORM,
-            TextureType::HEIGHT,
-            TextureType::EMISSIVE,
+            TextureType::ALBEDO,            TextureType::NORMAL,
+            TextureType::ROUGHNESS,         TextureType::METALLIC,
+            TextureType::AMBIENT_OCCLUSION, TextureType::ORM,
+            TextureType::HEIGHT,            TextureType::EMISSIVE,
             TextureType::ALPHA,
         };
         for (const auto t : types)

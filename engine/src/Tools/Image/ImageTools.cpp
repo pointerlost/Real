@@ -304,7 +304,7 @@ namespace Real::tools {
         packed->CreateFromData(packedData, graphics::TextureType::ORM);
 
         const String rawPath = String(ASSETS_DIR) + "textures/uncompressed/"
-                             + materialName + "_ORM.png";
+                             + materialName       + "_ORM.png";
         packed->SetFileInfo(fs::FileInfoFromPath(rawPath));
         if (!SaveTextureAsFile(packed.get()))
             Warn("[PackORM] Failed to save raw ORM: " + rawPath);
@@ -313,10 +313,13 @@ namespace Real::tools {
             Warn("[PackORM] Compression failed - texture will upload as uncompressed");
 
         auto& tm = Services::GetTextureManager();
-        for (auto* slot : {ao.get(), rgh.get(), mtl.get()}) {
-            if (!slot->IsDefault()) {
-                fs::File::Delete(slot->GetFileInfo().path);
-                tm.DeleteCPU(slot->GetUUID());
+        for (auto* tex : { ao.get(), rgh.get(), mtl.get() }) {
+            if (!tex->IsDefault()) {
+                fs::File::Delete(tex->GetFileInfo().path);
+                // UUID -> SlotHandle lookup, then delete
+                auto handle = tm.FindByUUID(tex->GetUUID());
+                if (handle.IsValid())
+                    tm.DeleteCPU(handle.GetHandle());
             }
         }
 

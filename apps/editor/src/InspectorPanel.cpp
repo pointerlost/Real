@@ -160,8 +160,8 @@ namespace Real::UI {
         if (!mat)
             return;
 
-        auto& baseColor = mat->m_BaseColorFactor;
-        auto& factors   = mat->m_ORMFactor; // x=AO, y=Roughness, z=Metallic, w=padding
+        auto& baseColor = mat->baseColorFactor;
+        auto& factors   = mat->ormFactor; // x=AO, y=Roughness, z=Metallic, w=padding
 
         ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(6, 4));
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 2));

@@ -4,9 +4,10 @@
 #include "Assets/AssetImporter.h"
 #include "Common/Macros.h"
 #include "Assets/AssetManager.h"
-#include "Assets/FileManager.h"
+#include "../../include/Core/FileManager.h"
 #include "Assets/MaterialManager.h"
 #include "Assets/MeshManager.h"
+#include "Assets/ModelManager.h"
 #include "Assets/TextureManager.h"
 #include "Tools/Image/TextureUtils.h"
 #include "Common/StringUtils.h"
@@ -45,44 +46,49 @@ namespace Real::assets {
     }
 
     void AssetImporter::SaveTextureToAssetDB(const platform::opengl::OpenGLTexture* texture) {
-        const auto fileInfo = texture->GetFileInfo();
-        if (HasAssetWithPath(fileInfo.path))
+        const auto [name, stem, path, ext] = texture->GetFileInfo();
+        if (HasAssetWithPath(path))
             return;
 
         const String uuidStr = std::to_string(texture->GetUUID());
         nlohmann::json& tex = m_AssetDB["textures"][uuidStr];
 
-        tex["name"]               = fileInfo.name;
-        tex["stem"]               = fileInfo.stem;
-        tex["path"]               = fileInfo.path;
-        tex["extension"]          = fileInfo.ext;
+        tex["name"]               = name;
+        tex["stem"]               = stem;
+        tex["path"]               = path;
+        tex["extension"]          = ext;
         tex["type"]               = util::texture::TextureType_EnumToString(texture->GetType());
         tex["image_format_state"] = util::compression::ImageFormatState_EnumToString(texture->GetImageFormatState());
 
-        CacheAssetWithPath(fileInfo.path, texture->GetUUID());
+        CacheAssetWithPath(path, texture->GetUUID());
         MarkDirtyAssetDB();
     }
 
     void AssetImporter::SaveMaterialToAssetDB(const Ref<Material> &mat) {
-        if (HasAssetWithName(mat->m_Name))
-            return;
+        if (mat->id.IsNull())
+            mat->id = UUID{};
 
-        if (mat->m_UUID.IsNull()) {
-            mat->m_UUID = UUID{};
-        }
-        const String uuidStr = std::to_string(mat->m_UUID);
-        nlohmann::json& material = m_AssetDB["materials"][uuidStr];
-        material["name"] = mat->m_Name;
+        const String uuidStr        = std::to_string(mat->id);
+        nlohmann::json& entry       = m_AssetDB["materials"][uuidStr];
+        entry["name"]               = mat->name;
 
-        material["textures"] = {
-            { "albedo",   static_cast<u64>(mat->m_Albedo)   },
-            { "normal",   static_cast<u64>(mat->m_Normal)   },
-            { "orm",      static_cast<u64>(mat->m_ORM)      },
-            { "height",   static_cast<u64>(mat->m_Height)   },
-            { "emissive", static_cast<u64>(mat->m_Emissive) }
+        // Resolve handle -> texture -> UUID for DB storage
+        auto handleToUUID = [&](const GLTextureResourceHandle& handle) -> u64 {
+            if (!handle.IsValid())
+                return 0ULL;
+            const auto* tex = static_cast<GLTexture*>(handle.Get());
+            return tex ? static_cast<u64>(tex->GetUUID()) : 0ULL;
         };
 
-        CacheAssetWithName(mat->m_Name, mat->m_UUID);
+        entry["textures"] = {
+            { "albedo",   handleToUUID(mat->albedo)   },
+            { "normal",   handleToUUID(mat->normal)   },
+            { "orm",      handleToUUID(mat->orm)       },
+            { "height",   handleToUUID(mat->height)   },
+            { "emissive", handleToUUID(mat->emissive) }
+        };
+
+        CacheAssetWithName(mat->name, mat->id);
         MarkDirtyAssetDB();
     }
 
@@ -105,7 +111,7 @@ namespace Real::assets {
 
         CacheAssetWithPath(model->m_FileInfo.path, model->m_UUID);
         MarkDirtyAssetDB();
-        Services::GetAssetManager().RegisterModel(model);
+        Services::GetModelManager().RegisterModel(model);
     }
 
     void AssetImporter::SaveMeshToAssetDB(const MeshBinaryHeader &header, const String &name) {
@@ -156,16 +162,15 @@ namespace Real::assets {
             fi.ext  = texData.value("extension", "null");
 
             if (ifs == ImageFormatState::UNDEFINED) {
-                Warn("[ImportTextures] UNDEFINED image format state: " + fi.path);
+                Warn("[ImportTextures] UNDEFINED state: " + fi.path);
                 continue;
             }
 
             auto texture = CreateRef<platform::opengl::OpenGLTexture>();
             texture->SetType(type);
-            texture->LoadFromFile(fi.path);  // sets origin, state, mip data
+            texture->SetID(uuid); // stamp the DB uuid before loading
+            texture->LoadFromFile(fi.path);
 
-            // If it was never compressed (COMPRESS_ME in DB = leftover from last session)
-            // or it's uncompressed and no .dds exists yet - compress now
             const bool needsCompression =
                 (ifs == ImageFormatState::COMPRESS_ME) ||
                 (ifs == ImageFormatState::UNCOMPRESSED && !tm.IsCompressed(fi.stem));
@@ -174,15 +179,15 @@ namespace Real::assets {
                 if (tools::CompressTexture(texture.get()))
                     UpdateTextureInAssetDB(texture.get());
                 else
-                    Warn("[ImportTextures] Compression failed, keeping uncompressed: " + fi.path);
+                    Warn("[ImportTextures] Compression failed: " + fi.path);
             }
 
             if (!texture->IsReadyForUpload()) {
-                Warn("[ImportTextures] Texture not ready after load: " + fi.path);
+                Warn("[ImportTextures] Not ready: " + fi.path);
                 continue;
             }
 
-            tm.Register(uuid, texture);
+            tm.Register(texture);  // UUID already set on texture, tracked via m_UUIDToSlot
         }
 
         Info("Textures imported from Asset DB successfully!");
@@ -205,7 +210,7 @@ namespace Real::assets {
     }
 
     void AssetImporter::ImportModels() {
-        auto& am = Services::GetAssetManager();
+        auto& mm = Services::GetModelManager();
         for (const auto& [uuidStr, modelData] : m_AssetDB["models"].items()) {
             UUID uuid;
             if (!util::TryParseUUID(uuidStr, uuid)) {
@@ -231,36 +236,45 @@ namespace Real::assets {
                 Warn("[AssetImporter] Model UUID mismatch!!! Binary UUID != AssetDbUUID fix it!");
             }
 
-            am.RegisterModel(model);
+            mm.RegisterModel(model);
         }
         Info("Models imported from ASSETS_DB successfully!");
     }
 
     void AssetImporter::ImportMaterials() {
         auto& mm = Services::GetMaterialManager();
-        for (const auto& [uuidStr, mat_data] : m_AssetDB["materials"].items()) {
+        auto& tm = Services::GetTextureManager();
+
+        for (const auto& [uuidStr, matData] : m_AssetDB["materials"].items()) {
             UUID uuid;
             if (!util::TryParseUUID(uuidStr, uuid)) {
-                Warn("Invalid UUID in Material DB");
+                Warn("[ImportMaterials] Invalid UUID in Material DB");
                 continue;
             }
-            const String name = mat_data.value("name", "Material");
 
-            const auto& mat = mm.LoadBaseAsset(uuid, name);
+            const auto& mat = mm.LoadBaseAsset(uuid, matData.value("name", "Material"));
 
-            if (mat_data.contains("textures")) {
-                const nlohmann::json& t = mat_data["textures"];
+            if (matData.contains("textures")) {
+                const auto& t = matData["textures"];
 
-                mat->m_Albedo   = UUID(t.value("albedo",   0ULL));
-                mat->m_Normal   = UUID(t.value("normal",   0ULL));
-                mat->m_ORM      = UUID(t.value("orm",      0ULL));
-                mat->m_Height   = UUID(t.value("height",   0ULL));
-                mat->m_Emissive = UUID(t.value("emissive", 0ULL));
+                // Read UUID from DB, resolve to runtime handle
+                auto resolve = [&](const String& key) -> GLTextureResourceHandle {
+                    const UUID texUUID(t.value(key, 0ULL));
+                    if (texUUID == UUID(0)) return {};
+                    return tm.FindByUUID(texUUID);
+                };
+
+                mat->albedo   = resolve("albedo");
+                mat->normal   = resolve("normal");
+                mat->orm      = resolve("orm");
+                mat->height   = resolve("height");
+                mat->emissive = resolve("emissive");
             }
 
             mm.RegisterBase(mat);
         }
-        Info("Materials imported from ASSETS_DB successfully!");
+
+        Info("Materials imported from Asset DB successfully!");
     }
 
     void AssetImporter::BuildCachesFromDB() {
@@ -383,17 +397,16 @@ namespace Real::assets {
                 return;
             }
     
-            const UUID uuid = texture->GetUUID();
-            tm.Register(uuid, texture);
+            auto texHandle = tm.Register(texture);
             UpdateTextureInAssetDB(texture.get());
-    
-            const auto& mat = mm.GetOrCreateBase(matName);
+
+            const auto mat = mm.GetOrCreateBase(matName);
             switch (type) {
-                case TextureType::ALBEDO:   mat->m_Albedo   = uuid; break;
-                case TextureType::NORMAL:   mat->m_Normal   = uuid; break;
-                case TextureType::ORM:      mat->m_ORM      = uuid; break;
-                case TextureType::HEIGHT:   mat->m_Height   = uuid; break;
-                case TextureType::EMISSIVE: mat->m_Emissive = uuid; break;
+                case TextureType::ALBEDO:   mat->albedo   = texHandle; break;
+                case TextureType::NORMAL:   mat->normal   = texHandle; break;
+                case TextureType::ORM:      mat->orm      = texHandle; break;
+                case TextureType::HEIGHT:   mat->height   = texHandle; break;
+                case TextureType::EMISSIVE: mat->emissive = texHandle; break;
                 default: break;
             }
             mm.RegisterBase(mat);
@@ -420,10 +433,9 @@ namespace Real::assets {
                 continue;
             }
     
-            const UUID uuid = orm->GetUUID();
-            tm.Register(uuid, orm);
+            auto ormHandle = tm.Register(orm);
             UpdateTextureInAssetDB(orm.get());
-            mm.GetOrCreateBase(matName)->m_ORM = uuid;
+            mm.GetOrCreateBase(matName)->orm = ormHandle;
         }
     
         Info("Textures loaded from folder successfully!");

@@ -7,7 +7,7 @@
 
 #include "Core/Logger.h"
 #include "../../../engine/include/Common/Utils.h"
-#include "Assets/FileManager.h"
+#include "../../../engine/include/Core/FileManager.h"
 #include "Core/CMakeConfig.h"
 
 namespace Real::editor {

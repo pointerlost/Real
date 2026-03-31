@@ -3,47 +3,51 @@
 //
 #pragma once
 #include <unordered_map>
-#include <unordered_set>
 #include "Common/Types.h"
-#include "Common/Utils.h"
-#include "Core/UUID.h"
 #include "Graphics/RenderTypes.h"
+#include "Resource/ResourceHandle.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
+#include "Core/IResourceManager.h"
 
-namespace Real::graphics         { struct Material;      }
-namespace Real::platform::opengl { struct OpenGLTexture; }
+namespace Real::graphics { struct Material; }
 
 namespace Real::assets {
+
     using namespace graphics;
 
     // TODO: using gl specific types is not good idea for cross-api, clean it from gl
-    class TextureManager {
+    class TextureManager final : public IResourceManager {
     public:
         TextureManager();
 
+        void* Get(core::SlotHandle handle)     override;
+        void  Release(core::SlotHandle handle) override;
+
         // Registration
-        void Register(const UUID& uuid, Ref<platform::opengl::OpenGLTexture> texture);
-        void DeleteCPU(const UUID& uuid);
+        GLTextureResourceHandle Register(const GLTextureReference& texture);
+        void                    DeleteCPU(core::SlotHandle slot);
+
+        GLTextureResourceHandle FindByUUID(const UUID& uuid);
 
         // Lookup
-        [[nodiscard]]    const Ref<platform::opengl::OpenGLTexture>&  GetTexture(const UUID& uuid, TextureType type);
-        [[maybe_unused]] Ref<platform::opengl::OpenGLTexture>&        GetOrCreateDefault(TextureType type);
-        [[nodiscard]]    bool                                         IsCompressed(const String& stem) const;
-        [[nodiscard]]    Vector<Ref<platform::opengl::OpenGLTexture>> GetMaterialTextures(const Material* mat) const;
+        [[nodiscard]] GLTextureReference         GetTexture(const GLTextureResourceHandle& handle);
+        [[nodiscard]] GLTextureReference         GetTexture(const UUID& id);
+        [[nodiscard]] bool                       IsCompressed(const String& stem) const;
+        [[maybe_unused]] GLTextureReference&     GetOrCreateDefault(TextureType type);
+        [[nodiscard]] Vector<GLTextureReference> GetMaterialTextures(const Material* mat);
 
-        // GPU - call once per frame or after batch load
-        [[nodiscard]] Vector<BindlessHandle> FlushPendingUploads();
+        // GPU
+        [[nodiscard]] Vector<BindlessHandle> FlushPendingUploads(); // Should we call updateframe? to
         [[nodiscard]] size_t                 GetNextBindlessIndex() const;
 
-        void Update();
-
     private:
-        std::unordered_map<UUID, Ref<platform::opengl::OpenGLTexture>>        m_Textures;
-        std::unordered_map<TextureType, Ref<platform::opengl::OpenGLTexture>> m_DefaultTextures;
+        core::SlotMap<GLTextureReference>          m_Textures{};
+        std::unordered_map<UUID, core::SlotHandle> m_UUIDToSlot{};
+        Vector<GLTextureReference>                 m_PendingUpload{};
+        Vector<BindlessHandle>                     m_BindlessHandles{};
 
-        Vector<Ref<platform::opengl::OpenGLTexture>> m_PendingUpload;
-        Vector<BindlessHandle>                       m_BindlessHandles;
+        std::unordered_map<TextureType, GLTextureReference> m_DefaultTextures{};
 
-    private:
         void InitDefaults();
     };
 }

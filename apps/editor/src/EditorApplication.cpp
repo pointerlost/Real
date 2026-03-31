@@ -12,7 +12,7 @@
 namespace Real::app::editor {
 
     EditorApplication::EditorApplication(EditorContext ctx) noexcept
-        : m_Ctx(std::move(ctx)), m_Editor(CreateScope<UI::Editor>())
+        : m_Ctx(std::move(ctx)), m_Editor(CreateScope<UI::Editor>()), m_UIResources(CreateScope<Real::editor::UIResources>())
     {
         m_State = CreateScope<EditorState>();
         Services::SetEditorState(m_State.get());
@@ -34,9 +34,11 @@ namespace Real::app::editor {
 
         scene->SetActiveCamera(m_State->editorCamera);
 
-        m_UIResources->InitResources();
+        m_Editor->OnAttachScene(scene);
 
         m_Editor->Init(m_Ctx.window);
+
+        m_UIResources->InitResources();
     }
 
     void EditorApplication::Update(float dt) {

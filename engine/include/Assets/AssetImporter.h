@@ -48,7 +48,7 @@ namespace Real::assets {
     private:
         static constexpr auto ASSET_DB_PATH = ASSETS_DIR "asset_database/asset_database.json";
         nlohmann::json m_AssetDB{};
-        bool m_AssetDBDirty  = false;
+        bool m_AssetDBDirty = false;
 
         // Cache paths with UUIDs to check when new assets are added (Textures, models etc.)
         std::unordered_map<String, UUID> m_PathToUUID;

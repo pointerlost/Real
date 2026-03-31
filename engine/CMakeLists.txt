@@ -38,14 +38,16 @@ add_library(engine STATIC
     src/Tools/Compression/CompressionUtils.cpp
     src/Physics/PhysicsUtils.cpp
     src/Common/StringUtils.cpp
-    include/Resource/ResourceHandle.h
+        include/Resource/ResourceHandle.h
     src/Core/ResourceHandle.cpp
     include/Core/SlotMap.h
     include/Core/TypedHandle.h
-    include/Assets/ResourceManager.h
+        include/Core/IResourceManager.h
     include/Platform/OpenGL/OpenGLTexture.h
     src/Platform/OpenGL/OpenGLTexture.cpp
         include/Graphics/RenderEnum.h
+        include/Resource/ResourceHandle.inl
+        include/Assets/ModelManager.h
 )
 
 target_sources(engine PRIVATE
@@ -109,8 +111,8 @@ target_sources(engine PRIVATE
     src/Common/Scheduling/Threads.cpp
     include/Common/Macros.h
     include/Common/Scheduling/TaskManager.h
-    src/Graphics/ModelLoader.cpp
-    include/Graphics/ModelLoader.h
+        src/Assets/ModelManager.cpp
+        include/Assets/ModelManager.h
     include/Common/RealEnum.h
     include/Graphics/Model.h
     include/Assets/ResourceLoader.h

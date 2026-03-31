@@ -5,26 +5,31 @@
 #include "Common/Macros.h"
 #include "Assets/AssetImporter.h"
 #include "Assets/MeshManager.h"
+#include "Assets/ModelManager.h"
 #include "Assets/ShaderManager.h"
+#include "Assets/TextureManager.h"
 #include "Core/Logger.h"
 #include "Core/Services.h"
+#include "Core/Engine/EngineCore.h"
+#include "Graphics/RenderContext.h"
 
 namespace Real::assets {
 
     ResourceManager::ResourceManager()
-        : m_ModelLoader(CreateScope<graphics::ModelLoader>())
     {
     }
 
-    void ResourceManager::Load() {
-        LoadAssets();
+    void ResourceManager::Load(core::CoreSystems* core) {
+        LoadAssets(core);
         LoadShaders();
     }
 
-    void ResourceManager::LoadAssets() const {
+    void ResourceManager::LoadAssets(core::CoreSystems* core) const {
         Info("Loading assets...");
-        auto& ai = Services::GetAssetImporter();
-        auto& mm = Services::GetMeshManager();
+        auto& ai     = Services::GetAssetImporter();
+        auto& meshM  = Services::GetMeshManager();
+        auto& modelM = Services::GetModelManager();
+        auto& texM   = Services::GetTextureManager();
 
         // The asset loading order is matter!!
 
@@ -33,12 +38,14 @@ namespace Real::assets {
         Info("Assets loaded from ASSET_DB successfully!");
 
         // Model loader state
-        m_ModelLoader->LoadAll(String(ASSETS_SOURCE_DIR) + "models/");
+        modelM.LoadAll(String(ASSETS_SOURCE_DIR) + "models/");
         Info("Models loaded from folder successfully!");
 
         // Mesh manager state
-        mm.InitResources();
+        meshM.InitResources();
         Info("Mesh manager init resources successfully!");
+
+        core->renderer->GetRenderContext().GetGPURenderData().textures = texM.FlushPendingUploads();
 
         Info("[ResourceLoader] Assets loaded successfully!");
     }
@@ -49,12 +56,12 @@ namespace Real::assets {
 
         auto vert = ConcatStr(SHADERS_DIR, "opengl/main.vert");
         auto frag = ConcatStr(SHADERS_DIR, "opengl/main.frag");
-        sm.Load(vert, frag, graphics::ShaderType::Main);
+        sm.Load(vert, frag, ShaderType::Main);
 
         // Load shader and save to AssetManager then get and use
         vert = ConcatStr(SHADERS_DIR, "opengl/debug/main.vert");
         frag = ConcatStr(SHADERS_DIR, "opengl/debug/main.frag");
-        sm.Load(vert, frag, graphics::ShaderType::Debug);
+        sm.Load(vert, frag, ShaderType::Debug);
 
         Info("[ResourceLoader] Shaders loaded successfully!");
     }

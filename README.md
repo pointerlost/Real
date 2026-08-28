@@ -1,6 +1,18 @@
 # Real Engine
 
-A modern OpenGL-based 3D(for now) renderer!
+A modern OpenGL-based 3D mini game engine!
+
+---
+
+## Showcase & Demo
+
+Click the preview below to watch the official engine features overview on YouTube:
+
+[![Engine Showcase Video](https://img.youtube.com/vi/jjWsiRB8PKg/maxresdefault.jpg)](https://www.youtube.com/watch?v=jjWsiRB8PKg)
+
+> *Click the image above to open the full presentation video.*
+
+---
 
 ## Prerequisites
 
